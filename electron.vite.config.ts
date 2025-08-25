@@ -15,6 +15,17 @@ export default defineConfig({
         '@renderer': resolve('src/renderer/src')
       }
     },
-    plugins: [react()]
+    plugins: [react()],
+    build: {
+      assetsDir: '.',
+      rollupOptions: {
+        output: {
+          format: 'es',
+          entryFileNames: '[name].js',
+          chunkFileNames: '[name].js',
+          assetFileNames: '[name].[ext]'
+        }
+      }
+    }
   }
 })

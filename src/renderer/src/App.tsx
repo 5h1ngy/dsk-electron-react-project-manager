@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from './store';
 import { restoreUser } from './store/slices/authSlice';
@@ -50,7 +50,6 @@ const App: React.FC = () => {
   
   return (
     <AppContainer>
-      <Router>
         <Routes>
           {/* Auth Routes */}
           <Route path="/" element={<AuthLayout />}>
@@ -91,7 +90,6 @@ const App: React.FC = () => {
             <Route path="*" element={<NotFoundPage />} />
           </Route>
         </Routes>
-      </Router>
     </AppContainer>
   );
 };

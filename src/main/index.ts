@@ -28,7 +28,7 @@ async function createWindow() {
       preload: join(__dirname, '../preload/index.js'),
       nodeIntegration: false,
       contextIsolation: true,
-    },
+    }
   });
 
   // Initialize SQLite database
@@ -41,43 +41,53 @@ async function createWindow() {
   registerNotesHandlers();
   registerDatabaseHandlers();
 
-  // Determine the correct path to index.html
+  // Determine the correct path to index.html with electron-vite structure
   // This approach works in both development and production modes
-  const indexPath = join(__dirname, '../../renderer/index.html');
-  const indexPathAlt = join(process.cwd(), 'dist/renderer/index.html');
+  // Note: electron-vite outputs to the 'out' directory by default
+  const indexPath = join(__dirname, '../renderer/index.html'); // Default for electron-vite
+  const indexPathAlt1 = join(process.cwd(), 'out/renderer/index.html'); // Absolute path
+  const indexPathAlt2 = join(__dirname, '../../out/renderer/index.html'); // Fallback
 
-  console.log('Trying to load from:', indexPath);
-  console.log('Alternative path:', indexPathAlt);
+  console.log('Trying primary path:', indexPath);
+  console.log('Alternative path 1:', indexPathAlt1);
+  console.log('Alternative path 2:', indexPathAlt2);
 
   try {
     // First try the relative path from __dirname
     await mainWindow.loadFile(indexPath);
   } catch (error) {
-    console.error('Failed to load from primary path, trying alternative path:', error);
+    console.error('Failed to load from primary path, trying alternative path 1:', error);
     try {
       // If that fails, try the absolute path from current working directory
-      await mainWindow.loadFile(indexPathAlt);
+      await mainWindow.loadFile(indexPathAlt1);
     } catch (secondError) {
-      console.error('Failed to load from alternative path too:', secondError);
-      // As a last resort, display an error
-      mainWindow.webContents.loadURL(`data:text/html;charset=utf-8,
-        <html>
-          <head><title>Error Loading App</title></head>
-          <body>
-            <h1>Error Loading Application</h1>
-            <p>Could not locate index.html</p>
-            <p>Primary path: ${indexPath}</p>
-            <p>Alternative path: ${indexPathAlt}</p>
-          </body>
-        </html>
-      `);
+      console.error('Failed to load from alternative path 1, trying alternative path 2:', secondError);
+      try {
+        // Last attempt with a different relative path
+        await mainWindow.loadFile(indexPathAlt2);
+      } catch (thirdError) {
+        console.error('Failed to load from all paths:', thirdError);
+        // As a last resort, display an error
+        mainWindow.webContents.loadURL(`data:text/html;charset=utf-8,
+          <html>
+            <head><title>Error Loading App</title></head>
+            <body>
+              <h1>Error Loading Application</h1>
+              <p>Could not locate index.html</p>
+              <p>Primary path: ${indexPath}</p>
+              <p>Alternative path 1: ${indexPathAlt1}</p>
+              <p>Alternative path 2: ${indexPathAlt2}</p>
+              <p>Current directory: ${process.cwd()}</p>
+              <p>__dirname: ${__dirname}</p>
+            </body>
+          </html>
+        `);
+      }
     }
   }
 
-  // Open DevTools in development mode
-  if (process.env.NODE_ENV === 'development') {
-    mainWindow.webContents.openDevTools();
-  }
+  // Always open DevTools for debugging
+  mainWindow.webContents.openDevTools();
 }
 
 app.whenReady().then(() => {

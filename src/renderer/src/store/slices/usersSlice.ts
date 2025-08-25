@@ -1,5 +1,11 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { ipcRenderer } from 'electron';
+
+// Use the exposed API instead of direct electron imports
+declare global {
+  interface Window {
+    api: any;
+  }
+}
 
 // Define User interface
 export interface User {
@@ -28,7 +34,7 @@ const initialState: UsersState = {
 export const fetchUsers = createAsyncThunk(
   'users/fetchUsers',
   async () => {
-    const response = await ipcRenderer.invoke('users:getAll');
+    const response = await window.api.getUsers();
     return response;
   }
 );

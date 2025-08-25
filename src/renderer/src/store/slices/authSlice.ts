@@ -1,5 +1,11 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { ipcRenderer } from 'electron';
+
+// Use the exposed API instead of direct electron imports
+declare global {
+  interface Window {
+    api: any;
+  }
+}
 
 // Define types
 interface User {
@@ -30,7 +36,7 @@ export const register = createAsyncThunk(
   'auth/register',
   async (userData: { name: string; email: string; password: string }, { rejectWithValue }) => {
     try {
-      const response = await ipcRenderer.invoke('auth:register', userData);
+      const response = await window.api.register(userData);
       return response;
     } catch (error) {
       return rejectWithValue((error as Error).message);
@@ -42,7 +48,7 @@ export const login = createAsyncThunk(
   'auth/login',
   async (loginData: { email: string; password: string }, { rejectWithValue }) => {
     try {
-      const response = await ipcRenderer.invoke('auth:login', loginData);
+      const response = await window.api.login(loginData);
       return response;
     } catch (error) {
       return rejectWithValue((error as Error).message);

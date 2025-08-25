@@ -1,5 +1,11 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { ipcRenderer } from 'electron';
+
+// Use the exposed API instead of direct electron imports
+declare global {
+  interface Window {
+    api: any;
+  }
+}
 import { Tag } from './projectsSlice';
 import { RootState } from '../index';
 
@@ -75,7 +81,7 @@ export const fetchFolders = createAsyncThunk(
   'notes/fetchFolders',
   async (userId: number, { rejectWithValue }) => {
     try {
-      const response = await ipcRenderer.invoke('folders:getAll', userId);
+      const response = await window.api.getFolders(userId);
       return response;
     } catch (error) {
       return rejectWithValue((error as Error).message);
@@ -87,7 +93,7 @@ export const createFolder = createAsyncThunk(
   'notes/createFolder',
   async (folderData: { name: string; userId: number; parentId?: number }, { rejectWithValue }) => {
     try {
-      const response = await ipcRenderer.invoke('folders:create', folderData);
+      const response = await window.api.createFolder(folderData);
       return response;
     } catch (error) {
       return rejectWithValue((error as Error).message);
@@ -102,7 +108,7 @@ export const updateFolder = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      const response = await ipcRenderer.invoke('folders:update', { id, name, tags });
+      const response = await window.api.updateFolder({ id, name, tags });
       return response;
     } catch (error) {
       return rejectWithValue((error as Error).message);
@@ -114,7 +120,7 @@ export const deleteFolder = createAsyncThunk(
   'notes/deleteFolder',
   async (folderId: number, { rejectWithValue }) => {
     try {
-      const response = await ipcRenderer.invoke('folders:delete', folderId);
+      const response = await window.api.deleteFolder(folderId);
       return { id: folderId, ...response };
     } catch (error) {
       return rejectWithValue((error as Error).message);
@@ -178,7 +184,7 @@ export const fetchNotes = createAsyncThunk(
   'notes/fetchNotes',
   async ({ userId, folderId }: { userId: number; folderId?: number }, { rejectWithValue }) => {
     try {
-      const response = await ipcRenderer.invoke('notes:getAll', { userId, folderId });
+      const response = await window.api.getFiles(folderId);
       return response;
     } catch (error) {
       return rejectWithValue((error as Error).message);
@@ -190,7 +196,7 @@ export const createNote = createAsyncThunk(
   'notes/createNote',
   async (noteData: { title: string; content: string; userId: number; folderId?: number }, { rejectWithValue }) => {
     try {
-      const response = await ipcRenderer.invoke('notes:create', noteData);
+      const response = await window.api.uploadFile(noteData);
       return response;
     } catch (error) {
       return rejectWithValue((error as Error).message);
@@ -205,7 +211,7 @@ export const updateNote = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      const response = await ipcRenderer.invoke('notes:update', { id, title, content, folderId });
+      const response = await window.api.updateFile({ id, title, content, folderId });
       return response;
     } catch (error) {
       return rejectWithValue((error as Error).message);
@@ -217,7 +223,7 @@ export const deleteNote = createAsyncThunk(
   'notes/deleteNote',
   async (noteId: number, { rejectWithValue }) => {
     try {
-      const response = await ipcRenderer.invoke('notes:delete', noteId);
+      const response = await window.api.deleteFile(noteId);
       return noteId;
     } catch (error) {
       return rejectWithValue((error as Error).message);
