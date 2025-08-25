@@ -1,124 +1,205 @@
-# Project Manager
+#  React-TS
 
-A modern project management desktop application built with Electron, React, and Node.js. This application integrates task management with a Jira-style board, note taking capabilities, and project statistics.
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
+![Electron](https://img.shields.io/badge/Electron-22.x-47848F.svg?logo=electron)
+![Vite](https://img.shields.io/badge/vite-4.x-646CFF.svg?logo=vite)
+![React](https://img.shields.io/badge/React-18.x-61DAFB.svg?logo=react)
+![TypeScript](https://img.shields.io/badge/TypeScript-4.x-3178C6.svg?logo=typescript)
 
-## Features
+An advanced Electron application with React and TypeScript. Ideal for developing robust and modern desktop applications with static typing and reactive UI components.
 
-- **Multi-user support** with authentication
-- **Project Management Dashboard** with card, table, and list views
-- **Task Board** with drag and drop functionality (Jira-style)
-- **Notes & File Management** with Google Drive-style folder structure
-- **Statistics** for project and task metrics
-- **Dark & Light Mode** with customizable color palettes
-- **SQLite Database** for local storage
-- **Import/Export Database** functionality
+**Topics:** `electron` `react` `typescript` `vite` `cross-platform` `desktop-app` `offline-first` `local-storage` `data-export`
 
-## Tech Stack
+##  Table of Contents
+- [Features](#-features)
+- [Project Structure](#-project-structure)
+- [Recommended IDE Setup](#-recommended-ide-setup)
+- [Project Setup](#-project-setup)
+- [Package Managers](#-package-managers)
+- [Resources](#-resources)
 
-- **Frontend**: React, Redux Toolkit, React Router, styled-components
-- **Backend**: Node.js, Sequelize (ORM)
-- **Database**: SQLite
-- **UI/UX**: Ant Design-inspired components with custom theming
-- **Forms**: React Hook Form with Zod validation
-- **Desktop**: Electron
+##  Features
 
-## Installation
+-  React framework for UI components
+-  Support for dashboard and statistical visualizations
+-  Ability to implement timeline and calendar views
+-  Data storage in localStorage (100% offline)
+-  Import/export and backup functionality
+-  Hot Module Replacement (HMR) during development
+-  Ultra-fast build with Vite bundler
+-  Cross-platform packaging
+-  Type safety with TypeScript
+-  Native Node.js integration
+-  TypeScript linting with ESLint
+-  Code formatting with Prettier
+-  Component-based architecture
 
-### Prerequisites
+##  Project Structure
 
-- Node.js (v16 or higher)
-- npm (v7 or higher)
+```
+bl-electron-vite-typescript-react/
+ build/              # Build resources and configuration
+ dist/               # Build output directory
+ out/                # Packaged application output
+ src/
+    main/           # Main process code
+       index.ts    # Main entry point
+    preload/        # Preload scripts
+       index.ts    # Preload entry point
+    renderer/       # Renderer process code (React)
+        App.tsx     # Root React component
+        components/ # React components
+        hooks/      # Custom React hooks
+        utils/      # Utility functions
+        index.html  # HTML template
+        index.tsx   # Renderer entry point
+ .eslintrc           # ESLint configuration
+ electron-builder.yml # Electron builder configuration
+ package.json        # Project dependencies and scripts
+ tsconfig.json       # TypeScript configuration
+ vite.config.ts      # Vite configuration
+```
 
-### Steps
+##  Recommended IDE Setup
 
-1. Clone the repository
-   ```bash
-   git clone https://github.com/yourusername/electron-project-manager.git
-   cd electron-project-manager
-   ```
+- [VSCode](https://code.visualstudio.com/) + [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) + [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
 
-2. Install dependencies
-   ```bash
-   npm install
-   ```
+##  Project Setup
 
-3. Start the development server
-   ```bash
-   npm run dev
-   ```
-
-4. In a separate terminal, start the Electron app
-   ```bash
-   npm start
-   ```
-
-## Build and Distribution
-
-To build the application for distribution:
+###  Install
 
 ```bash
-# Build for current platform
-npm run dist
-
-# Build portable version
-npm run pack
+$ pnpm install
 ```
 
-## Project Structure
+###  Development
 
-```
-electron-project-manager/
- electron/                # Electron specific code
-    main/                # Main process (Node.js backend)
-       database/        # Database models and configuration
-       handlers/        # IPC event handlers
-       utils/           # Utilities for the main process
-    preload/             # Preload scripts for renderer process
-    shared/              # Shared types and utilities
- src/                     # Frontend React application
-    components/          # Reusable UI components
-    features/            # Feature-specific components
-    hooks/               # Custom React hooks
-    layouts/             # Layout components
-    pages/               # Page components
-    store/               # Redux store configuration
-       slices/          # Redux slices
-    themes/              # Theme configuration
-    utils/               # Utility functions
- public/                  # Static assets
- vite.config.ts           # Vite configuration
+```bash
+$ pnpm dev
 ```
 
-## Configuration
+###  Build
 
-### Environment Variables
+```bash
+# For windows
+$ pnpm build:win
 
-Create `.env.development` or `.env.production` files in the root directory to configure environment-specific settings:
+# For macOS
+$ pnpm build:mac
 
-```
-# Development Settings
-NODE_ENV=development
-VITE_APP_TITLE=Project Manager (Dev)
-```
-
-### Mock Mode
-
-For development without a real database, enable mock mode in `.env.development`:
-
-```
-VITE_USE_MOCK_DATA=true
+# For Linux
+$ pnpm build:linux
 ```
 
-The mock mode uses in-memory data instead of SQLite, which is useful for testing UI components without setting up a database.
+##  Package Managers
 
-## Contributing
+This project supports multiple package managers. Here's how to use each one:
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+### NPM
 
-## License
+NPM is the default package manager for Node.js.
 
-This project is licensed under the ISC License.
+**Install NPM:**
+```bash
+# Included with Node.js installation
+```
+
+**Setup project with NPM:**
+```bash
+# Install dependencies
+$ npm install
+
+# Run development server
+$ npm run dev
+
+# Build application
+$ npm run build:win
+$ npm run build:mac
+$ npm run build:linux
+```
+
+**Key features:**
+-  Vast package ecosystem
+-  Hierarchical node_modules structure
+-  Package.json for dependency management
+
+### Yarn
+
+Yarn is a fast, reliable, and secure alternative to NPM.
+
+**Install Yarn:**
+```bash
+# Install using NPM
+$ npm install -g yarn
+```
+
+**Setup project with Yarn:**
+```bash
+# Install dependencies
+$ yarn
+
+# Run development server
+$ yarn dev
+
+# Build application
+$ yarn build:win
+$ yarn build:mac
+$ yarn build:linux
+```
+
+**Key features:**
+-  Faster installation speeds
+-  Offline caching
+-  Better security with checksums
+-  yarn.lock for deterministic installations
+
+### PNPM
+
+PNPM is a disk-space efficient package manager.
+
+**Install PNPM:**
+```bash
+# Install using NPM
+$ npm install -g pnpm
+```
+
+**Setup project with PNPM:**
+```bash
+# Install dependencies
+$ pnpm install
+
+# Run development server
+$ pnpm dev
+
+# Build application
+$ pnpm build:win
+$ pnpm build:mac
+$ pnpm build:linux
+```
+
+**Key features:**
+-  Disk space savings through symlinks
+-  Fast installation speeds
+-  Content-addressable storage
+-  pnpm-lock.yaml for dependency lock
+
+### Comparison
+
+| Feature               | NPM     | Yarn    | PNPM    |
+|-----------------------|---------|---------|---------|
+| Disk usage            | High    | High    | Low     |
+| Installation speed    | Slow    | Fast    | Fastest |
+| Parallel installations| Limited | Yes     | Yes     |
+| Workspace support     | Limited | Good    | Best    |
+| Offline mode          | Limited | Good    | Good    |
+| Security              | Good    | Better  | Better  |
+
+##  Resources
+
+- [Electron Documentation](https://www.electronjs.org/docs)
+- [React Documentation](https://reactjs.org/docs/getting-started.html)
+- [TypeScript Documentation](https://www.typescriptlang.org/docs/)
+- [Vite Documentation](https://vitejs.dev/guide/)
+- [NPM Documentation](https://docs.npmjs.com/)
+- [Yarn Documentation](https://yarnpkg.com/getting-started)
+- [PNPM Documentation](https://pnpm.io/motivation)

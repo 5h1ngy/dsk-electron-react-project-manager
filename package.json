@@ -1,40 +1,28 @@
 {
-  "name": "electron-project-manager",
+  "name": "react-ts",
   "version": "1.0.0",
-  "main": "dist/electron/main/index.js",
-  "description": "Project Management Software with Electron, React, and Node",
-  "author": "",
-  "license": "ISC",
+  "description": "An Electron application with React and TypeScript",
+  "main": "./out/main/index.js",
+  "author": "example.com",
+  "homepage": "https://electron-vite.org",
   "scripts": {
-    "dev": "vite",
-    "build": "npm run build:renderer && npm run build:electron && npm run dist",
-    "build:renderer": "vite build",
-    "build:electron": "node build-electron.js",
-    "preview": "vite preview",
-    "start": "electron .",
-    "dist": "electron-builder --dir -c electron-builder.js"
-  },
-  "keywords": [
-    "electron",
-    "react",
-    "project-management",
-    "sqlite",
-    "typescript"
-  ],
-  "devDependencies": {
-    "@types/node": "^22.14.0",
-    "@types/react": "^19.1.0",
-    "@types/react-dom": "^19.1.1",
-    "@vitejs/plugin-react": "^4.3.4",
-    "concurrently": "^9.1.2",
-    "electron": "^35.1.4",
-    "electron-builder": "^26.0.12",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.8.3",
-    "vite": "^6.2.5",
-    "vite-plugin-electron": "^0.29.0"
+    "format": "prettier --write .",
+    "lint": "eslint --cache .",
+    "typecheck:node": "tsc --noEmit -p tsconfig.node.json --composite false",
+    "typecheck:web": "tsc --noEmit -p tsconfig.web.json --composite false",
+    "typecheck": "npm run typecheck:node && npm run typecheck:web",
+    "start": "electron-vite preview",
+    "dev": "electron-vite dev",
+    "build": "npm run typecheck && electron-vite build",
+    "postinstall": "electron-builder install-app-deps",
+    "build:unpack": "npm run build && electron-builder --dir",
+    "build:win": "npm run build && electron-builder --win",
+    "build:mac": "electron-vite build && electron-builder --mac",
+    "build:linux": "electron-vite build && electron-builder --linux"
   },
   "dependencies": {
+    "@electron-toolkit/preload": "^3.0.1",
+    "@electron-toolkit/utils": "^4.0.0",
     "@hookform/resolvers": "^5.0.1",
     "@reduxjs/toolkit": "^2.6.1",
     "@uiw/react-md-editor": "^4.0.5",
@@ -56,34 +44,28 @@
     "styled-components": "^6.1.17",
     "zod": "^3.24.2"
   },
-  "build": {
-    "appId": "com.electron.project-manager",
-    "productName": "Project Manager",
-    "mac": {
-      "category": "public.app-category.productivity"
-    },
-    "win": {
-      "target": [
-        "portable",
-        "nsis"
-      ]
-    },
-    "linux": {
-      "target": [
-        "AppImage",
-        "deb"
-      ]
-    },
-    "files": [
-      "dist/**/*",
-      "node_modules/**/*"
-    ],
-    "directories": {
-      "buildResources": "assets",
-      "output": "release"
-    },
-    "extraMetadata": {
-      "main": "dist/electron/main/index.js"
-    }
+  "devDependencies": {
+    "@types/node": "^22.14.0",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "concurrently": "^9.1.2",
+    "electron": "^35.1.4",
+    "electron-builder": "^26.0.12",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3",
+    "vite": "^6.2.5",
+    "vite-plugin-electron": "^0.29.0",
+    "@electron-toolkit/eslint-config-prettier": "^3.0.0",
+    "@electron-toolkit/eslint-config-ts": "^3.0.0",
+    "@electron-toolkit/tsconfig": "^1.0.1",
+    "electron-vite": "^3.1.0",
+    "eslint": "^9.23.0",
+    "eslint-plugin-react": "^7.37.4",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.19",
+    "prettier": "^3.5.3",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   }
 }
