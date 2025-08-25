@@ -1,0 +1,71 @@
+:root {
+  --accent-color: #1677ff; /* Blu come colore predefinito */
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* Variabili CSS per correggere gli elementi in modalità dark */
+body[data-theme="dark"] {
+  --card-bg: #1f1f1f;
+  --input-bg: #121212;
+  --border-color: #333333;
+  --text-primary: #f5f5f5;
+  --text-secondary: #b0b0b0;
+  --text-tertiary: #737373;
+}
+
+body[data-theme="light"] {
+  --card-bg: #f8f8f8;
+  --input-bg: #ffffff;
+  --border-color: #e6e6e6;
+  --text-primary: #262626;
+  --text-secondary: #595959;
+  --text-tertiary: #8c8c8c;
+}
+
+/* Assicura che i testi si adattino al tema */
+.ant-input, .ant-select-selection-item, .ant-select-item-option-content,
+.ant-table, .ant-checkbox-wrapper, .ant-radio-wrapper, 
+.ant-tag, .ant-modal-content, .ant-message-notice-content {
+  color: var(--text-primary) !important;
+}
+
+/* Correzione sfondo componenti in modalità dark */
+body[data-theme="dark"] .ant-select-dropdown,
+body[data-theme="dark"] .ant-modal-content,
+body[data-theme="dark"] .ant-drawer-content,
+body[data-theme="dark"] .ant-card,
+body[data-theme="dark"] .ant-table,
+body[data-theme="dark"] .ant-popover-inner {
+  background-color: var(--card-bg) !important;
+}
+
+/* Input fields */
+body[data-theme="dark"] .ant-input,
+body[data-theme="dark"] .ant-select-selector,
+body[data-theme="dark"] .ant-input-number,
+body[data-theme="dark"] .ant-picker,
+body[data-theme="dark"] .ant-input-affix-wrapper {
+  background-color: var(--input-bg) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Adjust accent colors */
+.ant-btn-primary, 
+.ant-switch-checked,
+.ant-checkbox-checked .ant-checkbox-inner,
+.ant-radio-checked .ant-radio-inner {
+  background-color: var(--accent-color) !important;
+  border-color: var(--accent-color) !important;
+}
+
+a, .ant-btn-link, .ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: var(--accent-color) !important;
+}

@@ -1,13 +1,18 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { ThemeProvider as StyledThemeProvider } from 'styled-components';
-import { ThemeMode, getTheme } from './theme';
+import { ThemeMode, getTheme, AccentColor } from './theme';
+import { DefaultTheme } from 'styled-components';
 import { GlobalStyles } from './GlobalStyles';
 
 // Tipo per il contesto del tema
+
 interface ThemeContextType {
   mode: ThemeMode;
+  accentColor: AccentColor;
   setMode: (mode: ThemeMode) => void;
   toggleMode: () => void;
+  setAccentColor: (color: AccentColor) => void;
+  theme: DefaultTheme;
 }
 
 // Creazione del contesto
@@ -39,6 +44,13 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
     const savedMode = localStorage.getItem('themeMode') as ThemeMode;
     return savedMode || defaultMode;
   });
+  
+  // Stato per il colore accentato
+  const [accentColor, setAccentColor] = useState<AccentColor>(() => {
+    // Recupera il colore accentato dal localStorage
+    const savedColor = localStorage.getItem('accentColor') as AccentColor;
+    return savedColor || AccentColor.BLUE;
+  });
 
   // Toggle tra dark e light mode
   const toggleMode = () => {
@@ -47,16 +59,22 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
     );
   };
 
-  // Salva la modalità nel localStorage quando cambia
+  // Salva la modalità nel localStorage quando cambia e aggiorna l'attributo data-theme del body
   useEffect(() => {
     localStorage.setItem('themeMode', mode);
+    document.body.setAttribute('data-theme', mode.toLowerCase());
   }, [mode]);
+  
+  // Salva il colore accentato nel localStorage quando cambia
+  useEffect(() => {
+    localStorage.setItem('accentColor', accentColor);
+  }, [accentColor]);
 
-  // Ottieni il tema in base alla modalità attuale
-  const theme = getTheme(mode);
+  // Ottieni il tema in base alla modalità attuale e al colore accentato
+  const theme = getTheme(mode, accentColor);
 
   return (
-    <ThemeContext.Provider value={{ mode, setMode, toggleMode }}>
+    <ThemeContext.Provider value={{ mode, accentColor, setMode, toggleMode, setAccentColor, theme }}>
       <StyledThemeProvider theme={theme}>
         <GlobalStyles />
         {children}

@@ -1,13 +1,21 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useTheme } from '../../styles/ThemeProvider';
-import { ThemeMode } from '../../styles/theme';
+import { ThemeMode, AccentColor } from '../../styles/theme';
+import AccentColorPicker from './AccentColorPicker';
+import { SettingOutlined } from '@ant-design/icons';
 
 interface ThemeSwitcherProps {
   className?: string;
 }
 
 const SwitcherContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing.sm};
+`;
+
+const SwitcherControls = styled.div`
   display: flex;
   align-items: center;
   gap: ${({ theme }) => theme.spacing.sm};
@@ -68,25 +76,76 @@ const ModeIcon = styled.span<{ $isLight: boolean }>`
   }
 `;
 
+const ColorButton = styled.button<{ $accentColor: AccentColor }>`
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: ${({ theme }) => theme.colors.primary.main};
+  border: none;
+  cursor: pointer;
+  transition: all ${({ theme }) => theme.transition.fast};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: ${({ theme }) => theme.colors.text.inverse};
+  font-size: 12px;
+  
+  &:hover {
+    opacity: 0.9;
+    transform: scale(1.05);
+  }
+  
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px ${({ theme }) => theme.colors.primary.light};
+  }
+`;
+
 export const ThemeSwitcher: React.FC<ThemeSwitcherProps> = ({ className }) => {
-  const { mode, toggleMode } = useTheme();
+  const { mode, accentColor, toggleMode, setAccentColor } = useTheme();
   const isDarkMode = mode === ThemeMode.DARK;
+  const [showColorPicker, setShowColorPicker] = useState(false);
+  
+  const toggleColorPicker = () => {
+    setShowColorPicker(!showColorPicker);
+  };
+  
+  const handleColorChange = (color: AccentColor) => {
+    setAccentColor(color);
+  };
   
   return (
     <SwitcherContainer className={className}>
-      <SwitchLabel>Tema</SwitchLabel>
-      <SwitchButton
-        $isActive={isDarkMode}
-        onClick={toggleMode}
-        aria-label={`Passa alla modalità ${isDarkMode ? 'chiara' : 'scura'}`}
-      >
-        <ModeIcon $isLight={true}>
-          <i></i>
-        </ModeIcon>
-        <ModeIcon $isLight={false}>
-          <i></i>
-        </ModeIcon>
-      </SwitchButton>
+      <SwitcherControls>
+        <SwitchLabel>Tema</SwitchLabel>
+        <SwitchButton
+          $isActive={isDarkMode}
+          onClick={toggleMode}
+          aria-label={`Passa alla modalità ${isDarkMode ? 'chiara' : 'scura'}`}
+        >
+          <ModeIcon $isLight={true}>
+            <i></i>
+          </ModeIcon>
+          <ModeIcon $isLight={false}>
+            <i></i>
+          </ModeIcon>
+        </SwitchButton>
+        
+        <ColorButton 
+          onClick={toggleColorPicker}
+          title="Cambia colore accento"
+          $accentColor={accentColor}
+        >
+          <SettingOutlined />
+        </ColorButton>
+      </SwitcherControls>
+      
+      {showColorPicker && (
+        <AccentColorPicker
+          currentColor={accentColor}
+          onChange={handleColorChange}
+        />
+      )}
     </SwitcherContainer>
   );
 };

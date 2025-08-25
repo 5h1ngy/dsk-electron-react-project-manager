@@ -2,7 +2,7 @@ import React, { ReactNode, useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { ThemeSwitcher } from '../ui';
+import ThemeControls from '../ui/ThemeControls';
 import { logout } from '../../store/slices/authSlice';
 import { RootState } from '../../store';
 
@@ -149,18 +149,20 @@ const MainContent = styled.div`
 
 const Header = styled.header`
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: ${({ theme }) => theme.spacing.xl};
+  justify-content: space-between;
+  padding: ${({ theme }) => `${theme.spacing.md} ${theme.spacing.md}`};
+  border-bottom: 1px solid ${({ theme }) => theme.colors.border.light};
 `;
 
 const PageTitle = styled.h1`
-  font-size: ${({ theme }) => theme.typography.fontSizes.xxl};
-  font-weight: ${({ theme }) => theme.typography.fontWeights.bold};
+  font-size: ${({ theme }) => theme.typography.fontSizes.xl};
+  font-weight: ${({ theme }) => theme.typography.fontWeights.semibold};
+  color: ${({ theme }) => theme.colors.text.primary};
   margin: 0;
 `;
 
-const ThemeControls = styled.div`
+const HeaderControls = styled.div`
   display: flex;
   align-items: center;
 `;
@@ -213,15 +215,15 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
             Dashboard
           </NavItem>
           <NavItem
-            $isActive={isActivePath('/projects')}
-            onClick={() => handleNavigation('/projects', 'Progetti')}
+            $isActive={location.pathname.includes('/projects')}
+            onClick={() => handleNavigation('/dashboard', 'Progetti')}
           >
             <NavItemIcon></NavItemIcon>
             Progetti
           </NavItem>
           <NavItem
-            $isActive={location.pathname.startsWith('/tasks')}
-            onClick={() => handleNavigation('/tasks', 'Attività')}
+            $isActive={location.pathname.includes('/tasks')}
+            onClick={() => handleNavigation('/dashboard', 'Attività')}
           >
             <NavItemIcon></NavItemIcon>
             Attività
@@ -263,9 +265,9 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       <MainContent>
         <Header>
           <PageTitle>{pageTitle}</PageTitle>
-          <ThemeControls>
-            <ThemeSwitcher />
-          </ThemeControls>
+          <HeaderControls>
+            <ThemeControls />
+          </HeaderControls>
         </Header>
         
         {children}

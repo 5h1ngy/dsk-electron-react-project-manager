@@ -14,7 +14,20 @@ export enum TaskStatus {
   IN_PROGRESS = 'inProgress',
   REVIEW = 'review',
   BLOCKED = 'blocked',
-  DONE = 'done'
+  DONE = 'done',
+  // Supporto per stati personalizzati
+  CUSTOM0 = 'custom0',
+  CUSTOM1 = 'custom1',
+  CUSTOM2 = 'custom2',
+  CUSTOM3 = 'custom3',
+  CUSTOM4 = 'custom4'
+}
+
+export interface BoardColumn {
+  id: string;
+  title: string;
+  status: TaskStatus;
+  position: number;
 }
 
 export interface Attachment {
@@ -46,6 +59,7 @@ export interface Task {
 
 interface TasksState {
   tasks: Task[];
+  columns: BoardColumn[];
   loading: boolean;
   error: string | null;
   filter: {
@@ -58,6 +72,13 @@ interface TasksState {
 
 const initialState: TasksState = {
   tasks: [],
+  columns: [
+    { id: TaskStatus.TODO, title: 'Da fare', status: TaskStatus.TODO, position: 0 },
+    { id: TaskStatus.IN_PROGRESS, title: 'In corso', status: TaskStatus.IN_PROGRESS, position: 1 },
+    { id: TaskStatus.REVIEW, title: 'In revisione', status: TaskStatus.REVIEW, position: 2 },
+    { id: TaskStatus.BLOCKED, title: 'Bloccati', status: TaskStatus.BLOCKED, position: 3 },
+    { id: TaskStatus.DONE, title: 'Completati', status: TaskStatus.DONE, position: 4 }
+  ],
   loading: false,
   error: null,
   filter: {
@@ -221,6 +242,28 @@ const tasksSlice = createSlice({
         }
       });
     },
+    // Aggiorna le colonne della taskboard
+    updateTaskColumns: (state, action: PayloadAction<Array<{id: string, name: string}>>) => {
+      const columns = action.payload.map((col, index) => ({
+        id: col.id,
+        title: col.name,
+        status: col.id as TaskStatus, // Usa l'id come status
+        position: index
+      }));
+      state.columns = columns;
+      
+      // Aggiorna i task che si riferiscono a colonne rimosse
+      if (columns.length > 0) {
+        const validStatuses = columns.map(col => col.status);
+        state.tasks = state.tasks.map(task => {
+          if (!validStatuses.includes(task.status)) {
+            // Se lo status non è più valido, assegna il task alla prima colonna
+            return { ...task, status: validStatuses[0] };
+          }
+          return task;
+        });
+      }
+    },
   },
   extraReducers: (builder) => {
     // Fetch tasks
@@ -325,6 +368,7 @@ export const {
   clearTaskFilters,
   clearTasksError,
   reorderTasks,
+  updateTaskColumns
 } = tasksSlice.actions;
 
 // Selectors
@@ -365,18 +409,32 @@ export const selectFilteredTasks = (state: RootState) => {
 
 export const selectTasksByStatus = (state: RootState) => {
   const filteredTasks = selectFilteredTasks(state);
+  const columns = state.tasks.columns;
   
-  // Group tasks by status
-  const tasksByStatus: Record<TaskStatus, Task[]> = {
-    [TaskStatus.TODO]: [],
-    [TaskStatus.IN_PROGRESS]: [],
-    [TaskStatus.REVIEW]: [],
-    [TaskStatus.BLOCKED]: [],
-    [TaskStatus.DONE]: [],
-  };
+  // Crea un oggetto per raggruppare i task in base allo stato
+  const tasksByStatus: Record<string, Task[]> = {};
   
+  // Inizializza l'oggetto con tutte le colonne disponibili
+  columns.forEach(column => {
+    tasksByStatus[column.status] = [];
+  });
+  
+  // Assicurati che ci siano sempre le colonne standard anche se per qualche motivo columns è vuoto
+  if (!tasksByStatus[TaskStatus.TODO]) tasksByStatus[TaskStatus.TODO] = [];
+  if (!tasksByStatus[TaskStatus.IN_PROGRESS]) tasksByStatus[TaskStatus.IN_PROGRESS] = [];
+  if (!tasksByStatus[TaskStatus.REVIEW]) tasksByStatus[TaskStatus.REVIEW] = [];
+  if (!tasksByStatus[TaskStatus.BLOCKED]) tasksByStatus[TaskStatus.BLOCKED] = [];
+  if (!tasksByStatus[TaskStatus.DONE]) tasksByStatus[TaskStatus.DONE] = [];
+  
+  // Raggruppa i task per stato
   filteredTasks.forEach(task => {
-    tasksByStatus[task.status].push(task);
+    // Se lo stato esiste già, aggiungi il task al gruppo corrispondente
+    if (tasksByStatus[task.status]) {
+      tasksByStatus[task.status].push(task);
+    } else {
+      // Se lo stato non esiste (può accadere se le colonne sono cambiate), aggiungi il task al gruppo TODO
+      tasksByStatus[TaskStatus.TODO].push(task);
+    }
   });
   
   // Sort tasks by position within each status group

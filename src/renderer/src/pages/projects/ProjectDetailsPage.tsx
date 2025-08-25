@@ -58,6 +58,15 @@ const ProjectDetailsPage: React.FC = () => {
     setIsEditModalOpen(true);
   };
   
+  const handleUpdateProject = (data: { name: string; description?: string; tags?: number[] }) => {
+    if (project) {
+      // Qui implementare la chiamata per aggiornare il progetto
+      // Esempio: dispatch(updateProject({ id: project.id, ...data }));
+      console.log('Updating project:', { id: project.id, ...data });
+      setIsEditModalOpen(false);
+    }
+  };
+  
   const handleDeleteProject = () => {
     if (project && window.confirm('Are you sure you want to delete this project?')) {
       dispatch(deleteProject(project.id)).then(() => {
@@ -286,7 +295,10 @@ const ProjectDetailsPage: React.FC = () => {
         <ProjectModal
           isOpen={isEditModalOpen}
           onClose={() => setIsEditModalOpen(false)}
-          projectId={project.id}
+          onSubmit={handleUpdateProject}
+          title="Edit Project"
+          submitLabel="Update Project"
+          project={project}
         />
       )}
     </PageContainer>
