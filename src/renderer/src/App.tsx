@@ -17,6 +17,7 @@ import ProjectDetailsPage from './pages/projects/ProjectDetailsPage';
 import TaskBoardPage from './pages/tasks/TaskBoardPage';
 import NotesPage from './pages/notes/NotesPage';
 import StatisticsPage from './pages/statistics/StatisticsPage';
+import SettingsPage from './pages/settings/SettingsPage';
 import NotFoundPage from './pages/NotFoundPage';
 
 // Auth route protection component
@@ -90,6 +91,7 @@ const App: React.FC = () => {
               <Route path="notes" element={<NotesPage />} />
               <Route path="notes/:folderId" element={<NotesPage />} />
               <Route path="statistics" element={<StatisticsPage />} />
+              <Route path="settings" element={<SettingsPage />} />
               <Route path="*" element={<NotFoundPage />} />
             </Route>
           </Routes>
