@@ -1,13 +1,13 @@
-import React, { useEffect } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { useEffect } from 'react';
+import { Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from './store';
 import { restoreUser } from './store/slices/authSlice';
+import { ThemeProvider } from './styles/ThemeProvider';
 import styled from 'styled-components';
 
 // Layouts
-import MainLayout from './layouts/MainLayout';
-import AuthLayout from './layouts/AuthLayout';
+import { MainLayout, AuthLayout } from './components/layout';
 
 // Pages
 import LoginPage from './pages/auth/LoginPage';
@@ -49,48 +49,52 @@ const App: React.FC = () => {
   }, [dispatch]);
   
   return (
-    <AppContainer>
-        <Routes>
-          {/* Auth Routes */}
-          <Route path="/" element={<AuthLayout />}>
-            <Route index element={<Navigate to="/login" replace />} />
+    <ThemeProvider>
+      <AppContainer>
+          <Routes>
+            {/* Auth Routes */}
+            <Route path="/" element={<AuthLayout />}>
+              <Route index element={<Navigate to="/login" replace />} />
+              <Route 
+                path="login" 
+                element={
+                  <PublicRoute>
+                    <LoginPage />
+                  </PublicRoute>
+                } 
+              />
+              <Route 
+                path="register" 
+                element={
+                  <PublicRoute>
+                    <RegisterPage />
+                  </PublicRoute>
+                } 
+              />
+            </Route>
+            
+            {/* Protected Routes */}
             <Route 
-              path="login" 
+              path="/" 
               element={
-                <PublicRoute>
-                  <LoginPage />
-                </PublicRoute>
-              } 
-            />
-            <Route 
-              path="register" 
-              element={
-                <PublicRoute>
-                  <RegisterPage />
-                </PublicRoute>
-              } 
-            />
-          </Route>
-          
-          {/* Protected Routes */}
-          <Route 
-            path="/" 
-            element={
-              <ProtectedRoute>
-                <MainLayout />
-              </ProtectedRoute>
-            }
-          >
-            <Route path="dashboard" element={<DashboardPage />} />
-            <Route path="projects/:projectId" element={<ProjectDetailsPage />} />
-            <Route path="projects/:projectId/tasks" element={<TaskBoardPage />} />
-            <Route path="notes" element={<NotesPage />} />
-            <Route path="notes/:folderId" element={<NotesPage />} />
-            <Route path="statistics" element={<StatisticsPage />} />
-            <Route path="*" element={<NotFoundPage />} />
-          </Route>
-        </Routes>
-    </AppContainer>
+                <ProtectedRoute>
+                  <MainLayout>
+                    <Outlet />
+                  </MainLayout>
+                </ProtectedRoute>
+              }
+            >
+              <Route path="dashboard" element={<DashboardPage />} />
+              <Route path="projects/:projectId" element={<ProjectDetailsPage />} />
+              <Route path="projects/:projectId/tasks" element={<TaskBoardPage />} />
+              <Route path="notes" element={<NotesPage />} />
+              <Route path="notes/:folderId" element={<NotesPage />} />
+              <Route path="statistics" element={<StatisticsPage />} />
+              <Route path="*" element={<NotFoundPage />} />
+            </Route>
+          </Routes>
+      </AppContainer>
+    </ThemeProvider>
   );
 };
 

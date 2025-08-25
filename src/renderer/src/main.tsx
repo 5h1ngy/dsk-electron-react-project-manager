@@ -4,8 +4,7 @@ import { Provider } from 'react-redux';
 import { HashRouter } from 'react-router-dom';
 import App from './App';
 import { store } from './store';
-import { ThemeProvider } from './themes/ThemeProvider';
-import './index.css';
+import { ThemeProvider } from './styles/ThemeProvider';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

@@ -1,4 +1,4 @@
-import React from 'react';
+import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -7,16 +7,17 @@ import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import { login, clearError } from '../../store/slices/authSlice';
 import { RootState, AppDispatch } from '../../store';
+import { Button, Input } from '../../components/ui';
 
 // Login form validation schema
 const loginSchema = z.object({
-  username: z.string().min(1, 'Username is required'),
-  password: z.string().min(1, 'Password is required'),
+  username: z.string().min(1, 'Username è obbligatorio'),
+  password: z.string().min(1, 'Password è obbligatoria'),
 });
 
 type LoginFormInputs = z.infer<typeof loginSchema>;
 
-const LoginPage: React.FC = () => {
+const LoginPage = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { loading, error } = useSelector((state: RootState) => state.auth);
   
@@ -33,52 +34,53 @@ const LoginPage: React.FC = () => {
     dispatch(login(data));
   };
   
+  // Reset error on mount
+  useEffect(() => {
+    dispatch(clearError());
+  }, [dispatch]);
+  
   return (
     <LoginContainer>
-      <Title>Sign In</Title>
-      <Description>Welcome back! Please sign in to your account.</Description>
+      <Title>Accedi</Title>
+      <Description>Bentornato! Accedi al tuo account.</Description>
       
       {error && <ErrorMessage>{error}</ErrorMessage>}
       
       <Form onSubmit={handleSubmit(onSubmit)}>
-        <FormGroup>
-          <Label htmlFor="username">Username</Label>
-          <Input
-            id="username"
-            type="text"
-            {...register('username')}
-            error={!!errors.username}
-            placeholder="Enter your username"
-            disabled={loading}
-          />
-          {errors.username && (
-            <FormError>{errors.username.message}</FormError>
-          )}
-        </FormGroup>
+        <StyledInput
+          label="Username"
+          status={errors.username ? 'error' : 'default'}
+          helper={errors.username?.message}
+          fullWidth
+          placeholder="Inserisci il tuo username"
+          disabled={loading}
+          {...register('username')}
+        />
         
-        <FormGroup>
-          <Label htmlFor="password">Password</Label>
-          <Input
-            id="password"
-            type="password"
-            {...register('password')}
-            error={!!errors.password}
-            placeholder="Enter your password"
-            disabled={loading}
-          />
-          {errors.password && (
-            <FormError>{errors.password.message}</FormError>
-          )}
-        </FormGroup>
+        <StyledInput
+          label="Password"
+          type="password"
+          status={errors.password ? 'error' : 'default'}
+          helper={errors.password?.message}
+          fullWidth
+          placeholder="Inserisci la tua password"
+          disabled={loading}
+          {...register('password')}
+        />
         
-        <SubmitButton type="submit" disabled={loading}>
-          {loading ? 'Signing in...' : 'Sign In'}
-        </SubmitButton>
+        <Button 
+          type="submit" 
+          disabled={loading}
+          fullWidth
+          size="large"
+        >
+          {loading ? 'Accesso in corso...' : 'Accedi'}
+        </Button>
       </Form>
       
       <SignupLink>
-        Don't have an account?{' '}
-        <Link to="/register">Sign up</Link>
+        Non hai un account?{' '}
+        <StyledLink to="/register">Registrati</StyledLink>
       </SignupLink>
     </LoginContainer>
   );
@@ -90,8 +92,8 @@ const LoginContainer = styled.div`
 `;
 
 const Title = styled.h2`
-  font-size: ${({ theme }) => theme.fontSizes.xxl};
-  font-weight: ${({ theme }) => theme.fontWeights.bold};
+  font-size: ${({ theme }) => theme.typography.fontSizes.xxl};
+  font-weight: ${({ theme }) => theme.typography.fontWeights.bold};
   margin-bottom: ${({ theme }) => theme.spacing.sm};
   color: ${({ theme }) => theme.colors.text.primary};
 `;
@@ -102,101 +104,40 @@ const Description = styled.p`
 `;
 
 const Form = styled.form`
+  margin-bottom: ${({ theme }) => theme.spacing.lg};
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.md};
 `;
 
-const FormGroup = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
-
-const Label = styled.label`
-  font-size: ${({ theme }) => theme.fontSizes.sm};
-  margin-bottom: ${({ theme }) => theme.spacing.xs};
-  color: ${({ theme }) => theme.colors.text.secondary};
-`;
-
-const Input = styled.input<{ error?: boolean }>`
-  height: 40px;
-  padding: 0 ${({ theme }) => theme.spacing.md};
-  border-radius: ${({ theme }) => theme.borderRadius.sm};
-  border: 1px solid ${({ theme, error }) =>
-    error ? theme.colors.status.error : theme.colors.border.medium};
-  background-color: ${({ theme }) => theme.colors.background.primary};
-  color: ${({ theme }) => theme.colors.text.primary};
-  font-size: ${({ theme }) => theme.fontSizes.md};
-  outline: none;
-  transition: border-color ${({ theme }) => theme.transition.fast};
-  
-  &:focus {
-    border-color: ${({ theme, error }) =>
-      error ? theme.colors.status.error : theme.colors.accent.primary};
-  }
-  
-  &::placeholder {
-    color: ${({ theme }) => theme.colors.text.tertiary};
-  }
-  
-  &:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
-  }
-`;
-
-const FormError = styled.span`
-  color: ${({ theme }) => theme.colors.status.error};
-  font-size: ${({ theme }) => theme.fontSizes.sm};
-  margin-top: ${({ theme }) => theme.spacing.xs};
-`;
-
-const SubmitButton = styled.button`
-  height: 44px;
-  background-color: ${({ theme }) => theme.colors.accent.primary};
-  color: white;
-  border: none;
-  border-radius: ${({ theme }) => theme.borderRadius.sm};
-  font-size: ${({ theme }) => theme.fontSizes.md};
-  font-weight: ${({ theme }) => theme.fontWeights.medium};
-  cursor: pointer;
-  transition: background-color ${({ theme }) => theme.transition.fast};
-  margin-top: ${({ theme }) => theme.spacing.sm};
-  
-  &:hover:not(:disabled) {
-    background-color: ${({ theme }) => theme.colors.accent.secondary};
-  }
-  
-  &:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
-  }
-`;
-
 const ErrorMessage = styled.div`
   padding: ${({ theme }) => theme.spacing.sm};
-  background-color: ${({ theme }) => `${theme.colors.status.error}20`};
+  margin-bottom: ${({ theme }) => theme.spacing.md};
+  background-color: ${({ theme }) => theme.colors.status.error}15;
+  border-left: 3px solid ${({ theme }) => theme.colors.status.error};
   color: ${({ theme }) => theme.colors.status.error};
   border-radius: ${({ theme }) => theme.borderRadius.sm};
-  margin-bottom: ${({ theme }) => theme.spacing.md};
-  font-size: ${({ theme }) => theme.fontSizes.sm};
 `;
 
 const SignupLink = styled.div`
   text-align: center;
-  margin-top: ${({ theme }) => theme.spacing.lg};
-  font-size: ${({ theme }) => theme.fontSizes.sm};
+  margin-top: ${({ theme }) => theme.spacing.md};
   color: ${({ theme }) => theme.colors.text.secondary};
+`;
+
+const StyledLink = styled(Link)`
+  color: ${({ theme }) => theme.colors.primary.main};
+  text-decoration: none;
+  font-weight: ${({ theme }) => theme.typography.fontWeights.medium};
   
-  a {
-    color: ${({ theme }) => theme.colors.accent.primary};
-    text-decoration: none;
-    font-weight: ${({ theme }) => theme.fontWeights.medium};
-    
-    &:hover {
-      text-decoration: underline;
-    }
+  &:hover {
+    text-decoration: underline;
   }
+`;
+
+// Sovrascrivi lo stile del componente Input per adattarlo alla pagina di login
+const StyledInput = styled(Input)`
+  margin-bottom: 0;
 `;
 
 export default LoginPage;

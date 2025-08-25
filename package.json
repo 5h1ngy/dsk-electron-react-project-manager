@@ -18,7 +18,12 @@
     "build:unpack": "npm run build && electron-builder --dir",
     "build:win": "npm run build && electron-builder --win",
     "build:mac": "electron-vite build && electron-builder --mac",
-    "build:linux": "electron-vite build && electron-builder --linux"
+    "build:linux": "electron-vite build && electron-builder --linux",
+    "clean": "rimraf node_modules out dist .eslintcache *.lock",
+    "clean:deps": "rimraf node_modules",
+    "clean:dist": "rimraf dist",
+    "clean:out": "rimraf out",
+    "reset": "npm run clean && npm install"
   },
   "dependencies": {
     "@electron-toolkit/preload": "^3.0.1",
@@ -52,6 +57,7 @@
     "concurrently": "^9.1.2",
     "electron": "^35.1.4",
     "electron-builder": "^26.0.12",
+    "rimraf": "^5.0.5",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3",
     "vite": "^6.2.5",
@@ -64,8 +70,6 @@
     "eslint-plugin-react": "^7.37.4",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.19",
-    "prettier": "^3.5.3",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "prettier": "^3.5.3"
   }
 }

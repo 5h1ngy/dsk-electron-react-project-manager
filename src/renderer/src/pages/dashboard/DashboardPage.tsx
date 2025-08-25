@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
@@ -13,28 +13,17 @@ import {
 } from '../../store/slices/projectsSlice';
 import { ViewMode, setProjectsViewMode } from '../../store/slices/uiSlice';
 
-// Icons
-import {
-  AppstoreOutlined,
-  TableOutlined,
-  UnorderedListOutlined,
-  PlusOutlined,
-  SearchOutlined,
-  FilterOutlined,
-  CloseCircleOutlined,
-} from '@ant-design/icons';
+// Componenti UI
+import { Button, Card, Input, Badge } from '../../components/ui';
 
-// Components
+// Componenti da integrare
 import ProjectCard from '../../components/projects/ProjectCard';
 import ProjectTable from '../../components/projects/ProjectTable';
 import ProjectList from '../../components/projects/ProjectList';
 import ProjectModal from '../../components/projects/ProjectModal';
-import PageHeader from '../../components/common/PageHeader';
 import TagSelector from '../../components/common/TagSelector';
-import Loader from '../../components/common/Loader';
-import EmptyState from '../../components/common/EmptyState';
 
-const DashboardPage: React.FC = () => {
+const DashboardPage = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const { user } = useSelector((state: RootState) => state.auth);
@@ -84,7 +73,7 @@ const DashboardPage: React.FC = () => {
   
   const renderProjects = () => {
     if (loading) {
-      return <Loader />;
+      return <LoadingContainer>Caricamento progetti...</LoadingContainer>;
     }
     
     if (error) {
@@ -93,29 +82,35 @@ const DashboardPage: React.FC = () => {
     
     if (projects.length === 0) {
       return (
-        <EmptyState 
-          title="No projects found" 
-          description={
-            filter.tags.length > 0 || filter.searchTerm
-              ? "Try changing your filters to see more results."
-              : "Create your first project to get started."
-          }
-          actionLabel={
-            filter.tags.length > 0 || filter.searchTerm
-              ? "Clear filters"
-              : "Create project"
-          }
-          actionIcon={
-            filter.tags.length > 0 || filter.searchTerm
-              ? <CloseCircleOutlined />
-              : <PlusOutlined />
-          }
-          onAction={
-            filter.tags.length > 0 || filter.searchTerm
-              ? handleClearFilters
-              : () => setIsCreateModalOpen(true)
-          }
-        />
+        <EmptyStateContainer>
+          <Card variant="elevated" padding>
+            <EmptyStateContent>
+              <EmptyStateIcon></EmptyStateIcon>
+              <EmptyStateTitle>
+                {filter.tags.length > 0 || filter.searchTerm
+                  ? "Nessun progetto trovato"
+                  : "Nessun progetto"}
+              </EmptyStateTitle>
+              <EmptyStateDescription>
+                {filter.tags.length > 0 || filter.searchTerm
+                  ? "Prova a modificare i filtri per vedere più risultati."
+                  : "Crea il tuo primo progetto per iniziare."}
+              </EmptyStateDescription>
+              <Button
+                variant="primary"
+                onClick={
+                  filter.tags.length > 0 || filter.searchTerm
+                    ? handleClearFilters
+                    : () => setIsCreateModalOpen(true)
+                }
+              >
+                {filter.tags.length > 0 || filter.searchTerm
+                  ? "Cancella filtri"
+                  : "Crea progetto"}
+              </Button>
+            </EmptyStateContent>
+          </Card>
+        </EmptyStateContainer>
       );
     }
     
@@ -153,86 +148,97 @@ const DashboardPage: React.FC = () => {
   
   return (
     <DashboardContainer>
-      <PageHeader 
-        title="Projects Dashboard"
-        actionButton={{
-          label: "New Project",
-          icon: <PlusOutlined />,
-          onClick: () => setIsCreateModalOpen(true),
-        }}
-      />
+      <DashboardHeader>
+        <HeaderTitle>Dashboard Progetti</HeaderTitle>
+        <HeaderActions>
+          <Button
+            variant="primary"
+            icon={<PlusIcon>+</PlusIcon>}
+            onClick={() => setIsCreateModalOpen(true)}
+          >
+            Nuovo Progetto
+          </Button>
+        </HeaderActions>
+      </DashboardHeader>
       
       <ToolBar>
-        <ViewModeButtons>
+        <ViewModeContainer>
           <ViewModeButton 
-            active={projectsViewMode === 'card'} 
+            $active={projectsViewMode === 'card'} 
             onClick={() => handleViewModeChange('card')}
+            title="Vista a griglia"
           >
-            <AppstoreOutlined />
+            <span></span>
           </ViewModeButton>
           <ViewModeButton 
-            active={projectsViewMode === 'table'} 
+            $active={projectsViewMode === 'table'} 
             onClick={() => handleViewModeChange('table')}
+            title="Vista tabella"
           >
-            <TableOutlined />
+            <span></span>
           </ViewModeButton>
           <ViewModeButton 
-            active={projectsViewMode === 'list'} 
+            $active={projectsViewMode === 'list'} 
             onClick={() => handleViewModeChange('list')}
+            title="Vista lista"
           >
-            <UnorderedListOutlined />
+            <span>≡</span>
           </ViewModeButton>
-        </ViewModeButtons>
+        </ViewModeContainer>
         
         <SearchContainer>
-          <SearchIconWrapper>
-            <SearchOutlined />
-          </SearchIconWrapper>
-          <SearchInput 
-            placeholder="Search projects..."
+          <StyledInput
+            placeholder="Cerca progetti..."
             value={filter.searchTerm}
             onChange={handleSearchChange}
+            rightIcon={<span></span>}
           />
         </SearchContainer>
         
         <FilterButton 
-          active={isFilterVisible} 
+          $active={isFilterVisible} 
           onClick={() => setIsFilterVisible(!isFilterVisible)}
+          title={isFilterVisible ? "Nascondi filtri" : "Mostra filtri"}
         >
-          <FilterOutlined />
-          {isFilterVisible ? 'Hide Filters' : 'Show Filters'}
+          <span></span>
+          {filter.tags.length > 0 && (
+            <BadgeContainer>
+              <Badge count={filter.tags.length} variant="primary" size="small" />
+            </BadgeContainer>
+          )}
         </FilterButton>
       </ToolBar>
       
       {isFilterVisible && (
         <FilterContainer>
-          <FilterSection>
-            <FilterLabel>Filter by Tags</FilterLabel>
-            <TagSelector 
-              selectedTags={filter.tags}
-              onChange={handleTagsChange}
-            />
-          </FilterSection>
-          
-          {(filter.tags.length > 0 || filter.searchTerm) && (
-            <ClearFiltersButton onClick={handleClearFilters}>
-              <CloseCircleOutlined /> Clear All Filters
-            </ClearFiltersButton>
-          )}
+          <FilterHeader>
+            <FilterTitle>Filtri</FilterTitle>
+            {(filter.tags.length > 0 || filter.searchTerm) && (
+              <Button
+                variant="ghost"
+                size="small"
+                onClick={handleClearFilters}
+              >
+                Cancella filtri
+              </Button>
+            )}
+          </FilterHeader>
+          <TagSelector
+            selectedTags={filter.tags}
+            onChange={handleTagsChange}
+          />
         </FilterContainer>
       )}
       
-      <ContentArea>
-        {renderProjects()}
-      </ContentArea>
+      <ProjectsContainer>{renderProjects()}</ProjectsContainer>
       
-      <ProjectModal 
-        isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
-        onSubmit={handleCreateProject}
-        title="Create New Project"
-        submitLabel="Create Project"
-      />
+      {isCreateModalOpen && (
+        <ProjectModal
+          isOpen={isCreateModalOpen}
+          onClose={() => setIsCreateModalOpen(false)}
+          onSubmit={handleCreateProject}
+        />
+      )}
     </DashboardContainer>
   );
 };
@@ -243,161 +249,188 @@ const DashboardContainer = styled.div`
   flex-direction: column;
 `;
 
+const DashboardHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: ${({ theme }) => theme.spacing.lg};
+`;
+
+const HeaderTitle = styled.h1`
+  font-size: ${({ theme }) => theme.typography.fontSizes.xxl};
+  font-weight: ${({ theme }) => theme.typography.fontWeights.bold};
+  color: ${({ theme }) => theme.colors.text.primary};
+  margin: 0;
+`;
+
+const HeaderActions = styled.div`
+  display: flex;
+  gap: ${({ theme }) => theme.spacing.sm};
+`;
+
+const PlusIcon = styled.span`
+  font-size: ${({ theme }) => theme.typography.fontSizes.lg};
+  font-weight: ${({ theme }) => theme.typography.fontWeights.bold};
+`;
+
 const ToolBar = styled.div`
   display: flex;
   align-items: center;
-  gap: ${({ theme }) => theme.spacing.md};
-  margin-bottom: ${({ theme }) => theme.spacing.md};
-  flex-wrap: wrap;
+  padding: ${({ theme }) => theme.spacing.md};
+  background-color: ${({ theme }) => theme.colors.background.secondary};
+  border-radius: ${({ theme }) => theme.borderRadius.lg};
+  margin-bottom: ${({ theme }) => theme.spacing.lg};
 `;
 
-const ViewModeButtons = styled.div`
+const ViewModeContainer = styled.div`
   display: flex;
-  border-radius: ${({ theme }) => theme.borderRadius.sm};
-  overflow: hidden;
-  border: 1px solid ${({ theme }) => theme.colors.border.medium};
+  gap: ${({ theme }) => theme.spacing.xs};
+  margin-right: ${({ theme }) => theme.spacing.md};
 `;
 
-const ViewModeButton = styled.button<{ active: boolean }>`
-  height: 36px;
-  width: 36px;
+const ViewModeButton = styled.button<{ $active: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: ${({ active, theme }) => 
-    active ? theme.colors.accent.primary : 'transparent'};
-  color: ${({ active, theme }) => 
-    active ? 'white' : theme.colors.text.secondary};
+  width: 36px;
+  height: 36px;
+  border-radius: ${({ theme }) => theme.borderRadius.md};
+  background-color: ${({ theme, $active }) => 
+    $active ? theme.colors.primary.main : 'transparent'};
+  color: ${({ theme, $active }) => 
+    $active ? theme.colors.text.inverse : theme.colors.text.secondary};
   border: none;
   cursor: pointer;
   transition: all ${({ theme }) => theme.transition.fast};
   
   &:hover {
-    background-color: ${({ active, theme }) => 
-      active ? theme.colors.accent.secondary : theme.colors.background.tertiary};
+    background-color: ${({ theme, $active }) => 
+      $active ? theme.colors.primary.dark : theme.colors.background.tertiary};
   }
   
-  &:not(:last-child) {
-    border-right: 1px solid ${({ theme }) => theme.colors.border.medium};
+  span {
+    font-size: 18px;
   }
 `;
 
 const SearchContainer = styled.div`
   flex: 1;
+  margin-right: ${({ theme }) => theme.spacing.md};
+`;
+
+const StyledInput = styled(Input)`
+  margin-bottom: 0;
+`;
+
+const FilterButton = styled.button<{ $active: boolean }>`
   position: relative;
-  min-width: 200px;
-`;
-
-const SearchIconWrapper = styled.div`
-  position: absolute;
-  left: ${({ theme }) => theme.spacing.md};
-  top: 50%;
-  transform: translateY(-50%);
-  color: ${({ theme }) => theme.colors.text.tertiary};
-`;
-
-const SearchInput = styled.input`
-  height: 36px;
-  width: 100%;
-  padding: 0 ${({ theme }) => theme.spacing.md} 0 ${({ theme }) => theme.spacing.xl};
-  border-radius: ${({ theme }) => theme.borderRadius.sm};
-  border: 1px solid ${({ theme }) => theme.colors.border.medium};
-  background-color: ${({ theme }) => theme.colors.background.primary};
-  color: ${({ theme }) => theme.colors.text.primary};
-  font-size: ${({ theme }) => theme.fontSizes.sm};
-  outline: none;
-  
-  &:focus {
-    border-color: ${({ theme }) => theme.colors.accent.primary};
-  }
-  
-  &::placeholder {
-    color: ${({ theme }) => theme.colors.text.tertiary};
-  }
-`;
-
-const FilterButton = styled.button<{ active: boolean }>`
-  height: 36px;
-  padding: 0 ${({ theme }) => theme.spacing.md};
   display: flex;
   align-items: center;
-  gap: ${({ theme }) => theme.spacing.sm};
-  border-radius: ${({ theme }) => theme.borderRadius.sm};
-  border: 1px solid ${({ theme, active }) => 
-    active ? theme.colors.accent.primary : theme.colors.border.medium};
-  background-color: ${({ theme, active }) => 
-    active ? `${theme.colors.accent.primary}10` : 'transparent'};
-  color: ${({ theme, active }) => 
-    active ? theme.colors.accent.primary : theme.colors.text.secondary};
-  font-size: ${({ theme }) => theme.fontSizes.sm};
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: ${({ theme }) => theme.borderRadius.md};
+  background-color: ${({ theme, $active }) => 
+    $active ? theme.colors.primary.main : 'transparent'};
+  color: ${({ theme, $active }) => 
+    $active ? theme.colors.text.inverse : theme.colors.text.secondary};
+  border: none;
   cursor: pointer;
   transition: all ${({ theme }) => theme.transition.fast};
   
   &:hover {
-    border-color: ${({ theme }) => theme.colors.accent.primary};
-    color: ${({ theme }) => theme.colors.accent.primary};
+    background-color: ${({ theme, $active }) => 
+      $active ? theme.colors.primary.dark : theme.colors.background.tertiary};
   }
+  
+  span {
+    font-size: 18px;
+  }
+`;
+
+const BadgeContainer = styled.div`
+  position: absolute;
+  top: -5px;
+  right: -5px;
 `;
 
 const FilterContainer = styled.div`
   padding: ${({ theme }) => theme.spacing.md};
   background-color: ${({ theme }) => theme.colors.background.secondary};
-  border-radius: ${({ theme }) => theme.borderRadius.md};
-  margin-bottom: ${({ theme }) => theme.spacing.md};
-  display: flex;
-  flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.md};
+  border-radius: ${({ theme }) => theme.borderRadius.lg};
+  margin-bottom: ${({ theme }) => theme.spacing.lg};
 `;
 
-const FilterSection = styled.div`
+const FilterHeader = styled.div`
   display: flex;
-  flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.sm};
-`;
-
-const FilterLabel = styled.div`
-  font-size: ${({ theme }) => theme.fontSizes.sm};
-  font-weight: ${({ theme }) => theme.fontWeights.medium};
-  color: ${({ theme }) => theme.colors.text.secondary};
-`;
-
-const ClearFiltersButton = styled.button`
-  align-self: flex-start;
-  height: 32px;
-  padding: 0 ${({ theme }) => theme.spacing.md};
-  display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: ${({ theme }) => theme.spacing.sm};
-  border-radius: ${({ theme }) => theme.borderRadius.sm};
-  border: 1px solid ${({ theme }) => theme.colors.status.error};
-  background-color: transparent;
-  color: ${({ theme }) => theme.colors.status.error};
-  font-size: ${({ theme }) => theme.fontSizes.sm};
-  cursor: pointer;
-  
-  &:hover {
-    background-color: ${({ theme }) => `${theme.colors.status.error}10`};
-  }
+  margin-bottom: ${({ theme }) => theme.spacing.md};
 `;
 
-const ContentArea = styled.div`
+const FilterTitle = styled.h3`
+  font-size: ${({ theme }) => theme.typography.fontSizes.lg};
+  font-weight: ${({ theme }) => theme.typography.fontWeights.medium};
+  margin: 0;
+`;
+
+const ProjectsContainer = styled.div`
   flex: 1;
   overflow: auto;
-  padding: ${({ theme }) => theme.spacing.sm} 0;
 `;
 
 const CardGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: ${({ theme }) => theme.spacing.md};
+  gap: ${({ theme }) => theme.spacing.lg};
+`;
+
+const LoadingContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  color: ${({ theme }) => theme.colors.text.secondary};
+  font-size: ${({ theme }) => theme.typography.fontSizes.lg};
 `;
 
 const ErrorMessage = styled.div`
   padding: ${({ theme }) => theme.spacing.md};
-  background-color: ${({ theme }) => `${theme.colors.status.error}20`};
+  margin-bottom: ${({ theme }) => theme.spacing.md};
+  background-color: ${({ theme }) => theme.colors.status.error}15;
+  border-left: 3px solid ${({ theme }) => theme.colors.status.error};
   color: ${({ theme }) => theme.colors.status.error};
-  border-radius: ${({ theme }) => theme.borderRadius.md};
-  font-size: ${({ theme }) => theme.fontSizes.md};
+  border-radius: ${({ theme }) => theme.borderRadius.sm};
+`;
+
+const EmptyStateContainer = styled.div`
+  max-width: 600px;
+  margin: 0 auto;
+  padding: ${({ theme }) => theme.spacing.xl} 0;
+`;
+
+const EmptyStateContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: ${({ theme }) => theme.spacing.xl};
+`;
+
+const EmptyStateIcon = styled.div`
+  font-size: 48px;
+  margin-bottom: ${({ theme }) => theme.spacing.md};
+`;
+
+const EmptyStateTitle = styled.h3`
+  font-size: ${({ theme }) => theme.typography.fontSizes.xl};
+  margin-bottom: ${({ theme }) => theme.spacing.sm};
+  color: ${({ theme }) => theme.colors.text.primary};
+`;
+
+const EmptyStateDescription = styled.p`
+  color: ${({ theme }) => theme.colors.text.secondary};
+  margin-bottom: ${({ theme }) => theme.spacing.lg};
 `;
 
 export default DashboardPage;
