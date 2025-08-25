@@ -278,7 +278,7 @@ const ToolBar = styled.div`
   align-items: center;
   padding: ${({ theme }) => theme.spacing.md};
   background-color: ${({ theme }) => theme.colors.background.secondary};
-  border-radius: ${({ theme }) => theme.borderRadius.lg};
+  border-radius: 0 ${({ theme }) => theme.borderRadius.lg} 0 ${({ theme }) => theme.borderRadius.lg};
   margin-bottom: ${({ theme }) => theme.spacing.lg};
 `;
 

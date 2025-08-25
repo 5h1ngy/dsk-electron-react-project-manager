@@ -15,6 +15,8 @@ const LayoutContainer = styled.div`
   width: 100%;
   height: 100vh;
   overflow: hidden;
+  background-color: ${({ theme }) => theme.colors.background.secondary};
+  padding: ${({ theme }) => theme.spacing.xl};
 `;
 
 const Sidebar = styled.div`
@@ -71,7 +73,7 @@ const NavItem = styled.div<{ $isActive: boolean }>`
   
   &:hover {
     background-color: ${({ theme, $isActive }) =>
-      $isActive ? theme.colors.primary.main + '30' : theme.colors.background.tertiary};
+    $isActive ? theme.colors.primary.main + '30' : theme.colors.background.tertiary};
   }
 `;
 
@@ -145,6 +147,8 @@ const MainContent = styled.div`
   overflow: auto;
   padding: ${({ theme }) => theme.spacing.xl};
   background-color: ${({ theme }) => theme.colors.background.primary};
+  
+  border-radius: ${({ theme }) => theme.borderRadius.lg};
 `;
 
 const Header = styled.header`
@@ -172,9 +176,9 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   const location = useLocation();
   const dispatch = useDispatch();
   const { user } = useSelector((state: RootState) => state.auth);
-  
+
   const [pageTitle, setPageTitle] = useState('Dashboard');
-  
+
   const getInitials = (name: string) => {
     if (!name) return 'U';
     return name
@@ -183,28 +187,29 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       .join('')
       .toUpperCase();
   };
-  
+
   const handleNavigation = (path: string, title: string) => {
     navigate(path);
     setPageTitle(title);
   };
-  
+
   const handleLogout = () => {
     dispatch(logout());
     navigate('/login');
   };
-  
+
   const isActivePath = (path: string) => {
     return location.pathname === path;
   };
-  
+
   return (
     <LayoutContainer>
+
       <Sidebar>
         <SidebarHeader>
           <Logo>PM App</Logo>
         </SidebarHeader>
-        
+
         <NavSection>
           <NavSectionTitle>Menu</NavSectionTitle>
           <NavItem
@@ -236,7 +241,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
             Note
           </NavItem>
         </NavSection>
-        
+
         <NavSection>
           <NavSectionTitle>Impostazioni</NavSectionTitle>
           <NavItem
@@ -247,7 +252,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
             Impostazioni
           </NavItem>
         </NavSection>
-        
+
         <SidebarFooter>
           <UserSection>
             <Avatar>{user?.name ? getInitials(user.name) : 'U'}</Avatar>
@@ -261,7 +266,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
           </UserSection>
         </SidebarFooter>
       </Sidebar>
-      
+
       <MainContent>
         <Header>
           <PageTitle>{pageTitle}</PageTitle>
@@ -269,7 +274,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
             <ThemeControls />
           </HeaderControls>
         </Header>
-        
+
         {children}
       </MainContent>
     </LayoutContainer>
