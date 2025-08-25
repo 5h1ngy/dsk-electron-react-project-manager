@@ -1,5 +1,5 @@
 appId: com.electron.app
-productName: react-ts
+productName: dsk-electron-react-project-manager
 directories:
   buildResources: build
 files:
@@ -12,7 +12,7 @@ files:
 asarUnpack:
   - resources/**
 win:
-  executableName: react-ts
+  executableName: dsk-electron-react-project-manager
 nsis:
   artifactName: ${name}-${version}-setup.${ext}
   shortcutName: ${productName}

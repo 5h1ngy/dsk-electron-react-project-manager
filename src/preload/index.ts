@@ -68,6 +68,8 @@ contextBridge.exposeInMainWorld('api', {
     ipcRenderer.invoke('database:export'),
   importDatabase: () => 
     ipcRenderer.invoke('database:import'),
+  cleanupDatabase: () => 
+    ipcRenderer.invoke('database:cleanup'),
   
   // File dialogs
   selectFile: async (options: any) => {

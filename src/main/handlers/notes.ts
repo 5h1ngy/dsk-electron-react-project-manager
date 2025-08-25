@@ -12,6 +12,15 @@ export const registerNotesHandlers = () => {
   // Get all folders for a user (including root folders)
   ipcMain.handle('notes:getFolders', async (_, userId: number, parentId?: number) => {
     try {
+      // Verifica che userId sia definito e valido
+      if (!userId || isNaN(userId)) {
+        return {
+          success: false,
+          message: 'ID utente non valido',
+          folders: []
+        };
+      }
+      
       const where: any = { userId };
       if (parentId !== undefined) {
         where.parentId = parentId;
@@ -29,9 +38,12 @@ export const registerNotesHandlers = () => {
         order: [['name', 'ASC']]
       });
       
+      // Converti le cartelle in oggetti JavaScript semplici
+      const plainFolders = folders.map(folder => folder.get({ plain: true }));
+      
       return {
         success: true,
-        folders
+        folders: plainFolders
       };
     } catch (error) {
       console.error('Error fetching folders:', error);
@@ -51,6 +63,14 @@ export const registerNotesHandlers = () => {
   }) => {
     try {
       const { name, userId, parentId, tags } = folderData;
+      
+      // Verifica che userId sia definito e valido
+      if (!userId || isNaN(userId)) {
+        return {
+          success: false,
+          message: 'ID utente non valido'
+        };
+      }
       
       // Create the folder
       const folder = await Folder.create({
@@ -83,9 +103,12 @@ export const registerNotesHandlers = () => {
         ]
       });
       
+      // Converti la cartella in un oggetto JavaScript semplice
+      const plainFolder = createdFolder ? createdFolder.get({ plain: true }) : null;
+      
       return {
         success: true,
-        folder: createdFolder
+        folder: plainFolder
       };
     } catch (error) {
       console.error('Error creating folder:', error);
@@ -145,9 +168,12 @@ export const registerNotesHandlers = () => {
         ]
       });
       
+      // Converti la cartella in un oggetto JavaScript semplice
+      const plainFolder = updatedFolder ? updatedFolder.get({ plain: true }) : null;
+      
       return {
         success: true,
-        folder: updatedFolder
+        folder: plainFolder
       };
     } catch (error) {
       console.error('Error updating folder:', error);
@@ -231,9 +257,12 @@ export const registerNotesHandlers = () => {
         order: [['name', 'ASC']]
       });
       
+      // Converti i file in oggetti JavaScript semplici
+      const plainFiles = files.map(file => file.get({ plain: true }));
+      
       return {
         success: true,
-        files
+        files: plainFiles
       };
     } catch (error) {
       console.error('Error fetching files:', error);
@@ -255,6 +284,14 @@ export const registerNotesHandlers = () => {
   }) => {
     try {
       const { filePath, fileName, mimeType, userId, folderId, tags } = fileData;
+      
+      // Verifica che userId sia definito e valido
+      if (!userId || isNaN(userId)) {
+        return {
+          success: false,
+          message: 'ID utente non valido'
+        };
+      }
       
       // Create files directory if it doesn't exist
       const filesDir = path.join(app.getPath('userData'), 'files');
@@ -305,9 +342,12 @@ export const registerNotesHandlers = () => {
         ]
       });
       
+      // Converti il file in un oggetto JavaScript semplice
+      const plainFile = uploadedFile ? uploadedFile.get({ plain: true }) : null;
+      
       return {
         success: true,
-        file: uploadedFile
+        file: plainFile
       };
     } catch (error) {
       console.error('Error uploading file:', error);
@@ -367,6 +407,9 @@ export const registerNotesHandlers = () => {
       // Read file data
       const fileData = fs.readFileSync(file.path);
       
+      // Creiamo un oggetto semplice con solo le proprietà necessarie
+      // Non c'è bisogno di chiamare get({ plain: true }) perché stiamo già
+      // costruendo un nuovo oggetto con solo i campi che ci servono
       return {
         success: true,
         file: {
@@ -394,9 +437,12 @@ export const registerNotesHandlers = () => {
         order: [['updatedAt', 'DESC']]
       });
       
+      // Converti le note in oggetti JavaScript semplici
+      const plainNotes = notes.map(note => note.get({ plain: true }));
+      
       return {
         success: true,
-        notes
+        notes: plainNotes
       };
     } catch (error) {
       console.error('Error fetching notes:', error);
@@ -417,6 +463,14 @@ export const registerNotesHandlers = () => {
     try {
       const { title, content, userId, folderId } = noteData;
       
+      // Verifica che userId sia definito e valido
+      if (!userId || isNaN(userId)) {
+        return {
+          success: false,
+          message: 'ID utente non valido'
+        };
+      }
+      
       // Create the note
       const note = await Note.create({
         title,
@@ -425,9 +479,12 @@ export const registerNotesHandlers = () => {
         folderId
       });
       
+      // Converti la nota in un oggetto JavaScript semplice
+      const plainNote = note.get({ plain: true });
+      
       return {
         success: true,
-        note
+        note: plainNote
       };
     } catch (error) {
       console.error('Error creating note:', error);
@@ -464,9 +521,12 @@ export const registerNotesHandlers = () => {
       
       await note.save();
       
+      // Converti la nota in un oggetto JavaScript semplice
+      const plainNote = note.get({ plain: true });
+      
       return {
         success: true,
-        note
+        note: plainNote
       };
     } catch (error) {
       console.error('Error updating note:', error);

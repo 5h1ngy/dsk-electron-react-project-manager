@@ -1,4 +1,5 @@
-import { Sequelize, DataTypes, Model } from 'sequelize';
+import { Sequelize, DataTypes, Model, BelongsToManyAddAssociationMixin, BelongsToManyAddAssociationsMixin, BelongsToManyRemoveAssociationMixin, BelongsToManyRemoveAssociationsMixin, BelongsToManyHasAssociationMixin, BelongsToManyHasAssociationsMixin, BelongsToManyGetAssociationsMixin, BelongsToManyCountAssociationsMixin, BelongsToManySetAssociationsMixin } from 'sequelize';
+import { Tag } from './Tag';
 
 export class File extends Model {
   declare id: number;
@@ -10,6 +11,20 @@ export class File extends Model {
   declare folderId: number | null;
   declare createdAt: Date;
   declare updatedAt: Date;
+  
+  // Association methods
+  declare getTags: BelongsToManyGetAssociationsMixin<Tag>;
+  declare addTag: BelongsToManyAddAssociationMixin<Tag, number>;
+  declare addTags: BelongsToManyAddAssociationsMixin<Tag, number>;
+  declare setTags: BelongsToManySetAssociationsMixin<Tag, number>;
+  declare removeTag: BelongsToManyRemoveAssociationMixin<Tag, number>;
+  declare removeTags: BelongsToManyRemoveAssociationsMixin<Tag, number>;
+  declare hasTag: BelongsToManyHasAssociationMixin<Tag, number>;
+  declare hasTags: BelongsToManyHasAssociationsMixin<Tag, number>;
+  declare countTags: BelongsToManyCountAssociationsMixin;
+  
+  // Per retrocompatibilità con il codice esistente
+  $set: any;
 }
 
 export const initFile = (sequelize: Sequelize) => {

@@ -1,4 +1,4 @@
-#  React-TS
+#  dsk-electron-react-project-manager
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Electron](https://img.shields.io/badge/Electron-22.x-47848F.svg?logo=electron)

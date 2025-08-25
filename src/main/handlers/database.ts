@@ -1,8 +1,23 @@
 import { ipcMain, dialog } from 'electron';
 import { exportDatabase, importDatabase } from '../database';
+import { cleanupDatabase } from '../database/cleanup';
 import fs from 'fs';
 
 export const registerDatabaseHandlers = () => {
+  // Database cleanup
+  ipcMain.handle('database:cleanup', async () => {
+    try {
+      const result = await cleanupDatabase();
+      return result;
+    } catch (error) {
+      console.error('Errore durante la pulizia del database:', error);
+      return {
+        success: false,
+        message: `Errore durante la pulizia: ${(error as Error).message}`
+      };
+    }
+  });
+  
   // Export database to file
   ipcMain.handle('database:export', async () => {
     try {

@@ -2,7 +2,7 @@ import { ipcMain } from 'electron';
 import { Task, TaskStatus, TaskPriority } from '../database/models/Task';
 import { Tag } from '../database/models/Tag';
 import { Attachment } from '../database/models/Attachment';
-import { Op, Transaction } from 'sequelize';
+import { Op } from 'sequelize';
 import { getSequelize } from '../database';
 import path from 'path';
 import fs from 'fs';
@@ -32,9 +32,12 @@ export const registerTaskHandlers = () => {
         ]
       });
       
+      // Converti le attività in oggetti JavaScript semplici
+      const plainTasks = tasks.map(task => task.get({ plain: true }));
+      
       return {
         success: true,
-        tasks
+        tasks: plainTasks
       };
     } catch (error) {
       console.error('Error fetching tasks:', error);
@@ -100,9 +103,12 @@ export const registerTaskHandlers = () => {
         ]
       });
       
+      // Converti l'attività in un oggetto JavaScript semplice
+      const plainTask = createdTask ? createdTask.get({ plain: true }) : null;
+      
       return {
         success: true,
-        task: createdTask
+        task: plainTask
       };
     } catch (error) {
       console.error('Error creating task:', error);
@@ -176,9 +182,12 @@ export const registerTaskHandlers = () => {
         ]
       });
       
+      // Converti l'attività in un oggetto JavaScript semplice
+      const plainTask = updatedTask ? updatedTask.get({ plain: true }) : null;
+      
       return {
         success: true,
-        task: updatedTask
+        task: plainTask
       };
     } catch (error) {
       console.error('Error updating task:', error);

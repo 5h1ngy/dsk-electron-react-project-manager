@@ -8,6 +8,15 @@ export const registerProjectHandlers = () => {
   // Get all projects for a user
   ipcMain.handle('projects:getAll', async (_, userId: number) => {
     try {
+      // Check if userId is defined and valid
+      if (!userId || isNaN(userId)) {
+        return {
+          success: false,
+          message: 'Invalid user ID',
+          projects: []
+        };
+      }
+      
       const projects = await Project.findAll({
         where: { userId },
         include: [
@@ -20,9 +29,12 @@ export const registerProjectHandlers = () => {
         order: [['updatedAt', 'DESC']]
       });
       
+      // Converti tutti i progetti in oggetti JavaScript semplici
+      const plainProjects = projects.map(project => project.get({ plain: true }));
+      
       return {
         success: true,
-        projects
+        projects: plainProjects
       };
     } catch (error) {
       console.error('Error fetching projects:', error);
@@ -37,6 +49,14 @@ export const registerProjectHandlers = () => {
   ipcMain.handle('projects:create', async (_, projectData: { name: string; description?: string; userId: number; tags?: number[] }) => {
     try {
       const { name, description, userId, tags } = projectData;
+      
+      // Verifica che userId sia definito e valido
+      if (!userId || isNaN(userId)) {
+        return {
+          success: false,
+          message: 'ID utente non valido: userId è obbligatorio per creare un progetto'
+        };
+      }
       
       // Create the project
       const project = await Project.create({
@@ -69,9 +89,12 @@ export const registerProjectHandlers = () => {
         ]
       });
       
+      // Converti in un oggetto JavaScript semplice per evitare errori di serializzazione
+      const plainProject = createdProject ? createdProject.get({ plain: true }) : null;
+      
       return {
         success: true,
-        project: createdProject
+        project: plainProject
       };
     } catch (error) {
       console.error('Error creating project:', error);
@@ -126,9 +149,12 @@ export const registerProjectHandlers = () => {
         ]
       });
       
+      // Converti in un oggetto JavaScript semplice
+      const plainProject = updatedProject ? updatedProject.get({ plain: true }) : null;
+      
       return {
         success: true,
-        project: updatedProject
+        project: plainProject
       };
     } catch (error) {
       console.error('Error updating project:', error);
@@ -190,11 +216,15 @@ export const registerProjectHandlers = () => {
         group: ['priority']
       });
       
+      // Converti i dati delle statistiche in oggetti semplici
+      const plainTaskStats = taskStats.map(stat => stat.get({ plain: true }));
+      const plainTasksByPriority = tasksByPriority.map(stat => stat.get({ plain: true }));
+      
       return {
         success: true,
         stats: {
-          byStatus: taskStats,
-          byPriority: tasksByPriority
+          byStatus: plainTaskStats,
+          byPriority: plainTasksByPriority
         }
       };
     } catch (error) {

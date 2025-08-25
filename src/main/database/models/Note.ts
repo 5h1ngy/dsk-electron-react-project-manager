@@ -1,4 +1,6 @@
-import { Sequelize, DataTypes, Model } from 'sequelize';
+import { Sequelize, DataTypes, Model, BelongsToGetAssociationMixin } from 'sequelize';
+import { User } from './User';
+import { Folder } from './Folder';
 
 export class Note extends Model {
   declare id: number;
@@ -8,6 +10,10 @@ export class Note extends Model {
   declare folderId: number | null;
   declare createdAt: Date;
   declare updatedAt: Date;
+  
+  // Metodi di associazione
+  declare getUser: BelongsToGetAssociationMixin<User>;
+  declare getFolder: BelongsToGetAssociationMixin<Folder>;
 }
 
 export const initNote = (sequelize: Sequelize) => {
