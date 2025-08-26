@@ -1,24 +1,22 @@
 import fs from 'fs';
 import path from 'path';
 import { Sequelize } from 'sequelize-typescript';
-import { Inject, Service } from 'typedi';
+import Container, { Inject, Service } from 'typedi';
 
 import { DatabaseConfig } from '../config/database.config';
 import { encrypt, decrypt } from '../utils/encryption';
 import { Logger } from '../shared/logger';
+import { BaseService } from './base.service';
 
 @Service()
-export class DatabaseService {
+export class DatabaseService extends BaseService {
   private _sequelize: Sequelize | null = null;
 
-  private constructor(
-    @Inject()
-    private _logger: Logger,
-    @Inject()
-    private _config: DatabaseConfig,
+  constructor(
+    @Inject() private _config: DatabaseConfig,
   ) {
-    this._logger.info('DatabaseService instantiated');
-    
+    super(Container.get(Logger));
+
     this.initialize()
   }
 

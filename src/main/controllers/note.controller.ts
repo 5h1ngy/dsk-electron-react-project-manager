@@ -1,5 +1,5 @@
 import { ipcMain } from 'electron';
-import { Inject, Service } from 'typedi';
+import Container, { Inject, Service } from 'typedi';
 import { NoteService } from '../services/note.service';
 import { CreateNoteDto, SingleNoteResponseDto, UpdateNoteDto } from '../dtos/note.dto';
 import { BaseController } from './base.controller';
@@ -9,12 +9,9 @@ import { Logger } from '../shared/logger';
 export class NoteController extends BaseController {
 
   constructor(
-    @Inject()
-    private _noteService: NoteService,
-    @Inject()
-    logger: Logger
+    @Inject() private _noteService: NoteService,
   ) {
-    super(logger);
+    super(Container.get(Logger));
     this._logger.info('NoteController initialized');
   }
 
@@ -39,28 +36,28 @@ export class NoteController extends BaseController {
       userId: number;
     }) => {
       this._logger.info(`Creating note for user ${noteData.userId}`);
-      
+
       const dto = new CreateNoteDto(
         noteData.content,
         noteData.userId,
         noteData.projectId,
         noteData.taskId
       );
-      
+
       const errors = dto.validate();
       if (errors.length > 0) {
         this._logger.error(`Validation errors: ${JSON.stringify(errors)}`);
         return new SingleNoteResponseDto(false, 'Validation failed');
       }
-      
+
       return await this._noteService.createNote(dto);
     });
 
     ipcMain.handle('notes:update', async (_, noteId: number, content: string) => {
       this._logger.info(`Updating note ${noteId}`);
-      
+
       const dto = new UpdateNoteDto(content);
-      
+
       const errors = dto.validate();
       if (errors.length > 0) {
         this._logger.error(`Validation errors: ${JSON.stringify(errors)}`);

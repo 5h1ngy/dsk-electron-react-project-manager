@@ -1,5 +1,5 @@
 import { ipcMain } from 'electron';
-import { Inject, Service } from 'typedi';
+import Container, { Inject, Service } from 'typedi';
 import { TaskService } from '../services/task.service';
 import { CreateTaskDto, UpdateTaskDto, TaskStatus, TaskPriority, BulkUpdateTaskStatusDto, SingleTaskResponseDto } from '../dtos/task.dto';
 import { BaseController } from './base.controller';
@@ -10,13 +10,11 @@ import { Logger } from '../shared/logger';
  */
 @Service()
 export class TaskController extends BaseController {
+  
   constructor(
-    @Inject()
-    private _taskService: TaskService,
-    @Inject()
-    logger: Logger
+    @Inject() private _taskService: TaskService
   ) {
-    super(logger);
+    super(Container.get(Logger));
     this._logger.info('TaskController initialized');
   }
 
@@ -42,7 +40,7 @@ export class TaskController extends BaseController {
       projectId: number;
     }) => {
       this._logger.info(`IPC Handler: Creating new task for project ${taskData.projectId}`);
-      
+
       const dto = new CreateTaskDto(
         taskData.title,
         taskData.description,
@@ -51,14 +49,14 @@ export class TaskController extends BaseController {
         taskData.dueDate,
         taskData.projectId
       );
-      
+
       // Validate dto
       const errors = dto.validate();
       if (errors.length > 0) {
         this._logger.error(`Validation errors: ${JSON.stringify(errors)}`);
         return new SingleTaskResponseDto(false, 'Validation failed: ' + errors.join(', '));
       }
-      
+
       return await this._taskService.createTask(dto);
     });
 
@@ -72,10 +70,10 @@ export class TaskController extends BaseController {
       tags?: number[];
     }) => {
       this._logger.info(`IPC Handler: Updating task ${taskId}`);
-      
+
       // Convertire dueDate da null a undefined se necessario
       const dueDate = taskData.dueDate === null ? undefined : taskData.dueDate;
-      
+
       const dto = new UpdateTaskDto(
         taskData.title,
         taskData.description,
@@ -84,14 +82,14 @@ export class TaskController extends BaseController {
         dueDate,
         taskData.tags
       );
-      
+
       // Validate dto
       const errors = dto.validate();
       if (errors.length > 0) {
         this._logger.error(`Validation errors: ${JSON.stringify(errors)}`);
         return new SingleTaskResponseDto(false, 'Validation failed: ' + errors.join(', '));
       }
-      
+
       return await this._taskService.updateTask(taskId, dto);
     });
 
@@ -113,19 +111,19 @@ export class TaskController extends BaseController {
       status: string;
     }) => {
       this._logger.info(`IPC Handler: Updating status to ${bulkUpdateData.status} for ${bulkUpdateData.taskIds.length} tasks`);
-      
+
       const dto = new BulkUpdateTaskStatusDto(
         bulkUpdateData.taskIds,
         bulkUpdateData.status as TaskStatus
       );
-      
+
       // Validate dto
       const errors = dto.validate();
       if (errors.length > 0) {
         this._logger.error(`Validation errors: ${JSON.stringify(errors)}`);
         return new SingleTaskResponseDto(false, 'Validation failed: ' + errors.join(', '));
       }
-      
+
       return await this._taskService.updateTaskStatuses(bulkUpdateData.taskIds, bulkUpdateData.status as TaskStatus);
     });
   }

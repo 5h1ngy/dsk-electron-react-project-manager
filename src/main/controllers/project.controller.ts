@@ -1,5 +1,5 @@
 import { ipcMain } from 'electron';
-import { Inject, Service } from 'typedi';
+import Container, { Inject, Service } from 'typedi';
 import { ProjectService } from '../services/project.service';
 import { CreateProjectDto, UpdateProjectDto, SingleProjectResponseDto } from '../dtos/project.dto';
 import { BaseController } from './base.controller';
@@ -11,12 +11,9 @@ import { Logger } from '../shared/logger';
 @Service()
 export class ProjectController extends BaseController {
   constructor(
-    @Inject()
-    private _projectService: ProjectService,
-    @Inject()
-    logger: Logger
+    @Inject() private _projectService: ProjectService,
   ) {
-    super(logger);
+    super(Container.get(Logger));
     this._logger.info('ProjectController initialized');
   }
 
@@ -34,28 +31,28 @@ export class ProjectController extends BaseController {
 
     // Create a new project
     ipcMain.handle('projects:create', async (_, projectData: { name: string; description?: string; userId: number; tags?: number[] }) => {
-      this._logger.info(`IPC Handler: Creating new project for user ${projectData.userId}`);      
+      this._logger.info(`IPC Handler: Creating new project for user ${projectData.userId}`);
       const dto = new CreateProjectDto(
         projectData.name,
         projectData.description,
         projectData.userId,
         projectData.tags
       );
-      
+
       // Validate dto
       const errors = dto.validate();
       if (errors.length > 0) {
         this._logger.error(`Validation errors: ${JSON.stringify(errors)}`);
         return new SingleProjectResponseDto(false, 'Validation failed: ' + errors.join(', '));
       }
-      
+
       return await this._projectService.createProject(dto);
     });
 
     // Update a project
     ipcMain.handle('projects:update', async (_, projectId: number, updateData: UpdateProjectDto) => {
       this._logger.info(`IPC Handler: Updating project ${projectId}`);
-      
+
       return await this._projectService.updateProject(projectId, updateData);
     });
 

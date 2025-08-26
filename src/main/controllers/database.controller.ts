@@ -10,8 +10,7 @@ import { Logger } from '../shared/logger';
 export class DatabaseController extends BaseController {
 
   constructor(
-    @Inject()
-    private _databaseService: DatabaseService,
+    @Inject() private _databaseService: DatabaseService,
   ) {
     super(Container.get(Logger));
   }

@@ -10,12 +10,10 @@ export class Application {
   private mainWindow: BrowserWindow | null = null;
 
   constructor(
-    @Inject()
-    private _logger: Logger,
-    private _controllerRegistry: ControllerRegistry
+    @Inject() private _logger: Logger,
+    @Inject() private _controllerRegistry: ControllerRegistry
   ) {
     this._logger.info('Application class instantiated - direct logger usage');
-    this.init()
   }
 
   public async init(): Promise<void> {
@@ -140,7 +138,7 @@ export class Application {
 
         try {
           await this.mainWindow.loadFile(indexPathAlt2);
-          
+
         } catch (thirdError) {
           console.error('Failed to load from all paths:', thirdError);
           this.mainWindow.webContents.loadURL(`data:text/html;charset=utf-8,
