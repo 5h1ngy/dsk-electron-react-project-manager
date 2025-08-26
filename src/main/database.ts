@@ -1,6 +1,6 @@
 import { Sequelize } from 'sequelize';
-import databaseConfig from '../config/database.config';
-import { initializeModels } from '../models';
+import databaseConfig from './config/database.config';
+import { initializeModels } from './models';
 
 /**
  * Get the active Sequelize instance

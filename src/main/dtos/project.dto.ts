@@ -3,9 +3,7 @@ import { Expose, Type } from 'class-transformer';
 import { BaseDto, BaseResponseDto, PaginationDto } from './base.dto';
 import { TagResponseDto } from './tag.dto';
 
-/**
- * DTO for project creation request
- */
+
 export class CreateProjectDto extends BaseDto {
   @IsNotEmpty({ message: 'Project name is required' })
   @IsString({ message: 'Project name must be a string' })
@@ -38,9 +36,7 @@ export class CreateProjectDto extends BaseDto {
   }
 }
 
-/**
- * DTO for project update request
- */
+
 export class UpdateProjectDto extends BaseDto {
   @IsOptional()
   @IsString({ message: 'Project name must be a string' })
@@ -66,9 +62,7 @@ export class UpdateProjectDto extends BaseDto {
   }
 }
 
-/**
- * DTO for project response
- */
+
 export class ProjectResponseDto extends BaseDto {
   @IsNumber({}, { message: 'Project ID must be a number' })
   @Expose()
@@ -122,9 +116,23 @@ export class ProjectResponseDto extends BaseDto {
   }
 }
 
-/**
- * DTO for project list response
- */
+
+export class SingleProjectResponseDto extends BaseResponseDto {
+  @ValidateNested()
+  @Type(() => ProjectResponseDto)
+  @Expose()
+  project?: ProjectResponseDto;
+
+  constructor(
+    success: boolean = true,
+    message: string = 'Project operation completed successfully',
+    project?: ProjectResponseDto
+  ) {
+    super(success, message);
+    this.project = project;
+  }
+}
+
 export class ProjectListResponseDto extends BaseResponseDto {
   @IsArray({ message: 'Projects must be an array' })
   @ValidateNested({ each: true })
@@ -149,9 +157,7 @@ export class ProjectListResponseDto extends BaseResponseDto {
   }
 }
 
-/**
- * DTO for project pagination request
- */
+
 export class ProjectPaginationDto extends PaginationDto {
   @IsOptional()
   @IsString({ message: 'Search term must be a string' })

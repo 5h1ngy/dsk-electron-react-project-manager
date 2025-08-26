@@ -1,18 +1,23 @@
 import { ipcMain } from 'electron';
-import { Service } from 'typedi';
-import taskService from '../services/task.service';
-import { CreateTaskDto, UpdateTaskDto, TaskResponseDto, TaskListResponseDto, TaskStatus, TaskPriority, BulkUpdateTaskStatusDto } from '../dtos/task.dto';
-import { TagResponseDto } from '../dtos/tag.dto';
+import { Inject, Service } from 'typedi';
+import { TaskService } from '../services/task.service';
+import { CreateTaskDto, UpdateTaskDto, TaskStatus, TaskPriority, BulkUpdateTaskStatusDto, SingleTaskResponseDto } from '../dtos/task.dto';
 import { BaseController } from './base.controller';
-import { logger } from '../shared/logger';
+import { Logger } from '../shared/logger';
 
 /**
  * Controller for task-related IPC operations
  */
 @Service()
 export class TaskController extends BaseController {
-  constructor() {
-    super();
+  constructor(
+    @Inject()
+    private _taskService: TaskService,
+    @Inject()
+    logger: Logger
+  ) {
+    super(logger);
+    this._logger.info('TaskController initialized');
   }
 
 
@@ -23,25 +28,8 @@ export class TaskController extends BaseController {
   public registerHandlers(): void {
     // Get all tasks for a project
     ipcMain.handle('tasks:getByProject', async (_, projectId: number) => {
-      logger.info(`Getting tasks for project ${projectId}`);
-      const result = await taskService.getTasksByProject(projectId);
-      
-      return new TaskListResponseDto(
-        result.success,
-        result.message,
-        result.tasks?.map(t => new TaskResponseDto(
-          t.id,
-          t.title,
-          t.description,
-          t.status as TaskStatus,
-          t.priority as TaskPriority,
-          t.dueDate?.toString(),
-          t.projectId,
-          t.tags?.map(tag => new TagResponseDto(tag.id, tag.name, tag.color, tag.createdAt, tag.updatedAt)) || [],
-          t.createdAt,
-          t.updatedAt
-        )) || []
-      );
+      this._logger.info(`IPC Handler: Getting tasks for project ${projectId}`);
+      return await this._taskService.getTasksByProject(projectId);
     });
 
     // Create a new task
@@ -52,9 +40,8 @@ export class TaskController extends BaseController {
       priority: string;
       dueDate?: string;
       projectId: number;
-      tags?: number[];
     }) => {
-      logger.info(`Creating new task for project ${taskData.projectId}`);
+      this._logger.info(`IPC Handler: Creating new task for project ${taskData.projectId}`);
       
       const dto = new CreateTaskDto(
         taskData.title,
@@ -62,35 +49,17 @@ export class TaskController extends BaseController {
         taskData.status as TaskStatus,
         taskData.priority as TaskPriority,
         taskData.dueDate,
-        taskData.projectId,
-        taskData.tags
+        taskData.projectId
       );
       
       // Validate dto
       const errors = dto.validate();
       if (errors.length > 0) {
-        logger.error(`Validation errors: ${JSON.stringify(errors)}`);
-        return { success: false, message: 'Validation failed', errors };
+        this._logger.error(`Validation errors: ${JSON.stringify(errors)}`);
+        return new SingleTaskResponseDto(false, 'Validation failed: ' + errors.join(', '));
       }
       
-      const result = await taskService.createTask(dto);
-      
-      if (!result.success || !result.task) {
-        return { success: false, message: result.message || 'Failed to create task' };
-      }
-      
-      return new TaskResponseDto(
-        result.task.id,
-        result.task.title,
-        result.task.description,
-        result.task.status as TaskStatus,
-        result.task.priority as TaskPriority,
-        result.task.dueDate?.toString(),
-        result.task.projectId,
-        result.task.tags?.map(tag => new TagResponseDto(tag.id, tag.name, tag.color, tag.createdAt, tag.updatedAt)) || [],
-        result.task.createdAt,
-        result.task.updatedAt
-      );
+      return await this._taskService.createTask(dto);
     });
 
     // Update a task
@@ -102,7 +71,7 @@ export class TaskController extends BaseController {
       dueDate?: string | null;
       tags?: number[];
     }) => {
-      logger.info(`Updating task ${taskId}`);
+      this._logger.info(`IPC Handler: Updating task ${taskId}`);
       
       // Convertire dueDate da null a undefined se necessario
       const dueDate = taskData.dueDate === null ? undefined : taskData.dueDate;
@@ -119,77 +88,45 @@ export class TaskController extends BaseController {
       // Validate dto
       const errors = dto.validate();
       if (errors.length > 0) {
-        logger.error(`Validation errors: ${JSON.stringify(errors)}`);
-        return { success: false, message: 'Validation failed', errors };
+        this._logger.error(`Validation errors: ${JSON.stringify(errors)}`);
+        return new SingleTaskResponseDto(false, 'Validation failed: ' + errors.join(', '));
       }
       
-      const result = await taskService.updateTask(taskId, dto);
-      
-      if (!result.success || !result.task) {
-        return { success: false, message: result.message || 'Failed to update task' };
-      }
-      
-      return new TaskResponseDto(
-        result.task.id,
-        result.task.title,
-        result.task.description,
-        result.task.status as TaskStatus,
-        result.task.priority as TaskPriority,
-        result.task.dueDate?.toString(),
-        result.task.projectId,
-        result.task.tags?.map(tag => new TagResponseDto(tag.id, tag.name, tag.color, tag.createdAt, tag.updatedAt)) || [],
-        result.task.createdAt,
-        result.task.updatedAt
-      );
+      return await this._taskService.updateTask(taskId, dto);
     });
 
     // Delete a task
     ipcMain.handle('tasks:delete', async (_, taskId: number) => {
-      logger.info(`Deleting task ${taskId}`);
-      const result = await taskService.deleteTask(taskId);
-      return { success: result.success, message: result.message || (result.success ? 'Task deleted successfully' : 'Failed to delete task') };
+      this._logger.info(`IPC Handler: Deleting task ${taskId}`);
+      return await this._taskService.deleteTask(taskId);
     });
 
     // Get task details
     ipcMain.handle('tasks:getDetails', async (_, taskId: number) => {
-      logger.info(`Getting details for task ${taskId}`);
-      const result = await taskService.getTaskDetails(taskId);
-      
-      if (!result.success || !result.task) {
-        return { success: false, message: result.message || 'Task not found' };
-      }
-      
-      return new TaskResponseDto(
-        result.task.id,
-        result.task.title,
-        result.task.description,
-        result.task.status as TaskStatus,
-        result.task.priority as TaskPriority,
-        result.task.dueDate?.toString(),
-        result.task.projectId,
-        result.task.tags?.map(tag => new TagResponseDto(tag.id, tag.name, tag.color, tag.createdAt, tag.updatedAt)) || [],
-        result.task.createdAt,
-        result.task.updatedAt
-      );
+      this._logger.info(`IPC Handler: Getting details for task ${taskId}`);
+      return await this._taskService.getTaskDetails(taskId);
     });
 
-    // Update multiple task statuses
-    ipcMain.handle('tasks:updateStatuses', async (_, taskIds: number[], status: string) => {
-      logger.info(`Updating statuses for tasks: ${taskIds.join(', ')}`);
+    // Update multiple task statuses at once
+    ipcMain.handle('tasks:updateStatuses', async (_, bulkUpdateData: {
+      taskIds: number[];
+      status: string;
+    }) => {
+      this._logger.info(`IPC Handler: Updating status to ${bulkUpdateData.status} for ${bulkUpdateData.taskIds.length} tasks`);
       
       const dto = new BulkUpdateTaskStatusDto(
-        taskIds,
-        status as TaskStatus
+        bulkUpdateData.taskIds,
+        bulkUpdateData.status as TaskStatus
       );
       
       // Validate dto
       const errors = dto.validate();
       if (errors.length > 0) {
-        logger.error(`Validation errors: ${JSON.stringify(errors)}`);
-        return { success: false, message: 'Validation failed', errors };
+        this._logger.error(`Validation errors: ${JSON.stringify(errors)}`);
+        return new SingleTaskResponseDto(false, 'Validation failed: ' + errors.join(', '));
       }
       
-      return await taskService.updateTaskStatuses(taskIds, status);
+      return await this._taskService.updateTaskStatuses(bulkUpdateData.taskIds, bulkUpdateData.status as TaskStatus);
     });
   }
 }

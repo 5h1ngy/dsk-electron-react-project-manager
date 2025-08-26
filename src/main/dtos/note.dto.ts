@@ -1,15 +1,13 @@
 import { IsString, IsNotEmpty, IsOptional, IsNumber, IsArray, IsDate, ValidateNested, Min } from 'class-validator';
 import { Expose, Type } from 'class-transformer';
-import { BaseDto, BaseResponseDto, PaginationDto } from './base.dto';
+import { BaseDto, BaseResponseDto } from './base.dto';
 
-/**
- * DTO per la creazione di una nota
- */
 export class CreateNoteDto extends BaseDto {
   @IsNotEmpty({ message: 'Content is required' })
   @IsString({ message: 'Content must be a string' })
+  @IsOptional()
   @Expose()
-  content: string;
+  content: string | null;
 
   @IsNotEmpty({ message: 'User ID is required' })
   @IsNumber({}, { message: 'User ID must be a number' })
@@ -43,32 +41,28 @@ export class CreateNoteDto extends BaseDto {
   }
 }
 
-/**
- * DTO per l'aggiornamento del contenuto di una nota
- */
 export class UpdateNoteDto extends BaseDto {
   @IsNotEmpty({ message: 'Content is required' })
   @IsString({ message: 'Content must be a string' })
+  @IsOptional()
   @Expose()
-  content: string;
+  content: string | null;
 
-  constructor(content: string = '') {
+  constructor(content: string | null = null) {
     super();
     this.content = content;
   }
 }
 
-/**
- * DTO per la risposta di una nota
- */
 export class NoteResponseDto extends BaseDto {
   @IsNumber({}, { message: 'Note ID must be a number' })
   @Expose()
   id: number;
 
   @IsString({ message: 'Content must be a string' })
+  @IsOptional()
   @Expose()
-  content: string;
+  content: string | null;
 
   @IsNumber({}, { message: 'User ID must be a number' })
   @Expose()
@@ -77,12 +71,12 @@ export class NoteResponseDto extends BaseDto {
   @IsOptional()
   @IsNumber({}, { message: 'Project ID must be a number' })
   @Expose()
-  projectId?: number;
+  projectId: number | null;
 
   @IsOptional()
   @IsNumber({}, { message: 'Task ID must be a number' })
   @Expose()
-  taskId?: number;
+  taskId: number | null;
 
   @IsDate()
   @Expose()
@@ -92,14 +86,20 @@ export class NoteResponseDto extends BaseDto {
   @Expose()
   updatedAt: Date;
 
+  @IsOptional()
+  @IsString({ message: 'Title must be a string' })
+  @Expose()
+  title: string | null;
+
   constructor(
     id: number = 0,
-    content: string = '',
+    content: string | null = null,
     userId: number = 0,
-    projectId?: number,
-    taskId?: number,
+    projectId: number | null = null,
+    taskId: number | null = null,
     createdAt: Date = new Date(),
-    updatedAt: Date = new Date()
+    updatedAt: Date = new Date(),
+    title: string | null = null
   ) {
     super();
     this.id = id;
@@ -109,12 +109,26 @@ export class NoteResponseDto extends BaseDto {
     this.taskId = taskId;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
+    this.title = title;
   }
 }
 
-/**
- * DTO per la risposta di una lista di note
- */
+export class SingleNoteResponseDto extends BaseResponseDto {
+  @ValidateNested()
+  @Type(() => NoteResponseDto)
+  @Expose()
+  note?: NoteResponseDto;
+
+  constructor(
+    success: boolean = true,
+    message: string = 'Note operation completed successfully',
+    note?: NoteResponseDto
+  ) {
+    super(success, message);
+    this.note = note;
+  }
+}
+
 export class NoteListResponseDto extends BaseResponseDto {
   @IsArray({ message: 'Notes must be an array' })
   @ValidateNested({ each: true })
@@ -136,52 +150,5 @@ export class NoteListResponseDto extends BaseResponseDto {
     super(success, message);
     this.notes = notes;
     this.totalCount = totalCount;
-  }
-}
-
-/**
- * DTO per la richiesta di paginazione delle note
- */
-export class NotePaginationDto extends PaginationDto {
-  @IsOptional()
-  @IsString({ message: 'Search term must be a string' })
-  @Expose()
-  search?: string;
-
-  @IsOptional()
-  @IsNumber({}, { message: 'Project ID must be a number' })
-  @Expose()
-  projectId?: number;
-
-  @IsOptional()
-  @IsNumber({}, { message: 'Task ID must be a number' })
-  @Expose()
-  taskId?: number;
-
-  @IsOptional()
-  @IsNumber({}, { message: 'User ID must be a number' })
-  @Expose()
-  userId?: number;
-
-  @IsOptional()
-  @IsNumber({}, { message: 'Folder ID must be a number' })
-  @Expose()
-  folderId?: number;
-
-  constructor(
-    page: number = 1,
-    limit: number = 10,
-    search: string = '',
-    projectId?: number,
-    taskId?: number,
-    userId?: number,
-    folderId?: number
-  ) {
-    super(page, limit);
-    this.search = search;
-    this.projectId = projectId;
-    this.taskId = taskId;
-    this.userId = userId;
-    this.folderId = folderId;
   }
 }

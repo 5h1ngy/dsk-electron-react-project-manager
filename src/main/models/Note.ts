@@ -3,6 +3,7 @@ import { BaseModel } from './BaseModel';
 import { User } from './User';
 import { Folder } from './Folder';
 import { Task } from './Task';
+import { Project } from './Project';
 
 @Table({
   tableName: 'Notes'
@@ -13,18 +14,23 @@ export class Note extends BaseModel<Note> {
   @Column(DataType.INTEGER)
   declare id: number;
 
-  @AllowNull(false)
+  @AllowNull(true)
   @Column(DataType.STRING)
-  declare title: string;
+  declare title: string | null;
 
   @AllowNull(true)
   @Column(DataType.TEXT)
-  declare content: string;
+  declare content: string | null;
   
   @ForeignKey(() => User)
   @AllowNull(false)
   @Column(DataType.INTEGER)
   declare userId: number;
+
+  @ForeignKey(() => Project)
+  @AllowNull(true)
+  @Column(DataType.INTEGER)
+  declare projectId: number | null;
   
   @ForeignKey(() => Folder)
   @AllowNull(true)
@@ -51,6 +57,9 @@ export class Note extends BaseModel<Note> {
   
   @BelongsTo(() => Task)
   declare task: Task;
+
+  @BelongsTo(() => Project)
+  declare project: Project;
 }
 
 // Non necessario più l'inizializzazione manuale perché gestita da sequelize-typescript

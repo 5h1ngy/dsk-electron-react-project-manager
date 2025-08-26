@@ -39,7 +39,6 @@ export class Project extends BaseModel<Project> {
   @UpdatedAt
   declare updatedAt: Date;
 
-  // Definizione delle relazioni con decoratori
   @BelongsTo(() => User)
   declare user: User;
 
@@ -49,5 +48,3 @@ export class Project extends BaseModel<Project> {
   @BelongsToMany(() => Tag, () => ProjectTag)
   declare tags: Tag[];
 }
-
-// Non necessario più l'inizializzazione manuale perché gestita da sequelize-typescript

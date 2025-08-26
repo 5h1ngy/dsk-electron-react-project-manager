@@ -237,6 +237,25 @@ export class TaskListResponseDto extends BaseResponseDto {
 }
 
 /**
+ * DTO per la risposta di un singolo task
+ */
+export class SingleTaskResponseDto extends BaseResponseDto {
+  @ValidateNested()
+  @Type(() => TaskResponseDto)
+  @Expose()
+  task?: TaskResponseDto;
+
+  constructor(
+    success: boolean = true,
+    message: string = 'Task operation completed successfully',
+    task?: TaskResponseDto
+  ) {
+    super(success, message);
+    this.task = task;
+  }
+}
+
+/**
  * DTO per la richiesta di paginazione delle attività
  */
 export class TaskPaginationDto extends PaginationDto {

@@ -1,101 +1,73 @@
-import { User } from '../models/User';
 import { Op } from 'sequelize';
-import { Service } from 'typedi';
-import { logger } from '../shared/logger';
-import { 
-  UserRegistrationDto, 
-  UserLoginDto, 
-  UserResponseDto, 
-  RegisterResponseDto,
-  LoginResponseDto 
-} from '../dtos/auth.dto';
+import { Inject, Service } from 'typedi';
 
-/**
- * Service responsible for authentication operations
- */
+import { Logger } from '../shared/logger';
+import { User } from '../models/User';
+import { RegisterRequestDTO, RegisterResponseDTO, LoginResponseDTO } from '../dtos/auth.dto';
+import { LoginRequestDTO, UserResponseDTO } from '../dtos/auth.dto';
+
 @Service()
 export class AuthService {
 
-  /**
-   * Register a new user
-   * @param userData User registration data
-   */
-  public async register(userData: UserRegistrationDto): Promise<RegisterResponseDto> {
+  constructor(
+    @Inject()
+    protected _logger: Logger
+  ) { }
+
+  public async register(form: RegisterRequestDTO): Promise<RegisterResponseDTO> {
     try {
-      const { username, email, password } = userData;
-      
-      // Check if user already exists
-      const existingUser = await User.findOne({
-        where: {
-          [Op.or]: [{ username }, { email }]
-        }
-      });
-      
-      if (existingUser) {
-        return {
-          success: false,
-          message: 'Username or email already exists'
-        };
+      const error = form.isValid();
+      if (error) {
+        throw new Error('VALIDATION_ERROR');
       }
-      
-      // Create new user
-      const user = await User.create({
-        username,
-        email,
-        password // Password will be hashed by the model hook
-      });
-      
-      logger.info(`User ${username} registered successfully`);
-      const userResponse = new UserResponseDto(user.id, user.username, user.email);
-      return new LoginResponseDto(true, undefined, userResponse);
+
+      const { username, email, password } = form.toPlain();
+
+      const existingUser = await User.findOne({ where: { [Op.or]: [{ username }, { email }] } });
+      if (existingUser) {
+        throw new Error('ALREADY_EXIST');
+      }
+
+      const user = await User.create({ username, email, password } as any);
+      this._logger.info(`User ${username} registered successfully`);
+
+      const userResponse = new UserResponseDTO(user.id, user.username, user.email);
+      return new LoginResponseDTO(true, undefined, userResponse);
+
     } catch (error) {
-      console.error('Registration error:', error);
-      logger.error(`Registration error: ${error instanceof Error ? error.message : String(error)}`);
-      return new RegisterResponseDto(false, 'Registration failed');
+      this._logger.error(`Registration error: ${error instanceof Error ? error.message : String(error)}`);
+      return new RegisterResponseDTO(false, error instanceof Error ? error.message : String(error));
+
     }
   }
 
-  /**
-   * Login user
-   * @param loginData User login data
-   */
-  public async login(loginData: UserLoginDto): Promise<LoginResponseDto> {
+  public async login(loginData: LoginRequestDTO): Promise<LoginResponseDTO> {
     try {
-      const { username, password } = loginData;
-      
-      // Find user by username
-      const user = await User.findOne({
-        where: { username }
-      });
-      
+      const error = loginData.isValid();
+      if (error) {
+        throw new Error('VALIDATION_ERROR');
+      }
+
+      const { username, password } = loginData.toPlain();
+
+      const user = await User.findOne({ where: { username } });
       if (!user) {
-        return {
-          success: false,
-          message: 'Invalid username or password'
-        };
+        throw new Error('ALREADY_EXIST');
       }
-      
-      // Validate password
-      const isPasswordValid = await user.validatePassword(password);
-      
+
+      const isPasswordValid = await user.checkPassword(password);
       if (!isPasswordValid) {
-        return {
-          success: false,
-          message: 'Invalid username or password'
-        };
+        throw new Error('INVALID_PASSWORD');
       }
-      
-      logger.info(`User ${username} registered successfully`);
-      const userResponse = new UserResponseDto(user.id, user.username, user.email);
-      return new LoginResponseDto(true, undefined, userResponse);
+
+      this._logger.info(`User ${username} registered successfully`);
+      const userResponse = new UserResponseDTO(user.id, user.username, user.email);
+      return new LoginResponseDTO(true, undefined, userResponse);
+
     } catch (error) {
-      console.error('Login error:', error);
-      logger.error(`Login error: ${error instanceof Error ? error.message : String(error)}`);
-      return new LoginResponseDto(false, 'Login failed');
+      this._logger.error(`Login error: ${error instanceof Error ? error.message : String(error)}`);
+      return new LoginResponseDTO(false, error instanceof Error ? error.message : String(error));
+
     }
   }
 }
-
-// Creiamo un'istanza singleton del servizio
-const authServiceInstance = new AuthService();
-export default authServiceInstance;

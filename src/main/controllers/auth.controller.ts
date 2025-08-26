@@ -1,36 +1,36 @@
 import { ipcMain } from 'electron';
-import { Service } from 'typedi';
-import { BaseController } from './base.controller';
-import authService from '../services/auth.service';
-import { UserRegistrationDto, UserLoginDto } from '../dtos/auth.dto';
-import { logger } from '../shared/logger';
+import Container, { Inject, Service } from 'typedi';
 
-/**
- * Controller for authentication-related IPC operations
- */
+import { BaseController } from './base.controller';
+import { AuthService } from '../services/auth.service';
+import { RegisterRequestDTO, LoginRequestDTO } from '../dtos/auth.dto';
+import { Logger } from '../shared/logger';
+
 @Service()
 export class AuthController extends BaseController {
 
-  /**
-   * Register all authentication IPC handlers
-   */
+  constructor(
+    @Inject()
+    protected _logger: Logger,
+    @Inject()
+    private _authService: AuthService,
+  ) {
+    super(Container.get(Logger));
+  }
+
   public registerHandlers(): void {
-    logger.info('Registering auth handlers...');
-    
-    // Register user
-    ipcMain.handle('auth:register', async (_, userData: UserRegistrationDto) => {
-      logger.info(`Registration request received for user: ${userData.username}`);
-      return await authService.register(userData);
+    this._logger.info('Registering auth handlers...');
+
+    ipcMain.handle('auth:register', async (_, userData: RegisterRequestDTO) => {
+      this._logger.info(`Registration request received for user: ${userData.username}`);
+      return await this._authService.register(userData);
     });
-    
-    // Login user
-    ipcMain.handle('auth:login', async (_, loginData: UserLoginDto) => {
-      logger.info(`Login request received for user: ${loginData.username}`);
-      return await authService.login(loginData);
+
+    ipcMain.handle('auth:login', async (_, loginData: LoginRequestDTO) => {
+      this._logger.info(`Login request received for user: ${loginData.username}`);
+      return await this._authService.login(loginData);
     });
-    
-    logger.info('Auth handlers registered successfully');
+
+    this._logger.info('Auth handlers registered successfully');
   }
 }
-
-// Non esporta più un'istanza singleton, verrà gestita da TypeDI

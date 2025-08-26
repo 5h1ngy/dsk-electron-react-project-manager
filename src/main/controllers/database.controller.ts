@@ -1,62 +1,53 @@
 import { ipcMain } from 'electron';
-import { Service } from 'typedi';
+import Container, { Inject, Service } from 'typedi';
+
 import { BaseController } from './base.controller';
 import { DatabaseService } from '../services/database.service';
-import { ImportDatabaseRequestDto, ExportDatabaseResponseDto, ImportDatabaseResponseDto } from '../dtos/auth.dto';
-import { logger } from '../shared/logger';
+import { ImportDatabaseRequestDTO, ExportDatabaseResponseDTO, ImportDatabaseResponseDTO } from '../dtos/auth.dto';
+import { Logger } from '../shared/logger';
 
-/**
- * Controller for database-related IPC operations
- */
 @Service()
 export class DatabaseController extends BaseController {
 
-  private databaseService: DatabaseService;
-  
-  constructor(databaseService: DatabaseService) {
-    super();
-    this.databaseService = databaseService;
+  constructor(
+    @Inject()
+    private _databaseService: DatabaseService,
+  ) {
+    super(Container.get(Logger));
   }
 
-  /**
-   * Register all database IPC handlers
-   */
   public registerHandlers(): void {
-    logger.info('Registering database handlers...');
+    this._logger.info('Registering database handlers...');
 
-    // Export database
     ipcMain.handle('database:export', async () => {
       try {
-        logger.info('Database export request received');
-        const data = await this.databaseService.exportDatabase();
-        logger.info('Database exported successfully');
-        
-        const response = new ExportDatabaseResponseDto(true, data, 'Database exported successfully');
+        this._logger.info('Database export request received');
+        const data = await this._databaseService.exportDatabase();
+        this._logger.info('Database exported successfully');
+
+        const response = new ExportDatabaseResponseDTO(true, data, 'Database exported successfully');
         return response;
       } catch (error) {
-        logger.error(`Error exporting database: ${error instanceof Error ? error.message : String(error)}`);
-        return new ExportDatabaseResponseDto(false, undefined, 'Failed to export database');
+        this._logger.error(`Error exporting database: ${error instanceof Error ? error.message : String(error)}`);
+        return new ExportDatabaseResponseDTO(false, undefined, 'Failed to export database');
       }
     });
-    
-    // Import database
-    ipcMain.handle('database:import', async (_, importData: ImportDatabaseRequestDto) => {
+
+    ipcMain.handle('database:import', async (_, importData: ImportDatabaseRequestDTO) => {
       try {
-        logger.info('Database import request received');
-        const recordCount = await this.databaseService.importDatabase(importData.data);
-        logger.info(`Database imported successfully with ${recordCount} records`);
-        
+        this._logger.info('Database import request received');
+        const recordCount = await this._databaseService.importDatabase(importData.data);
+        this._logger.info(`Database imported successfully with ${recordCount} records`);
+
         // Assicuriamoci che recordCount sia un numero
         const count = typeof recordCount === 'boolean' ? 0 : recordCount;
-        return new ImportDatabaseResponseDto(true, 'Database imported successfully', count);
+        return new ImportDatabaseResponseDTO(true, 'Database imported successfully', count);
       } catch (error) {
-        logger.error(`Error importing database: ${error instanceof Error ? error.message : String(error)}`);
-        return new ImportDatabaseResponseDto(false, 'Failed to import database');
+        this._logger.error(`Error importing database: ${error instanceof Error ? error.message : String(error)}`);
+        return new ImportDatabaseResponseDTO(false, 'Failed to import database');
       }
     });
-    
-    logger.info('Database handlers registered successfully');
+
+    this._logger.info('Database handlers registered successfully');
   }
 }
-
-// La classe è già esportata tramite il decoratore @Service
