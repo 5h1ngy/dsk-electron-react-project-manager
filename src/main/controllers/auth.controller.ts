@@ -10,10 +10,7 @@ import { Logger } from '../shared/logger';
 export class AuthController extends BaseController {
 
   constructor(
-    @Inject()
-    protected _logger: Logger,
-    @Inject()
-    private _authService: AuthService,
+    @Inject() private _authService: AuthService,
   ) {
     super(Container.get(Logger));
   }

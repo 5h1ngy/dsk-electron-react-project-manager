@@ -1,18 +1,18 @@
 import { Op } from 'sequelize';
-import { Inject, Service } from 'typedi';
+import Container, { Service } from 'typedi';
 
 import { Logger } from '../shared/logger';
 import { User } from '../models/User';
 import { RegisterRequestDTO, RegisterResponseDTO, LoginResponseDTO } from '../dtos/auth.dto';
 import { LoginRequestDTO, UserResponseDTO } from '../dtos/auth.dto';
+import { BaseService } from './base.service';
 
 @Service()
-export class AuthService {
+export class AuthService extends BaseService {
 
-  constructor(
-    @Inject()
-    protected _logger: Logger
-  ) { }
+  constructor() {
+    super(Container.get(Logger));
+  }
 
   public async register(form: RegisterRequestDTO): Promise<RegisterResponseDTO> {
     try {

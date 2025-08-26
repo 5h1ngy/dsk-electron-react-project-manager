@@ -12,8 +12,7 @@ export class DatabaseConfig {
     private _initialized: boolean = false;
 
     constructor(
-        @Inject()
-        private _logger: Logger
+        @Inject() private _logger: Logger
     ) {
         this._logger.info('DatabaseConfig instantiated via DI');
 

@@ -1,4 +1,4 @@
-import { Inject, Service } from 'typedi';
+import Container, { Service } from 'typedi';
 
 import { Note } from '../models/Note';
 import { Project } from '../models/Project';
@@ -10,11 +10,8 @@ import { BaseService } from './base.service';
 @Service()
 export class NoteService extends BaseService {
 
-  constructor(
-    @Inject()
-    logger: Logger
-  ) {
-    super(logger);
+  constructor() {
+    super(Container.get(Logger));
     this._logger.info('NoteService initialized');
   }
 

@@ -8,8 +8,7 @@ import { Logger } from '../shared/logger';
 export abstract class BaseService {
 
     constructor(
-        @Inject()
-        protected _logger: Logger
+        @Inject() protected _logger: Logger
     ) {
         this._logger.info(`Service ${this.constructor.name} instantiated via DI`);
     }

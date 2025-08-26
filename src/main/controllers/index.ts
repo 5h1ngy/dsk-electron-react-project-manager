@@ -13,7 +13,7 @@ import { Logger } from '../shared/logger';
 export class ControllerRegistry {
   private controllers: BaseController[] = [];
 
-  private constructor(
+  constructor(
     @Inject()
     private _logger: Logger,
     @Inject()
