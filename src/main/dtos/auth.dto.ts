@@ -2,15 +2,12 @@ import { IsString, IsEmail, IsNotEmpty, IsOptional, IsNumber, Length, Matches } 
 import { Expose } from 'class-transformer';
 import { BaseDto, BaseResponseDto } from './base.dto';
 
-/**
- * DTO for user registration request
- */
-export class UserRegistrationDto extends BaseDto {
+export class RegisterRequestDTO extends BaseDto {
   @IsNotEmpty({ message: 'Username is required' })
   @IsString({ message: 'Username must be a string' })
   @Length(3, 50, { message: 'Username must be between 3 and 50 characters' })
   @Expose()
-  username: string;
+  username!: string;
 
   @IsNotEmpty({ message: 'Email is required' })
   @IsEmail({}, { message: 'Please provide a valid email address' })
@@ -40,10 +37,21 @@ export class UserRegistrationDto extends BaseDto {
   }
 }
 
+export class RegisterResponseDTO extends BaseResponseDto {
+  @IsOptional()
+  @Expose()
+  user?: UserResponseDTO;
+
+  constructor(success: boolean = true, message?: string, user?: UserResponseDTO) {
+    super(success, message);
+    this.user = user;
+  }
+}
+
 /**
  * DTO for user login request
  */
-export class UserLoginDto extends BaseDto {
+export class LoginRequestDTO extends BaseDto {
   @IsNotEmpty({ message: 'Username is required' })
   @IsString({ message: 'Username must be a string' })
   @Expose()
@@ -61,10 +69,39 @@ export class UserLoginDto extends BaseDto {
   }
 }
 
+export class LoginResponseDTO extends BaseResponseDto {
+  @IsOptional()
+  @Expose()
+  user?: UserResponseDTO;
+
+  @IsOptional()
+  @IsString({ message: 'Access token must be a string' })
+  @Expose()
+  access_token?: string;
+  
+  @IsOptional()
+  @IsString({ message: 'Refresh token must be a string' })
+  @Expose()
+  refresh_token?: string;
+  
+  @IsOptional()
+  @IsString({ message: 'Token type must be a string' })
+  @Expose()
+  token_type?: string;
+
+  constructor(success: boolean = true, message?: string, user?: UserResponseDTO, access_token?: string, refresh_token?: string, token_type?: string) {
+    super(success, message);
+    this.user = user;
+    this.access_token = access_token;
+    this.refresh_token = refresh_token;
+    this.token_type = token_type;
+  }
+}
+
 /**
  * DTO for user response (without sensitive data)
  */
-export class UserResponseDto extends BaseDto {
+export class UserResponseDTO extends BaseDto {
   @IsNumber({}, { message: 'User ID must be a number' })
   @Expose()
   id: number;
@@ -86,55 +123,9 @@ export class UserResponseDto extends BaseDto {
 }
 
 /**
- * DTO for registration response
- */
-export class RegisterResponseDto extends BaseResponseDto {
-  @IsOptional()
-  @Expose()
-  user?: UserResponseDto;
-
-  constructor(success: boolean = true, message?: string, user?: UserResponseDto) {
-    super(success, message);
-    this.user = user;
-  }
-}
-
-/**
- * DTO for login response
- */
-export class LoginResponseDto extends BaseResponseDto {
-  @IsOptional()
-  @Expose()
-  user?: UserResponseDto;
-
-  @IsOptional()
-  @IsString({ message: 'Access token must be a string' })
-  @Expose()
-  access_token?: string;
-  
-  @IsOptional()
-  @IsString({ message: 'Refresh token must be a string' })
-  @Expose()
-  refresh_token?: string;
-  
-  @IsOptional()
-  @IsString({ message: 'Token type must be a string' })
-  @Expose()
-  token_type?: string;
-
-  constructor(success: boolean = true, message?: string, user?: UserResponseDto, access_token?: string, refresh_token?: string, token_type?: string) {
-    super(success, message);
-    this.user = user;
-    this.access_token = access_token;
-    this.refresh_token = refresh_token;
-    this.token_type = token_type;
-  }
-}
-
-/**
  * DTO for database export response
  */
-export class ExportDatabaseResponseDto extends BaseResponseDto {
+export class ExportDatabaseResponseDTO extends BaseResponseDto {
   @IsOptional()
   @IsString({ message: 'Exported data must be a string' })
   @Expose()
@@ -149,7 +140,7 @@ export class ExportDatabaseResponseDto extends BaseResponseDto {
 /**
  * DTO for database import request
  */
-export class ImportDatabaseRequestDto extends BaseDto {
+export class ImportDatabaseRequestDTO extends BaseDto {
   @IsNotEmpty({ message: 'Data is required' })
   @IsString({ message: 'Data must be a string' })
   @Expose()
@@ -164,7 +155,7 @@ export class ImportDatabaseRequestDto extends BaseDto {
 /**
  * DTO for database import response
  */
-export class ImportDatabaseResponseDto extends BaseResponseDto {
+export class ImportDatabaseResponseDTO extends BaseResponseDto {
   @IsOptional()
   @IsNumber({}, { message: 'Record count must be a number' })
   @Expose()

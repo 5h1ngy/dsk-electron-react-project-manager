@@ -1,40 +1,32 @@
+import { Inject, Service } from 'typedi';
+
 import { Project } from '../models/Project';
 import { Tag } from '../models/Tag';
 import { Task } from '../models/Task';
+import { Logger } from '../shared/logger';
+import { CreateProjectDto, ProjectListResponseDto, ProjectResponseDto, SingleProjectResponseDto, UpdateProjectDto } from '../dtos/project.dto';
+import { TagResponseDto } from '../dtos/tag.dto';
+import { BaseService } from './base.service';
 
-/**
- * Service responsible for project operations
- */
-export class ProjectService {
-  private static instance: ProjectService;
+@Service()
+export class ProjectService extends BaseService {
 
-  private constructor() {
-    // Private constructor for singleton pattern
+  constructor(
+    @Inject()
+    logger: Logger
+  ) {
+    super(logger);
+    this._logger.info('ProjectService initialized');
   }
 
-  /**
-   * Get singleton instance
-   */
-  public static getInstance(): ProjectService {
-    if (!ProjectService.instance) {
-      ProjectService.instance = new ProjectService();
-    }
-    return ProjectService.instance;
-  }
-
-  /**
-   * Get all projects for a user
-   * @param userId User ID
-   */
-  public async getAllProjects(userId: number) {
+  public async getAllProjects(userId: number): Promise<ProjectListResponseDto> {
     try {
+      this._logger.info(`Fetching all projects for user ${userId}`);
+      
       // Check if userId is defined and valid
       if (!userId || isNaN(userId)) {
-        return {
-          success: false,
-          message: 'Invalid user ID',
-          projects: []
-        };
+        this._logger.warn(`Invalid user ID provided: ${userId}`);
+        return new ProjectListResponseDto(false, 'Invalid user ID', []);
       }
       
       // Query per ottenere i progetti
@@ -44,54 +36,58 @@ export class ProjectService {
           {
             model: Tag,
             as: 'tags',
-            // Non specifichiamo 'through' per evitare problemi con le associazioni
           }
         ],
         order: [['updatedAt', 'DESC']]
       });
       
-      // Converti i progetti in oggetti JavaScript normali
-      const plainProjects = projects.map(project => {
-        const plainProject = project.get({ plain: true });
-        return plainProject;
+      // Mappare i risultati usando ProjectResponseDto
+      const mappedProjects = projects.map(project => {
+        const tagsDto = project.tags?.map(tag => new TagResponseDto(
+          tag.id,
+          tag.name,
+          tag.color || '#6e6e6e',
+          tag.createdAt,
+          tag.updatedAt
+        )) || [];
+        
+        return new ProjectResponseDto(
+          project.id,
+          project.name,
+          project.description || '',
+          project.userId,
+          tagsDto,
+          project.createdAt,
+          project.updatedAt
+        );
       });
       
-      return {
-        success: true,
-        projects: plainProjects,
-        message: 'Projects retrieved successfully'
-      };
+      this._logger.info(`Retrieved ${mappedProjects.length} projects for user ${userId}`);
+      return new ProjectListResponseDto(true, 'Projects retrieved successfully', mappedProjects, projects.length);
     } catch (error) {
-      // Log dell'errore per il debug
-      console.error('Error fetching projects:', error);
-      
-      return {
-        success: false,
-        projects: [],
-        message: `Failed to fetch projects: ${error instanceof Error ? error.message : 'Unknown error'}`
-      };
+      this.handleError(`Error fetching projects for user ${userId}`, error);
+      return new ProjectListResponseDto(false, 'Failed to fetch projects', []);
     }
   }
 
-  /**
-   * Create a new project
-   * @param projectData Project data
-   */
-  public async createProject(projectData: { name: string; description?: string; userId: number; tags?: number[] }) {
+  public async createProject(createProjectDto: CreateProjectDto): Promise<SingleProjectResponseDto> {
     try {
-      const { name, description, userId, tags } = projectData;
+      const { name, description, userId, tags } = createProjectDto;
+      
+      this._logger.info(`Creating project "${name}" for user ${userId}`);
       
       // Create the project
-      const project = await Project.create({
+      const projectData = {
         name,
         description: description || '',
         userId
-      });
+      };
+      
+      const project = await Project.create(projectData as any);
       
       // Add tags if provided
       if (tags && tags.length > 0) {
-        // Usiamo il metodo add<Relation> generato da Sequelize (con TypeScript).
-        // Il metodo addTags è definito nel modello Project come associazione
+        this._logger.info(`Adding ${tags.length} tags to project ${project.id}`);
         await (project as any).addTags(tags);
       }
       
@@ -104,35 +100,49 @@ export class ProjectService {
         }]
       });
       
-      return {
-        success: true,
-        project: updatedProject?.get({ plain: true })
-      };
+      if (!updatedProject) {
+        this._logger.warn(`Unable to retrieve updated project ${project.id} after creation`);
+        return new SingleProjectResponseDto(false, 'Project created but could not be retrieved');
+      }
+      
+      // Costruiamo un ProjectResponseDto
+      const tagsDto = updatedProject.tags?.map(tag => new TagResponseDto(
+        tag.id,
+        tag.name,
+        tag.color || '#6e6e6e',
+        tag.createdAt,
+        tag.updatedAt
+      )) || [];
+      
+      const projectDto = new ProjectResponseDto(
+        updatedProject.id,
+        updatedProject.name,
+        updatedProject.description || '',
+        updatedProject.userId,
+        tagsDto,
+        updatedProject.createdAt,
+        updatedProject.updatedAt
+      );
+      
+      this._logger.info(`Project ${project.id} created successfully`);
+      return new SingleProjectResponseDto(true, 'Project created successfully', projectDto);
     } catch (error) {
-      console.error('Error creating project:', error);
-      return {
-        success: false,
-        message: 'Failed to create project'
-      };
+      this.handleError('Error creating project', error);
+      return new SingleProjectResponseDto(false, 'Failed to create project');
     }
   }
 
-  /**
-   * Update a project
-   * @param projectId Project ID
-   * @param projectData Project data
-   */
-  public async updateProject(projectId: number, projectData: { name?: string; description?: string; tags?: number[] }) {
+  public async updateProject(projectId: number, updateProjectDto: UpdateProjectDto): Promise<SingleProjectResponseDto> {
     try {
-      const { name, description, tags } = projectData;
+      const { name, description, tags } = updateProjectDto;
+      
+      this._logger.info(`Updating project ${projectId}`);
       
       // Find the project
       const project = await Project.findByPk(projectId);
       if (!project) {
-        return {
-          success: false,
-          message: 'Project not found'
-        };
+        this._logger.warn(`Project ${projectId} not found during update attempt`);
+        return new SingleProjectResponseDto(false, 'Project not found');
       }
       
       // Update fields
@@ -143,8 +153,7 @@ export class ProjectService {
       
       // Set tags for the project
       if (tags && tags.length > 0) {
-        // Usiamo il metodo set<Relation> generato da Sequelize (con TypeScript).
-        // Il metodo setTags è definito nel modello Project come associazione
+        this._logger.info(`Setting ${tags.length} tags for project ${project.id}`);
         await (project as any).setTags(tags);
       }
       
@@ -157,54 +166,59 @@ export class ProjectService {
         }]
       });
       
-      return {
-        success: true,
-        project: updatedProject?.get({ plain: true })
-      };
+      if (!updatedProject) {
+        this._logger.warn(`Unable to retrieve updated project ${project.id} after update`);
+        return new SingleProjectResponseDto(false, 'Project updated but could not be retrieved');
+      }
+      
+      // Costruiamo un ProjectResponseDto
+      const tagsDto = updatedProject.tags?.map(tag => new TagResponseDto(
+        tag.id,
+        tag.name,
+        tag.color || '#6e6e6e',
+        tag.createdAt,
+        tag.updatedAt
+      )) || [];
+      
+      const projectDto = new ProjectResponseDto(
+        updatedProject.id,
+        updatedProject.name,
+        updatedProject.description || '',
+        updatedProject.userId,
+        tagsDto,
+        updatedProject.createdAt,
+        updatedProject.updatedAt
+      );
+      
+      this._logger.info(`Project ${project.id} updated successfully`);
+      return new SingleProjectResponseDto(true, 'Project updated successfully', projectDto);
     } catch (error) {
-      console.error('Error updating project:', error);
-      return {
-        success: false,
-        message: 'Failed to update project'
-      };
+      this.handleError(`Error updating project ${projectId}`, error);
+      return new SingleProjectResponseDto(false, 'Failed to update project');
     }
   }
 
-  /**
-   * Delete a project
-   * @param projectId Project ID
-   */
-  public async deleteProject(projectId: number) {
+  public async deleteProject(projectId: number): Promise<SingleProjectResponseDto> {
     try {
       // Find the project
       const project = await Project.findByPk(projectId);
       if (!project) {
-        return {
-          success: false,
-          message: 'Project not found'
-        };
+        this._logger.warn(`Project ${projectId} not found during delete attempt`);
+        return new SingleProjectResponseDto(false, 'Project not found');
       }
       
       // Delete the project
       await project.destroy();
       
-      return {
-        success: true
-      };
+      this._logger.info(`Project ${projectId} deleted successfully`);
+      return new SingleProjectResponseDto(true, 'Project deleted successfully');
     } catch (error) {
-      console.error('Error deleting project:', error);
-      return {
-        success: false,
-        message: 'Failed to delete project'
-      };
+      this.handleError(`Error deleting project ${projectId}`, error);
+      return new SingleProjectResponseDto(false, 'Failed to delete project');
     }
   }
 
-  /**
-   * Get project details
-   * @param projectId Project ID
-   */
-  public async getProjectDetails(projectId: number) {
+  public async getProjectDetails(projectId: number): Promise<SingleProjectResponseDto> {
     try {
       const project = await Project.findByPk(projectId, {
         include: [
@@ -221,24 +235,36 @@ export class ProjectService {
       });
       
       if (!project) {
-        return {
-          success: false,
-          message: 'Project not found'
-        };
+        this._logger.warn(`Project ${projectId} not found during delete attempt`);
+        return new SingleProjectResponseDto(false, 'Project not found');
       }
       
-      return {
-        success: true,
-        project: project.get({ plain: true })
-      };
+      // Costruiamo un ProjectResponseDto
+      const tagsDto = project.tags?.map(tag => new TagResponseDto(
+        tag.id,
+        tag.name,
+        tag.color || '#6e6e6e',
+        tag.createdAt,
+        tag.updatedAt
+      )) || [];
+      
+      const projectDto = new ProjectResponseDto(
+        project.id,
+        project.name,
+        project.description || '',
+        project.userId,
+        tagsDto,
+        project.createdAt,
+        project.updatedAt
+      );
+      
+      this._logger.info(`Project ${projectId} details retrieved successfully`);
+      return new SingleProjectResponseDto(true, 'Project details retrieved successfully', projectDto);
     } catch (error) {
-      console.error('Error fetching project details:', error);
-      return {
-        success: false,
-        message: 'Failed to fetch project details'
-      };
+      this.handleError(`Error fetching project details for project ${projectId}`, error);
+      return new SingleProjectResponseDto(false, 'Failed to fetch project details');
     }
   }
 }
 
-export default ProjectService.getInstance();
+// Export is managed by TypeDI

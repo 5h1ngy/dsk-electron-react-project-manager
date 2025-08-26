@@ -1,18 +1,17 @@
-import { Service, Inject } from 'typedi';
-import type { ILogger } from '../shared/logger';
+import { Inject, Service } from 'typedi';
+import { Logger } from '../shared/logger';
 
 /**
  * Base service class that implements common functionality using dependency injection
  */
 @Service()
 export abstract class BaseService {
-    /**
-     * Constructor with logger injection
-     */
+
     constructor(
-        @Inject('logger') protected logger: ILogger
+        @Inject()
+        protected _logger: Logger
     ) {
-        this.logger.info(`Service ${this.constructor.name} instantiated via DI`);
+        this._logger.info(`Service ${this.constructor.name} instantiated via DI`);
     }
 
     /**
@@ -23,9 +22,12 @@ export abstract class BaseService {
      */
     protected handleError(message: string, error: any, rethrow: boolean = false): void {
         const errorMessage = `${message}: ${error?.message || 'Unknown error'}`;
-        this.logger.error(errorMessage);
-        console.error(errorMessage, error);
-
+        this._logger.error(errorMessage);
+        
+        if (error instanceof Error && error.stack) {
+            this._logger.debug(error.stack);
+        }
+        
         if (rethrow) {
             throw error;
         }
