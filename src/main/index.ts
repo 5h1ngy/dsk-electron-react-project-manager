@@ -1,122 +1,64 @@
-import { app, BrowserWindow, ipcMain, dialog } from 'electron';
-import { join } from 'path';
-import { initialize as initializeDatabase } from './database';
-import { registerAuthHandlers } from './handlers/auth';
-import { registerProjectHandlers } from './handlers/projects';
-import { registerTaskHandlers } from './handlers/tasks';
-import { registerNotesHandlers } from './handlers/notes';
-import { registerDatabaseHandlers } from './handlers/database';
+import 'reflect-metadata';
+import { Container } from 'typedi';
 
-// Disable GPU Acceleration for Windows 7
-if (process.platform === 'win32') {
-  app.disableHardwareAcceleration();
-}
+import { logger } from './shared/logger';
+import { DatabaseConfig } from './config/database.config';
+import { Application } from './Application';
+import { ControllerRegistry } from './controllers';
 
-// Set application name for Windows 10+ notifications
-if (process.platform === 'win32') {
-  app.setAppUserModelId(app.getName());
-}
+logger.info('Starting application...');
+Container.set('logger', logger);
+logger.info('Modules imported successfully');
 
-let mainWindow: BrowserWindow | null = null;
-
-async function createWindow() {
-  mainWindow = new BrowserWindow({
-    title: 'Project Manager',
-    width: 1200,
-    height: 800,
-    webPreferences: {
-      preload: join(__dirname, '../preload/index.js'),
-      nodeIntegration: false,
-      contextIsolation: true,
-      // Aggiungi policy di sicurezza
-      webSecurity: true,
-    }
-  });
-  
-  // Imposta Content Security Policy
-  mainWindow.webContents.session.webRequest.onHeadersReceived((details, callback) => {
-    callback({
-      responseHeaders: {
-        ...details.responseHeaders,
-        'Content-Security-Policy': ["default-src 'self'; script-src 'self' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:;"]
-      }
-    });
-  });
-
-  // Initialize SQLite database
-  await initializeDatabase();
-
-  // Register IPC handlers
-  registerAuthHandlers();
-  registerProjectHandlers();
-  registerTaskHandlers();
-  registerNotesHandlers();
-  registerDatabaseHandlers();
-
-  // Determine the correct path to index.html with electron-vite structure
-  // This approach works in both development and production modes
-  // Note: electron-vite outputs to the 'out' directory by default
-  const indexPath = join(__dirname, '../renderer/index.html'); // Default for electron-vite
-  const indexPathAlt1 = join(process.cwd(), 'out/renderer/index.html'); // Absolute path
-  const indexPathAlt2 = join(__dirname, '../../out/renderer/index.html'); // Fallback
-
-  console.log('Trying primary path:', indexPath);
-  console.log('Alternative path 1:', indexPathAlt1);
-  console.log('Alternative path 2:', indexPathAlt2);
-
+if (process.env.NODE_ENV === 'development') {
   try {
-    // First try the relative path from __dirname
-    await mainWindow.loadFile(indexPath);
+    require('electron-reload')(__dirname, {
+      hardResetMethod: 'exit',
+      ignored: /node_modules|[\/\\]\.|.git|out|dist/
+    });
+    console.log(' Electron auto-reload attivato in modalità development');
   } catch (error) {
-    console.error('Failed to load from primary path, trying alternative path 1:', error);
-    try {
-      // If that fails, try the absolute path from current working directory
-      await mainWindow.loadFile(indexPathAlt1);
-    } catch (secondError) {
-      console.error('Failed to load from alternative path 1, trying alternative path 2:', secondError);
-      try {
-        // Last attempt with a different relative path
-        await mainWindow.loadFile(indexPathAlt2);
-      } catch (thirdError) {
-        console.error('Failed to load from all paths:', thirdError);
-        // As a last resort, display an error
-        mainWindow.webContents.loadURL(`data:text/html;charset=utf-8,
-          <html>
-            <head><title>Error Loading App</title></head>
-            <body>
-              <h1>Error Loading Application</h1>
-              <p>Could not locate index.html</p>
-              <p>Primary path: ${indexPath}</p>
-              <p>Alternative path 1: ${indexPathAlt1}</p>
-              <p>Alternative path 2: ${indexPathAlt2}</p>
-              <p>Current directory: ${process.cwd()}</p>
-              <p>__dirname: ${__dirname}</p>
-            </body>
-          </html>
-        `);
-      }
-    }
+    console.error(' Errore nell\'attivazione dell\'auto-reload:', error);
   }
-
-  // Always open DevTools for debugging
-  mainWindow.webContents.openDevTools();
 }
 
-app.whenReady().then(() => {
-  createWindow();
+Container.set('logger', logger);
+logger.info('Logger registered in TypeDI container');
 
-  app.on('activate', function () {
-    // On macOS it's common to re-create a window in the app when the
-    // dock icon is clicked and there are no other windows open.
-    if (BrowserWindow.getAllWindows().length === 0) createWindow();
-  });
-});
+Container.set('databaseConfig', new DatabaseConfig());
+logger.info('DatabaseConfig registered in TypeDI container');
 
-// Quit when all windows are closed, except on macOS
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit();
+let application;
+try {
+
+  const controllerRegistry = ControllerRegistry.getInstance();
+  logger.info('ControllerRegistry instance retrieved');
+
+
+  application = new Application(controllerRegistry);
+  logger.info('Application instance created manually');
+} catch (error) {
+  logger.error(`Error creating Application instance: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  process.exit(1);
+}
+
+Promise.resolve().then(async function () {
+  try {
+    await application.init();
+    logger.info('Application fully initialized');
+  } catch (error) {
+    logger.error(`Error initializing application: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 });
 
-// Auto-updates handling would go here (could implement later)
+process.on('uncaughtException', (error) => {
+  logger.error(`Uncaught exception: ${error?.message || 'Unknown error'}`);
+  console.error('Uncaught exception:', error);
+});
+
+process.on('unhandledRejection', (reason) => {
+  logger.error(`Unhandled rejection: ${reason || 'Unknown reason'}`);
+  console.error('Unhandled rejection:', reason);
+});
+
+logger.info('Application started successfully');
