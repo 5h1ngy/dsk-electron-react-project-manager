@@ -1,7 +1,6 @@
-import { Project } from '../database/models/Project';
-import { Tag } from '../database/models/Tag';
-import { Task } from '../database/models/Task';
-import { Op, Sequelize } from 'sequelize';
+import { Project } from '../models/Project';
+import { Tag } from '../models/Tag';
+import { Task } from '../models/Task';
 
 /**
  * Service responsible for project operations
@@ -38,30 +37,38 @@ export class ProjectService {
         };
       }
       
+      // Query per ottenere i progetti
       const projects = await Project.findAll({
         where: { userId },
         include: [
           {
             model: Tag,
             as: 'tags',
-            through: { attributes: [] }
+            // Non specifichiamo 'through' per evitare problemi con le associazioni
           }
         ],
         order: [['updatedAt', 'DESC']]
       });
       
-      // Convert projects to plain JavaScript objects
-      const plainProjects = projects.map(project => project.get({ plain: true }));
+      // Converti i progetti in oggetti JavaScript normali
+      const plainProjects = projects.map(project => {
+        const plainProject = project.get({ plain: true });
+        return plainProject;
+      });
       
       return {
         success: true,
-        projects: plainProjects
+        projects: plainProjects,
+        message: 'Projects retrieved successfully'
       };
     } catch (error) {
+      // Log dell'errore per il debug
       console.error('Error fetching projects:', error);
+      
       return {
         success: false,
-        message: 'Failed to fetch projects'
+        projects: [],
+        message: `Failed to fetch projects: ${error instanceof Error ? error.message : 'Unknown error'}`
       };
     }
   }
@@ -83,7 +90,9 @@ export class ProjectService {
       
       // Add tags if provided
       if (tags && tags.length > 0) {
-        await project.$add('tags', tags);
+        // Usiamo il metodo add<Relation> generato da Sequelize (con TypeScript).
+        // Il metodo addTags è definito nel modello Project come associazione
+        await (project as any).addTags(tags);
       }
       
       // Get the updated project with tags
@@ -132,9 +141,11 @@ export class ProjectService {
       
       await project.save();
       
-      // Update tags if provided
-      if (tags !== undefined) {
-        await project.$set('tags', tags);
+      // Set tags for the project
+      if (tags && tags.length > 0) {
+        // Usiamo il metodo set<Relation> generato da Sequelize (con TypeScript).
+        // Il metodo setTags è definito nel modello Project come associazione
+        await (project as any).setTags(tags);
       }
       
       // Get the updated project with tags

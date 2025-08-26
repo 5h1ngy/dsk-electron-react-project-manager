@@ -1,5 +1,5 @@
-import { Task } from '../database/models/Task';
-import { Project } from '../database/models/Project';
+import { Task } from '../models/Task';
+import { Project } from '../models/Project';
 import { Op } from 'sequelize';
 
 /**

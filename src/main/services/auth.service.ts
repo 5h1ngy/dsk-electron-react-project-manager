@@ -1,32 +1,26 @@
-import { User } from '../database/models/User';
+import { User } from '../models/User';
 import { Op } from 'sequelize';
-import { UserRegistrationDto, UserLoginDto, UserResponseDto } from '../dtos/auth.dto';
+import { Service } from 'typedi';
+import { logger } from '../shared/logger';
+import { 
+  UserRegistrationDto, 
+  UserLoginDto, 
+  UserResponseDto, 
+  RegisterResponseDto,
+  LoginResponseDto 
+} from '../dtos/auth.dto';
 
 /**
  * Service responsible for authentication operations
  */
+@Service()
 export class AuthService {
-  private static instance: AuthService;
-
-  private constructor() {
-    // Private constructor for singleton pattern
-  }
-
-  /**
-   * Get singleton instance
-   */
-  public static getInstance(): AuthService {
-    if (!AuthService.instance) {
-      AuthService.instance = new AuthService();
-    }
-    return AuthService.instance;
-  }
 
   /**
    * Register a new user
    * @param userData User registration data
    */
-  public async register(userData: UserRegistrationDto): Promise<{ success: boolean; message?: string; user?: UserResponseDto }> {
+  public async register(userData: UserRegistrationDto): Promise<RegisterResponseDto> {
     try {
       const { username, email, password } = userData;
       
@@ -51,20 +45,13 @@ export class AuthService {
         password // Password will be hashed by the model hook
       });
       
-      return {
-        success: true,
-        user: {
-          id: user.id,
-          username: user.username,
-          email: user.email,
-        }
-      };
+      logger.info(`User ${username} registered successfully`);
+      const userResponse = new UserResponseDto(user.id, user.username, user.email);
+      return new LoginResponseDto(true, undefined, userResponse);
     } catch (error) {
       console.error('Registration error:', error);
-      return {
-        success: false,
-        message: 'Registration failed'
-      };
+      logger.error(`Registration error: ${error instanceof Error ? error.message : String(error)}`);
+      return new RegisterResponseDto(false, 'Registration failed');
     }
   }
 
@@ -72,7 +59,7 @@ export class AuthService {
    * Login user
    * @param loginData User login data
    */
-  public async login(loginData: UserLoginDto): Promise<{ success: boolean; message?: string; user?: UserResponseDto }> {
+  public async login(loginData: UserLoginDto): Promise<LoginResponseDto> {
     try {
       const { username, password } = loginData;
       
@@ -98,22 +85,17 @@ export class AuthService {
         };
       }
       
-      return {
-        success: true,
-        user: {
-          id: user.id,
-          username: user.username,
-          email: user.email,
-        }
-      };
+      logger.info(`User ${username} registered successfully`);
+      const userResponse = new UserResponseDto(user.id, user.username, user.email);
+      return new LoginResponseDto(true, undefined, userResponse);
     } catch (error) {
       console.error('Login error:', error);
-      return {
-        success: false,
-        message: 'Login failed'
-      };
+      logger.error(`Login error: ${error instanceof Error ? error.message : String(error)}`);
+      return new LoginResponseDto(false, 'Login failed');
     }
   }
 }
 
-export default AuthService.getInstance();
+// Creiamo un'istanza singleton del servizio
+const authServiceInstance = new AuthService();
+export default authServiceInstance;

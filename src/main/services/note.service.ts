@@ -1,6 +1,6 @@
-import { Note } from '../database/models/Note';
-import { Project } from '../database/models/Project';
-import { Task } from '../database/models/Task';
+import { Note } from '../models/Note';
+import { Project } from '../models/Project';
+import { Task } from '../models/Task';
 
 /**
  * Service responsible for note operations

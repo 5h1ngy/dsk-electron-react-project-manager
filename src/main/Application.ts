@@ -1,32 +1,56 @@
 import { app, BrowserWindow } from 'electron';
 import { join } from 'path';
-import controllerRegistry from './controllers';
-import databaseService from './services/database.service';
+import { Service } from 'typedi';
+
+// Importiamo il logger singleton direttamente
+import { logger } from './shared/logger';
+
+// Importazione dei servizi tramite TypeDI
+import { ControllerRegistry } from './controllers';
+import { DatabaseService } from './services/database.service';
 
 /**
  * Classe principale dell'applicazione
  * Responsabile per l'inizializzazione e la gestione del ciclo di vita dell'app
  */
+@Service()
 export class Application {
-  private static instance: Application;
   private mainWindow: BrowserWindow | null = null;
 
-  private constructor() {
-    // Configurazione di base per Windows
-    this.configureForWindows();
-    
-    // Registra gli eventi di app
-    this.registerAppEvents();
-  }
+  private databaseService: DatabaseService;
 
+  constructor(
+    // Utilizziamo l'iniezione delle dipendenze solo per il registro dei controller
+    private controllerRegistry: ControllerRegistry
+  ) {
+    // Usiamo direttamente il logger singleton
+    logger.info('Application class instantiated - direct logger usage');
+    
+    // Otteniamo l'istanza singleton del DatabaseService
+    this.databaseService = DatabaseService.getInstance();
+  }
+  
   /**
-   * Get singleton instance
+   * Inizializza l'applicazione
    */
-  public static getInstance(): Application {
-    if (!Application.instance) {
-      Application.instance = new Application();
+  public async init(): Promise<void> {
+    try {
+      // Configurazione di base per Windows
+      this.configureForWindows();
+      
+      // Registra gli eventi di app
+      this.registerAppEvents();
+      
+      // Inizializza il database
+      await this.databaseService.initialize();
+      
+      // Inizializza i controller
+      this.controllerRegistry.registerAllHandlers();
+      
+      logger.info('Application initialized successfully');
+    } catch (error) {
+      logger.error(`Error initializing application: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
-    return Application.instance;
   }
 
   /**
@@ -50,6 +74,10 @@ export class Application {
     app.whenReady().then(() => {
       this.createWindow();
 
+      app.on('will-quit', async () => {
+        logger.info('App will quit');
+      });
+
       app.on('activate', () => {
         // Su macOS è comune ricreare una finestra quando
         // l'icona nel dock viene cliccata e non ci sono altre finestre aperte
@@ -61,6 +89,7 @@ export class Application {
 
     // Evento window-all-closed
     app.on('window-all-closed', () => {
+      logger.info('All windows closed, quitting app');
       if (process.platform !== 'darwin') {
         app.quit();
       }
@@ -71,6 +100,7 @@ export class Application {
    * Crea la finestra principale
    */
   private async createWindow(): Promise<void> {
+    logger.info('Creating main window...');
     this.mainWindow = new BrowserWindow({
       title: 'Project Manager',
       width: 1200,
@@ -82,15 +112,26 @@ export class Application {
         webSecurity: true,
       }
     });
+    
+    logger.info('Main window created successfully');
 
     // Imposta Content Security Policy
     this.configureContentSecurityPolicy();
 
-    // Inizializza database
-    await databaseService.initialize();
+    try {
+      // Inizializza database
+      logger.info('Initializing database...');
+      await this.databaseService.initialize();
+      logger.info('Database initialized successfully');
 
-    // Registra tutti gli handler IPC
-    controllerRegistry.registerAllHandlers();
+      // Registra tutti gli handler IPC
+      logger.info('Registering IPC handlers...');
+      this.controllerRegistry.registerAllHandlers();
+      logger.info('IPC handlers registered successfully');
+    } catch (error: any) {
+      logger.error(`Failed to initialize application: ${error?.message || 'Unknown error'}`);
+      console.error('Failed to initialize application:', error);
+    }
 
     // Carica l'interfaccia utente
     await this.loadUserInterface();
@@ -121,7 +162,11 @@ export class Application {
    * Carica l'interfaccia utente
    */
   private async loadUserInterface(): Promise<void> {
-    if (!this.mainWindow) return;
+    logger.info('Loading user interface...');
+    if (!this.mainWindow) {
+      logger.error('Cannot load user interface: main window is not created');
+      return;
+    }
 
     // Determine the correct path to index.html with electron-vite structure
     const indexPath = join(__dirname, '../renderer/index.html'); // Default for electron-vite
@@ -168,4 +213,4 @@ export class Application {
   }
 }
 
-export default Application.getInstance();
+// Non esportiamo più un'istanza singleton, verrà gestita da TypeDI

@@ -4,10 +4,18 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   main: {
-    plugins: [externalizeDepsPlugin()]
+    plugins: [externalizeDepsPlugin()],
+    build: {
+      // Migliorato per il live reload
+      watch: {}
+    }
   },
   preload: {
-    plugins: [externalizeDepsPlugin()]
+    plugins: [externalizeDepsPlugin()],
+    build: {
+      // Migliorato per il live reload
+      watch: {}
+    }
   },
   renderer: {
     resolve: {
@@ -16,6 +24,12 @@ export default defineConfig({
       }
     },
     plugins: [react()],
+    server: {
+      // Migliorato per il live reload
+      hmr: {
+        overlay: true
+      }
+    },
     build: {
       assetsDir: '.',
       rollupOptions: {

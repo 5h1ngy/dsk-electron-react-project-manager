@@ -1,20 +1,25 @@
 import fs from 'fs';
-import { Sequelize } from 'sequelize';
-import databaseConfig from '../config/database.config';
+import path from 'path';
+import { Sequelize } from 'sequelize-typescript';
+import { Service } from 'typedi';
+import { DatabaseConfig } from '../config/database.config';
 import { encrypt, decrypt } from '../utils/encryption';
-import { initializeModels } from '../database/models';
+import { logger } from '../shared/logger';
 
 /**
  * Service responsible for database operations
  */
+@Service()
 export class DatabaseService {
   private static instance: DatabaseService;
   private _sequelize: Sequelize | null = null;
+  private databaseConfig: DatabaseConfig;
 
   private constructor() {
-    // Private constructor for singleton pattern
+    this.databaseConfig = new DatabaseConfig();
+    logger.info('DatabaseService instantiated');
   }
-
+  
   /**
    * Get singleton instance
    */
@@ -30,31 +35,38 @@ export class DatabaseService {
    */
   public async initialize(): Promise<boolean> {
     try {
-      // Initialize database config
-      await databaseConfig.initialize();
-      
-      // Create directory if it doesn't exist
-      const userDataPath = databaseConfig.dbPath.split('/').slice(0, -1).join('/');
-      if (!fs.existsSync(userDataPath)) {
-        fs.mkdirSync(userDataPath, { recursive: true });
+      if (this._sequelize) {
+        return true; // Already initialized
       }
 
-      // Create and store sequelize instance
-      this._sequelize = databaseConfig.createSequelizeInstance();
+      // Get database path and ensure directory exists
+      const dbPath = this.databaseConfig.getDatabasePath();
+      const dbDir = path.dirname(dbPath);
+
+      if (!fs.existsSync(dbDir)) {
+        fs.mkdirSync(dbDir, { recursive: true });
+      }
+
+      // Create Sequelize instance with the database configuration
+      this._sequelize = await this.databaseConfig.createSequelizeInstance();
+      
+      if (!this._sequelize) {
+        throw new Error('Sequelize instance is null');
+      }
       
       // Authenticate connection
       await this._sequelize.authenticate();
-      console.log('Database connection has been established successfully.');
+      logger.info('Database initialized successfully');
       
-      // Initialize all models
-      initializeModels(this._sequelize);
+      // L'inizializzazione dei modelli viene gestita in database/index.ts
+      // quando viene chiamato databaseConfig.initialize()
       
       // Sync all models with database
       await this._sequelize.sync();
       
       return true;
-    } catch (error) {
-      console.error('Unable to connect to the database:', error);
+    } catch (error: any) {
+      logger.error(`Database initialization error: ${error instanceof Error ? error.message : 'Unknown error'}`);
       return false;
     }
   }
@@ -70,7 +82,7 @@ export class DatabaseService {
    * Export database as encrypted base64 string
    */
   public async exportDatabase(): Promise<string> {
-    const dbPath = databaseConfig.dbPath;
+    const dbPath = this.databaseConfig.getDatabasePath();
     
     if (!fs.existsSync(dbPath)) {
       throw new Error('Database file does not exist');
@@ -85,7 +97,7 @@ export class DatabaseService {
    */
   public async importDatabase(encryptedData: string): Promise<boolean> {
     try {
-      const dbPath = databaseConfig.dbPath;
+      const dbPath = this.databaseConfig.getDatabasePath();
       const decodedData = decrypt(encryptedData);
       const buffer = Buffer.from(decodedData, 'base64');
       
@@ -103,10 +115,10 @@ export class DatabaseService {
       
       return true;
     } catch (error) {
-      console.error('Error importing database:', error);
+      logger.error(`Error importing database: ${error instanceof Error ? error.message : 'Unknown error'}`);
       return false;
     }
   }
 }
 
-export default DatabaseService.getInstance();
+// Implementazione singleton per evitare problemi di dipendenze circolari

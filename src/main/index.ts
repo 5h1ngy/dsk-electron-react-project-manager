@@ -1,18 +1,19 @@
-/**
- * Entry point dell'applicazione Electron
- */
+import 'reflect-metadata';
+import { Container } from 'typedi';
 
-// Implementazione dell'auto-reload in modalità development
-// process.env.NODE_ENV è impostato a 'development' quando esegui 'electron-vite dev'
+import { logger } from './shared/logger';
+import { DatabaseConfig } from './config/database.config';
+import { Application } from './Application';
+import { ControllerRegistry } from './controllers';
+
+logger.info('Starting application...');
+Container.set('logger', logger);
+logger.info('Modules imported successfully');
+
 if (process.env.NODE_ENV === 'development') {
   try {
-    // Utilizzo di electron-reload per ricaricare l'app quando i file cambiano
-    // Non specifichiamo il percorso dell'eseguibile electron per evitare errori
     require('electron-reload')(__dirname, {
-      // Forza un riavvio completo dell'app
       hardResetMethod: 'exit',
-      // Cartelle da monitorare (potrebbero essere modificate in base alle tue esigenze)
-      // Escludiamo node_modules e altri file temporanei
       ignored: /node_modules|[\/\\]\.|.git|out|dist/
     });
     console.log(' Electron auto-reload attivato in modalità development');
@@ -21,7 +22,43 @@ if (process.env.NODE_ENV === 'development') {
   }
 }
 
-// Avvia l'applicazione utilizzando la classe Application
-import './Application';
+Container.set('logger', logger);
+logger.info('Logger registered in TypeDI container');
 
-// Nessun altro codice è necessario qui perché tutto è gestito dalla classe Application
+Container.set('databaseConfig', new DatabaseConfig());
+logger.info('DatabaseConfig registered in TypeDI container');
+
+let application;
+try {
+
+  const controllerRegistry = ControllerRegistry.getInstance();
+  logger.info('ControllerRegistry instance retrieved');
+
+
+  application = new Application(controllerRegistry);
+  logger.info('Application instance created manually');
+} catch (error) {
+  logger.error(`Error creating Application instance: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  process.exit(1);
+}
+
+Promise.resolve().then(async function () {
+  try {
+    await application.init();
+    logger.info('Application fully initialized');
+  } catch (error) {
+    logger.error(`Error initializing application: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+});
+
+process.on('uncaughtException', (error) => {
+  logger.error(`Uncaught exception: ${error?.message || 'Unknown error'}`);
+  console.error('Uncaught exception:', error);
+});
+
+process.on('unhandledRejection', (reason) => {
+  logger.error(`Unhandled rejection: ${reason || 'Unknown reason'}`);
+  console.error('Unhandled rejection:', reason);
+});
+
+logger.info('Application started successfully');

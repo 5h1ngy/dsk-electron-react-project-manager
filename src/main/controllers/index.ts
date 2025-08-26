@@ -1,28 +1,53 @@
-import { Controller } from '../types';
-import authController from './auth.controller';
-import databaseController from './database.controller';
-import projectController from './project.controller';
-import taskController from './task.controller';
-import noteController from './note.controller';
-import databaseCleanupController from './database-cleanup.controller';
+import { Service } from 'typedi';
+import { BaseController } from './base.controller';
+
+// Importiamo il logger singleton e altri servizi necessari
+import { logger } from '../shared/logger';
+import { DatabaseService } from '../services/database.service';
+
+// Importa tutti i controller
+import { AuthController } from './auth.controller';
+import { DatabaseController } from './database.controller';
+import { ProjectController } from './project.controller';
+import { TaskController } from './task.controller';
+import { NoteController } from './note.controller';
 
 /**
  * Registry for all controllers
  */
+@Service()
 export class ControllerRegistry {
   private static instance: ControllerRegistry;
-  private controllers: Controller[] = [];
+  private controllers: BaseController[] = [];
+  
+  // Controller instances
+  private authController: AuthController;
+  private databaseController: DatabaseController;
+  private projectController: ProjectController;
+  private taskController: TaskController;
+  private noteController: NoteController;
 
   private constructor() {
-    // Initialize controllers
+    logger.info('Initializing Controller Registry manually');
+    
+    // Creiamo manualmente le istanze dei controller
+    this.authController = new AuthController();
+    // Per DatabaseController serve l'istanza di DatabaseService
+    const databaseService = DatabaseService.getInstance();
+    this.databaseController = new DatabaseController(databaseService);
+    this.projectController = new ProjectController();
+    this.taskController = new TaskController();
+    this.noteController = new NoteController();
+    
+    // Initialize controllers array
     this.controllers = [
-      authController,
-      databaseController,
-      projectController,
-      taskController,
-      noteController,
-      databaseCleanupController
+      this.authController,
+      this.databaseController,
+      this.projectController,
+      this.taskController,
+      this.noteController
     ];
+    logger.info(`Initialized ${this.controllers.length} controllers`);
   }
 
   /**
@@ -36,15 +61,15 @@ export class ControllerRegistry {
   }
 
   /**
-   * Register all handlers for all controllers
+   * Register all IPC handlers
    */
   public registerAllHandlers(): void {
-    console.log('Registering all IPC handlers...');
+    logger.info('Registering all IPC handlers');
     for (const controller of this.controllers) {
       controller.registerHandlers();
     }
-    console.log('All IPC handlers registered successfully');
+    logger.info(`Registered handlers for ${this.controllers.length} controllers`);
   }
 }
 
-export default ControllerRegistry.getInstance();
+// Non esportiamo un'istanza singleton, verrà gestita da TypeDI
