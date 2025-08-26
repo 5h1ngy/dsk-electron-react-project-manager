@@ -1,11 +1,32 @@
-import { ipcMain } from 'electron';
 import { User } from '../database/models/User';
-import bcrypt from 'bcryptjs';
 import { Op } from 'sequelize';
+import { UserRegistrationDto, UserLoginDto, UserResponseDto } from '../dtos/auth.dto';
 
-export const registerAuthHandlers = () => {
-  // Handle user registration
-  ipcMain.handle('auth:register', async (_, userData: { username: string; email: string; password: string }) => {
+/**
+ * Service responsible for authentication operations
+ */
+export class AuthService {
+  private static instance: AuthService;
+
+  private constructor() {
+    // Private constructor for singleton pattern
+  }
+
+  /**
+   * Get singleton instance
+   */
+  public static getInstance(): AuthService {
+    if (!AuthService.instance) {
+      AuthService.instance = new AuthService();
+    }
+    return AuthService.instance;
+  }
+
+  /**
+   * Register a new user
+   * @param userData User registration data
+   */
+  public async register(userData: UserRegistrationDto): Promise<{ success: boolean; message?: string; user?: UserResponseDto }> {
     try {
       const { username, email, password } = userData;
       
@@ -45,10 +66,13 @@ export const registerAuthHandlers = () => {
         message: 'Registration failed'
       };
     }
-  });
-  
-  // Handle user login
-  ipcMain.handle('auth:login', async (_, loginData: { username: string; password: string }) => {
+  }
+
+  /**
+   * Login user
+   * @param loginData User login data
+   */
+  public async login(loginData: UserLoginDto): Promise<{ success: boolean; message?: string; user?: UserResponseDto }> {
     try {
       const { username, password } = loginData;
       
@@ -89,5 +113,7 @@ export const registerAuthHandlers = () => {
         message: 'Login failed'
       };
     }
-  });
-};
+  }
+}
+
+export default AuthService.getInstance();
