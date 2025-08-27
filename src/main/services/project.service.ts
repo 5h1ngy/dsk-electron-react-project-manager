@@ -3,7 +3,7 @@ import Container, { Service } from 'typedi';
 import { Project } from '../models/Project';
 import { Tag } from '../models/Tag';
 import { Task } from '../models/Task';
-import { Logger } from '../shared/logger';
+import * as _logger from '../shared/logger';
 import { CreateProjectDto, ProjectListResponseDto, ProjectResponseDto, SingleProjectResponseDto, UpdateProjectDto } from '../dtos/project.dto';
 import { TagResponseDto } from '../dtos/tag.dto';
 import { BaseService } from './base.service';
@@ -11,18 +11,13 @@ import { BaseService } from './base.service';
 @Service()
 export class ProjectService extends BaseService {
 
-  constructor() {
-    super(Container.get(Logger));
-    this._logger.info('ProjectService initialized');
-  }
-
   public async getAllProjects(userId: number): Promise<ProjectListResponseDto> {
     try {
-      this._logger.info(`Fetching all projects for user ${userId}`);
+      _logger.info(`Fetching all projects for user ${userId}`);
 
       // Check if userId is defined and valid
       if (!userId || isNaN(userId)) {
-        this._logger.warn(`Invalid user ID provided: ${userId}`);
+        _logger.warn(`Invalid user ID provided: ${userId}`);
         return new ProjectListResponseDto(false, 'Invalid user ID', []);
       }
 
@@ -59,7 +54,7 @@ export class ProjectService extends BaseService {
         );
       });
 
-      this._logger.info(`Retrieved ${mappedProjects.length} projects for user ${userId}`);
+      _logger.info(`Retrieved ${mappedProjects.length} projects for user ${userId}`);
       return new ProjectListResponseDto(true, 'Projects retrieved successfully', mappedProjects, projects.length);
     } catch (error) {
       this.handleError(`Error fetching projects for user ${userId}`, error);
@@ -71,7 +66,7 @@ export class ProjectService extends BaseService {
     try {
       const { name, description, userId, tags } = createProjectDto;
 
-      this._logger.info(`Creating project "${name}" for user ${userId}`);
+      _logger.info(`Creating project "${name}" for user ${userId}`);
 
       // Create the project
       const projectData = {
@@ -84,7 +79,7 @@ export class ProjectService extends BaseService {
 
       // Add tags if provided
       if (tags && tags.length > 0) {
-        this._logger.info(`Adding ${tags.length} tags to project ${project.id}`);
+        _logger.info(`Adding ${tags.length} tags to project ${project.id}`);
         await (project as any).addTags(tags);
       }
 
@@ -98,7 +93,7 @@ export class ProjectService extends BaseService {
       });
 
       if (!updatedProject) {
-        this._logger.warn(`Unable to retrieve updated project ${project.id} after creation`);
+        _logger.warn(`Unable to retrieve updated project ${project.id} after creation`);
         return new SingleProjectResponseDto(false, 'Project created but could not be retrieved');
       }
 
@@ -121,7 +116,7 @@ export class ProjectService extends BaseService {
         updatedProject.updatedAt
       );
 
-      this._logger.info(`Project ${project.id} created successfully`);
+      _logger.info(`Project ${project.id} created successfully`);
       return new SingleProjectResponseDto(true, 'Project created successfully', projectDto);
     } catch (error) {
       this.handleError('Error creating project', error);
@@ -133,12 +128,12 @@ export class ProjectService extends BaseService {
     try {
       const { name, description, tags } = updateProjectDto;
 
-      this._logger.info(`Updating project ${projectId}`);
+      _logger.info(`Updating project ${projectId}`);
 
       // Find the project
       const project = await Project.findByPk(projectId);
       if (!project) {
-        this._logger.warn(`Project ${projectId} not found during update attempt`);
+        _logger.warn(`Project ${projectId} not found during update attempt`);
         return new SingleProjectResponseDto(false, 'Project not found');
       }
 
@@ -150,7 +145,7 @@ export class ProjectService extends BaseService {
 
       // Set tags for the project
       if (tags && tags.length > 0) {
-        this._logger.info(`Setting ${tags.length} tags for project ${project.id}`);
+        _logger.info(`Setting ${tags.length} tags for project ${project.id}`);
         await (project as any).setTags(tags);
       }
 
@@ -164,7 +159,7 @@ export class ProjectService extends BaseService {
       });
 
       if (!updatedProject) {
-        this._logger.warn(`Unable to retrieve updated project ${project.id} after update`);
+        _logger.warn(`Unable to retrieve updated project ${project.id} after update`);
         return new SingleProjectResponseDto(false, 'Project updated but could not be retrieved');
       }
 
@@ -187,7 +182,7 @@ export class ProjectService extends BaseService {
         updatedProject.updatedAt
       );
 
-      this._logger.info(`Project ${project.id} updated successfully`);
+      _logger.info(`Project ${project.id} updated successfully`);
       return new SingleProjectResponseDto(true, 'Project updated successfully', projectDto);
     } catch (error) {
       this.handleError(`Error updating project ${projectId}`, error);
@@ -200,14 +195,14 @@ export class ProjectService extends BaseService {
       // Find the project
       const project = await Project.findByPk(projectId);
       if (!project) {
-        this._logger.warn(`Project ${projectId} not found during delete attempt`);
+        _logger.warn(`Project ${projectId} not found during delete attempt`);
         return new SingleProjectResponseDto(false, 'Project not found');
       }
 
       // Delete the project
       await project.destroy();
 
-      this._logger.info(`Project ${projectId} deleted successfully`);
+      _logger.info(`Project ${projectId} deleted successfully`);
       return new SingleProjectResponseDto(true, 'Project deleted successfully');
     } catch (error) {
       this.handleError(`Error deleting project ${projectId}`, error);
@@ -232,7 +227,7 @@ export class ProjectService extends BaseService {
       });
 
       if (!project) {
-        this._logger.warn(`Project ${projectId} not found during delete attempt`);
+        _logger.warn(`Project ${projectId} not found during delete attempt`);
         return new SingleProjectResponseDto(false, 'Project not found');
       }
 
@@ -255,7 +250,7 @@ export class ProjectService extends BaseService {
         project.updatedAt
       );
 
-      this._logger.info(`Project ${projectId} details retrieved successfully`);
+      _logger.info(`Project ${projectId} details retrieved successfully`);
       return new SingleProjectResponseDto(true, 'Project details retrieved successfully', projectDto);
     } catch (error) {
       this.handleError(`Error fetching project details for project ${projectId}`, error);

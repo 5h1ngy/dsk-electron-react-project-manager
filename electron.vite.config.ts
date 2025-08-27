@@ -6,6 +6,8 @@ export default defineConfig({
   main: {
     plugins: [externalizeDepsPlugin(), swcPlugin()],
     build: {
+      sourcemap: true,
+      minify: false, // Disabilita la minificazione
       // Migliorato per il live reload
       watch: {}
     }
@@ -13,6 +15,8 @@ export default defineConfig({
   preload: {
     plugins: [externalizeDepsPlugin(), swcPlugin()],
     build: {
+      sourcemap: true, // Abilita i sourcemap
+      minify: false, // Disabilita la minificazione
       // Migliorato per il live reload
       watch: {}
     }

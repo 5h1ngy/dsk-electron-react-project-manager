@@ -2,7 +2,7 @@ import path from 'path';
 import { app } from 'electron';
 import { Sequelize, SequelizeOptions } from 'sequelize-typescript';
 import { Inject, Service } from 'typedi';
-import { Logger } from '../shared/logger';
+import * as _logger from '../shared/logger';
 import { initializeModels } from '../models';
 
 @Service()
@@ -11,10 +11,8 @@ export class DatabaseConfig {
     private _dbPath: string = '';
     private _initialized: boolean = false;
 
-    constructor(
-        @Inject() private _logger: Logger
-    ) {
-        this._logger.info('DatabaseConfig instantiated via DI');
+    constructor() {
+        _logger.info('DatabaseConfig instantiated via DI');
 
         this.initialize()
     }
@@ -22,7 +20,7 @@ export class DatabaseConfig {
     public getDatabasePath(): string {
         const userDataPath = app.getPath('userData');
         const dbPath = path.join(userDataPath, 'database.sqlite');
-        this._logger.info(`Using local database path: ${dbPath}`);
+        _logger.info(`Using local database path: ${dbPath}`);
         return dbPath;
     }
 
@@ -32,7 +30,7 @@ export class DatabaseConfig {
         }
 
         this._dbPath = this.getDatabasePath();
-        this._logger.info('Database initialized successfully');
+        _logger.info('Database initialized successfully');
         this._initialized = true;
     }
 
@@ -61,7 +59,7 @@ export class DatabaseConfig {
         const options: SequelizeOptions = {
             dialect: 'sqlite',
             storage: dbPath,
-            logging: (msg) => this._logger.info(msg),
+            logging: (msg) => _logger.info(msg),
             define: {
                 timestamps: true, // Abilita createdAt e updatedAt di default
                 underscored: false // Non usare snake_case per i nomi delle colonne
@@ -71,7 +69,7 @@ export class DatabaseConfig {
             validateOnly: false          // Esegue le validazioni durante le operazioni
         };
 
-        this._logger.info(`Creating Sequelize instance for ${this._dbPath}`);
+        _logger.info(`Creating Sequelize instance for ${this._dbPath}`);
         this._sequelize = new Sequelize(options);
 
         initializeModels(this._sequelize);
@@ -88,7 +86,7 @@ export class DatabaseConfig {
             const options: SequelizeOptions = {
                 dialect: 'sqlite',
                 storage: this._dbPath,
-                logging: (msg) => this._logger.info(msg),
+                logging: (msg) => _logger.info(msg),
                 define: {
                     timestamps: true, // Abilita createdAt e updatedAt di default
                     underscored: false // Non usare snake_case per i nomi delle colonne
@@ -103,18 +101,18 @@ export class DatabaseConfig {
 
             // Authenticate connection
             await this._sequelize.authenticate();
-            this._logger.info('Database connection has been established successfully.');
+            _logger.info('Database connection has been established successfully.');
 
             // Inizializzazione dei modelli tramite sequelize-typescript
             initializeModels(this._sequelize);
 
             // Sync all models with database
             await this._sequelize.sync();
-            this._logger.info('Database synchronized successfully!');
+            _logger.info('Database synchronized successfully!');
 
             this._initialized = true;
         } catch (error: any) {
-            this._logger.error(`Error creating Sequelize instance: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            _logger.error(`Error creating Sequelize instance: ${error instanceof Error ? error.message : 'Unknown error'}`);
             throw error;
         }
     }
@@ -122,7 +120,7 @@ export class DatabaseConfig {
     public async disconnect(): Promise<void> {
         if (this._sequelize) {
             await this._sequelize.close();
-            this._logger.info(`Database connection closed successfully to ${this._dbPath}`);
+            _logger.info(`Database connection closed successfully to ${this._dbPath}`);
             this._sequelize = null;
             this._initialized = false;
         }

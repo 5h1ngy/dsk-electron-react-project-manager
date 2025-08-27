@@ -1,11 +1,11 @@
 import fs from 'fs';
 import path from 'path';
 import { Sequelize } from 'sequelize-typescript';
-import Container, { Inject, Service } from 'typedi';
+import { Inject, Service } from 'typedi';
 
 import { DatabaseConfig } from '../config/database.config';
 import { encrypt, decrypt } from '../utils/encryption';
-import { Logger } from '../shared/logger';
+import * as _logger from '../shared/logger';
 import { BaseService } from './base.service';
 
 @Service()
@@ -15,7 +15,7 @@ export class DatabaseService extends BaseService {
   constructor(
     @Inject() private _config: DatabaseConfig,
   ) {
-    super(Container.get(Logger));
+    super();
 
     this.initialize()
   }
@@ -43,7 +43,7 @@ export class DatabaseService extends BaseService {
 
       // Authenticate connection
       await this._sequelize.authenticate();
-      this._logger.info('Database initialized successfully');
+      _logger.info('Database initialized successfully');
 
       // L'inizializzazione dei modelli viene gestita in database/index.ts
       // quando viene chiamato databaseConfig.initialize()
@@ -53,7 +53,7 @@ export class DatabaseService extends BaseService {
 
       return true;
     } catch (error: any) {
-      this._logger.error(`Database initialization error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      _logger.error(`Database initialization error: ${error instanceof Error ? error.message : 'Unknown error'}`);
       return false;
     }
   }
@@ -89,7 +89,7 @@ export class DatabaseService extends BaseService {
 
       return true;
     } catch (error) {
-      this._logger.error(`Error importing database: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      _logger.error(`Error importing database: ${error instanceof Error ? error.message : 'Unknown error'}`);
       return false;
     }
   }

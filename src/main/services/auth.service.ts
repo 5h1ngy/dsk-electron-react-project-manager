@@ -1,18 +1,14 @@
 import { Op } from 'sequelize';
-import Container, { Service } from 'typedi';
+import { Service } from 'typedi';
 
-import { Logger } from '../shared/logger';
 import { User } from '../models/User';
 import { RegisterRequestDTO, RegisterResponseDTO, LoginResponseDTO } from '../dtos/auth.dto';
 import { LoginRequestDTO, UserResponseDTO } from '../dtos/auth.dto';
 import { BaseService } from './base.service';
+import * as _logger from '../shared/logger';
 
 @Service()
 export class AuthService extends BaseService {
-
-  constructor() {
-    super(Container.get(Logger));
-  }
 
   public async register(form: RegisterRequestDTO): Promise<RegisterResponseDTO> {
     try {
@@ -29,13 +25,13 @@ export class AuthService extends BaseService {
       }
 
       const user = await User.create({ username, email, password } as any);
-      this._logger.info(`User ${username} registered successfully`);
+      _logger.info(`User ${username} registered successfully`);
 
       const userResponse = new UserResponseDTO(user.id, user.username, user.email);
       return new LoginResponseDTO(true, undefined, userResponse);
 
     } catch (error) {
-      this._logger.error(`Registration error: ${error instanceof Error ? error.message : String(error)}`);
+      _logger.error(`Registration error: ${error instanceof Error ? error.message : String(error)}`);
       return new RegisterResponseDTO(false, error instanceof Error ? error.message : String(error));
 
     }
@@ -60,12 +56,12 @@ export class AuthService extends BaseService {
         throw new Error('INVALID_PASSWORD');
       }
 
-      this._logger.info(`User ${username} registered successfully`);
+      _logger.info(`User ${username} registered successfully`);
       const userResponse = new UserResponseDTO(user.id, user.username, user.email);
       return new LoginResponseDTO(true, undefined, userResponse);
 
     } catch (error) {
-      this._logger.error(`Login error: ${error instanceof Error ? error.message : String(error)}`);
+      _logger.error(`Login error: ${error instanceof Error ? error.message : String(error)}`);
       return new LoginResponseDTO(false, error instanceof Error ? error.message : String(error));
 
     }

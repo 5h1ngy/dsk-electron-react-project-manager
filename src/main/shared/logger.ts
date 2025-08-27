@@ -1,60 +1,40 @@
 import { app } from 'electron';
 import path from 'path';
 import fs from 'fs';
-import { createLogger, format, transports, Logger as WinstonLogger } from 'winston';
-import { Service } from 'typedi';
+import { createLogger, format, transports, } from 'winston';
 
-@Service()
-export class Logger {
+const logger = createLogger({
+    level: 'info',
+    format: format.combine(
+        format.timestamp(),
+        format.colorize(),
+        format.printf(({ level, message, timestamp }) => `${timestamp} ${level}: ${message}`)
+    ),
+    transports: [new transports.Console()]
+});
 
-    private winstonLogger: WinstonLogger
+app.whenReady().then(() => {
+    const userDataPath = app.getPath('userData');
+    const logsPath = path.join(userDataPath, 'logs');
 
-    constructor() {
-
-        this.winstonLogger = createLogger({
-            level: 'info',
-            format: format.combine(
-                format.timestamp(),
-                format.colorize(),
-                format.printf(({ level, message, timestamp }) => `${timestamp} ${level}: ${message}`)
-            ),
-            transports: [new transports.Console()]
-        });
-
-        app.whenReady().then(() => {
-            const userDataPath = app.getPath('userData');
-            const logsPath = path.join(userDataPath, 'logs');
-
-            if (!fs.existsSync(logsPath)) {
-                fs.mkdirSync(logsPath, { recursive: true });
-            }
-
-            this.winstonLogger.add(new transports.File({
-                filename: path.join(logsPath, 'error.log'),
-                level: 'error'
-            }));
-
-            this.winstonLogger.add(new transports.File({
-                filename: path.join(logsPath, 'combined.log')
-            }));
-        }).catch(error => {
-            console.error('Error setting up file logging:', error);
-        })
+    if (!fs.existsSync(logsPath)) {
+        fs.mkdirSync(logsPath, { recursive: true });
     }
 
-    public get info() {
-        return this.winstonLogger.info;
-    }
-    public get warn() {
-        return this.winstonLogger.warn;
-    }
-    public get error() {
-        return this.winstonLogger.error;
-    }
-    public get debug() {
-        return this.winstonLogger.debug;
-    }
-    public get verbose() {
-        return this.winstonLogger.verbose;
-    }
-}
+    logger.add(new transports.File({
+        filename: path.join(logsPath, 'error.log'),
+        level: 'error'
+    }));
+
+    logger.add(new transports.File({
+        filename: path.join(logsPath, 'combined.log')
+    }));
+}).catch(error => {
+    console.error('Error setting up file logging:', error);
+})
+
+
+export const info = (message: string) => logger.info(message)
+export const error = (message: string) => logger.error(message)
+export const warn = (message: string) => logger.warn(message)
+export const debug = (message: string) => logger.debug(message)

@@ -1,6 +1,4 @@
-import { Table, Column, Model, DataType, ForeignKey, PrimaryKey, AutoIncrement, CreatedAt, UpdatedAt } from 'sequelize-typescript';
-import { Project } from './Project';
-import { Tag } from './Tag';
+import { Table, Column, Model, DataType, PrimaryKey, AutoIncrement, CreatedAt, UpdatedAt } from 'sequelize-typescript';
 
 /**
  * Join table for many-to-many relationship between Project and Tag models
@@ -14,22 +12,6 @@ export class ProjectTag extends Model<ProjectTag> {
   @AutoIncrement
   @Column(DataType.INTEGER)
   declare id: number;
-
-  @ForeignKey(() => Project)
-  @Column({
-    type: DataType.INTEGER,
-    allowNull: false,
-    onDelete: 'CASCADE'
-  })
-  declare projectId: number;
-
-  @ForeignKey(() => Tag)
-  @Column({
-    type: DataType.INTEGER,
-    allowNull: false,
-    onDelete: 'CASCADE'
-  })
-  declare tagId: number;
 
   @CreatedAt
   declare createdAt: Date;
