@@ -1,7 +1,7 @@
 import { Op } from 'sequelize';
 import { Service } from 'typedi';
 
-import { User } from '../models';
+import { User } from '../Models';
 import { RegisterRequestDTO, RegisterResponseDTO, LoginResponseDTO } from '../dtos/auth.dto';
 import { LoginRequestDTO, UserResponseDTO } from '../dtos/auth.dto';
 import { BaseService } from './base.service';

@@ -1,8 +1,8 @@
 import { Service } from 'typedi';
 
-import { Project } from '../models';
-import { Tag } from '../models';
-import { Task } from '../models';
+import { Project } from '../Models';
+import { Tag } from '../Models';
+import { Task } from '../Models';
 import * as _logger from '../shared/logger';
 import { CreateProjectDto, ProjectListResponseDto, ProjectResponseDto, SingleProjectResponseDto, UpdateProjectDto } from '../dtos/project.dto';
 import { TagResponseDto } from '../dtos/tag.dto';

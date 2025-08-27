@@ -3,7 +3,7 @@ import { app } from 'electron';
 import { Sequelize, SequelizeOptions } from 'sequelize-typescript';
 import { Service } from 'typedi';
 import * as _logger from '../shared/logger';
-import { models } from '../models';
+import { models } from '../Models';
 
 @Service()
 export class DatabaseConfig {

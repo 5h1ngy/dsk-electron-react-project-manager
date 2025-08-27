@@ -388,7 +388,7 @@ export class Note extends BaseModel<Note> {
     @AllowNull(true)
     @ForeignKey(() => User)
     @Column(DataType.INTEGER)
-    declare userId: number | null;
+    declare userId: number;
 
     @CreatedAt
     declare createdAt: Date;
