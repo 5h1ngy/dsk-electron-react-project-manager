@@ -6,8 +6,6 @@ import {
   AutoIncrement,
   CreatedAt,
   UpdatedAt,
-  ForeignKey,
-  BelongsTo,
 } from 'sequelize-typescript';
 
 import { BaseModel } from './BaseModel';
@@ -38,10 +36,8 @@ export class Attachment extends BaseModel<Attachment> {
   @UpdatedAt
   declare updatedAt: Date;
 
-  @ForeignKey(() => require('./Task').Task)
   @Column(DataType.INTEGER)
   declare taskId: number;
 
-  @BelongsTo(() => require('./Task').Task, { foreignKey: 'taskId', as: 'task' })
   declare task: Task;
 }

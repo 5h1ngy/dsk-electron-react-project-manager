@@ -6,9 +6,6 @@ import {
   AutoIncrement,
   CreatedAt,
   UpdatedAt,
-  ForeignKey,
-  BelongsTo,
-  HasMany,
   AllowNull
 } from 'sequelize-typescript';
 
@@ -27,7 +24,6 @@ export class Folder extends BaseModel<Folder> {
   declare name: string;
 
   @AllowNull(true)
-  @ForeignKey(() => Folder)
   @Column(DataType.INTEGER)
   declare parentId: number | null;
 
@@ -37,15 +33,11 @@ export class Folder extends BaseModel<Folder> {
   @UpdatedAt
   declare updatedAt: Date;
 
-  @HasMany(() => Folder, { foreignKey: 'parentId', as: 'subfolders' })
   declare subfolders: Folder[];
 
-  @BelongsTo(() => Folder, { foreignKey: 'parentId', as: 'parent' })
   declare parent: Folder;
 
-  @HasMany(() => require('./File').File, { foreignKey: 'folderId', as: 'files' })
   declare files: File[];
 
-  @HasMany(() => require('./Note').Note, { foreignKey: 'folderId', as: 'notes' })
   declare notes: Note[];
 }

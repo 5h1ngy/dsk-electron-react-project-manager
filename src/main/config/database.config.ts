@@ -3,7 +3,7 @@ import { app } from 'electron';
 import { Sequelize, SequelizeOptions } from 'sequelize-typescript';
 import { Service } from 'typedi';
 import * as _logger from '../shared/logger';
-import { initializeModels } from '../models';
+import { bindRelationships, models } from '../models';
 
 @Service()
 export class DatabaseConfig {
@@ -37,6 +37,7 @@ export class DatabaseConfig {
             const options: SequelizeOptions = {
                 dialect: 'sqlite',
                 storage: this.dbPath,
+                models,
                 logging: (msg) => _logger.info(msg),
                 define: { timestamps: true, underscored: false },
                 repositoryMode: true,
@@ -47,7 +48,7 @@ export class DatabaseConfig {
             await this._sequelize.authenticate();
 
             _logger.info('Database connection has been established successfully.');
-            initializeModels(this._sequelize);
+            bindRelationships();
 
             await this._sequelize.sync();
             _logger.info('Database synchronized successfully!');

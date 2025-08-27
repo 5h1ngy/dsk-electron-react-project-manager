@@ -8,7 +8,6 @@ import {
   UpdatedAt,
   BeforeCreate,
   BeforeUpdate,
-  HasMany,
 } from 'sequelize-typescript';
 import bcrypt from 'bcryptjs';
 
@@ -63,15 +62,11 @@ export class User extends BaseModel<User> implements UserAttributes {
     return bcrypt.compare(password, this.password);
   }
 
-  @HasMany(() => require('./Project').Project, { foreignKey: 'userId', as: 'projects' })
   declare projects: Project[];
 
-  @HasMany(() => require('./Note').Note, { foreignKey: 'userId', as: 'notes' })
   declare notes: Note[];
 
-  @HasMany(() => require('./Folder').Folder, { foreignKey: 'userId', as: 'folders' })
   declare folders: Folder[];
 
-  @HasMany(() => require('./File').File, { foreignKey: 'userId', as: 'files' })
   declare files: File[];
 }

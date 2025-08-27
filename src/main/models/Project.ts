@@ -6,10 +6,6 @@ import {
   AutoIncrement,
   CreatedAt,
   UpdatedAt,
-  ForeignKey,
-  BelongsTo,
-  HasMany,
-  BelongsToMany,
   AllowNull
 } from 'sequelize-typescript';
 
@@ -39,19 +35,14 @@ export class Project extends BaseModel<Project> {
   @UpdatedAt
   declare updatedAt: Date;
 
-  @ForeignKey(() => require('./User').User)
   @Column(DataType.INTEGER)
   declare userId: number;
 
-  @BelongsTo(() => require('./User').User, { foreignKey: 'userId', as: 'user' })
   declare user: User;
 
-  @HasMany(() => require('./Task').Task, { foreignKey: 'projectId', as: 'tasks' })
   declare tasks: Task[];
 
-  @HasMany(() => require('./Note').Note, { foreignKey: 'projectId', as: 'notes' })
   declare notes: Note[];
 
-  @BelongsToMany(() => require('./Tag').Tag, { through: () => require('./ProjectTag').ProjectTag, foreignKey: 'projectId', otherKey: 'tagId', as: 'tags' })
   declare tags: Tag[];
 }

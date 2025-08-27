@@ -6,8 +6,6 @@ import {
   AutoIncrement,
   CreatedAt,
   UpdatedAt,
-  ForeignKey,
-  BelongsTo,
   AllowNull
 } from 'sequelize-typescript';
 
@@ -25,12 +23,10 @@ export class Note extends BaseModel<Note> {
   declare id: number;
 
   @AllowNull(true)
-  @ForeignKey(() => require('./Task').Task)
   @Column(DataType.INTEGER)
   declare taskId: number | null;
 
   @AllowNull(true)
-  @ForeignKey(() => require('./Project').Project)
   @Column(DataType.INTEGER)
   declare projectId: number | null;
 
@@ -43,12 +39,10 @@ export class Note extends BaseModel<Note> {
   declare content: string | null;
 
   @AllowNull(true)
-  @ForeignKey(() => require('./Folder').Folder)
   @Column(DataType.INTEGER)
   declare folderId: number | null;
 
   @AllowNull(true)
-  @ForeignKey(() => require('./User').User)
   @Column(DataType.INTEGER)
   declare userId: number | null;
 
@@ -58,15 +52,11 @@ export class Note extends BaseModel<Note> {
   @UpdatedAt
   declare updatedAt: Date;
 
-  @BelongsTo(() => require('./Task').Task, { foreignKey: 'taskId', as: 'task' })
   declare task: Task;
 
-  @BelongsTo(() => require('./Project').Project, { foreignKey: 'projectId', as: 'project' })
   declare project: Project;
 
-  @BelongsTo(() => require('./Folder').Folder, { foreignKey: 'folderId', as: 'folder' })
   declare folder: Folder;
 
-  @BelongsTo(() => require('./User').User, { foreignKey: 'userId', as: 'user' })
   declare user: User;
 }

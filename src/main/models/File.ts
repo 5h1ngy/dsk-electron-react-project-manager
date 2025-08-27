@@ -6,8 +6,6 @@ import {
   AutoIncrement,
   CreatedAt,
   UpdatedAt,
-  ForeignKey,
-  BelongsTo,
 } from 'sequelize-typescript';
 
 import { BaseModel } from './BaseModel';
@@ -39,17 +37,13 @@ export class File extends BaseModel<File> {
   @UpdatedAt
   declare updatedAt: Date;
 
-  @ForeignKey(() => require('./Folder').Folder)
   @Column(DataType.INTEGER)
   declare folderId: number;
 
-  @BelongsTo(() => require('./Folder').Folder, { foreignKey: 'folderId', as: 'folder' })
   declare folder: Folder;
 
-  @ForeignKey(() => require('./User').User)
   @Column(DataType.INTEGER)
   declare userId: number;
 
-  @BelongsTo(() => require('./User').User, { foreignKey: 'userId', as: 'user' })
   declare user: User;
 }

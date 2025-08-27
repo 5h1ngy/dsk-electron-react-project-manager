@@ -1,5 +1,3 @@
-import { Sequelize } from 'sequelize-typescript';
-
 import { User } from './User';
 import { Project } from './Project';
 import { Tag } from './Tag';
@@ -11,19 +9,20 @@ import { Note } from './Note';
 import { Folder } from './Folder';
 import { File } from './File';
 
-export const initializeModels = (sequelize: Sequelize): void => {
-  sequelize.addModels([
-    User,
-    Project,
-    Tag,
-    ProjectTag,
-    Task,
-    TaskTag,
-    Attachment,
-    Note,
-    Folder,
-    File
-  ]);
+export const models = [
+  User,
+  Project,
+  Tag,
+  ProjectTag,
+  Task,
+  TaskTag,
+  Attachment,
+  Note,
+  Folder,
+  File
+]
+
+export const bindRelationships = (): void => {
 
   // user <-> project
   User.hasMany(Project, { foreignKey: 'userId', as: 'projects' });

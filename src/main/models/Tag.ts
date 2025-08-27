@@ -6,7 +6,6 @@ import {
   AutoIncrement,
   CreatedAt,
   UpdatedAt,
-  BelongsToMany,
 } from 'sequelize-typescript';
 
 import { BaseModel } from './BaseModel';
@@ -37,9 +36,7 @@ export class Tag extends BaseModel<Tag> {
   @UpdatedAt
   declare updatedAt: Date;
 
-  @BelongsToMany(() => require('./Project').Project, { through: () => require('./ProjectTag').ProjectTag, foreignKey: 'tagId', otherKey: 'projectId', as: 'projects' })
   declare projects: Project[];
 
-  @BelongsToMany(() => require('./Task').Task, { through: () => require('./TaskTag').TaskTag, foreignKey: 'tagId', otherKey: 'taskId', as: 'tasks' })
   declare tasks: Task[];
 }
