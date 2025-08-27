@@ -1,8 +1,8 @@
-import Container, { Service } from 'typedi';
+import { Service } from 'typedi';
 
-import { Project } from '../models/Project';
-import { Tag } from '../models/Tag';
-import { Task } from '../models/Task';
+import { Project } from '../models';
+import { Tag } from '../models';
+import { Task } from '../models';
 import * as _logger from '../shared/logger';
 import { CreateProjectDto, ProjectListResponseDto, ProjectResponseDto, SingleProjectResponseDto, UpdateProjectDto } from '../dtos/project.dto';
 import { TagResponseDto } from '../dtos/tag.dto';

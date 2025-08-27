@@ -3,7 +3,7 @@ import { app } from 'electron';
 import { Sequelize, SequelizeOptions } from 'sequelize-typescript';
 import { Service } from 'typedi';
 import * as _logger from '../shared/logger';
-import { bindRelationships, models } from '../models';
+import { models } from '../models';
 
 @Service()
 export class DatabaseConfig {
@@ -48,7 +48,6 @@ export class DatabaseConfig {
             await this._sequelize.authenticate();
 
             _logger.info('Database connection has been established successfully.');
-            bindRelationships();
 
             await this._sequelize.sync();
             _logger.info('Database synchronized successfully!');
