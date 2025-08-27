@@ -1,29 +1,36 @@
-import { Table, Column, DataType, PrimaryKey, AutoIncrement, CreatedAt, UpdatedAt, AllowNull } from 'sequelize-typescript';
-import { BaseModel } from './BaseModel';
+import {
+  Table,
+  Column,
+  DataType,
+  PrimaryKey,
+  AutoIncrement,
+  CreatedAt,
+  UpdatedAt,
+  ForeignKey,
+  BelongsTo,
+} from 'sequelize-typescript';
 
-@Table({
-  tableName: 'Files'
-})
+import { BaseModel } from './BaseModel';
+import type { User } from './User';
+import type { Folder } from './Folder';
+
+@Table({ tableName: 'Files' })
 export class File extends BaseModel<File> {
   @PrimaryKey
   @AutoIncrement
   @Column(DataType.INTEGER)
   declare id: number;
 
-  @AllowNull(false)
-  @Column(DataType.STRING)
+  @Column({ type: DataType.STRING, allowNull: false })
   declare name: string;
 
-  @AllowNull(false)
-  @Column(DataType.STRING)
+  @Column({ type: DataType.STRING, allowNull: false })
   declare path: string;
 
-  @AllowNull(false)
-  @Column(DataType.STRING)
+  @Column({ type: DataType.STRING, allowNull: false })
   declare mimeType: string;
 
-  @AllowNull(false)
-  @Column(DataType.INTEGER)
+  @Column({ type: DataType.INTEGER, allowNull: false })
   declare size: number;
 
   @CreatedAt
@@ -32,6 +39,17 @@ export class File extends BaseModel<File> {
   @UpdatedAt
   declare updatedAt: Date;
 
-}
+  @ForeignKey(() => require('./Folder').Folder)
+  @Column(DataType.INTEGER)
+  declare folderId: number;
 
-// Non necessario più l'inizializzazione manuale perché gestita da sequelize-typescript
+  @BelongsTo(() => require('./Folder').Folder, { foreignKey: 'folderId', as: 'folder' })
+  declare folder: Folder;
+
+  @ForeignKey(() => require('./User').User)
+  @Column(DataType.INTEGER)
+  declare userId: number;
+
+  @BelongsTo(() => require('./User').User, { foreignKey: 'userId', as: 'user' })
+  declare user: User;
+}

@@ -1,37 +1,35 @@
-import { Table, Column, DataType, PrimaryKey, AutoIncrement, CreatedAt, UpdatedAt, } from 'sequelize-typescript';
-import { BaseModel } from './BaseModel';
+import {
+  Table,
+  Column,
+  DataType,
+  PrimaryKey,
+  AutoIncrement,
+  CreatedAt,
+  UpdatedAt,
+  ForeignKey,
+  BelongsTo,
+} from 'sequelize-typescript';
 
-@Table({
-  tableName: 'Attachments'
-})
+import { BaseModel } from './BaseModel';
+import type { Task } from './Task';
+
+@Table({ tableName: 'Attachments' })
 export class Attachment extends BaseModel<Attachment> {
   @PrimaryKey
   @AutoIncrement
   @Column(DataType.INTEGER)
   declare id: number;
 
-  @Column({
-    type: DataType.STRING,
-    allowNull: false
-  })
+  @Column({ type: DataType.STRING, allowNull: false })
   declare name: string;
 
-  @Column({
-    type: DataType.STRING,
-    allowNull: false
-  })
+  @Column({ type: DataType.STRING, allowNull: false })
   declare path: string;
 
-  @Column({
-    type: DataType.STRING,
-    allowNull: false
-  })
+  @Column({ type: DataType.STRING, allowNull: false })
   declare mimeType: string;
 
-  @Column({
-    type: DataType.BIGINT,
-    allowNull: false
-  })
+  @Column({ type: DataType.BIGINT, allowNull: false })
   declare size: number;
 
   @CreatedAt
@@ -40,4 +38,10 @@ export class Attachment extends BaseModel<Attachment> {
   @UpdatedAt
   declare updatedAt: Date;
 
+  @ForeignKey(() => require('./Task').Task)
+  @Column(DataType.INTEGER)
+  declare taskId: number;
+
+  @BelongsTo(() => require('./Task').Task, { foreignKey: 'taskId', as: 'task' })
+  declare task: Task;
 }

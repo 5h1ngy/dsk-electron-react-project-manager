@@ -1,29 +1,33 @@
-import { Table, Column, DataType, PrimaryKey, AutoIncrement, CreatedAt, UpdatedAt, } from 'sequelize-typescript';
-import { BaseModel } from './BaseModel';
+import {
+  Table,
+  Column,
+  DataType,
+  PrimaryKey,
+  AutoIncrement,
+  CreatedAt,
+  UpdatedAt,
+  BelongsToMany,
+} from 'sequelize-typescript';
 
-@Table({
-  tableName: 'Tags'
-})
+import { BaseModel } from './BaseModel';
+import type { Project } from './Project';
+import type { Task } from './Task';
+
+@Table({ tableName: 'Tags' })
 export class Tag extends BaseModel<Tag> {
   @PrimaryKey
   @AutoIncrement
   @Column(DataType.INTEGER)
   declare id: number;
 
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
-    unique: true
-  })
+  @Column({ type: DataType.STRING, allowNull: false, unique: true })
   declare name: string;
 
   @Column({
     type: DataType.STRING(7),
     allowNull: false,
     defaultValue: '#1890ff',
-    validate: {
-      is: /^#[0-9A-F]{6}$/i
-    }
+    validate: { is: /^#[0-9A-F]{6}$/i }
   })
   declare color: string;
 
@@ -33,6 +37,9 @@ export class Tag extends BaseModel<Tag> {
   @UpdatedAt
   declare updatedAt: Date;
 
-}
+  @BelongsToMany(() => require('./Project').Project, { through: () => require('./ProjectTag').ProjectTag, foreignKey: 'tagId', otherKey: 'projectId', as: 'projects' })
+  declare projects: Project[];
 
-// Non necessario più l'inizializzazione manuale perché gestita da sequelize-typescript
+  @BelongsToMany(() => require('./Task').Task, { through: () => require('./TaskTag').TaskTag, foreignKey: 'tagId', otherKey: 'taskId', as: 'tasks' })
+  declare tasks: Task[];
+}
