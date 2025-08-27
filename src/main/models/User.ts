@@ -1,7 +1,6 @@
-import { Table, Column, DataType, PrimaryKey, AutoIncrement, CreatedAt, UpdatedAt, BeforeCreate, BeforeUpdate, HasMany } from 'sequelize-typescript';
+import { Table, Column, DataType, PrimaryKey, AutoIncrement, CreatedAt, UpdatedAt, BeforeCreate, BeforeUpdate, } from 'sequelize-typescript';
 import { BaseModel } from './BaseModel';
 import bcrypt from 'bcryptjs';
-import { Project } from './Project';
 
 @Table({
   tableName: 'Users'
@@ -40,10 +39,6 @@ export class User extends BaseModel<User> {
 
   @UpdatedAt
   declare updatedAt: Date;
-  
-  // Relazioni definite tramite decoratori
-  @HasMany(() => Project)
-  declare projects: Project[];
 
   // Method to check password
   public async checkPassword(password: string): Promise<boolean> {

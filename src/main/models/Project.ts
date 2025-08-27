@@ -1,9 +1,5 @@
-import { Table, Column, DataType, CreatedAt, UpdatedAt, PrimaryKey, AutoIncrement, ForeignKey, HasMany, BelongsToMany, BelongsTo } from 'sequelize-typescript';
+import { Table, Column, DataType, CreatedAt, UpdatedAt, PrimaryKey, AutoIncrement, } from 'sequelize-typescript';
 import { BaseModel } from './BaseModel';
-import { Tag } from './Tag';
-import { Task } from './Task';
-import { User } from './User';
-import { ProjectTag } from './ProjectTag';
 
 @Table({
   tableName: 'Projects'
@@ -26,25 +22,9 @@ export class Project extends BaseModel<Project> {
   })
   declare description: string;
 
-  @ForeignKey(() => User)
-  @Column({
-    type: DataType.INTEGER,
-    allowNull: false
-  })
-  declare userId: number;
-
   @CreatedAt
   declare createdAt: Date;
 
   @UpdatedAt
   declare updatedAt: Date;
-
-  @BelongsTo(() => User)
-  declare user: User;
-
-  @HasMany(() => Task)
-  declare tasks: Task[];
-
-  @BelongsToMany(() => Tag, () => ProjectTag)
-  declare tags: Tag[];
 }

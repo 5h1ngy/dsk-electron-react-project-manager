@@ -1,32 +1,24 @@
 import { ipcMain } from 'electron';
-import Container, { Inject, Service } from 'typedi';
+import { Inject, Service } from 'typedi';
 import { TaskService } from '../services/task.service';
 import { CreateTaskDto, UpdateTaskDto, TaskStatus, TaskPriority, BulkUpdateTaskStatusDto, SingleTaskResponseDto } from '../dtos/task.dto';
 import { BaseController } from './base.controller';
-import { Logger } from '../shared/logger';
+import * as _logger from '../shared/logger';
 
-/**
- * Controller for task-related IPC operations
- */
 @Service()
 export class TaskController extends BaseController {
-  
+
   constructor(
     @Inject() private _taskService: TaskService
   ) {
-    super(Container.get(Logger));
-    this._logger.info('TaskController initialized');
+    super();
+    _logger.info('TaskController initialized');
   }
 
-
-
-  /**
-   * Register all task IPC handlers
-   */
   public registerHandlers(): void {
     // Get all tasks for a project
     ipcMain.handle('tasks:getByProject', async (_, projectId: number) => {
-      this._logger.info(`IPC Handler: Getting tasks for project ${projectId}`);
+      _logger.info(`IPC Handler: Getting tasks for project ${projectId}`);
       return await this._taskService.getTasksByProject(projectId);
     });
 
@@ -39,7 +31,7 @@ export class TaskController extends BaseController {
       dueDate?: string;
       projectId: number;
     }) => {
-      this._logger.info(`IPC Handler: Creating new task for project ${taskData.projectId}`);
+      _logger.info(`IPC Handler: Creating new task for project ${taskData.projectId}`);
 
       const dto = new CreateTaskDto(
         taskData.title,
@@ -53,7 +45,7 @@ export class TaskController extends BaseController {
       // Validate dto
       const errors = dto.validate();
       if (errors.length > 0) {
-        this._logger.error(`Validation errors: ${JSON.stringify(errors)}`);
+        _logger.error(`Validation errors: ${JSON.stringify(errors)}`);
         return new SingleTaskResponseDto(false, 'Validation failed: ' + errors.join(', '));
       }
 
@@ -69,7 +61,7 @@ export class TaskController extends BaseController {
       dueDate?: string | null;
       tags?: number[];
     }) => {
-      this._logger.info(`IPC Handler: Updating task ${taskId}`);
+      _logger.info(`IPC Handler: Updating task ${taskId}`);
 
       // Convertire dueDate da null a undefined se necessario
       const dueDate = taskData.dueDate === null ? undefined : taskData.dueDate;
@@ -86,7 +78,7 @@ export class TaskController extends BaseController {
       // Validate dto
       const errors = dto.validate();
       if (errors.length > 0) {
-        this._logger.error(`Validation errors: ${JSON.stringify(errors)}`);
+        _logger.error(`Validation errors: ${JSON.stringify(errors)}`);
         return new SingleTaskResponseDto(false, 'Validation failed: ' + errors.join(', '));
       }
 
@@ -95,13 +87,13 @@ export class TaskController extends BaseController {
 
     // Delete a task
     ipcMain.handle('tasks:delete', async (_, taskId: number) => {
-      this._logger.info(`IPC Handler: Deleting task ${taskId}`);
+      _logger.info(`IPC Handler: Deleting task ${taskId}`);
       return await this._taskService.deleteTask(taskId);
     });
 
     // Get task details
     ipcMain.handle('tasks:getDetails', async (_, taskId: number) => {
-      this._logger.info(`IPC Handler: Getting details for task ${taskId}`);
+      _logger.info(`IPC Handler: Getting details for task ${taskId}`);
       return await this._taskService.getTaskDetails(taskId);
     });
 
@@ -110,7 +102,7 @@ export class TaskController extends BaseController {
       taskIds: number[];
       status: string;
     }) => {
-      this._logger.info(`IPC Handler: Updating status to ${bulkUpdateData.status} for ${bulkUpdateData.taskIds.length} tasks`);
+      _logger.info(`IPC Handler: Updating status to ${bulkUpdateData.status} for ${bulkUpdateData.taskIds.length} tasks`);
 
       const dto = new BulkUpdateTaskStatusDto(
         bulkUpdateData.taskIds,
@@ -120,7 +112,7 @@ export class TaskController extends BaseController {
       // Validate dto
       const errors = dto.validate();
       if (errors.length > 0) {
-        this._logger.error(`Validation errors: ${JSON.stringify(errors)}`);
+        _logger.error(`Validation errors: ${JSON.stringify(errors)}`);
         return new SingleTaskResponseDto(false, 'Validation failed: ' + errors.join(', '));
       }
 
@@ -128,5 +120,3 @@ export class TaskController extends BaseController {
     });
   }
 }
-
-// Non esporta più un'istanza singleton, verrà gestita da TypeDI

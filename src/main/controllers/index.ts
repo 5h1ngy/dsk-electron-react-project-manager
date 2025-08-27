@@ -7,15 +7,13 @@ import { ProjectController } from './project.controller';
 import { TaskController } from './task.controller';
 import { NoteController } from './note.controller';
 
-import { Logger } from '../shared/logger';
+import * as _logger from '../shared/logger';
 
 @Service()
 export class ControllerRegistry {
   private controllers: BaseController[] = [];
 
   constructor(
-    @Inject()
-    private _logger: Logger,
     @Inject()
     private _authController: AuthController,
     @Inject()
@@ -27,7 +25,7 @@ export class ControllerRegistry {
     @Inject()
     private _noteController: NoteController,
   ) {
-    this._logger.info('Initializing Controller Registry manually');
+    _logger.info('Initializing Controller Registry manually');
 
     this.controllers = [
       this._authController,
@@ -41,10 +39,10 @@ export class ControllerRegistry {
   }
 
   public registerAllHandlers(): void {
-    this._logger.info('Registering all IPC handlers');
+    _logger.info('Registering all IPC handlers');
     for (const controller of this.controllers) {
       controller.registerHandlers();
     }
-    this._logger.info(`Registered handlers for ${this.controllers.length} controllers`);
+    _logger.info(`Registered handlers for ${this.controllers.length} controllers`);
   }
 }

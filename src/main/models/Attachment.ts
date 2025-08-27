@@ -1,6 +1,5 @@
-import { Table, Column, DataType, PrimaryKey, AutoIncrement, CreatedAt, UpdatedAt, ForeignKey, BelongsTo } from 'sequelize-typescript';
+import { Table, Column, DataType, PrimaryKey, AutoIncrement, CreatedAt, UpdatedAt, } from 'sequelize-typescript';
 import { BaseModel } from './BaseModel';
-import { Task } from './Task';
 
 @Table({
   tableName: 'Attachments'
@@ -35,20 +34,10 @@ export class Attachment extends BaseModel<Attachment> {
   })
   declare size: number;
 
-  @ForeignKey(() => Task)
-  @Column({
-    type: DataType.INTEGER,
-    allowNull: false
-  })
-  declare taskId: number;
-
   @CreatedAt
   declare createdAt: Date;
 
   @UpdatedAt
   declare updatedAt: Date;
 
-  // Relazioni
-  @BelongsTo(() => Task)
-  declare task: Task;
 }

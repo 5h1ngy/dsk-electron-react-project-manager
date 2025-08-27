@@ -2,6 +2,30 @@ import { IsString, IsEmail, IsNotEmpty, IsOptional, IsNumber, Length, Matches } 
 import { Expose } from 'class-transformer';
 import { BaseDto, BaseResponseDto } from './base.dto';
 
+/**
+ * DTO for user response (without sensitive data)
+ */
+export class UserResponseDTO extends BaseDto {
+  @IsNumber({}, { message: 'User ID must be a number' })
+  @Expose()
+  id: number;
+
+  @IsString({ message: 'Username must be a string' })
+  @Expose()
+  username: string;
+
+  @IsEmail({}, { message: 'Email must be a valid email address' })
+  @Expose()
+  email: string;
+
+  constructor(id: number = 0, username: string = '', email: string = '') {
+    super();
+    this.id = id;
+    this.username = username;
+    this.email = email;
+  }
+}
+
 export class RegisterRequestDTO extends BaseDto {
   @IsNotEmpty({ message: 'Username is required' })
   @IsString({ message: 'Username must be a string' })
@@ -95,30 +119,6 @@ export class LoginResponseDTO extends BaseResponseDto {
     this.access_token = access_token;
     this.refresh_token = refresh_token;
     this.token_type = token_type;
-  }
-}
-
-/**
- * DTO for user response (without sensitive data)
- */
-export class UserResponseDTO extends BaseDto {
-  @IsNumber({}, { message: 'User ID must be a number' })
-  @Expose()
-  id: number;
-
-  @IsString({ message: 'Username must be a string' })
-  @Expose()
-  username: string;
-
-  @IsEmail({}, { message: 'Email must be a valid email address' })
-  @Expose()
-  email: string;
-
-  constructor(id: number = 0, username: string = '', email: string = '') {
-    super();
-    this.id = id;
-    this.username = username;
-    this.email = email;
   }
 }
 

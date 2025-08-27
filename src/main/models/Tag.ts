@@ -1,8 +1,5 @@
-import { Table, Column, DataType, PrimaryKey, AutoIncrement, CreatedAt, UpdatedAt, BelongsToMany } from 'sequelize-typescript';
+import { Table, Column, DataType, PrimaryKey, AutoIncrement, CreatedAt, UpdatedAt, } from 'sequelize-typescript';
 import { BaseModel } from './BaseModel';
-import { Project } from './Project';
-import { Task } from './Task';
-import { ProjectTag } from './ProjectTag';
 
 @Table({
   tableName: 'Tags'
@@ -36,12 +33,6 @@ export class Tag extends BaseModel<Tag> {
   @UpdatedAt
   declare updatedAt: Date;
 
-  // Relazioni
-  @BelongsToMany(() => Project, () => ProjectTag)
-  declare projects: Project[];
-
-  @BelongsToMany(() => Task, 'TaskTags')
-  declare tasks: Task[];
 }
 
 // Non necessario più l'inizializzazione manuale perché gestita da sequelize-typescript

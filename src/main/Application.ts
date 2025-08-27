@@ -2,7 +2,7 @@ import { app, BrowserWindow } from 'electron';
 import { join } from 'path';
 import { Inject, Service } from 'typedi';
 
-import { Logger } from './shared/logger';
+import * as _logger from './shared/logger';
 import { ControllerRegistry } from './controllers';
 
 @Service()
@@ -10,10 +10,9 @@ export class Application {
   private mainWindow: BrowserWindow | null = null;
 
   constructor(
-    @Inject() private _logger: Logger,
     @Inject() private _controllerRegistry: ControllerRegistry
   ) {
-    this._logger.info('Application class instantiated - direct logger usage');
+    _logger.info('Application class instantiated - direct logger usage');
   }
 
   public async init(): Promise<void> {
@@ -23,9 +22,9 @@ export class Application {
 
       this._controllerRegistry.registerAllHandlers();
 
-      this._logger.info('Application initialized successfully');
+      _logger.info('Application initialized successfully');
     } catch (error) {
-      this._logger.error(`Error initializing application: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      _logger.error(`Error initializing application: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
 
@@ -41,7 +40,7 @@ export class Application {
       this.createWindow();
 
       app.on('will-quit', async () => {
-        this._logger.info('App will quit');
+        _logger.info('App will quit');
       });
 
       app.on('activate', () => {
@@ -55,7 +54,7 @@ export class Application {
 
     // Evento window-all-closed
     app.on('window-all-closed', () => {
-      this._logger.info('All windows closed, quitting app');
+      _logger.info('All windows closed, quitting app');
       if (process.platform !== 'darwin') {
         app.quit();
       }
@@ -63,7 +62,7 @@ export class Application {
   }
 
   private async createWindow(): Promise<void> {
-    this._logger.info('Creating main window...');
+    _logger.info('Creating main window...');
     this.mainWindow = new BrowserWindow({
       title: 'Project Manager',
       width: 1200,
@@ -76,15 +75,15 @@ export class Application {
       }
     });
 
-    this._logger.info('Main window created successfully');
+    _logger.info('Main window created successfully');
     this.configureContentSecurityPolicy();
 
     try {
-      this._logger.info('Registering IPC handlers...');
+      _logger.info('Registering IPC handlers...');
       this._controllerRegistry.registerAllHandlers();
-      this._logger.info('IPC handlers registered successfully');
+      _logger.info('IPC handlers registered successfully');
     } catch (error: any) {
-      this._logger.error(`Failed to initialize application: ${error?.message || 'Unknown error'}`);
+      _logger.error(`Failed to initialize application: ${error?.message || 'Unknown error'}`);
       console.error('Failed to initialize application:', error);
     }
 
@@ -110,9 +109,9 @@ export class Application {
   }
 
   private async loadUserInterface(): Promise<void> {
-    this._logger.info('Loading user interface...');
+    _logger.info('Loading user interface...');
     if (!this.mainWindow) {
-      this._logger.error('Cannot load user interface: main window is not created');
+      _logger.error('Cannot load user interface: main window is not created');
       return;
     }
 
@@ -161,5 +160,3 @@ export class Application {
     }
   }
 }
-
-// Non esportiamo più un'istanza singleton, verrà gestita da TypeDI

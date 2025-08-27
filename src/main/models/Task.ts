@@ -1,8 +1,5 @@
-import { Table, Column, DataType, PrimaryKey, AutoIncrement, CreatedAt, UpdatedAt, ForeignKey, BelongsTo, BelongsToMany, HasMany } from 'sequelize-typescript';
+import { Table, Column, DataType, PrimaryKey, AutoIncrement, CreatedAt, UpdatedAt, } from 'sequelize-typescript';
 import { BaseModel } from './BaseModel';
-import { Project } from './Project';
-import { Tag } from './Tag';
-import { Attachment } from './Attachment';
 
 export enum TaskPriority {
   LOW = 'low',
@@ -66,13 +63,6 @@ export class Task extends BaseModel<Task> {
   })
   declare estimationDate: Date | null;
 
-  @ForeignKey(() => Project)
-  @Column({
-    type: DataType.INTEGER,
-    allowNull: false
-  })
-  declare projectId: number;
-
   @Column({
     type: DataType.INTEGER,
     allowNull: false,
@@ -86,18 +76,4 @@ export class Task extends BaseModel<Task> {
   @UpdatedAt
   declare updatedAt: Date;
 
-  // Relazioni
-  @BelongsTo(() => Project)
-  declare project: Project;
-
-  @BelongsToMany(() => Tag, 'TaskTags')
-  declare tags: Tag[];
-
-  @HasMany(() => Attachment)
-  declare attachments: Attachment[];
-
-  // For backward compatibility with existing code
-  $set: any;
 }
-
-// Non necessario più l'inizializzazione manuale perché gestita da sequelize-typescript
