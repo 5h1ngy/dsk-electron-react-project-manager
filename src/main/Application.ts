@@ -20,7 +20,7 @@ export class Application {
       this.configureForWindows();
       this.registerAppEvents();
 
-      this._controllerRegistry.registerAllHandlers();
+      await this._controllerRegistry.registerAllHandlers();
 
       _logger.info('Application initialized successfully');
     } catch (error) {

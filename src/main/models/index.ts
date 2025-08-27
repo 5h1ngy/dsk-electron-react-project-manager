@@ -12,7 +12,15 @@ import { Note } from './Note';
 import { Folder } from './Folder';
 import { File } from './File';
 
-function initRelations() {
+
+export const initializeModels = (sequelize: Sequelize): void => {
+
+  sequelize.addModels([
+    User, Task, Tag,
+    Attachment, ProjectTag, Project,
+    Note, Folder, File
+  ]);
+
   // Esempi di relazioni user <-> project
   User.hasMany(Project, { foreignKey: 'userId', as: 'projects' })
   Project.belongsTo(User, { foreignKey: 'userId', as: 'user' })
@@ -30,28 +38,12 @@ function initRelations() {
   Note.belongsTo(Project, { foreignKey: 'projectId', as: 'project' })
 
   // project <-> tag (relazione N:N via ProjectTag)
-  Project.belongsToMany(Tag, {
-    through: ProjectTag,
-    foreignKey: 'projectId',
-    as: 'tags',
-  })
-  Tag.belongsToMany(Project, {
-    through: ProjectTag,
-    foreignKey: 'tagId',
-    as: 'projects',
-  })
+  Project.belongsToMany(Tag, { through: ProjectTag, foreignKey: 'projectId', as: 'tags', })
+  Tag.belongsToMany(Project, { through: ProjectTag, foreignKey: 'tagId', as: 'projects', })
 
   // task <-> tag (relazione N:N con tabella intermedia "TaskTags")
-  Task.belongsToMany(Tag, {
-    through: 'TaskTags',
-    foreignKey: 'taskId',
-    as: 'tags',
-  })
-  Tag.belongsToMany(Task, {
-    through: 'TaskTags',
-    foreignKey: 'tagId',
-    as: 'tasks',
-  })
+  Task.belongsToMany(Tag, { through: 'TaskTags', foreignKey: 'taskId', as: 'tags', })
+  Tag.belongsToMany(Task, { through: 'TaskTags', foreignKey: 'tagId', as: 'tasks', })
 
   // task <-> attachment (1:N)
   Task.hasMany(Attachment, { foreignKey: 'taskId', as: 'attachments' })
@@ -80,41 +72,8 @@ function initRelations() {
   // note <-> task
   Task.hasMany(Note, { foreignKey: 'taskId', as: 'notes' })
   Note.belongsTo(Task, { foreignKey: 'taskId', as: 'task' })
-}
-
-/**
- * Funzione per inizializzare i modelli con sequelize-typescript
- * @param sequelize Istanza di Sequelize da utilizzare
- */
-export const initializeModels = (sequelize: Sequelize): void => {
-  // Con sequelize-typescript, non è necessario definire manualmente le relazioni
-  // Invece, registriamo tutti i modelli all'istanza di Sequelize
-  // Utilizziamo la notazione esplicita del percorso per assicurarci che sequelize-typescript
-  // trovi e carichi correttamente tutti i modelli
-  sequelize.addModels([
-    __dirname + '/User.ts',
-    __dirname + '/Task.ts',
-    __dirname + '/Tag.ts',
-    __dirname + '/Attachment.ts',
-    __dirname + '/ProjectTag.ts',
-    __dirname + '/Project.ts',
-    __dirname + '/Note.ts',
-    __dirname + '/Folder.ts',
-    __dirname + '/File.ts',
-  ]);
-  
-  initRelations()
-
-  // Le relazioni sono già definite nei modelli stessi tramite i decoratori
-  // quindi non c'è bisogno di definirle qui
-  
-  // Questo consente a sequelize-typescript di gestire automaticamente
-  // la configurazione del database e le relazioni tra i modelli
 };
 
-/**
- * Esporta i modelli per poterli utilizzare in altre parti dell'applicazione
- */
 export {
   User,
   Task,
