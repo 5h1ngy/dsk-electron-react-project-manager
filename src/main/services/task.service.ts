@@ -1,7 +1,7 @@
-import Container, { Service } from 'typedi';
+import { Service } from 'typedi';
 
-import { Task } from '../models/Task';
-import { Project } from '../models/Project';
+import { Task } from '../Models';
+import { Project } from '../Models';
 import { Op } from 'sequelize';
 import * as _logger from '../shared/logger';
 import { CreateTaskDto, TaskListResponseDto, TaskResponseDto, SingleTaskResponseDto, UpdateTaskDto, TaskStatus, TaskPriority } from '../dtos/task.dto';

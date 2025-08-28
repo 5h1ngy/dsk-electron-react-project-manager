@@ -1,5 +1,6 @@
 import { Inject, Service } from 'typedi';
 
+import { DatabaseConfig } from '../config/database.config';
 import { BaseController } from './base.controller';
 import { AuthController } from './auth.controller';
 import { DatabaseController } from './database.controller';
@@ -14,6 +15,8 @@ export class ControllerRegistry {
   private controllers: BaseController[] = [];
 
   constructor(
+    @Inject()
+    private _databaseConfig: DatabaseConfig,
     @Inject()
     private _authController: AuthController,
     @Inject()
@@ -38,11 +41,14 @@ export class ControllerRegistry {
     _logger.info(`Initialized ${this.controllers.length} controllers`);
   }
 
-  public registerAllHandlers(): void {
+  public async registerAllHandlers(): Promise<void> {
+    await this._databaseConfig.connect()
+
     _logger.info('Registering all IPC handlers');
     for (const controller of this.controllers) {
       controller.registerHandlers();
     }
+    
     _logger.info(`Registered handlers for ${this.controllers.length} controllers`);
   }
 }

@@ -8,9 +8,11 @@ const logger = createLogger({
     format: format.combine(
         format.timestamp(),
         format.colorize(),
-        format.printf(({ level, message, timestamp }) => `${timestamp} ${level}: ${message}`)
+        format.printf(({ level, message, timestamp }) => `${timestamp} ${level}: ${message}`),
     ),
-    transports: [new transports.Console()]
+    transports: [
+        new transports.Console(),
+    ]
 });
 
 app.whenReady().then(() => {
@@ -23,8 +25,7 @@ app.whenReady().then(() => {
 
     logger.add(new transports.File({
         filename: path.join(logsPath, 'error.log'),
-        level: 'error'
-    }));
+    } as transports.FileTransportOptions));
 
     logger.add(new transports.File({
         filename: path.join(logsPath, 'combined.log')

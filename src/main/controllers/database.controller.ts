@@ -22,9 +22,10 @@ export class DatabaseController extends BaseController {
       try {
         _logger.info('Database export request received');
         const data = await this._databaseService.exportDatabase();
-        _logger.info('Database exported successfully');
 
+        _logger.info('Database exported successfully');
         const response = new ExportDatabaseResponseDTO(true, data, 'Database exported successfully');
+
         return response;
       } catch (error) {
         _logger.error(`Error exporting database: ${error instanceof Error ? error.message : String(error)}`);
@@ -36,11 +37,11 @@ export class DatabaseController extends BaseController {
       try {
         _logger.info('Database import request received');
         const recordCount = await this._databaseService.importDatabase(importData.data);
-        _logger.info(`Database imported successfully with ${recordCount} records`);
 
-        // Assicuriamoci che recordCount sia un numero
+        _logger.info(`Database imported successfully with ${recordCount} records`);
         const count = typeof recordCount === 'boolean' ? 0 : recordCount;
         return new ImportDatabaseResponseDTO(true, 'Database imported successfully', count);
+        
       } catch (error) {
         _logger.error(`Error importing database: ${error instanceof Error ? error.message : String(error)}`);
         return new ImportDatabaseResponseDTO(false, 'Failed to import database');

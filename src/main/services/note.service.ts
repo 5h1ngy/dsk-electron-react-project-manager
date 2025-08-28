@@ -1,8 +1,8 @@
 import { Service } from 'typedi';
 
-import { Note } from '../models/Note';
-import { Project } from '../models/Project';
-import { Task } from '../models/Task';
+import { Note } from '../Models';
+import { Project } from '../Models';
+import { Task } from '../Models';
 import * as _logger from '../shared/logger';
 import { CreateNoteDto, NoteListResponseDto, NoteResponseDto, SingleNoteResponseDto, UpdateNoteDto } from '../dtos/note.dto';
 import { BaseService } from './base.service';
