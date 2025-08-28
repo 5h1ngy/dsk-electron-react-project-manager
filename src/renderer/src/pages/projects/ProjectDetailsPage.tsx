@@ -17,8 +17,8 @@ import {
 } from '@ant-design/icons';
 import { format } from 'date-fns';
 import { RootState, AppDispatch } from '../../store';
-import { fetchProjects, deleteProject } from '../../store/slices/projectsSlice';
-import { fetchTasks } from '../../store/slices/tasksSlice';
+import { fetchProjects, deleteProject } from '../../store/projectsSlice/projectsSlice';
+import { fetchTasks } from '../../store/tasksSlice/tasksSlice';
 import ProjectModal from '../../components/projects/ProjectModal';
 import PageHeader from '../../components/common/PageHeader';
 import Loader from '../../components/common/Loader';

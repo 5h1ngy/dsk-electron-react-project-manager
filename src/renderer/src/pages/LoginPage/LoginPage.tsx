@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
-import { login, clearError } from '../../store/slices/authSlice';
+import { login, clearError } from '../../store/authSlice';
 import { RootState, AppDispatch } from '../../store';
 import { Button, Input } from '../../components/ui';
 

@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 
 import { Dispatch } from '@renderer/store';
-import { restoreUser } from '@renderer/store/slices/authSlice';
+import { restoreUser } from '@renderer/store/authSlice/asyncThunks';
 import { ThemeProvider } from '@renderer/styles/ThemeProvider';
 import { routes } from '@renderer/pages/routes';
 

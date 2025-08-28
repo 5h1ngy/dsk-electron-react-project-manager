@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import ThemeControls from '../ui/ThemeControls';
-import { logout } from '../../store/slices/authSlice';
+import { logout } from '../../store/authSlice';
 import { RootState } from '../../store';
 
 interface MainLayoutProps {

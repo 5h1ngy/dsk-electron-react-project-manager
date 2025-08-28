@@ -1,6 +1,6 @@
 // #region Imports
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { Tag } from './projectsSlice';
+import { Tag } from '../projectsSlice/projectsSlice';
 import { RootState } from '../index';
 // #endregion
 

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { Select, Input } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
-import { TaskStatus, TaskPriority, TaskFilter } from '../../store/slices/tasksSlice';
+import { TaskStatus, TaskPriority, TaskFilter } from '../../store/tasksSlice/tasksSlice';
 
 interface TaskFilterBarProps {
   filters: TaskFilter;

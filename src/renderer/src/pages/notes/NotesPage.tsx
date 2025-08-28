@@ -22,7 +22,7 @@ import {
   deleteFolder,
   deleteNote,
   setCurrentNote
-} from '../../store/slices/notesSlice';
+} from '../../store/notesSlice';
 import PageHeader from '../../components/common/PageHeader';
 import Loader from '../../components/common/Loader';
 import EmptyState from '../../components/common/EmptyState';
