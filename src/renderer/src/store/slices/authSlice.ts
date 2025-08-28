@@ -1,28 +1,33 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-
+// #region Global Declarations
 // Use the exposed API instead of direct electron imports
 declare global {
   interface Window {
     api: any;
   }
 }
+// #endregion
 
-// Define types
-interface User {
+// #region Imports
+import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+// #endregion
+
+// #region Types
+export interface User {
   id: number;
   name: string;
   email: string;
 }
 
-interface AuthState {
+export interface AuthState {
   user: User | null;
   loading: boolean;
   error: string | null;
   initialized: boolean;
   isAuthenticated: boolean;
 }
+// #endregion
 
-// Define initial state
+// #region Initial State
 const initialState: AuthState = {
   user: null,
   loading: false,
@@ -30,18 +35,19 @@ const initialState: AuthState = {
   initialized: false,
   isAuthenticated: false
 };
+// #endregion
 
-// Async thunks
+// #region Async Thunks
 export const register = createAsyncThunk(
   'auth/register',
   async (userData: { username: string; email: string; password: string }, { rejectWithValue }) => {
     try {
       const response = await window.api.register(userData);
-      
+
       if (!response.success) {
         return rejectWithValue(response.message || 'Errore durante la registrazione');
       }
-      
+
       return response.user;
     } catch (error) {
       console.error('Errore durante la registrazione:', error);
@@ -55,11 +61,11 @@ export const login = createAsyncThunk(
   async (loginData: { username: string; password: string }, { rejectWithValue }) => {
     try {
       const response = await window.api.login(loginData);
-      
+
       if (!response.success) {
         return rejectWithValue(response.message || 'Errore durante l\'accesso');
       }
-      
+
       return response.user;
     } catch (error) {
       console.error('Errore durante il login:', error);
@@ -82,8 +88,9 @@ export const restoreUser = createAsyncThunk(
     }
   }
 );
+// #endregion
 
-// Create slice
+// #region Slice
 const authSlice = createSlice({
   name: 'auth',
   initialState,
@@ -115,7 +122,7 @@ const authSlice = createSlice({
       state.error = action.payload as string || 'Failed to register';
       state.initialized = true;
     });
-    
+
     // Login cases
     builder.addCase(login.pending, (state) => {
       state.loading = true;
@@ -133,7 +140,7 @@ const authSlice = createSlice({
       state.error = action.payload as string || 'Failed to login';
       state.initialized = true;
     });
-    
+
     // Restore user cases
     builder.addCase(restoreUser.pending, (state) => {
       state.loading = true;
@@ -152,6 +159,9 @@ const authSlice = createSlice({
     });
   },
 });
+// #endregion
 
+// #region Exports
 export const { logout, clearError } = authSlice.actions;
 export default authSlice.reducer;
+// #endregion

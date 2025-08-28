@@ -4,20 +4,24 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   main: {
-    plugins: [externalizeDepsPlugin(), swcPlugin()],
+    plugins: [
+      externalizeDepsPlugin(),
+      swcPlugin()
+    ],
     build: {
       sourcemap: true,
-      minify: false, // Disabilita la minificazione
-      // Migliorato per il live reload
+      minify: false,
       watch: {}
     }
   },
   preload: {
-    plugins: [externalizeDepsPlugin(), swcPlugin()],
+    plugins: [
+      externalizeDepsPlugin(),
+      swcPlugin()
+    ],
     build: {
-      sourcemap: true, // Abilita i sourcemap
-      minify: false, // Disabilita la minificazione
-      // Migliorato per il live reload
+      sourcemap: true,
+      minify: false,
       watch: {}
     }
   },
@@ -27,9 +31,10 @@ export default defineConfig({
         '@renderer': resolve('src/renderer/src')
       }
     },
-    plugins: [react()],
+    plugins: [
+      react()
+    ],
     server: {
-      // Migliorato per il live reload
       hmr: {
         overlay: true
       }

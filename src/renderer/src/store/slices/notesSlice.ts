@@ -1,5 +1,3 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-
 // Use the exposed API instead of direct electron imports
 declare global {
   interface Window {
@@ -8,7 +6,13 @@ declare global {
 }
 import { Tag } from './projectsSlice';
 import { RootState } from '../index';
+// #endregion
 
+// #region Imports
+import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+// #endregion
+
+// #region Types
 export interface Note {
   id: number;
   title: string;
@@ -42,7 +46,7 @@ export interface File {
   updatedAt: string;
 }
 
-interface NotesState {
+export interface NotesState {
   folders: Folder[];
   currentFolder: Folder | null;
   files: File[];
@@ -58,7 +62,9 @@ interface NotesState {
     searchTerm: string;
   };
 }
+// #endregion
 
+// #region Initial State
 const initialState: NotesState = {
   folders: [],
   currentFolder: null,
@@ -75,8 +81,9 @@ const initialState: NotesState = {
     searchTerm: '',
   },
 };
+// #endregion
 
-// Async thunks for notes actions
+// #region Async Thunks
 export const fetchFolders = createAsyncThunk(
   'notes/fetchFolders',
   async (userId: number, { rejectWithValue }) => {
@@ -182,7 +189,7 @@ export const deleteFile = createAsyncThunk(
 
 export const fetchNotes = createAsyncThunk(
   'notes/fetchNotes',
-  async ({ userId, folderId }: { userId: number; folderId?: number }, { rejectWithValue }) => {
+  async ({ folderId }: { userId: number; folderId?: number }, { rejectWithValue }) => {
     try {
       const response = await window.api.getFiles(folderId);
       return response;
@@ -223,14 +230,16 @@ export const deleteNote = createAsyncThunk(
   'notes/deleteNote',
   async (noteId: number, { rejectWithValue }) => {
     try {
-      const response = await window.api.deleteFile(noteId);
+      // const response = await window.api.deleteFile(noteId);
       return noteId;
     } catch (error) {
       return rejectWithValue((error as Error).message);
     }
   }
 );
+// #endregion
 
+// #region Slice
 const notesSlice = createSlice({
   name: 'notes',
   initialState,
@@ -297,14 +306,14 @@ const notesSlice = createSlice({
     });
     builder.addCase(updateFolder.fulfilled, (state, action: PayloadAction<Folder>) => {
       state.loading = false;
-      state.folders = state.folders.map(folder => 
+      state.folders = state.folders.map(folder =>
         folder.id === action.payload.id ? action.payload : folder
       );
       if (state.currentFolder?.id === action.payload.id) {
         state.currentFolder = action.payload;
       }
       // Update breadcrumbs if needed
-      state.breadcrumbs = state.breadcrumbs.map(folder => 
+      state.breadcrumbs = state.breadcrumbs.map(folder =>
         folder.id === action.payload.id ? action.payload : folder
       );
     });
@@ -409,7 +418,7 @@ const notesSlice = createSlice({
     });
     builder.addCase(updateNote.fulfilled, (state, action: PayloadAction<Note>) => {
       state.loading = false;
-      state.notes = state.notes.map(note => 
+      state.notes = state.notes.map(note =>
         note.id === action.payload.id ? action.payload : note
       );
     });
@@ -433,7 +442,9 @@ const notesSlice = createSlice({
     });
   },
 });
+// #endregion
 
+// #region Exports & Selectors
 export const {
   setCurrentFolder,
   updateBreadcrumbs,
@@ -446,7 +457,7 @@ export const {
 // Selectors
 export const selectFilteredItems = (state: RootState) => {
   const { folders, files, filter } = state.notes;
-  
+
   const filteredFolders = folders.filter(folder => {
     // Filter by tags
     if (filter.tags.length > 0) {
@@ -455,16 +466,16 @@ export const selectFilteredItems = (state: RootState) => {
         return false;
       }
     }
-    
+
     // Filter by search term
     if (filter.searchTerm && filter.searchTerm.trim() !== '') {
       const searchTerm = filter.searchTerm.toLowerCase();
       return folder.name.toLowerCase().includes(searchTerm);
     }
-    
+
     return true;
   });
-  
+
   const filteredFiles = files.filter(file => {
     // Filter by tags
     if (filter.tags.length > 0) {
@@ -473,17 +484,18 @@ export const selectFilteredItems = (state: RootState) => {
         return false;
       }
     }
-    
+
     // Filter by search term
     if (filter.searchTerm && filter.searchTerm.trim() !== '') {
       const searchTerm = filter.searchTerm.toLowerCase();
       return file.name.toLowerCase().includes(searchTerm);
     }
-    
+
     return true;
   });
-  
+
   return { folders: filteredFolders, files: filteredFiles };
 };
 
 export default notesSlice.reducer;
+// #endregion

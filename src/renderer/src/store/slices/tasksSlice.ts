@@ -1,7 +1,10 @@
+// #region Imports
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { Tag } from './projectsSlice';
 import { RootState } from '../index';
+// #endregion
 
+// #region Enums
 export enum TaskPriority {
   LOW = 'low',
   MEDIUM = 'medium',
@@ -22,7 +25,9 @@ export enum TaskStatus {
   CUSTOM3 = 'custom3',
   CUSTOM4 = 'custom4'
 }
+// #endregion
 
+// #region Types
 export interface BoardColumn {
   id: string;
   title: string;
@@ -57,7 +62,7 @@ export interface Task {
   updatedAt: string;
 }
 
-interface TasksState {
+export interface TasksState {
   tasks: Task[];
   columns: BoardColumn[];
   loading: boolean;
@@ -69,7 +74,9 @@ interface TasksState {
     searchTerm: string;
   };
 }
+// #endregion
 
+// #region Initial State
 const initialState: TasksState = {
   tasks: [],
   columns: [
@@ -88,8 +95,9 @@ const initialState: TasksState = {
     searchTerm: '',
   },
 };
+// #endregion
 
-// Async thunks for task actions
+// #region Async Thunks
 export const fetchTasks = createAsyncThunk(
   'tasks/fetchByProject',
   async (projectId: number, { rejectWithValue }) => {
@@ -204,7 +212,9 @@ export const deleteAttachment = createAsyncThunk(
     }
   }
 );
+// #endregion
 
+// #region Slice
 const tasksSlice = createSlice({
   name: 'tasks',
   initialState,
@@ -362,7 +372,9 @@ const tasksSlice = createSlice({
     });
   },
 });
+// #endregion
 
+// #region Exports & Selectors
 export const {
   setTaskFilter,
   clearTaskFilters,
@@ -446,3 +458,4 @@ export const selectTasksByStatus = (state: RootState) => {
 };
 
 export default tasksSlice.reducer;
+// #endregion

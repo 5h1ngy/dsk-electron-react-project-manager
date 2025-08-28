@@ -6,7 +6,7 @@ import notesReducer from './slices/notesSlice';
 import uiReducer from './slices/uiSlice';
 import usersReducer from './slices/usersSlice';
 
-export const store = configureStore({
+const store = configureStore({
   reducer: {
     auth: authReducer,
     projects: projectsReducer,
@@ -14,12 +14,10 @@ export const store = configureStore({
     notes: notesReducer,
     ui: uiReducer,
     users: usersReducer,
-  },
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({
-      serializableCheck: false,
-    }),
+  }
 });
 
 export type RootState = ReturnType<typeof store.getState>;
-export type AppDispatch = typeof store.dispatch;
+export type Dispatch = typeof store.dispatch;
+
+export default store;

@@ -1,6 +1,9 @@
+// #region Imports
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '../index';
+// #endregion
 
+// #region Types
 export interface Tag {
   id: number;
   name: string;
@@ -17,7 +20,7 @@ export interface Project {
   updatedAt: string;
 }
 
-interface ProjectsState {
+export interface ProjectsState {
   projects: Project[];
   currentProject: Project | null;
   loading: boolean;
@@ -27,7 +30,9 @@ interface ProjectsState {
     searchTerm: string;
   };
 }
+// #endregion
 
+// #region Initial State
 const initialState: ProjectsState = {
   projects: [],
   currentProject: null,
@@ -38,8 +43,9 @@ const initialState: ProjectsState = {
     searchTerm: '',
   },
 };
+// #endregion
 
-// Async thunks for project actions
+// #region Async Thunks
 export const fetchProjects = createAsyncThunk(
   'projects/fetchAll',
   async (userId: number, { rejectWithValue }) => {
@@ -50,18 +56,18 @@ export const fetchProjects = createAsyncThunk(
       }
 
       const response = await window.api.getProjects(userId);
-      
+
       // Gestione migliore della risposta
       if (!response.success) {
         return rejectWithValue(response.message || 'Errore nel recupero dei progetti');
       }
-      
+
       // Verifica che i progetti siano un array
       if (!Array.isArray(response.projects)) {
         console.error('Risposta non valida dal server:', response);
         return rejectWithValue('La risposta dal server non contiene un elenco di progetti valido');
       }
-      
+
       return response.projects;
     } catch (error) {
       console.error('Errore durante il recupero dei progetti:', error);
@@ -114,7 +120,9 @@ export const deleteProject = createAsyncThunk(
     }
   }
 );
+// #endregion
 
+// #region Slice
 const projectsSlice = createSlice({
   name: 'projects',
   initialState,
@@ -174,7 +182,7 @@ const projectsSlice = createSlice({
     });
     builder.addCase(updateProject.fulfilled, (state, action: PayloadAction<Project>) => {
       state.loading = false;
-      state.projects = state.projects.map(project => 
+      state.projects = state.projects.map(project =>
         project.id === action.payload.id ? action.payload : project
       );
       if (state.currentProject?.id === action.payload.id) {
@@ -204,7 +212,9 @@ const projectsSlice = createSlice({
     });
   },
 });
+// #endregion
 
+// #region Exports & Selectors
 export const {
   setCurrentProject,
   setTagFilter,
@@ -216,7 +226,7 @@ export const {
 // Selectors
 export const selectFilteredProjects = (state: RootState) => {
   const { projects, filter } = state.projects;
-  
+
   return projects.filter(project => {
     // Filter by tags
     if (filter.tags.length > 0) {
@@ -225,7 +235,7 @@ export const selectFilteredProjects = (state: RootState) => {
         return false;
       }
     }
-    
+
     // Filter by search term
     if (filter.searchTerm && filter.searchTerm.trim() !== '') {
       const searchTerm = filter.searchTerm.toLowerCase();
@@ -234,9 +244,10 @@ export const selectFilteredProjects = (state: RootState) => {
         project.description.toLowerCase().includes(searchTerm)
       );
     }
-    
+
     return true;
   });
 };
 
 export default projectsSlice.reducer;
+// #endregion

@@ -1,12 +1,17 @@
+// #region Imports
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+// #endregion
 
+// #region Global Declarations
 // Use the exposed API instead of direct electron imports
 declare global {
   interface Window {
     api: any;
   }
 }
+// #endregion
 
+// #region Types
 // Define User interface
 export interface User {
   id: number;
@@ -18,18 +23,22 @@ export interface User {
 }
 
 // Define initial state
-interface UsersState {
+export interface UsersState {
   users: User[];
   loading: boolean;
   error: string | null;
 }
+// #endregion
 
+// #region Initial State
 const initialState: UsersState = {
   users: [],
   loading: false,
   error: null,
 };
+// #endregion
 
+// #region Async Thunks
 // Async thunks for user operations
 export const fetchUsers = createAsyncThunk(
   'users/fetchUsers',
@@ -38,7 +47,9 @@ export const fetchUsers = createAsyncThunk(
     return response;
   }
 );
+// #endregion
 
+// #region Slice
 // Create the users slice
 const usersSlice = createSlice({
   name: 'users',
@@ -64,6 +75,9 @@ const usersSlice = createSlice({
       });
   },
 });
+// #endregion
 
+// #region Exports
 export const { clearError } = usersSlice.actions;
 export default usersSlice.reducer;
+// #endregion
