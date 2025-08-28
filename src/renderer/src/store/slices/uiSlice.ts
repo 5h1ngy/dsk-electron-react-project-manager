@@ -1,18 +1,23 @@
+// #region Imports
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+// #endregion
 
+// #region Types
 export type ThemeMode = 'light' | 'dark';
 export type ViewMode = 'card' | 'table' | 'list';
 export type NotesViewMode = 'grid' | 'list';
 export type ColorPalette = 'blue' | 'green' | 'purple' | 'orange' | 'red';
 
-interface UiState {
+export interface UiState {
   themeMode: ThemeMode;
   colorPalette: ColorPalette;
   projectsViewMode: ViewMode;
   notesViewMode: NotesViewMode;
   sidebarCollapsed: boolean;
 }
+// #endregion
 
+// #region Initial State
 const initialState: UiState = {
   themeMode: 'dark', // Default to dark mode
   colorPalette: 'blue', // Default accent color
@@ -20,7 +25,9 @@ const initialState: UiState = {
   notesViewMode: 'grid', // Default notes view
   sidebarCollapsed: false,
 };
+// #endregion
 
+// #region Slice
 const uiSlice = createSlice({
   name: 'ui',
   initialState,
@@ -64,7 +71,9 @@ const uiSlice = createSlice({
     },
   },
 });
+// #endregion
 
+// #region Exports
 export const {
   setThemeMode,
   setColorPalette,
@@ -76,3 +85,4 @@ export const {
 } = uiSlice.actions;
 
 export default uiSlice.reducer;
+// #endregion
