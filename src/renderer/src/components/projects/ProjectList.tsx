@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Project } from '../../store/slices/projectsSlice';
+import { Project } from '../../store/projectsSlice/projectsSlice';
 import { formatDistanceToNow } from 'date-fns';
 import { ProjectOutlined, CalendarOutlined, TagOutlined, RightOutlined } from '@ant-design/icons';
 

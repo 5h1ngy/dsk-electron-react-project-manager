@@ -20,8 +20,6 @@ export class Application {
       this.configureForWindows();
       this.registerAppEvents();
 
-      await this._controllerRegistry.registerAllHandlers();
-
       _logger.info('Application initialized successfully');
     } catch (error) {
       _logger.error(`Error initializing application: ${error instanceof Error ? error.message : 'Unknown error'}`);

@@ -13,11 +13,11 @@ import {
   setTaskFilter,
   clearTaskFilters,
   reorderTasks
-} from '../../store/slices/tasksSlice';
+} from '../../store/tasksSlice/tasksSlice';
 import { 
   fetchProjects, 
   setCurrentProject 
-} from '../../store/slices/projectsSlice';
+} from '../../store/projectsSlice/projectsSlice';
 
 // Components
 import TaskColumn from '../../components/tasks/TaskColumn';

@@ -1,17 +1,12 @@
 import { useEffect } from 'react';
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { useDispatch } from 'react-redux';
-import styled from 'styled-components';
 
 import { Dispatch } from '@renderer/store';
-import { restoreUser } from '@renderer/store/slices/authSlice';
+import { restoreUser } from '@renderer/store/authSlice/asyncThunks';
 import { ThemeProvider } from '@renderer/styles/ThemeProvider';
 import { routes } from '@renderer/pages/routes';
-
-const AppContainer = styled.div`
-  height: 100%;
-  width: 100%;
-`;
+import { AppContainer } from './App.style';
 
 const App: React.FC = () => {
   const dispatch = useDispatch<Dispatch>();

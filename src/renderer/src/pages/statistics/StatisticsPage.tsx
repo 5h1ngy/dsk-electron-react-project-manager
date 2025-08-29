@@ -23,8 +23,8 @@ import {
 } from 'chart.js';
 import { Pie, Bar, Line } from 'react-chartjs-2';
 import { RootState, AppDispatch } from '../../store';
-import { fetchProjects } from '../../store/slices/projectsSlice';
-import { fetchTasks, TaskStatus, TaskPriority } from '../../store/slices/tasksSlice';
+import { fetchProjects } from '../../store/projectsSlice/projectsSlice';
+import { fetchTasks, TaskStatus, TaskPriority } from '../../store/tasksSlice/tasksSlice';
 import PageHeader from '../../components/common/PageHeader';
 
 // Register ChartJS components

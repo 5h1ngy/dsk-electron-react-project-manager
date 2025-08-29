@@ -10,8 +10,8 @@ import {
   setTagFilter,
   setSearchFilter,
   clearFilters 
-} from '../../store/slices/projectsSlice';
-import { ViewMode, setProjectsViewMode } from '../../store/slices/uiSlice';
+} from '../../store/projectsSlice/projectsSlice';
+import { ViewMode, setProjectsViewMode } from '../../store/uiSlice/uiSlice';
 
 // Componenti UI
 import { Button, Card, Input, Badge } from '../../components/ui';

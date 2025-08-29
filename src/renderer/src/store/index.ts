@@ -1,10 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit';
-import authReducer from './slices/authSlice';
-import projectsReducer from './slices/projectsSlice';
-import tasksReducer from './slices/tasksSlice';
-import notesReducer from './slices/notesSlice';
-import uiReducer from './slices/uiSlice';
-import usersReducer from './slices/usersSlice';
+
+import authReducer, { actions as authActions } from './authSlice';
+import projectsReducer from './projectsSlice';
+import tasksReducer from './tasksSlice';
+import notesReducer from './notesSlice';
+import uiReducer from './uiSlice';
+import usersReducer from './usersSlice';
 
 const store = configureStore({
   reducer: {
@@ -16,6 +17,10 @@ const store = configureStore({
     users: usersReducer,
   }
 });
+
+export const actions = {
+  authActions,
+}
 
 export type RootState = ReturnType<typeof store.getState>;
 export type Dispatch = typeof store.dispatch;

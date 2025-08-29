@@ -11,7 +11,7 @@ import {
 } from '@ant-design/icons';
 import { Modal } from 'antd';
 import { RootState } from '../../store';
-import { updateTaskColumns } from '../../store/slices/tasksSlice';
+import { updateTaskColumns } from '../../store/tasksSlice/tasksSlice';
 import { Button, Input } from '../ui';
 
 interface BoardColumnSettingsProps {

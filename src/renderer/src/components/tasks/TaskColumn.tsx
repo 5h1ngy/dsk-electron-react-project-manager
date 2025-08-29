@@ -2,7 +2,7 @@ import React, { useRef } from 'react';
 import styled from 'styled-components';
 import { useDrop } from 'react-dnd';
 import TaskCard from './TaskCard';
-import { Task, TaskStatus } from '../../store/slices/tasksSlice';
+import { Task, TaskStatus } from '../../store/tasksSlice/tasksSlice';
 import { PlusOutlined } from '@ant-design/icons';
 
 interface TaskColumnProps {

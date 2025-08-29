@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
-import { register as registerUser, clearError } from '../../store/slices/authSlice';
+import { register as registerUser, clearError } from '../../store/authSlice';
 import { RootState, AppDispatch } from '../../store';
 
 // Registration form validation schema

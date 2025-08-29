@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import styled from 'styled-components';
 import { useDrag, useDrop } from 'react-dnd';
-import { Task, TaskPriority } from '../../store/slices/tasksSlice';
+import { Task, TaskPriority } from '../../store/tasksSlice/tasksSlice';
 import { format } from 'date-fns';
 import { 
   CalendarOutlined,
