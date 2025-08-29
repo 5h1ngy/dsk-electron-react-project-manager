@@ -5,7 +5,7 @@ import { fetchFolders, createFolder, updateFolder, deleteFolder, fetchFiles, upl
 export default (builder: ActionReducerMapBuilder<NotesState>) => {
     
     // Fetch folders
-    builder.addCase(fetchFolders.pending, (state) => {
+    builder.addCase(fetchFolders.pending, (state: NotesState) => {
         state.loading = true;
         state.error = null;
     });
@@ -19,7 +19,7 @@ export default (builder: ActionReducerMapBuilder<NotesState>) => {
     });
 
     // Create folder
-    builder.addCase(createFolder.pending, (state) => {
+    builder.addCase(createFolder.pending, (state: NotesState) => {
         state.loading = true;
         state.error = null;
     });
@@ -33,7 +33,7 @@ export default (builder: ActionReducerMapBuilder<NotesState>) => {
     });
 
     // Update folder
-    builder.addCase(updateFolder.pending, (state) => {
+    builder.addCase(updateFolder.pending, (state: NotesState) => {
         state.loading = true;
         state.error = null;
     });
@@ -56,7 +56,7 @@ export default (builder: ActionReducerMapBuilder<NotesState>) => {
     });
 
     // Delete folder
-    builder.addCase(deleteFolder.pending, (state) => {
+    builder.addCase(deleteFolder.pending, (state: NotesState) => {
         state.loading = true;
         state.error = null;
     });
@@ -75,7 +75,7 @@ export default (builder: ActionReducerMapBuilder<NotesState>) => {
     });
 
     // Fetch files
-    builder.addCase(fetchFiles.pending, (state) => {
+    builder.addCase(fetchFiles.pending, (state: NotesState) => {
         state.loading = true;
         state.error = null;
     });
@@ -89,7 +89,7 @@ export default (builder: ActionReducerMapBuilder<NotesState>) => {
     });
 
     // Upload file
-    builder.addCase(uploadFile.pending, (state) => {
+    builder.addCase(uploadFile.pending, (state: NotesState) => {
         state.loading = true;
         state.error = null;
     });
@@ -103,7 +103,7 @@ export default (builder: ActionReducerMapBuilder<NotesState>) => {
     });
 
     // Delete file
-    builder.addCase(deleteFile.pending, (state) => {
+    builder.addCase(deleteFile.pending, (state: NotesState) => {
         state.loading = true;
         state.error = null;
     });
@@ -117,7 +117,7 @@ export default (builder: ActionReducerMapBuilder<NotesState>) => {
     });
 
     // Fetch notes
-    builder.addCase(fetchNotes.pending, (state) => {
+    builder.addCase(fetchNotes.pending, (state: NotesState) => {
         state.loading = true;
         state.error = null;
     });
@@ -131,7 +131,7 @@ export default (builder: ActionReducerMapBuilder<NotesState>) => {
     });
 
     // Create note
-    builder.addCase(createNote.pending, (state) => {
+    builder.addCase(createNote.pending, (state: NotesState) => {
         state.loading = true;
         state.error = null;
     });
@@ -145,7 +145,7 @@ export default (builder: ActionReducerMapBuilder<NotesState>) => {
     });
 
     // Update note
-    builder.addCase(updateNote.pending, (state) => {
+    builder.addCase(updateNote.pending, (state: NotesState) => {
         state.loading = true;
         state.error = null;
     });
@@ -161,7 +161,7 @@ export default (builder: ActionReducerMapBuilder<NotesState>) => {
     });
 
     // Delete note
-    builder.addCase(deleteNote.pending, (state) => {
+    builder.addCase(deleteNote.pending, (state: NotesState) => {
         state.loading = true;
         state.error = null;
     });
