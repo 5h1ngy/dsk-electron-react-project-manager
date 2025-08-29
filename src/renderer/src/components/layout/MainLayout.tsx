@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import ThemeControls from '../ui/ThemeControls';
-import { logout } from '../../store/authSlice';
+import { actions } from '../../store';
 import { RootState } from '../../store';
 
 interface MainLayoutProps {
@@ -194,7 +194,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   };
 
   const handleLogout = () => {
-    dispatch(logout());
+    dispatch(actions.authActions.logout());
     navigate('/login');
   };
 
