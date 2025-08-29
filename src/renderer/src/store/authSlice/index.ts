@@ -4,6 +4,7 @@ import '../types'
 import initialState from './initialState';
 import reducers from './reducers';
 import extraReducers from './extraReducers';
+import * as asyncThunks from './asyncThunks';
 
 const authSlice = createSlice({
   name: 'auth',
@@ -12,5 +13,5 @@ const authSlice = createSlice({
   extraReducers,
 });
 
-export const { logout, clearError } = authSlice.actions;
+export const actions = { ...asyncThunks, ...authSlice.actions }
 export default authSlice.reducer;

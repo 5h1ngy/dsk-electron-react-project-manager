@@ -1,6 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
 
-import authReducer from './authSlice';
+import authReducer, { actions as authActions } from './authSlice';
 import projectsReducer from './projectsSlice';
 import tasksReducer from './tasksSlice';
 import notesReducer from './notesSlice';
@@ -17,6 +17,10 @@ const store = configureStore({
     users: usersReducer,
   }
 });
+
+export const actions = {
+  authActions,
+}
 
 export type RootState = ReturnType<typeof store.getState>;
 export type Dispatch = typeof store.dispatch;

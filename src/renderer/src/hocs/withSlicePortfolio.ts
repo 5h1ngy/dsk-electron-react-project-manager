@@ -1,14 +1,15 @@
 import { connect, ConnectedProps } from "react-redux";
-import { bindActionCreators, Dispatch } from "redux";
+import { bindActionCreators } from "redux";
 
-import { State, actions } from '@/store';
+import { RootState, Dispatch } from '../store';
+import { actions } from '../store';
 
-const mapStateToProps = (state: State) => ({
-    ...state.portfolioSlice,
+const mapStateToProps = (state: RootState) => ({
+    ...state.auth,
 })
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
-    ...bindActionCreators(actions.portfolioActions, dispatch),
+    ...bindActionCreators(actions.authActions, dispatch),
 })
 
 const bind = connect(mapStateToProps, mapDispatchToProps, (stateProps, dispatchProps, ownProps) => ({
