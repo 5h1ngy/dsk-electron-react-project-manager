@@ -4,6 +4,7 @@ import '../types'
 import initialState from './initialState';
 import reducers from './reducers';
 import extraReducers from './extraReducers';
+import * as asyncThunks from './asyncThunks';
 
 const notesSlice = createSlice({
   name: 'notes',
@@ -12,13 +13,5 @@ const notesSlice = createSlice({
   extraReducers,
 });
 
-export const {
-  setCurrentFolder,
-  updateBreadcrumbs,
-  setNoteFilter,
-  clearNoteFilters,
-  clearNotesError,
-  setCurrentNote,
-} = notesSlice.actions;
-
+export const actions = { ...asyncThunks, ...notesSlice.actions }
 export default notesSlice.reducer;
