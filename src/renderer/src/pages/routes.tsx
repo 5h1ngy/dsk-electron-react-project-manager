@@ -1,6 +1,7 @@
 import { RouteObject, Outlet, Navigate } from "react-router-dom"
 
-import { MainLayout, AuthLayout } from '@renderer/components/layout';
+import AuthLayout from '@renderer/components/layouts/AuthLayout';
+import MainLayout from '@renderer/components/layouts/MainLayout';
 import PublicRoute from "@renderer/hocs/PublicRoute";
 import ProtectedRoute from "@renderer/hocs/ProtectedRoute";
 
@@ -24,19 +25,19 @@ export const routes: RouteObject[] = [
             // { path: "register", ...Register, },
         ]
     },
-    {
-        path: "/",
-        element: <ProtectedRoute children={<MainLayout children={<Outlet />} />} />,
-        children: [
-            { index: true, element: <Navigate to="/home" replace /> },
-            // { path: "dashboard", ...Dashboard, },
-            // { path: "projects/:projectId", ...ProjectDetails, },
-            // { path: "projects/:projectId/tasks", ...TaskBoard, },
-            // { path: "notes", ...Notes, },
-            // { path: "notes/:folderId", ...Notes, },
-            // { path: "statistics", ...Statistics, },
-            // { path: "settings", ...Settings, },
-            // { path: "*", ...NotFound, },
-        ]
-    }
+    // {
+    //     path: "/",
+    //     element: <ProtectedRoute children={<MainLayout children={<Outlet />} />} />,
+    //     children: [
+    //         { index: true, element: <Navigate to="/home" replace /> },
+    //         // { path: "dashboard", ...Dashboard, },
+    //         // { path: "projects/:projectId", ...ProjectDetails, },
+    //         // { path: "projects/:projectId/tasks", ...TaskBoard, },
+    //         // { path: "notes", ...Notes, },
+    //         // { path: "notes/:folderId", ...Notes, },
+    //         // { path: "statistics", ...Statistics, },
+    //         // { path: "settings", ...Settings, },
+    //         // { path: "*", ...NotFound, },
+    //     ]
+    // }
 ];

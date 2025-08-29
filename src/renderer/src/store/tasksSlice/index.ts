@@ -2,7 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 import { initialState } from './initialState';
 import { reducers } from './reducers';
 import { extraReducers } from './extraReducers';
-import { fetchTasks, createTask, updateTask, deleteTask } from './asyncThunks';
+import * as asyncThunks from './asyncThunks';
 
 const tasksSlice = createSlice({
   name: 'tasks',
@@ -11,14 +11,6 @@ const tasksSlice = createSlice({
   extraReducers,
 });
 
-export const {
-  setTaskFilter,
-  clearTaskFilters,
-  clearTasksError,
-  reorderTasks,
-  updateTaskColumns,
-} = tasksSlice.actions;
+export const actions = { ...asyncThunks, ...tasksSlice.actions }
 
 export default tasksSlice.reducer;
-
-export { fetchTasks, createTask, updateTask, deleteTask };

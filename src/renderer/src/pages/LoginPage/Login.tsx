@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 
-import { RootState, Dispatch, actions } from '../../store';
+import { RootState, RootDispatch, rootActions } from '../../store';
 import { Button } from '../../components/ui';
 
 import { Description, ErrorMessage, Form, LoginContainer, SignupLink, StyledInput, StyledLink, Title } from './Login.style';
@@ -17,7 +17,7 @@ const loginSchema = z.object({
 type LoginFormInputs = z.infer<typeof loginSchema>;
 
 const LoginPage = () => {
-  const dispatch = useDispatch<Dispatch>();
+  const dispatch = useDispatch<RootDispatch>();
   const { loading, error } = useSelector((state: RootState) => state.auth);
 
   const {
@@ -29,12 +29,12 @@ const LoginPage = () => {
   });
 
   const onSubmit = (data: LoginFormInputs) => {
-    dispatch(actions.authActions.clearError());
-    dispatch(actions.authActions.login(data));
+    dispatch(rootActions.authActions.clearError());
+    dispatch(rootActions.authActions.login(data));
   };
 
   useEffect(() => {
-    dispatch(actions.authActions.clearError());
+    dispatch(rootActions.authActions.clearError());
   }, [dispatch]);
 
   return (
@@ -76,10 +76,10 @@ const LoginPage = () => {
         </Button>
       </Form>
 
-      <SignupLink>
+      {/* <SignupLink>
         Non hai un account?{' '}
         <StyledLink to="/register">Registrati</StyledLink>
-      </SignupLink>
+      </SignupLink> */}
     </LoginContainer>
   );
 };

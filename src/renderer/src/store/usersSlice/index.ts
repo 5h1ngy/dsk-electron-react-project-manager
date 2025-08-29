@@ -2,7 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 import { initialState } from './initialState';
 import { reducers } from './reducers';
 import { extraReducers } from './extraReducers';
-import { fetchUsers } from './asyncThunks';
+import * as asyncThunks from './asyncThunks';
 
 const usersSlice = createSlice({
   name: 'users',
@@ -11,7 +11,6 @@ const usersSlice = createSlice({
   extraReducers,
 });
 
-export const { clearError } = usersSlice.actions;
-export default usersSlice.reducer;
+export const actions = { ...asyncThunks, ...usersSlice.actions }
 
-export { fetchUsers };
+export default usersSlice.reducer;

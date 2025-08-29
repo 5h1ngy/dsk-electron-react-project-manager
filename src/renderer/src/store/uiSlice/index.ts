@@ -8,14 +8,6 @@ const uiSlice = createSlice({
   reducers,
 });
 
-export const {
-  setThemeMode,
-  setColorPalette,
-  setProjectsViewMode,
-  setNotesViewMode,
-  toggleSidebar,
-  setSidebarCollapsed,
-  initializeUiFromStorage,
-} = uiSlice.actions;
+export const actions = { ...uiSlice.actions }
 
 export default uiSlice.reducer;
