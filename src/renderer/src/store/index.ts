@@ -1,11 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit';
 
-import authReducer, { actions as authActions } from './authSlice';
-import projectsReducer, { actions as projectsActions, selectors as projectSelectors } from './projectsSlice';
-import tasksReducer, { actions as tasksActions } from './tasksSlice';
-import notesReducer, { actions as notesActions } from './notesSlice';
-import uiReducer, { actions as uiActions } from './uiSlice';
-import usersReducer, { actions as usersActions } from './usersSlice';
+import { reducer as authReducer, actions as authActions } from './auth';
+import { reducer as projectsReducer, actions as projectsActions, selectors as projectSelectors } from './projects';
+import { reducer as tasksReducer, actions as tasksActions } from './tasks';
+import { reducer as notesReducer, actions as notesActions, selectors as notesSelectors } from './notes';
+import { reducer as uiReducer, actions as uiActions } from './ui';
+import { reducer as usersReducer, actions as usersActions } from './users';
 
 const store = configureStore({
   reducer: {
@@ -28,7 +28,8 @@ export const rootActions = {
 }
 
 export const rootSelectors = {
-  projectSelectors
+  projectSelectors,
+  notesSelectors,
 }
 
 export type RootState = ReturnType<typeof store.getState>;

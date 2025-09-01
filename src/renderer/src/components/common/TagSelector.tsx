@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
-import { Tag } from '../../store/projectsSlice/projectsSlice';
+import { Tag } from '../../store/projects/projectsSlice';
 import { TagOutlined, PlusOutlined, CloseOutlined } from '@ant-design/icons';
 
 interface TagSelectorProps {

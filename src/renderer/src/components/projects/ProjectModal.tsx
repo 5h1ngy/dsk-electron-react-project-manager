@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Project } from '../../store/projectsSlice/projectsSlice';
+import { Project } from '../../store/projects/projectsSlice';
 import TagSelector from '../common/TagSelector';
 import { CloseOutlined } from '@ant-design/icons';
 
