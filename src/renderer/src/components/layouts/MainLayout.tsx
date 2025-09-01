@@ -1,9 +1,8 @@
 import React, { ReactNode, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
 
+import withSlice, { Bind } from '@renderer/hocs/withSlice';
 import ThemeControls from '@renderer/components/ui/ThemeControls';
-import { RootState, rootActions } from '@renderer/store';
 
 import {
   LayoutContainer,
@@ -27,38 +26,26 @@ import {
   LogoutButton
 } from './MainLayout.style';
 
-interface MainLayoutProps {
+function getInitials(name: string) {
+  return name ? name.split(' ').map((n) => n[0]).join('').toUpperCase() : 'U';
+}
+
+interface MainLayoutProps extends Bind {
   children: ReactNode;
 }
 
-export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
+export const MainLayout: React.FC<MainLayoutProps> = ({ actions, state, children }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const dispatch = useDispatch();
-  const { user } = useSelector((state: RootState) => state.auth);
 
   const [pageTitle, setPageTitle] = useState('Dashboard');
 
-  const getInitials = (name: string) => {
-    if (!name) return 'U';
-    return name
-      .split(' ')
-      .map((n) => n[0])
-      .join('')
-      .toUpperCase();
-  };
-
-  const handleNavigation = (path: string, title: string) => {
+  function handleNavigation(path: string, title: string) {
     navigate(path);
     setPageTitle(title);
   };
 
-  const handleLogout = () => {
-    dispatch(rootActions.authActions.logout());
-    navigate('/login');
-  };
-
-  const isActivePath = (path: string) => {
+  function isActivePath(path: string) {
     return location.pathname === path;
   };
 
@@ -81,14 +68,14 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
           </NavItem>
           <NavItem
             $isActive={location.pathname.includes('/projects')}
-            onClick={() => handleNavigation('/dashboard', 'Progetti')}
+            onClick={() => handleNavigation('/projects', 'Progetti')}
           >
             <NavItemIcon></NavItemIcon>
             Progetti
           </NavItem>
           <NavItem
             $isActive={location.pathname.includes('/tasks')}
-            onClick={() => handleNavigation('/dashboard', 'Attività')}
+            onClick={() => handleNavigation('/tasks', 'Attività')}
           >
             <NavItemIcon></NavItemIcon>
             Attività
@@ -115,14 +102,28 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 
         <SidebarFooter>
           <UserSection>
-            <Avatar>{user?.name ? getInitials(user.name) : 'U'}</Avatar>
+            <Avatar>
+              {state.auth.user?.name ? getInitials(state.auth.user?.name) : 'U'}
+            </Avatar>
+
             <UserInfo>
-              <Username>{user?.name || 'Utente'}</Username>
-              <UserRole>Sviluppatore</UserRole>
+              <Username>
+                {state.auth.user?.name || 'Utente'}
+              </Username>
+              <UserRole>
+                Sviluppatore
+              </UserRole>
             </UserInfo>
-            <LogoutButton onClick={handleLogout} title="Logout">
+
+            <LogoutButton
+              title="Logout"
+              onClick={() => {
+                actions.authActions.logout();
+                navigate('/login');
+              }}>
               
             </LogoutButton>
+            
           </UserSection>
         </SidebarFooter>
       </Sidebar>
@@ -141,4 +142,4 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   );
 };
 
-export default MainLayout;
+export default withSlice(MainLayout);

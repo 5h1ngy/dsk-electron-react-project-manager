@@ -12,13 +12,14 @@ import * as _logger from '../shared/logger';
 @Service()
 export class AuthService extends BaseService {
 
-  private UserModel: ModelCtor<User>;
-
   constructor(
     @Inject() private _databaseConfig: DatabaseConfig,
   ) {
     super();
-    this.UserModel = this._databaseConfig.models.User as ModelCtor<User>;
+  }
+
+  private get UserModel(): ModelCtor<User> {
+    return this._databaseConfig.models.User as ModelCtor<User>;
   }
 
   public async register(form: RegisterRequestDTO): Promise<RegisterResponseDTO> {

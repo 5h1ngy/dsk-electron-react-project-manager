@@ -7,4 +7,4 @@ export const loader: LoaderFunction | undefined =
 export const action: ActionFunction | undefined =
     undefined;
 
-export const element: React.ReactElement = <DashboardPage />;
+export const element: React.ReactElement = <></> // <DashboardPage />;

@@ -34,7 +34,7 @@ const DashboardPage = () => {
   // Fetch projects on component mount
   useEffect(() => {
     if (user) {
-      dispatch(rootActions.projectsActions.fetchProjects(user.id));
+      // dispatch(rootActions.projectsActions.fetchProjects(user.id));
     }
   }, [dispatch, user]);
 

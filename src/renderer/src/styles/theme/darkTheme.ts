@@ -1,5 +1,5 @@
 import { DefaultTheme } from 'styled-components';
-import { baseTheme } from './base';
+import { baseTheme } from './baseTheme';
 
 // Dark theme con colori molto scuri
 export const darkTheme: DefaultTheme = {
