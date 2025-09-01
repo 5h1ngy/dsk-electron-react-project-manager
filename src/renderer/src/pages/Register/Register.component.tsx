@@ -2,11 +2,11 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { RootState, RootDispatch, rootActions } from '@renderer/store';
 
+import { RegisterFormInputs, registerSchema } from './Register.form';
 import {
   Description,
   ErrorMessage,
@@ -20,19 +20,6 @@ import {
   Title,
   LoginLink,
 } from './Register.style';
-
-// Registration form validation schema
-const registerSchema = z.object({
-  username: z.string().min(3, 'Username must be at least 3 characters'),
-  email: z.string().email('Please enter a valid email address'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
-  confirmPassword: z.string().min(1, 'Please confirm your password'),
-}).refine(data => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ['confirmPassword'],
-});
-
-type RegisterFormInputs = z.infer<typeof registerSchema>;
 
 const RegisterPage: React.FC = () => {
   const dispatch = useDispatch<RootDispatch>();

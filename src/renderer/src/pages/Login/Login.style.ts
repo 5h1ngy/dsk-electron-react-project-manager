@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 
-import { Input } from '../../components/ui';
+import { Input } from '@renderer/components/ui/Input';
 
 export const LoginContainer = styled.div`
   display: flex;

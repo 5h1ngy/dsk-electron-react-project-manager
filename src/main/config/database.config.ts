@@ -1,6 +1,6 @@
 import path from 'path';
 import { app } from 'electron';
-import { Sequelize, SequelizeOptions } from 'sequelize-typescript';
+import { Model, ModelCtor, Sequelize, SequelizeOptions } from 'sequelize-typescript';
 import { Service } from 'typedi';
 import * as _logger from '../shared/logger';
 import { models } from '../models';
@@ -24,6 +24,10 @@ export class DatabaseConfig {
 
     public get isInitialized(): boolean {
         return this._sequelize !== null;
+    }
+
+    public get models(): { [key: string]: ModelCtor<Model<any, any>> } {
+        return this._sequelize!.models as { [key: string]: ModelCtor<Model<any, any>> };
     }
 
     constructor() {
@@ -62,7 +66,7 @@ export class DatabaseConfig {
         if (this._sequelize) {
             await this._sequelize.close();
             _logger.info(`Database connection closed successfully to ${this.dbPath}`);
-            
+
             this._sequelize = null;
         }
     }
