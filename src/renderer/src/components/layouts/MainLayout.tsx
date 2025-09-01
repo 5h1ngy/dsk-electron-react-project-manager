@@ -123,14 +123,16 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ actions, state, children
               }}>
               
             </LogoutButton>
-            
+
           </UserSection>
         </SidebarFooter>
       </Sidebar>
 
       <MainContent>
         <Header>
-          <PageTitle>{pageTitle}</PageTitle>
+          <PageTitle>
+            {pageTitle}
+          </PageTitle>
           <HeaderControls>
             <ThemeControls />
           </HeaderControls>
