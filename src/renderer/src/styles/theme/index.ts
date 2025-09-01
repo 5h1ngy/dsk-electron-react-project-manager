@@ -1,7 +1,6 @@
 import { DefaultTheme } from 'styled-components';
 import { lightTheme } from './lightTheme';
 import { darkTheme } from './darkTheme';
-import { deepMerge } from '../../utils/object';
 
 // Definizione di tutte le palette di colori disponibili
 export enum ThemeMode {
@@ -92,16 +91,18 @@ export const themes: Record<ThemeMode, DefaultTheme> = {
 export const getTheme = (mode: ThemeMode, accent: AccentColor = AccentColor.BLUE): DefaultTheme => {
   const baseTheme = themes[mode] || themes[ThemeMode.LIGHT];
   const accentTheme = accentColors[accent] || accentColors[AccentColor.BLUE];
-  
+
   // Unisci il tema base con il colore accentato ma mantieni gli altri colori del tema base
-  return deepMerge({}, baseTheme, { 
-    colors: { 
+  return {
+    ...baseTheme,
+    colors: {
+      ...baseTheme.colors,
       primary: accentTheme.primary,
-      accent: accentTheme.accent
-    } 
-  });
+      accent: accentTheme.accent,
+    }
+  };
 };
 
-export * from './base';
+export * from './baseTheme';
 export * from './lightTheme';
 export * from './darkTheme';

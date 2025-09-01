@@ -1,5 +1,5 @@
 import { DefaultTheme } from 'styled-components';
-import { baseTheme } from './base';
+import { baseTheme } from './baseTheme';
 
 // Light theme con colori soft/panna, evitando il bianco puro
 export const lightTheme: DefaultTheme = {

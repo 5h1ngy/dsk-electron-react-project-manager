@@ -5,6 +5,7 @@ import { BaseController } from './base.controller';
 import { AuthService } from '../services/auth.service';
 import { RegisterRequestDTO, LoginRequestDTO } from '../dtos/auth.dto';
 import * as _logger from '../shared/logger';
+
 @Service()
 export class AuthController extends BaseController {
 
