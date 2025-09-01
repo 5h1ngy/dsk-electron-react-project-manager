@@ -1,6 +1,6 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
-import { ThemeSwitcher } from '../ui';
+import ThemeSwitcher from '@renderer/components/ui/ThemeSwitcher';
 
 import {
   AuthContainer,
@@ -25,13 +25,13 @@ const AuthLayout: React.FC = () => {
           </BannerDescription>
         </BannerContent>
       </AuthBanner>
-      
+
       <FormSection>
         <Logo>PM App</Logo>
         <ThemeToggle>
           <ThemeSwitcher />
         </ThemeToggle>
-        
+
         <FormContainer>
           <Outlet />
         </FormContainer>

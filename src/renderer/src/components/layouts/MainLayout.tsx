@@ -1,9 +1,9 @@
 import React, { ReactNode, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import ThemeControls from '../ui/ThemeControls';
-import { rootActions } from '../../store';
-import { RootState } from '../../store';
+
+import ThemeControls from '@renderer/components/ui/ThemeControls';
+import { RootState, rootActions } from '@renderer/store';
 
 import {
   LayoutContainer,

@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Project } from '../../store/projectsSlice/projectsSlice';
+import { Project } from '../../store/projects/projectsSlice';
 import { format } from 'date-fns';
 import { TagOutlined } from '@ant-design/icons';
 
