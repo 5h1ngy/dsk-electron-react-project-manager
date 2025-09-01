@@ -1,6 +1,8 @@
 import { Op } from 'sequelize';
-import { Service } from 'typedi';
+import { Inject, Service } from 'typedi';
+import { ModelCtor } from 'sequelize-typescript';
 
+import { DatabaseConfig } from '../config/database.config';
 import { User } from '../models';
 import { RegisterRequestDTO, RegisterResponseDTO, LoginResponseDTO } from '../dtos/auth.dto';
 import { LoginRequestDTO, UserResponseDTO } from '../dtos/auth.dto';
@@ -10,21 +12,25 @@ import * as _logger from '../shared/logger';
 @Service()
 export class AuthService extends BaseService {
 
+  private UserModel: ModelCtor<User>;
+
+  constructor(
+    @Inject() private _databaseConfig: DatabaseConfig,
+  ) {
+    super();
+    this.UserModel = this._databaseConfig.models.User as ModelCtor<User>;
+  }
+
   public async register(form: RegisterRequestDTO): Promise<RegisterResponseDTO> {
     try {
-      const error = form.isValid();
-      if (error) {
-        throw new Error('VALIDATION_ERROR');
-      }
-
       const { username, email, password } = form.toPlain();
 
-      const existingUser = await User.findOne({ where: { [Op.or]: [{ username }, { email }] } });
+      const existingUser = await this.UserModel.findOne({ where: { [Op.or]: [{ username }, { email }] } });
       if (existingUser) {
         throw new Error('ALREADY_EXIST');
       }
 
-      const user = await User.create({ username, email, password } as any);
+      const user = await this.UserModel.create({ username, email, password } as any);
       _logger.info(`User ${username} registered successfully`);
 
       const userResponse = new UserResponseDTO(user.id, user.username, user.email);
@@ -39,14 +45,9 @@ export class AuthService extends BaseService {
 
   public async login(loginData: LoginRequestDTO): Promise<LoginResponseDTO> {
     try {
-      const error = loginData.isValid();
-      if (error) {
-        throw new Error('VALIDATION_ERROR');
-      }
-
       const { username, password } = loginData.toPlain();
 
-      const user = await User.findOne({ where: { username } });
+      const user = await this.UserModel.findOne({ where: { username } });
       if (!user) {
         throw new Error('ALREADY_EXIST');
       }
@@ -56,7 +57,7 @@ export class AuthService extends BaseService {
         throw new Error('INVALID_PASSWORD');
       }
 
-      _logger.info(`User ${username} registered successfully`);
+      _logger.info(`User ${username} logged in successfully`);
       const userResponse = new UserResponseDTO(user.id, user.username, user.email);
       return new LoginResponseDTO(true, undefined, userResponse);
 

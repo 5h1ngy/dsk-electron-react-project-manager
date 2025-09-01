@@ -11,11 +11,11 @@ import MainLayout from '@renderer/components/layouts/MainLayout';
 import loginRoute from '@renderer/pages/Login';
 import registerRoute from '@renderer/pages/Register';
 import dashboardRoute from '@renderer/pages/Dashboard';
-import projectsRoute from '@renderer/pages/Projects';
-import tasksRoute from '@renderer/pages/TaskBoard';
-import notesRoute from '@renderer/pages/Notes';
-import statisticsRoute from '@renderer/pages/Statistics';
-import settingsRoute from '@renderer/pages/Settings';
+// import projectsRoute from '@renderer/pages/Projects';
+// import tasksRoute from '@renderer/pages/TaskBoard';
+// import notesRoute from '@renderer/pages/Notes';
+// import statisticsRoute from '@renderer/pages/Statistics';
+// import settingsRoute from '@renderer/pages/Settings';
 import notFoundRoute from '@renderer/pages/NotFound/NotFound.component';
 import { AppContainer } from '@renderer/App.style';
 
@@ -40,11 +40,11 @@ const App: React.FC<Bind> = (props: Bind) => {
             <Route path="/" element={privateAuthLayout}>
               <Route index element={<Navigate to="/dashboard" replace />} />
               <Route path="dashboard" {...dashboardRoute} />
-              <Route path="projects/:projectId" {...projectsRoute} />
+              {/* <Route path="projects/:projectId" {...projectsRoute} />
               <Route path="projects/:projectId/tasks" {...tasksRoute} />
               <Route path="notes" {...notesRoute} />
               <Route path="statistics" {...statisticsRoute} />
-              <Route path="settings" {...settingsRoute} />
+              <Route path="settings" {...settingsRoute} /> */}
               <Route path="*" {...notFoundRoute} />
             </Route>
           </Routes>

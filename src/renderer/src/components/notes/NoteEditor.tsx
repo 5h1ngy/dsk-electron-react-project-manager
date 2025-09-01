@@ -12,7 +12,7 @@ import {
   EditOutlined
 } from '@ant-design/icons';
 import { useDispatch } from 'react-redux';
-import { updateNote } from '../../store/notes';
+import { rootActions } from '@renderer/store';
 import { formatDistanceToNow } from 'date-fns';
 
 interface NoteEditorProps {
@@ -98,7 +98,7 @@ const NoteEditor: React.FC<NoteEditorProps> = ({ note, onChange }) => {
   
   const saveTitle = () => {
     if (title.trim() !== note.title) {
-      dispatch(updateNote({
+      dispatch(rootActions.notesActions.updateNote({
         id: note.id,
         title: title.trim()
       }));

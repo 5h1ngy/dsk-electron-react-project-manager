@@ -55,15 +55,18 @@ export interface Task {
   updatedAt: string;
 }
 
+export interface TaskFilter {
+  searchTerm?: string;
+  status?: TaskStatus[];
+  priority?: TaskPriority[];
+  tags?: string[];
+  dueDateRange?: [string, string];
+}
+
 export interface TasksState {
   tasks: Task[];
   columns: BoardColumn[];
   loading: boolean;
   error: string | null;
-  filter: {
-    tags: number[];
-    status: TaskStatus[];
-    priority: TaskPriority[];
-    searchTerm: string;
-  };
+  filter: TaskFilter;
 }
