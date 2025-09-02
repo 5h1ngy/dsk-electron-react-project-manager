@@ -1,7 +1,7 @@
 import { Button, Card, Space, Spin, Tag, Typography } from 'antd'
 import { ReloadOutlined } from '@ant-design/icons'
-import { JSX, useMemo } from 'react'
-import { useHealthStatus } from '../hooks/useHealthStatus'
+import { useMemo } from 'react'
+import { useHealthStatus } from './hooks/useHealthStatus'
 
 const formatTimestamp = (timestamp: string): string => {
   const date = new Date(timestamp)
@@ -11,7 +11,7 @@ const formatTimestamp = (timestamp: string): string => {
   return date.toLocaleString()
 }
 
-export const HealthStatusCard = (): JSX.Element => {
+export const HealthStatusCard = () => {
   const { loading, data, error, refresh } = useHealthStatus()
 
   const uptimeLabel = useMemo(() => {

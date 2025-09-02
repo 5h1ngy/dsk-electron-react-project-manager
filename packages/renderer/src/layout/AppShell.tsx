@@ -1,5 +1,5 @@
 import { Layout, Typography, Space, Button, Tag } from 'antd'
-import type { JSX, ReactNode } from 'react'
+import type { ReactNode } from 'react'
 import type { UserDTO } from '@main/auth/authService'
 import { ThemeToggle } from '../components/ThemeToggle'
 
@@ -11,7 +11,7 @@ interface AppShellProps {
   children: ReactNode
 }
 
-export const AppShell = ({ currentUser, onLogout, children }: AppShellProps): JSX.Element => {
+export const AppShell = ({ currentUser, onLogout, children }: AppShellProps) => {
   return (
     <Layout className="app-layout">
       <Header className="app-header">

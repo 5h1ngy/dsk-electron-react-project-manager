@@ -1,0 +1,16 @@
+{
+  "language": {
+    "ariaLabel": "Choisir la langue",
+    "options": {
+      "it": "Italiano",
+      "en": "English",
+      "de": "Deutsch",
+      "fr": "Franais"
+    }
+  },
+  "theme": {
+    "switchToDark": "Passer au thme sombre",
+    "switchToLight": "Passer au thme clair",
+    "ariaLabel": "Changer le thme"
+  }
+}

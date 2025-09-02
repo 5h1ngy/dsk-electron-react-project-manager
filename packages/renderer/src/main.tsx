@@ -1,6 +1,7 @@
 import '@ant-design/v5-patch-for-react-19'
 import 'antd/dist/reset.css'
 import './styles/global.css'
+import './i18n/config'
 
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'

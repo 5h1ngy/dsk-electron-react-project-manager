@@ -1,0 +1,19 @@
+{
+  "title": "Accedi",
+  "usernameLabel": "Username",
+  "usernamePlaceholder": "Inserisci l'username",
+  "passwordLabel": "Password",
+  "passwordPlaceholder": "Inserisci la password",
+  "submitLabel": "Entra",
+  "errorTitle": "Accesso non riuscito",
+  "defaultCredentials": "Usa le credenziali di default admin / changeme! al primo avvio e modifica la password appena possibile.",
+  "validation": {
+    "usernameRequired": "Inserisci almeno 3 caratteri",
+    "usernameMin": "Inserisci almeno 3 caratteri",
+    "usernameMax": "Massimo 32 caratteri",
+    "usernamePattern": "Formato username non valido",
+    "passwordRequired": "La password deve contenere almeno 8 caratteri",
+    "passwordMin": "La password deve contenere almeno 8 caratteri",
+    "passwordMax": "Massimo 128 caratteri"
+  }
+}
