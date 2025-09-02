@@ -1,14 +1,22 @@
 import { useEffect } from 'react'
 import type { JSX } from 'react'
 import { Button, Card, Form, Input, Typography, Alert } from 'antd'
-import { useForm } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useAuthStore } from '../../../store/authStore'
 
 const loginSchema = z.object({
-  username: z.string().min(3).max(32),
-  password: z.string().min(8)
+  username: z
+    .string({ required_error: 'Inserisci almeno 3 caratteri' })
+    .trim()
+    .min(3, { message: 'Inserisci almeno 3 caratteri' })
+    .max(32, { message: 'Massimo 32 caratteri' })
+    .regex(/^[a-zA-Z0-9_.-]+$/, 'Formato username non valido'),
+  password: z
+    .string({ required_error: 'La password deve contenere almeno 8 caratteri' })
+    .min(7, { message: 'La password deve contenere almeno 8 caratteri' })
+    .max(128, { message: 'Massimo 128 caratteri' })
 })
 
 type LoginFormValues = z.infer<typeof loginSchema>
@@ -20,12 +28,14 @@ export const LoginForm = (): JSX.Element => {
   const clearError = useAuthStore((state) => state.clearError)
 
   const {
-    register,
+    control,
     handleSubmit,
     formState: { errors },
     setFocus
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
+    mode: 'onChange',
+    reValidateMode: 'onChange',
     defaultValues: { username: '', password: '' }
   })
 
@@ -45,11 +55,20 @@ export const LoginForm = (): JSX.Element => {
           validateStatus={errors.username ? 'error' : undefined}
           help={errors.username?.message}
         >
-          <Input
-            {...register('username')}
-            autoComplete="username"
-            autoFocus
-            aria-label="Username"
+          <Controller
+            control={control}
+            name="username"
+            render={({ field }) => (
+              <Input
+                {...field}
+                value={field.value ?? ''}
+                onChange={(event) => field.onChange(event.target.value)}
+                autoComplete="username"
+                autoFocus
+                aria-label="Username"
+                placeholder="Inserisci l'username"
+              />
+            )}
           />
         </Form.Item>
         <Form.Item
@@ -57,10 +76,19 @@ export const LoginForm = (): JSX.Element => {
           validateStatus={errors.password ? 'error' : undefined}
           help={errors.password?.message}
         >
-          <Input.Password
-            {...register('password')}
-            autoComplete="current-password"
-            aria-label="Password"
+          <Controller
+            control={control}
+            name="password"
+            render={({ field }) => (
+              <Input.Password
+                {...field}
+                value={field.value ?? ''}
+                onChange={(event) => field.onChange(event.target.value)}
+                autoComplete="current-password"
+                aria-label="Password"
+                placeholder="Inserisci la password"
+              />
+            )}
           />
         </Form.Item>
         {error && (
@@ -78,7 +106,8 @@ export const LoginForm = (): JSX.Element => {
           Entra
         </Button>
         <Typography.Paragraph type="secondary" style={{ marginTop: 16, fontSize: 12 }}>
-          Usa le credenziali di default dmin / changeme! al primo avvio e modifica la password appena possibile.
+          Usa le credenziali di default dmin / changeme! al primo avvio e modifica la password
+          appena possibile.
         </Typography.Paragraph>
       </form>
     </Card>
