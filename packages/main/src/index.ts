@@ -5,6 +5,7 @@ import { createMainWindow } from './windows/mainWindow'
 import { registerSecurityHooks } from './security/hardening'
 import { initializeDatabase } from './db/database'
 import { registerHealthIpc } from './ipc/health'
+import { registerAuthIpc } from './ipc/auth'
 import { logger } from './utils/logger'
 
 let mainWindow: BrowserWindow | null = null
@@ -54,6 +55,8 @@ app
 
     registerHealthIpc(database)
     logger.debug('Health IPC channel registered', 'IPC')
+    registerAuthIpc()
+    logger.debug('Auth IPC channels registered', 'IPC')
 
     mainWindow = await createMainWindow()
     logger.success('Main window created', 'Window')

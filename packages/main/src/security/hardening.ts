@@ -1,10 +1,4 @@
-import {
-  app,
-  session,
-  type OnBeforeRequestListener,
-  type Session,
-  type WebContents
-} from 'electron'
+import { app, session, type Session, type WebContents } from 'electron'
 import { URL } from 'node:url'
 
 const OFFLINE_PROTOCOLS = new Set(['file:', 'data:', 'devtools:', 'about:'])
@@ -62,7 +56,12 @@ export const shouldAllowRequest = (url: URL, isPackaged: boolean): boolean => {
   return false
 }
 
-export const createNetworkBlockerHandler = (isPackaged: boolean): OnBeforeRequestListener => {
+type BeforeRequestHandler = (
+  details: Electron.OnBeforeRequestListenerDetails,
+  callback: (response: Electron.CallbackResponse) => void
+) => void
+
+export const createNetworkBlockerHandler = (isPackaged: boolean): BeforeRequestHandler => {
   return (details, callback) => {
     try {
       const requestedUrl = new URL(details.url)

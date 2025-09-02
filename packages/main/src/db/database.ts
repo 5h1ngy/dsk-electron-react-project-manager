@@ -5,6 +5,10 @@ import { Umzug, SequelizeStorage } from 'umzug'
 import type { QueryInterface } from 'sequelize'
 import { MigrationMeta } from './models/MigrationMeta'
 import { SystemSetting } from './models/SystemSetting'
+import { Role } from './models/Role'
+import { User } from './models/User'
+import { UserRole } from './models/UserRole'
+import { AuditLog } from './models/AuditLog'
 import { migrations } from './migrations'
 
 export interface DatabaseInitializationOptions {
@@ -23,7 +27,7 @@ export const createSequelizeInstance = (
   return new Sequelize({
     dialect: 'sqlite',
     storage: storagePath,
-    models: [MigrationMeta, SystemSetting],
+    models: [MigrationMeta, SystemSetting, Role, User, UserRole, AuditLog],
     logging: options.logging ?? false
   })
 }

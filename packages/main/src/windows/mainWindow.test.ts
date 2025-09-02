@@ -91,7 +91,7 @@ beforeEach(() => {
   loadURLMock.mockResolvedValue(undefined)
   loadFileMock.mockResolvedValue(undefined)
   browserWindowConstructor.mockClear()
-  delete process.env['ELECTRON_RENDERER_URL']
+  delete (process.env as Record<string, string | undefined>)['ELECTRON_RENDERER_URL']
   infoMock.mockClear()
   warnMock.mockClear()
   errorMock.mockClear()
@@ -107,7 +107,6 @@ describe('main window configuration', () => {
     expect(prefs?.sandbox).toBe(true)
     expect(prefs?.contextIsolation).toBe(true)
     expect(prefs?.nodeIntegration).toBe(false)
-    expect(prefs?.enableRemoteModule).toBe(false)
   })
 
   it('sets application window defaults', () => {

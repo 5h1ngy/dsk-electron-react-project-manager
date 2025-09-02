@@ -41,3 +41,12 @@ body[data-theme='dark'] {
   justify-content: center;
   align-items: flex-start;
 }
+
+.auth-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+

@@ -14,7 +14,6 @@ export const MAIN_WINDOW_OPTIONS: Electron.BrowserWindowConstructorOptions = {
     sandbox: true,
     contextIsolation: true,
     nodeIntegration: false,
-    enableRemoteModule: false,
     spellcheck: false
   }
 }
