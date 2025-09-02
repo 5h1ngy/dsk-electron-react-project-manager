@@ -1,31 +1,31 @@
 {
     "extends":  "@electron-toolkit/tsconfig/tsconfig.web.json",
     "include":  [
-                    "packages/renderer/src/env.d.ts",
-                    "packages/renderer/src/**/*",
-                    "packages/renderer/src/**/*.tsx",
-                    "packages/preload/src/**/*.d.ts"
-                ],
+        "packages/renderer/src/env.d.ts",
+        "packages/renderer/src/**/*",
+        "packages/renderer/src/**/*.tsx",
+        "packages/preload/src/**/*.d.ts"
+    ],
     "compilerOptions":  {
-                            "composite":  true,
-                            "jsx":  "react-jsx",
-                            "baseUrl":  ".",
-                            "paths":  {
-                                          "@renderer/*":  [
-                                                              "packages/renderer/src/*"
-                                                          ],
-                                          "@preload/*":  [
-                                                             "packages/preload/src/*"
-                                                         ],
-                                          "@main/*":  [
-                                                          "packages/main/src/*"
-                                                      ]
-                                      },
-                            "strict":  true,
-                            "types":  [
-                                          "jest"
-                                      ],
-                            "experimentalDecorators":  true,
-                            "emitDecoratorMetadata":  true
-                        }
+        "composite":  true,
+        "jsx":  "react-jsx",
+        "baseUrl":  ".",
+        "paths":  {
+            "@renderer/*":  [
+                "packages/renderer/src/*"
+            ],
+            "@preload/*":  [
+                "packages/preload/src/*"
+            ],
+            "@main/*":  [
+                "packages/main/src/*"
+            ]
+        },
+        "strict":  true,
+        "types":  [
+            "jest"
+        ],
+        "experimentalDecorators":  true,
+        "emitDecoratorMetadata":  true
+    }
 }

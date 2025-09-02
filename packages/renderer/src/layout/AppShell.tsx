@@ -15,7 +15,14 @@ export const AppShell = ({ currentUser, onLogout, children }: AppShellProps): JS
   return (
     <Layout className="app-layout">
       <Header className="app-header">
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            width: '100%'
+          }}
+        >
           <div>
             <Typography.Title level={4} style={{ margin: 0 }}>
               DSK Project Manager
