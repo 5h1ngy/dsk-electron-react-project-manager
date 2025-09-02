@@ -1,29 +1,13 @@
 import { resolve } from 'path'
-import { defineConfig, externalizeDepsPlugin, swcPlugin } from 'electron-vite'
+import { defineConfig, externalizeDepsPlugin } from 'electron-vite'
 import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   main: {
-    plugins: [
-      externalizeDepsPlugin(),
-      swcPlugin()
-    ],
-    build: {
-      sourcemap: true,
-      minify: false,
-      watch: {}
-    }
+    plugins: [externalizeDepsPlugin()]
   },
   preload: {
-    plugins: [
-      externalizeDepsPlugin(),
-      swcPlugin()
-    ],
-    build: {
-      sourcemap: true,
-      minify: false,
-      watch: {}
-    }
+    plugins: [externalizeDepsPlugin()]
   },
   renderer: {
     resolve: {
@@ -31,24 +15,6 @@ export default defineConfig({
         '@renderer': resolve('src/renderer/src')
       }
     },
-    plugins: [
-      react()
-    ],
-    server: {
-      hmr: {
-        overlay: true
-      }
-    },
-    build: {
-      assetsDir: '.',
-      rollupOptions: {
-        output: {
-          format: 'es',
-          entryFileNames: '[name].js',
-          chunkFileNames: '[name].js',
-          assetFileNames: '[name].[ext]'
-        }
-      }
-    }
+    plugins: [react()]
   }
 })

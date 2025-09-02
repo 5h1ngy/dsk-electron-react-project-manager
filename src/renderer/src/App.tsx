@@ -1,57 +1,35 @@
-import React, { useEffect, createElement } from 'react';
-import { Navigate, Outlet, Route, Routes } from "react-router-dom";
-import { HashRouter } from 'react-router-dom';
+import Versions from './components/Versions'
+import electronLogo from './assets/electron.svg'
 
-import { ThemeProvider } from '@renderer/styles/ThemeProvider';
-import withSlice, { Bind } from '@renderer/hocs/withSlice';
-import withPublicRoute from '@renderer/hocs/withPublicRoute';
-import withProtectedRoute from '@renderer/hocs/withProtectedRoute';
-import AuthLayout from '@renderer/components/layouts/AuthLayout';
-import MainLayout from '@renderer/components/layouts/MainLayout';
-import loginRoute from '@renderer/pages/Login';
-import registerRoute from '@renderer/pages/Register';
-import dashboardRoute from '@renderer/pages/Dashboard';
-// import projectsRoute from '@renderer/pages/Projects';
-// import tasksRoute from '@renderer/pages/TaskBoard';
-// import notesRoute from '@renderer/pages/Notes';
-// import statisticsRoute from '@renderer/pages/Statistics';
-// import settingsRoute from '@renderer/pages/Settings';
-import notFoundRoute from '@renderer/pages/NotFound/NotFound.component';
-import { AppContainer } from '@renderer/App.style';
-
-const App: React.FC<Bind> = (props: Bind) => {
-  const publicAuthLayout = createElement(withPublicRoute(AuthLayout, { redirect: "/dashboard" }))
-  const privateAuthLayout = createElement(withProtectedRoute(MainLayout, { redirect: '/login', children: <Outlet /> }))
-
-  useEffect(() => {
-    props.actions.authActions.restoreUser()
-  }, []);
+function App(): React.JSX.Element {
+  const ipcHandle = (): void => window.electron.ipcRenderer.send('ping')
 
   return (
-    <ThemeProvider>
-      <AppContainer>
-        <HashRouter>
-          <Routes>
-            <Route path="/" element={publicAuthLayout}>
-              <Route index element={<Navigate to="/login" replace />} />
-              <Route path="login" {...loginRoute} />
-              <Route path="register" {...registerRoute} />
-            </Route>
-            <Route path="/" element={privateAuthLayout}>
-              <Route index element={<Navigate to="/dashboard" replace />} />
-              <Route path="dashboard" {...dashboardRoute} />
-              {/* <Route path="projects/:projectId" {...projectsRoute} />
-              <Route path="projects/:projectId/tasks" {...tasksRoute} />
-              <Route path="notes" {...notesRoute} />
-              <Route path="statistics" {...statisticsRoute} />
-              <Route path="settings" {...settingsRoute} /> */}
-              <Route path="*" {...notFoundRoute} />
-            </Route>
-          </Routes>
-        </HashRouter>
-      </AppContainer>
-    </ThemeProvider>
-  );
-};
+    <>
+      <img alt="logo" className="logo" src={electronLogo} />
+      <div className="creator">Powered by electron-vite</div>
+      <div className="text">
+        Build an Electron app with <span className="react">React</span>
+        &nbsp;and <span className="ts">TypeScript</span>
+      </div>
+      <p className="tip">
+        Please try pressing <code>F12</code> to open the devTool
+      </p>
+      <div className="actions">
+        <div className="action">
+          <a href="https://electron-vite.org/" target="_blank" rel="noreferrer">
+            Documentation
+          </a>
+        </div>
+        <div className="action">
+          <a target="_blank" rel="noreferrer" onClick={ipcHandle}>
+            Send IPC
+          </a>
+        </div>
+      </div>
+      <Versions></Versions>
+    </>
+  )
+}
 
-export default withSlice(App);
+export default App
