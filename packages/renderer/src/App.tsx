@@ -1,65 +1,36 @@
-import { JSX, useEffect } from 'react'
-import { App as AntdApp, ConfigProvider, Space, theme as antdTheme } from 'antd'
-import { ErrorBoundary } from './components/ErrorBoundary'
-import { useThemeStore } from './store/themeStore'
-import { AppShell } from './layout/AppShell'
-import { useAuthStore } from './store/authStore'
-import { LoginForm } from './features/auth/components/LoginForm'
-import { HealthStatusCard } from './features/health/components/HealthStatusCard'
-import { UserManagementPanel } from './features/auth/components/UserManagementPanel'
+import type { JSX } from 'react'
+import { useEffect, useMemo } from 'react'
+import { HashRouter } from 'react-router-dom'
+import { App as AntdApp, ConfigProvider } from 'antd'
 
-const { darkAlgorithm, defaultAlgorithm } = antdTheme
+import { ErrorBoundary } from '@renderer/components/ErrorBoundary'
+import { useThemeStore } from '@renderer/store/themeStore'
+import { useAuthStore } from '@renderer/store/authStore'
+import { AppRoutes } from '@renderer/routes'
+import { createThemeConfig } from '@renderer/theme/themeConfig'
 
 const App = (): JSX.Element => {
   const mode = useThemeStore((state) => state.mode)
-  const token = useAuthStore((state) => state.token)
-  const currentUser = useAuthStore((state) => state.currentUser)
   const restoreSession = useAuthStore((state) => state.restoreSession)
-  const logout = useAuthStore((state) => state.logout)
 
   useEffect(() => {
     document.body.dataset.theme = mode
   }, [mode])
 
   useEffect(() => {
-    void restoreSession()
+    restoreSession()
   }, [restoreSession])
 
-  const themeConfig = {
-    algorithm: mode === 'dark' ? [darkAlgorithm] : [defaultAlgorithm],
-    token: {
-      colorPrimary: '#1677ff'
-    }
-  }
-
-  const renderAuthenticatedView = () => {
-    if (!token || !currentUser) {
-      return (
-        <div className="auth-screen">
-          <Space direction="vertical" size="large" style={{ width: '100%', maxWidth: 480 }}>
-            <HealthStatusCard />
-            <LoginForm />
-          </Space>
-        </div>
-      )
-    }
-
-    return (
-      <AppShell currentUser={currentUser} onLogout={logout}>
-        <Space direction="vertical" size="large" style={{ width: '100%' }}>
-          <HealthStatusCard />
-          <UserManagementPanel />
-        </Space>
-      </AppShell>
-    )
-  }
+  const themeConfig = useMemo(() => createThemeConfig(mode), [mode])
 
   return (
     <ErrorBoundary>
       <ConfigProvider theme={themeConfig}>
-        <AntdApp>
-          {renderAuthenticatedView()}
-        </AntdApp>
+        <HashRouter>
+          <AntdApp>
+            <AppRoutes />
+          </AntdApp>
+        </HashRouter>
       </ConfigProvider>
     </ErrorBoundary>
   )

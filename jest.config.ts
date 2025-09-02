@@ -12,8 +12,20 @@ const config: Config = {
   coverageProvider: 'v8',
   clearMocks: true,
   coverageDirectory: 'coverage',
-  coveragePathIgnorePatterns: ['<rootDir>/packages/main/src/index.ts', '<rootDir>/packages/preload/src/types.ts', '<rootDir>/packages/renderer/src/main.tsx'],
-  collectCoverageFrom: ['packages/**/*.{ts,tsx}', '!**/*.d.ts', '!**/*.test.ts', '!**/*.test.tsx', '!packages/main/src/index.ts', '!packages/preload/src/types.ts', '!packages/renderer/src/main.tsx'],
+  coveragePathIgnorePatterns: [
+    '<rootDir>/packages/main/src/index.ts',
+    '<rootDir>/packages/preload/src/types.ts',
+    '<rootDir>/packages/renderer/src/main.tsx'
+  ],
+  collectCoverageFrom: [
+    'packages/**/*.{ts,tsx}',
+    '!**/*.d.ts',
+    '!**/*.test.ts',
+    '!**/*.test.tsx',
+    '!packages/main/src/index.ts',
+    '!packages/preload/src/types.ts',
+    '!packages/renderer/src/main.tsx'
+  ],
   coverageThreshold: {
     global: {
       statements: 0.8,
@@ -61,8 +73,3 @@ const config: Config = {
 }
 
 export default config
-
-
-
-
-
