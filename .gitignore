@@ -1,56 +1,6 @@
-# Dipendenze
 node_modules
-.pnp.*
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/sdks
-!.yarn/versions
-
-# Build e output
 dist
 out
-build
-release
-
-# File di cache
-.eslintcache
-.cache
-.npm
-.parcel-cache
-
-# Log
-*.log*
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# Files del sistema operativo
 .DS_Store
-Desktop.ini
-Thumbs.db
-
-# File temporanei di editor
-.vscode/*
-!.vscode/extensions.json
-!.vscode/settings.json
-.idea
-*.swp
-*.swo
-
-# File locali di ambiente
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
-# File di lock (se usi Yarn, puoi tenere yarn.lock ma rimuovere package-lock.json)
-package-lock.json
-
-# Database SQLite (se utilizzi SQLite localmente per test)
-*.sqlite
-*.sqlite3
-
-# Coverage report
-coverage
+.eslintcache
+*.log*
