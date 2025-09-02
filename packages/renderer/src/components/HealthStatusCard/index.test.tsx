@@ -1,7 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import type { HealthResponse } from '@main/ipc/health'
 import type { PreloadApi } from '@preload/types'
-import { HealthStatusCard } from './HealthStatusCard'
+import { HealthStatusCard } from './index'
 
 const createHealthApi = (): jest.Mocked<PreloadApi['health']> => ({
   check: jest.fn<Promise<HealthResponse>, []>()
@@ -39,9 +39,7 @@ describe('HealthStatusCard', () => {
 
     render(<HealthStatusCard />)
 
-    await waitFor(() =>
-      expect(screen.getByText('1.0.0', { exact: false })).toBeInTheDocument()
-    )
+    await waitFor(() => expect(screen.getByText('1.0.0', { exact: false })).toBeInTheDocument())
 
     expect(healthMock.check).toHaveBeenCalledTimes(1)
   })
@@ -56,8 +54,6 @@ describe('HealthStatusCard', () => {
 
     render(<HealthStatusCard />)
 
-    await waitFor(() =>
-      expect(screen.getByText(/failure/i)).toBeInTheDocument()
-    )
+    await waitFor(() => expect(screen.getByText(/failure/i)).toBeInTheDocument())
   })
 })
