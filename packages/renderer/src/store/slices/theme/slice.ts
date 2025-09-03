@@ -1,10 +1,11 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
 
-import { persistMode, readInitialMode } from './helpers'
+import { persistAccentColor, persistMode, readInitialAccentColor, readInitialMode } from './helpers'
 import type { ThemeMode, ThemeState } from './types'
 
 const initialState: ThemeState = {
-  mode: readInitialMode()
+  mode: readInitialMode(),
+  accentColor: readInitialAccentColor()
 }
 
 const themeSlice = createSlice({
@@ -18,9 +19,13 @@ const themeSlice = createSlice({
     toggleMode: (state) => {
       state.mode = state.mode === 'light' ? 'dark' : 'light'
       persistMode(state.mode)
+    },
+    setAccentColor: (state, action: PayloadAction<string>) => {
+      state.accentColor = action.payload
+      persistAccentColor(action.payload)
     }
   }
 })
 
 export const themeReducer = themeSlice.reducer
-export const { setMode, toggleMode } = themeSlice.actions
+export const { setMode, toggleMode, setAccentColor } = themeSlice.actions

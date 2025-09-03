@@ -1,0 +1,62 @@
+{
+  "actionBar": {
+    "create": "Nouvel utilisateur",
+    "refresh": "Actualiser"
+  },
+  "table": {
+    "username": "Nom d'utilisateur",
+    "displayName": "Nom",
+    "roles": "Rôles",
+    "status": "Statut",
+    "actions": "Actions",
+    "empty": "Aucun utilisateur"
+  },
+  "status": {
+    "active": "Actif",
+    "inactive": "Inactif"
+  },
+  "actions": {
+    "edit": "Modifier"
+  },
+  "modals": {
+    "create": {
+      "title": "Créer un utilisateur",
+      "confirm": "Créer",
+      "fields": {
+        "username": "Nom d'utilisateur",
+        "displayName": "Nom",
+        "password": "Mot de passe",
+        "roles": "Rôles",
+        "rolesPlaceholder": "Sélectionnez les rôles",
+        "active": "Actif"
+      }
+    },
+    "edit": {
+      "title": "Modifier l'utilisateur {{username}}",
+      "confirm": "Enregistrer",
+      "fields": {
+        "displayName": "Nom",
+        "password": "Nouveau mot de passe",
+        "passwordHint": "Laissez vide pour conserver le mot de passe actuel",
+        "roles": "Rôles",
+        "rolesPlaceholder": "Sélectionnez les rôles",
+        "active": "Actif"
+      }
+    }
+  },
+  "messages": {
+    "createSuccess": "Utilisateur créé avec succès",
+    "createErrorFallback": "Impossible de créer l'utilisateur",
+    "updateSuccess": "Utilisateur mis à jour avec succès",
+    "updateErrorFallback": "Impossible de mettre à jour l'utilisateur"
+  },
+  "error": {
+    "title": "Erreur"
+  },
+  "roles": {
+    "Admin": "Administrateur",
+    "Maintainer": "Mainteneur",
+    "Contributor": "Contributeur",
+    "Viewer": "Lecteur"
+  }
+}

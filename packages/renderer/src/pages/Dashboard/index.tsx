@@ -1,14 +1,65 @@
-import { Space } from 'antd'
-import { HealthStatusCard } from '../../components/HealthStatusCard'
-import { UserManagementPanel } from './components/UserManagementPanel'
+import type { JSX } from 'react'
+import { useTranslation } from 'react-i18next'
+import { Alert, Space } from 'antd'
 
-const DashboardPage = () => {
+import { HealthStatusCard } from '@renderer/components/HealthStatusCard'
+
+import { CreateUserModal } from './components/CreateUserModal'
+import { EditUserModal } from './components/EditUserModal'
+import { UserTable } from './components/UserTable'
+import { ActionBar } from './components/ActionBar'
+import { useUserManagement } from './hooks/useUserManagement'
+
+const Dashboard = (): JSX.Element => {
+  const { t } = useTranslation('dashboard')
+  const {
+    users,
+    error,
+    messageContext,
+    columns,
+    isCreateOpen,
+    editingUser,
+    openCreateModal,
+    closeCreateModal,
+    closeEditModal,
+    submitCreate,
+    submitUpdate,
+    createForm,
+    updateForm,
+    refreshUsers,
+    clearError
+  } = useUserManagement()
+
   return (
     <Space direction="vertical" size="large" style={{ width: '100%' }}>
+      {messageContext}
       <HealthStatusCard />
-      <UserManagementPanel />
+      <ActionBar onCreate={openCreateModal} onRefresh={refreshUsers} />
+      {error && (
+        <Alert
+          type="error"
+          message={t('dashboard:error.title')}
+          description={error}
+          onClose={clearError}
+          closable
+        />
+      )}
+      <UserTable columns={columns} users={users} />
+      <CreateUserModal
+        open={isCreateOpen}
+        onCancel={closeCreateModal}
+        onSubmit={submitCreate}
+        form={createForm}
+      />
+      <EditUserModal
+        user={editingUser}
+        open={Boolean(editingUser)}
+        onCancel={closeEditModal}
+        onSubmit={submitUpdate}
+        form={updateForm}
+      />
     </Space>
   )
 }
 
-export default DashboardPage
+export default Dashboard

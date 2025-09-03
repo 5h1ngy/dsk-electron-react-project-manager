@@ -1,0 +1,62 @@
+{
+  "actionBar": {
+    "create": "Nuovo utente",
+    "refresh": "Aggiorna"
+  },
+  "table": {
+    "username": "Username",
+    "displayName": "Nome",
+    "roles": "Ruoli",
+    "status": "Stato",
+    "actions": "Azioni",
+    "empty": "Nessun utente"
+  },
+  "status": {
+    "active": "Attivo",
+    "inactive": "Disattivo"
+  },
+  "actions": {
+    "edit": "Modifica"
+  },
+  "modals": {
+    "create": {
+      "title": "Crea utente",
+      "confirm": "Crea",
+      "fields": {
+        "username": "Username",
+        "displayName": "Nome",
+        "password": "Password",
+        "roles": "Ruoli",
+        "rolesPlaceholder": "Seleziona i ruoli",
+        "active": "Attivo"
+      }
+    },
+    "edit": {
+      "title": "Modifica utente {{username}}",
+      "confirm": "Salva",
+      "fields": {
+        "displayName": "Nome",
+        "password": "Nuova password",
+        "passwordHint": "Lascia vuoto per mantenere la password attuale",
+        "roles": "Ruoli",
+        "rolesPlaceholder": "Seleziona i ruoli",
+        "active": "Attivo"
+      }
+    }
+  },
+  "messages": {
+    "createSuccess": "Utente creato correttamente",
+    "createErrorFallback": "Impossibile creare l'utente",
+    "updateSuccess": "Utente aggiornato correttamente",
+    "updateErrorFallback": "Impossibile aggiornare l'utente"
+  },
+  "error": {
+    "title": "Errore"
+  },
+  "roles": {
+    "Admin": "Amministratore",
+    "Maintainer": "Manutentore",
+    "Contributor": "Collaboratore",
+    "Viewer": "Visualizzatore"
+  }
+}

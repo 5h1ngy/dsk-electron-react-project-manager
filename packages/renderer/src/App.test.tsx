@@ -76,11 +76,10 @@ describe('App', () => {
   })
 
   it('renders login view when there is no active session', async () => {
+    window.location.hash = '#/login'
     renderWithStore()
 
-    await waitFor(() => {
-      expect(screen.getByText('Accedi')).toBeInTheDocument()
-    })
+    await screen.findByTestId('login-form')
 
     expect(document.body.dataset.theme).toBe('light')
   })
@@ -98,6 +97,6 @@ describe('App', () => {
     })
 
     expect(authMock.listUsers).toHaveBeenCalled()
-    expect(screen.getByRole('button', { name: 'Logout' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Esci' })).toBeInTheDocument()
   })
 })
