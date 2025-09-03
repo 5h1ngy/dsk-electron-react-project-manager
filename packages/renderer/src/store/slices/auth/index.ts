@@ -2,6 +2,7 @@ export { authReducer, clearError, setStatus } from './slice'
 export {
   fetchUsers,
   login,
+  register,
   logout,
   restoreSession,
   createUser,

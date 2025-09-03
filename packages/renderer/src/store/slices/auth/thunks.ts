@@ -1,7 +1,12 @@
 import { createAsyncThunk } from '@reduxjs/toolkit'
 
-import type { UserDTO } from '@main/auth/authService'
-import type { CreateUserInput, UpdateUserInput, LoginInput } from '@main/auth/validation'
+import type { SessionPayload, UserDTO } from '@main/auth/authService'
+import type {
+  CreateUserInput,
+  UpdateUserInput,
+  LoginInput,
+  RegisterUserInput
+} from '@main/auth/validation'
 
 import type { AppThunk, RootState } from '../../types'
 import { extractErrorMessage, getStoredToken, handleResponse, persistToken } from './helpers'
@@ -26,6 +31,20 @@ export const login = createAsyncThunk<
     const payload = await handleResponse(window.api.auth.login(input))
     persistToken(payload)
     await dispatch(fetchUsers(payload.token))
+    return { token: payload.token, user: payload.user }
+  } catch (error) {
+    return rejectWithValue(extractErrorMessage(error))
+  }
+})
+
+export const register = createAsyncThunk<
+  { token: string; user: UserDTO },
+  RegisterUserInput,
+  { rejectValue: string }
+>('auth/register', async (input, { rejectWithValue }) => {
+  try {
+    const payload = await handleResponse<SessionPayload>(window.api.auth.register(input))
+    persistToken(payload)
     return { token: payload.token, user: payload.user }
   } catch (error) {
     return rejectWithValue(extractErrorMessage(error))

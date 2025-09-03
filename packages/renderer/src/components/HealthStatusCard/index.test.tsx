@@ -10,6 +10,7 @@ const createHealthApi = (): jest.Mocked<PreloadApi['health']> => ({
 
 const createAuthApi = (): jest.Mocked<PreloadApi['auth']> => ({
   login: jest.fn(),
+  register: jest.fn(),
   logout: jest.fn(),
   session: jest.fn(),
   listUsers: jest.fn(),

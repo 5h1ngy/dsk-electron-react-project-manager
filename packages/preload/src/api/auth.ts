@@ -1,10 +1,11 @@
 import { ipcRenderer } from 'electron'
 import type { SessionPayload, UserDTO } from '@main/auth/authService'
-import type { CreateUserInput, UpdateUserInput, LoginInput } from '@main/auth/validation'
+import type { CreateUserInput, UpdateUserInput, LoginInput, RegisterUserInput } from '@main/auth/validation'
 import type { IpcResponse } from '../types'
 
 const CHANNELS = {
   login: 'auth:login',
+  register: 'auth:register',
   logout: 'auth:logout',
   session: 'auth:session',
   listUsers: 'auth:list-users',
@@ -36,6 +37,7 @@ const invoke = async <T>(channel: string, ...args: unknown[]): Promise<IpcRespon
 
 export const authApi = {
   login: async (payload: LoginInput) => await invoke<SessionPayload>(CHANNELS.login, payload),
+  register: async (payload: RegisterUserInput) => await invoke<SessionPayload>(CHANNELS.register, payload),
   logout: async (token: string) => await invoke<{ success: boolean }>(CHANNELS.logout, token),
   session: async (token: string) => await invoke<UserDTO | null>(CHANNELS.session, token),
   listUsers: async (token: string) => await invoke<UserDTO[]>(CHANNELS.listUsers, token),

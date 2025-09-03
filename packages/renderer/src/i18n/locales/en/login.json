@@ -1,20 +1,22 @@
 {
-  "title": "Sign in",
-  "header": "SDK",
-  "usernameLabel": "Username",
-  "usernamePlaceholder": "Enter your username",
-  "passwordLabel": "Password",
-  "passwordPlaceholder": "Enter your password",
-  "submitLabel": "Sign in",
-  "errorTitle": "Sign-in failed",
-  "defaultCredentials": "Use the default credentials admin / changeme! on first launch and update the password as soon as possible.",
-  "validation": {
-    "usernameRequired": "Please enter at least 3 characters",
-    "usernameMin": "Please enter at least 3 characters",
-    "usernameMax": "Maximum 32 characters allowed",
-    "usernamePattern": "Username format is invalid",
-    "passwordRequired": "Password must contain at least 8 characters",
-    "passwordMin": "Password must contain at least 8 characters",
-    "passwordMax": "Maximum 128 characters allowed"
-  }
+    "title":  "Sign in",
+    "header":  "SDK",
+    "usernameLabel":  "Username",
+    "usernamePlaceholder":  "Enter your username",
+    "passwordLabel":  "Password",
+    "passwordPlaceholder":  "Enter your password",
+    "submitLabel":  "Sign in",
+    "errorTitle":  "Sign-in failed",
+    "defaultCredentials":  "Use the default credentials admin / changeme! on first launch and update the password as soon as possible.",
+    "validation":  {
+                       "usernameRequired":  "Please enter at least 3 characters",
+                       "usernameMin":  "Please enter at least 3 characters",
+                       "usernameMax":  "Maximum 32 characters allowed",
+                       "usernamePattern":  "Username format is invalid",
+                       "passwordRequired":  "Password must contain at least 8 characters",
+                       "passwordMin":  "Password must contain at least 8 characters",
+                       "passwordMax":  "Maximum 128 characters allowed"
+                   },
+    "registerPrompt":  "Need an account?",
+    "registerLink":  "Create one"
 }

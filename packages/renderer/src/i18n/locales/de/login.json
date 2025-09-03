@@ -1,20 +1,22 @@
 {
-  "title": "Anmelden",
-  "header": "SDK",
-  "usernameLabel": "Benutzername",
-  "usernamePlaceholder": "Benutzernamen eingeben",
-  "passwordLabel": "Passwort",
-  "passwordPlaceholder": "Passwort eingeben",
-  "submitLabel": "Anmelden",
-  "errorTitle": "Anmeldung fehlgeschlagen",
-  "defaultCredentials": "Verwende beim ersten Start die Standard-Anmeldedaten admin / changeme! und ndere das Passwort so bald wie mglich.",
-  "validation": {
-    "usernameRequired": "Bitte mindestens 3 Zeichen eingeben",
-    "usernameMin": "Bitte mindestens 3 Zeichen eingeben",
-    "usernameMax": "Maximal 32 Zeichen erlaubt",
-    "usernamePattern": "Ungltiges Benutzernamenformat",
-    "passwordRequired": "Das Passwort muss mindestens 8 Zeichen enthalten",
-    "passwordMin": "Das Passwort muss mindestens 8 Zeichen enthalten",
-    "passwordMax": "Maximal 128 Zeichen erlaubt"
-  }
+    "title":  "Anmelden",
+    "header":  "SDK",
+    "usernameLabel":  "Benutzername",
+    "usernamePlaceholder":  "Benutzernamen eingeben",
+    "passwordLabel":  "Passwort",
+    "passwordPlaceholder":  "Passwort eingeben",
+    "submitLabel":  "Anmelden",
+    "errorTitle":  "Anmeldung fehlgeschlagen",
+    "defaultCredentials":  "Verwende beim ersten Start die Standard-Anmeldedaten admin / changeme! und ndere das Passwort so bald wie mglich.",
+    "validation":  {
+                       "usernameRequired":  "Bitte mindestens 3 Zeichen eingeben",
+                       "usernameMin":  "Bitte mindestens 3 Zeichen eingeben",
+                       "usernameMax":  "Maximal 32 Zeichen erlaubt",
+                       "usernamePattern":  "Ungltiges Benutzernamenformat",
+                       "passwordRequired":  "Das Passwort muss mindestens 8 Zeichen enthalten",
+                       "passwordMin":  "Das Passwort muss mindestens 8 Zeichen enthalten",
+                       "passwordMax":  "Maximal 128 Zeichen erlaubt"
+                   },
+    "registerPrompt":  "Noch kein Konto?",
+    "registerLink":  "Registrieren"
 }

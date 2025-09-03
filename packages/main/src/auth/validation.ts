@@ -30,6 +30,20 @@ export const CreateUserSchema = z
 
 export type CreateUserInput = z.infer<typeof CreateUserSchema>
 
+export const RegisterUserSchema = z
+  .object({
+    username: z
+      .string()
+      .min(3)
+      .max(32)
+      .regex(usernameRegex, 'Formato username non valido'),
+    password: z.string().min(PASSWORD_POLICY.minLength),
+    displayName: z.string().min(1).max(64)
+  })
+  .strict()
+
+export type RegisterUserInput = z.infer<typeof RegisterUserSchema>
+
 export const UpdateUserSchema = z
   .object({
     displayName: z.string().min(1).max(64).optional(),

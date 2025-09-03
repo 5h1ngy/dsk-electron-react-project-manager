@@ -1,7 +1,7 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
 
 import type { AuthState } from './types'
-import { createUser, fetchUsers, login, logout, restoreSession, updateUser } from './thunks'
+import { createUser, fetchUsers, login, logout, register, restoreSession, updateUser } from './thunks'
 
 const initialState: AuthState = {
   token: null,
@@ -34,6 +34,19 @@ const authSlice = createSlice({
         state.currentUser = action.payload.user
       })
       .addCase(login.rejected, (state, action) => {
+        state.status = 'idle'
+        state.error = action.payload ?? 'Operazione non riuscita'
+      })
+      .addCase(register.pending, (state) => {
+        state.status = 'loading'
+        state.error = undefined
+      })
+      .addCase(register.fulfilled, (state, action) => {
+        state.status = 'idle'
+        state.token = action.payload.token
+        state.currentUser = action.payload.user
+      })
+      .addCase(register.rejected, (state, action) => {
         state.status = 'idle'
         state.error = action.payload ?? 'Operazione non riuscita'
       })

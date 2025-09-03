@@ -1,6 +1,6 @@
 import type { ThunkAction, UnknownAction } from '@reduxjs/toolkit'
 
-import { setupStore } from '../setupStore'
+import { setupStore } from './setupStore'
 
 export type AppStore = ReturnType<typeof setupStore>
 export type RootState = ReturnType<AppStore['getState']>

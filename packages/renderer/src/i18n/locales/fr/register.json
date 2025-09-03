@@ -1,0 +1,28 @@
+{
+  "header": "Crez votre compte",
+  "title": "Inscription",
+  "displayNameLabel": "Nom complet",
+  "displayNamePlaceholder": "Saisissez votre nom complet",
+  "usernameLabel": "Nom d'utilisateur",
+  "usernamePlaceholder": "Choisissez un nom d'utilisateur",
+  "passwordLabel": "Mot de passe",
+  "passwordPlaceholder": "Choisissez un mot de passe",
+  "confirmPasswordLabel": "Confirmez le mot de passe",
+  "confirmPasswordPlaceholder": "Rptez votre mot de passe",
+  "submitLabel": "Crer un compte",
+  "errorTitle": "chec de l'inscription",
+  "loginPrompt": "Vous avez dj un compte ?",
+  "loginLink": "Se connecter",
+  "validation": {
+    "usernameRequired": "Veuillez saisir au moins 3 caractres",
+    "usernameMin": "Veuillez saisir au moins 3 caractres",
+    "usernameMax": "Maximum 32 caractres autoriss",
+    "usernamePattern": "Format du nom d'utilisateur invalide",
+    "displayNameRequired": "Veuillez saisir votre nom",
+    "displayNameMax": "Maximum 64 caractres autoriss",
+    "passwordRequired": "Le mot de passe doit contenir au moins 8 caractres",
+    "passwordMin": "Le mot de passe doit contenir au moins 8 caractres",
+    "confirmPasswordRequired": "Veuillez confirmer votre mot de passe",
+    "confirmPasswordMatch": "Les mots de passe doivent correspondre"
+  }
+}

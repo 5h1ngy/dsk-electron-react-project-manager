@@ -53,6 +53,10 @@ export const registerAuthIpc = (): void => {
     return await authService.login(payload)
   })
 
+  registerHandler('auth:register', async (payload: unknown) => {
+    return await authService.register(payload)
+  })
+
   registerHandler('auth:logout', async (token: string) => {
     await authService.logout(token)
     return { success: true }
