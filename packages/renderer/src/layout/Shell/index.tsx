@@ -112,6 +112,6 @@ const Shell = ({ currentUser, onLogout, children }: ShellProps): JSX.Element => 
   )
 }
 
-Shell.displayName = 'AppShell'
+Shell.displayName = 'Shell'
 
 export default Shell

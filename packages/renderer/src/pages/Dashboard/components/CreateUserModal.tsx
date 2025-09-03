@@ -15,7 +15,12 @@ interface CreateUserModalProps {
   form: UseFormReturn<CreateUserValues>
 }
 
-export const CreateUserModal = ({ open, onCancel, onSubmit, form }: CreateUserModalProps): JSX.Element => {
+export const CreateUserModal = ({
+  open,
+  onCancel,
+  onSubmit,
+  form
+}: CreateUserModalProps): JSX.Element => {
   const { t } = useTranslation('dashboard')
   const {
     control,
@@ -24,12 +29,10 @@ export const CreateUserModal = ({ open, onCancel, onSubmit, form }: CreateUserMo
   } = form
   const roleOptions = useMemo(
     () =>
-      ROLE_NAMES.map(
-        (role): { label: string; value: RoleName } => ({
-          label: t(`dashboard:roles.${role}`, { defaultValue: role }),
-          value: role
-        })
-      ),
+      ROLE_NAMES.map((role): { label: string; value: RoleName } => ({
+        label: t(`dashboard:roles.${role}`, { defaultValue: role }),
+        value: role
+      })),
     [t]
   )
 
@@ -94,10 +97,7 @@ export const CreateUserModal = ({ open, onCancel, onSubmit, form }: CreateUserMo
             control={control}
             name="isActive"
             render={({ field }) => (
-              <Switch
-                checked={field.value}
-                onChange={(checked) => field.onChange(checked)}
-              />
+              <Switch checked={field.value} onChange={(checked) => field.onChange(checked)} />
             )}
           />
         </Form.Item>

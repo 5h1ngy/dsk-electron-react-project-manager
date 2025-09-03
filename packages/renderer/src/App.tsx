@@ -26,10 +26,7 @@ const App = () => {
     dispatch(restoreSession())
   }, [dispatch])
 
-  const themeConfig = useMemo(
-    () => createThemeConfig(mode, accentColor),
-    [mode, accentColor]
-  )
+  const themeConfig = useMemo(() => createThemeConfig(mode, accentColor), [mode, accentColor])
 
   return (
     <ErrorBoundary>

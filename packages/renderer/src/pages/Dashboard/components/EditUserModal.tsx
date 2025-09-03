@@ -16,7 +16,13 @@ interface EditUserModalProps {
   form: UseFormReturn<UpdateUserValues>
 }
 
-export const EditUserModal = ({ user, open, onCancel, onSubmit, form }: EditUserModalProps): JSX.Element => {
+export const EditUserModal = ({
+  user,
+  open,
+  onCancel,
+  onSubmit,
+  form
+}: EditUserModalProps): JSX.Element => {
   const { t } = useTranslation('dashboard')
   const {
     control,
@@ -25,12 +31,10 @@ export const EditUserModal = ({ user, open, onCancel, onSubmit, form }: EditUser
   } = form
   const roleOptions = useMemo(
     () =>
-      ROLE_NAMES.map(
-        (role): { label: string; value: RoleName } => ({
-          label: t(`dashboard:roles.${role}`, { defaultValue: role }),
-          value: role
-        })
-      ),
+      ROLE_NAMES.map((role): { label: string; value: RoleName } => ({
+        label: t(`dashboard:roles.${role}`, { defaultValue: role }),
+        value: role
+      })),
     [t]
   )
 
@@ -92,10 +96,7 @@ export const EditUserModal = ({ user, open, onCancel, onSubmit, form }: EditUser
             control={control}
             name="isActive"
             render={({ field }) => (
-              <Switch
-                checked={field.value}
-                onChange={(checked) => field.onChange(checked)}
-              />
+              <Switch checked={field.value} onChange={(checked) => field.onChange(checked)} />
             )}
           />
         </Form.Item>
