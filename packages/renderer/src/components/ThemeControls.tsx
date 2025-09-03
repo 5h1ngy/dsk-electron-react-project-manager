@@ -12,26 +12,21 @@ import {
   setMode
 } from '@renderer/store/slices/theme'
 
-export const ACCENT_COLORS = [
-  '#00F5D4',
-  '#00D4FF',
-  '#5BFF70',
-  '#FF00C8',
-  '#FFB400',
-  '#C0FF00'
-] as const
+const ACCENT_COLORS = ['#00F5D4', '#00D4FF', '#5BFF70', '#FF00C8', '#FFB400', '#C0FF00']
 
 export const ThemeControls = (): JSX.Element => {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
   const mode = useAppSelector(selectThemeMode)
   const accentColor = useAppSelector(selectAccentColor)
+
   const [open, setOpen] = useState(false)
   const iconColor = useMemo(() => {
     const hex = accentColor.replace('#', '')
     const r = parseInt(hex.substring(0, 2), 16)
     const g = parseInt(hex.substring(2, 4), 16)
     const b = parseInt(hex.substring(4, 6), 16)
+
     const brightness = (r * 299 + g * 587 + b * 114) / 1000
     return brightness > 140 ? '#0f172a' : '#ffffff'
   }, [accentColor])
@@ -51,14 +46,14 @@ export const ThemeControls = (): JSX.Element => {
     [dispatch]
   )
 
-  const dropdownRender: DropdownProps['dropdownRender'] = useCallback(() => {
+  const popupRender: DropdownProps['popupRender'] = useCallback(() => {
     const cardStyle: React.CSSProperties = {
       width: 240,
       boxShadow: '0 8px 24px rgba(15, 23, 42, 0.12)'
     }
 
     return (
-      <Card size="small" bordered style={cardStyle} onClick={(event) => event.stopPropagation()}>
+      <Card size="small" variant="outlined" style={cardStyle} onClick={(event) => event.stopPropagation()}>
         <Space direction="vertical" size="middle" style={{ width: '100%' }}>
           <Space align="center" style={{ width: '100%', justifyContent: 'space-between' }}>
             <Typography.Text strong>{t('appShell.theme.mode')}</Typography.Text>
@@ -107,9 +102,9 @@ export const ThemeControls = (): JSX.Element => {
       arrow: true,
       open,
       onOpenChange: setOpen,
-      dropdownRender
+      popupRender
     }),
-    [dropdownRender, open]
+    [popupRender, open]
   )
 
   return (

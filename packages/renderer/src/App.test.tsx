@@ -64,12 +64,8 @@ describe('App', () => {
         check: jest.fn().mockResolvedValue(createHealthResponse())
       },
       auth: {
-        register: jest
-          .fn()
-          .mockResolvedValue({ ok: true, data: { token: 'token', user: sessionUser } }),
-        login: jest
-          .fn()
-          .mockResolvedValue({ ok: true, data: { token: 'token', user: sessionUser } }),
+        register: jest.fn().mockResolvedValue({ ok: true, data: { token: 'token', user: sessionUser } }),
+        login: jest.fn().mockResolvedValue({ ok: true, data: { token: 'token', user: sessionUser } }),
         logout: jest.fn().mockResolvedValue({ ok: true, data: { success: true } }),
         session: jest.fn().mockResolvedValue({ ok: true, data: null }),
         listUsers: jest.fn().mockResolvedValue({ ok: true, data: [] }),

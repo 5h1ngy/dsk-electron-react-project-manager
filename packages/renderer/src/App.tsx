@@ -4,7 +4,7 @@ import { App as AntdApp, ConfigProvider } from 'antd'
 
 import { ErrorBoundary } from '@renderer/components/ErrorBoundary'
 import { AppRoutes } from '@renderer/pages/routes'
-import { createThemeConfig } from '@renderer/theme/themeConfig'
+import { createThemeConfig } from '@renderer/theme'
 import { useAppDispatch, useAppSelector } from '@renderer/store/hooks'
 import { restoreSession } from '@renderer/store/slices/auth'
 import { selectAccentColor, selectThemeMode } from '@renderer/store/slices/theme'

@@ -1,61 +1,73 @@
-import { render } from '@testing-library/react'
-import { screen, waitFor } from '@testing-library/dom'
-import type { HealthResponse } from '@main/ipc/health'
-import type { PreloadApi } from '@preload/types'
+import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+
 import { HealthStatusCard } from './index'
 
-const createHealthApi = (): jest.Mocked<PreloadApi['health']> => ({
-  check: jest.fn<Promise<HealthResponse>, []>()
-})
+jest.mock('./hooks/useHealthStatus', () => ({
+  useHealthStatus: jest.fn()
+}))
 
-const createAuthApi = (): jest.Mocked<PreloadApi['auth']> => ({
-  login: jest.fn(),
-  register: jest.fn(),
-  logout: jest.fn(),
-  session: jest.fn(),
-  listUsers: jest.fn(),
-  createUser: jest.fn(),
-  updateUser: jest.fn()
-})
+const mockUseHealthStatus = jest.requireMock('./hooks/useHealthStatus')
+  .useHealthStatus as jest.Mock
 
 describe('HealthStatusCard', () => {
   beforeEach(() => {
-    window.api = {
-      health: createHealthApi(),
-      auth: createAuthApi()
-    }
+    jest.clearAllMocks()
   })
 
-  it('renders health data returned by the preload api', async () => {
-    const timestamp = new Date().toISOString()
-    const healthMock = window.api.health as jest.Mocked<PreloadApi['health']>
-    healthMock.check.mockResolvedValueOnce({
-      ok: true,
+  it('renders health information when available', () => {
+    const refresh = jest.fn()
+    mockUseHealthStatus.mockReturnValue({
+      loading: false,
+      refresh,
+      error: undefined,
       data: {
         status: 'healthy',
         version: '1.0.0',
-        timestamp,
-        uptimeSeconds: 75
+        timestamp: new Date('2025-01-01T00:00:00.000Z').toISOString(),
+        uptimeSeconds: 125
       }
     })
 
     render(<HealthStatusCard />)
 
-    await waitFor(() => expect(screen.getByText('1.0.0', { exact: false })).toBeInTheDocument())
-
-    expect(healthMock.check).toHaveBeenCalledTimes(1)
+    expect(screen.getByText('Versione:')).toBeInTheDocument()
+    expect(screen.getByText('1.0.0')).toBeInTheDocument()
+    expect(screen.getByText('2m 5s')).toBeInTheDocument()
+    expect(screen.getByText('healthy')).toBeInTheDocument()
   })
 
-  it('shows an error message when the api fails', async () => {
-    const healthMock = window.api.health as jest.Mocked<PreloadApi['health']>
-    healthMock.check.mockResolvedValueOnce({
-      ok: false,
-      code: 'ERR_UNKNOWN',
-      message: 'failure'
+  it('renders error message when health check fails', () => {
+    mockUseHealthStatus.mockReturnValue({
+      loading: false,
+      refresh: jest.fn(),
+      error: 'Errore di rete',
+      data: undefined
     })
 
     render(<HealthStatusCard />)
 
-    await waitFor(() => expect(screen.getByText(/failure/i)).toBeInTheDocument())
+    expect(screen.getByText('Errore di rete')).toBeInTheDocument()
+  })
+
+  it('calls refresh when requested', async () => {
+    const refresh = jest.fn()
+    mockUseHealthStatus.mockReturnValue({
+      loading: false,
+      refresh,
+      error: undefined,
+      data: {
+        status: 'healthy',
+        version: '1.0.0',
+        timestamp: new Date().toISOString(),
+        uptimeSeconds: 10
+      }
+    })
+
+    render(<HealthStatusCard />)
+
+    await userEvent.click(screen.getByRole('button', { name: 'Aggiorna stato' }))
+
+    expect(refresh).toHaveBeenCalled()
   })
 })
