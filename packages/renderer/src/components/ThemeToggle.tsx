@@ -4,7 +4,7 @@ import type { JSX } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { useAppDispatch, useAppSelector } from '@renderer/store/hooks'
-import { selectThemeMode, toggleMode } from '@renderer/store/slices/themeSlice'
+import { selectThemeMode, toggleMode } from '@renderer/store/slices/theme'
 
 export const ThemeToggle = (): JSX.Element => {
   const dispatch = useAppDispatch()

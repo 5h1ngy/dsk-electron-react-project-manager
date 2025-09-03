@@ -3,7 +3,7 @@ import { Navigate, Outlet } from 'react-router-dom'
 
 import { AppShell } from '@renderer/layout/AppShell'
 import { useAppDispatch, useAppSelector } from '@renderer/store/hooks'
-import { logout, selectCurrentUser, selectIsAuthenticated } from '@renderer/store/slices/authSlice'
+import { logout, selectCurrentUser, selectIsAuthenticated } from '@renderer/store/slices/auth'
 
 export const ProtectedRoute = () => {
   const dispatch = useAppDispatch()

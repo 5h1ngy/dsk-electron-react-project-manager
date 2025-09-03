@@ -1,7 +1,7 @@
 import { Navigate, Outlet } from 'react-router-dom'
 
 import { useAppSelector } from '@renderer/store/hooks'
-import { selectIsAuthenticated } from '@renderer/store/slices/authSlice'
+import { selectIsAuthenticated } from '@renderer/store/slices/auth'
 
 interface PublicRouteProps {
   redirectTo?: string

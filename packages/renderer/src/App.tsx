@@ -6,8 +6,8 @@ import { ErrorBoundary } from '@renderer/components/ErrorBoundary'
 import { AppRoutes } from '@renderer/pages/routes'
 import { createThemeConfig } from '@renderer/theme/themeConfig'
 import { useAppDispatch, useAppSelector } from '@renderer/store/hooks'
-import { restoreSession } from '@renderer/store/slices/authSlice'
-import { selectThemeMode } from '@renderer/store/slices/themeSlice'
+import { restoreSession } from '@renderer/store/slices/auth'
+import { selectThemeMode } from '@renderer/store/slices/theme'
 
 const App = () => {
   const dispatch = useAppDispatch()

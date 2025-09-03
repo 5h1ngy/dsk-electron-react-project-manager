@@ -15,7 +15,7 @@ import {
   selectAuthError,
   selectUsers,
   updateUser as updateUserThunk
-} from '@renderer/store/slices/authSlice'
+} from '@renderer/store/slices/auth'
 
 const createUserSchema = z.object({
   username: z.string().min(3).max(32),

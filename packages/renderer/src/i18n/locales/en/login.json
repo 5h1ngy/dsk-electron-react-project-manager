@@ -1,5 +1,6 @@
 {
   "title": "Sign in",
+  "header": "SDK",
   "usernameLabel": "Username",
   "usernamePlaceholder": "Enter your username",
   "passwordLabel": "Password",

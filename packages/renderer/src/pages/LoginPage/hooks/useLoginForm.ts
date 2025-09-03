@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -10,8 +10,8 @@ import {
   login,
   selectAuthError,
   selectAuthStatus
-} from '@renderer/store/slices/authSlice'
-import { selectLocale } from '@renderer/store/slices/localeSlice'
+} from '@renderer/store/slices/auth'
+import { selectLocale } from '@renderer/store/slices/locale'
 
 interface LoginValidationMessages {
   usernameRequired: string
@@ -59,8 +59,7 @@ export const useLoginForm = () => {
     control,
     handleSubmit,
     formState: { errors },
-    setFocus,
-    trigger
+    setFocus
   } = useForm<LoginFormValues>({
     resolver,
     mode: 'onChange',
@@ -71,16 +70,6 @@ export const useLoginForm = () => {
   useEffect(() => {
     setFocus('username')
   }, [setFocus])
-
-  const hasMountedRef = useRef(false)
-
-  useEffect(() => {
-    if (hasMountedRef.current) {
-      void trigger()
-    } else {
-      hasMountedRef.current = true
-    }
-  }, [trigger, locale])
 
   const onSubmit = useCallback(
     async (values: LoginFormValues) => {

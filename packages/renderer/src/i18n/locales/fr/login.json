@@ -1,5 +1,6 @@
 {
   "title": "Connexion",
+  "header": "SDK",
   "usernameLabel": "Nom d'utilisateur",
   "usernamePlaceholder": "Saisissez le nom d'utilisateur",
   "passwordLabel": "Mot de passe",
