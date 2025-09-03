@@ -1,4 +1,5 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { render } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/dom'
 import type { HealthResponse } from '@main/ipc/health'
 import type { PreloadApi } from '@preload/types'
 import { HealthStatusCard } from './index'
@@ -9,6 +10,7 @@ const createHealthApi = (): jest.Mocked<PreloadApi['health']> => ({
 
 const createAuthApi = (): jest.Mocked<PreloadApi['auth']> => ({
   login: jest.fn(),
+  register: jest.fn(),
   logout: jest.fn(),
   session: jest.fn(),
   listUsers: jest.fn(),

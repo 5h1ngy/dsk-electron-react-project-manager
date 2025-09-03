@@ -1,6 +1,6 @@
 import type { HealthResponse } from '@main/ipc/health'
 import type { SessionPayload, UserDTO } from '@main/auth/authService'
-import type { CreateUserInput, UpdateUserInput, LoginInput } from '@main/auth/validation'
+import type { CreateUserInput, UpdateUserInput, LoginInput, RegisterUserInput } from '@main/auth/validation'
 
 export interface IpcSuccess<T> {
   ok: true
@@ -21,6 +21,7 @@ export interface HealthApi {
 
 export interface AuthApi {
   login: (payload: LoginInput) => Promise<IpcResponse<SessionPayload>>
+  register: (payload: RegisterUserInput) => Promise<IpcResponse<SessionPayload>>
   logout: (token: string) => Promise<IpcResponse<{ success: boolean }>>
   session: (token: string) => Promise<IpcResponse<UserDTO | null>>
   listUsers: (token: string) => Promise<IpcResponse<UserDTO[]>>

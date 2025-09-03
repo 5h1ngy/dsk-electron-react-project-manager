@@ -1,37 +1,40 @@
-import type { JSX } from 'react'
-import { Alert, Button, Card, Form, Input, Space, Typography } from 'antd'
+import type { ChangeEvent, JSX } from 'react'
+import { Alert, Button, Card, Form, Input, Space, Typography, Layout } from 'antd'
 import { Controller } from 'react-hook-form'
+import { Link } from 'react-router-dom'
 
 import { LanguageSwitcher } from '@renderer/components/LanguageSwitcher'
 import { ThemeToggle } from '@renderer/components/ThemeToggle'
 import { useLoginForm } from './hooks/useLoginForm'
 
-const LoginPage = (): JSX.Element => {
+const { Header, Content } = Layout
+
+const Login = (): JSX.Element => {
   const { t, status, error, clearError, control, errors, handleSubmit, onSubmit } = useLoginForm()
 
   return (
-    <div className="auth-screen">
-      <div
+    <Layout style={{ minHeight: '100vh' }}>
+      <Header
         style={{
-          width: '100%',
-          maxWidth: 480,
-          margin: '0 auto',
           display: 'flex',
-          justifyContent: 'flex-end'
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          paddingInline: 24
         }}
       >
-        <Space align="center" size="middle">
+        <Typography.Title level={4} style={{ margin: 0, color: '#fff' }}>
+          {t('login:header')}
+        </Typography.Title>
+        <Space align="center" size="middle" style={{ marginLeft: 'auto' }}>
           <LanguageSwitcher />
           <ThemeToggle />
         </Space>
-      </div>
-      <Space
-        direction="vertical"
-        size="large"
-        style={{ width: '100%', maxWidth: 480, marginTop: 16 }}
+      </Header>
+      <Content
+        style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: 24 }}
       >
-        <Card title={t('login:title')} style={{ maxWidth: 400, margin: '0 auto' }}>
-          <form data-testid="login-form" onSubmit={handleSubmit(onSubmit)}>
+        <Card title={t('login:title')} style={{ maxWidth: 400, width: '100%' }}>
+          <Form data-testid="login-form" layout="vertical" onFinish={handleSubmit(onSubmit)}>
             <Form.Item
               label={t('login:usernameLabel')}
               validateStatus={errors.username ? 'error' : undefined}
@@ -44,7 +47,9 @@ const LoginPage = (): JSX.Element => {
                   <Input
                     {...field}
                     value={field.value ?? ''}
-                    onChange={(event) => field.onChange(event.target.value)}
+                    onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                      field.onChange(event.target.value)
+                    }
                     autoComplete="username"
                     autoFocus
                     aria-label={t('login:usernameLabel')}
@@ -65,7 +70,9 @@ const LoginPage = (): JSX.Element => {
                   <Input.Password
                     {...field}
                     value={field.value ?? ''}
-                    onChange={(event) => field.onChange(event.target.value)}
+                    onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                      field.onChange(event.target.value)
+                    }
                     autoComplete="current-password"
                     aria-label={t('login:passwordLabel')}
                     placeholder={t('login:passwordPlaceholder')}
@@ -90,11 +97,14 @@ const LoginPage = (): JSX.Element => {
             <Typography.Paragraph type="secondary" style={{ marginTop: 16, fontSize: 12 }}>
               {t('login:defaultCredentials')}
             </Typography.Paragraph>
-          </form>
+            <Typography.Paragraph type="secondary" style={{ marginTop: 8, fontSize: 12 }}>
+              {t('login:registerPrompt')} <Link to="/register">{t('login:registerLink')}</Link>
+            </Typography.Paragraph>
+          </Form>
         </Card>
-      </Space>
-    </div>
+      </Content>
+    </Layout>
   )
 }
 
-export default LoginPage
+export default Login

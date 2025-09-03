@@ -11,9 +11,11 @@ import {
   LoginSchema,
   CreateUserSchema,
   UpdateUserSchema,
+  RegisterUserSchema,
   type LoginInput,
   type CreateUserInput,
-  type UpdateUserInput
+  type UpdateUserInput,
+  type RegisterUserInput
 } from './validation'
 import { ROLE_NAMES, type RoleName } from './constants'
 import { logger } from '../utils/logger'
@@ -180,6 +182,62 @@ export class AuthService {
 
     const users = await User.findAll({ include: [{ model: UserRole, include: [Role] }] })
     return users.map((user) => sanitizeUser(user, extractRoleNames(user)))
+  }
+
+  async register(payload: unknown): Promise<SessionPayload> {
+    let input: RegisterUserInput
+    try {
+      input = RegisterUserSchema.parse(payload)
+    } catch (error) {
+      throw new AppError('ERR_VALIDATION', 'Dati registrazione non validi', { cause: error })
+    }
+
+    const viewerRoles = await this.ensureRolesExist(['Viewer'])
+
+    try {
+      const passwordHash = await hashPassword(input.password)
+      const user = await User.create({
+        id: randomUUID(),
+        username: input.username,
+        displayName: input.displayName,
+        passwordHash,
+        isActive: true,
+        lastLoginAt: null
+      })
+
+      await Promise.all(
+        viewerRoles.map((role) =>
+          UserRole.create({
+            userId: user.id,
+            roleId: role.id
+          })
+        )
+      )
+
+      const reloaded = await User.findOne({
+        where: { id: user.id },
+        include: [{ model: UserRole, include: [Role] }]
+      })
+
+      const userWithRoles = reloaded ?? user
+      const roles = extractRoleNames(userWithRoles)
+      const session = this.sessionManager.createSession(userWithRoles.id, roles)
+
+      await this.auditService.record(user.id, 'user', user.id, 'register', {
+        username: input.username
+      })
+      logger.success(`Registrazione completata per ${input.username}`, 'AuthService')
+
+      return {
+        token: session.token,
+        user: sanitizeUser(userWithRoles, roles)
+      }
+    } catch (error) {
+      if (error instanceof UniqueConstraintError) {
+        throw new AppError('ERR_CONFLICT', 'Username gia in uso')
+      }
+      throw wrapError(error)
+    }
   }
 
   async createUser(token: string, payload: unknown): Promise<UserDTO> {

@@ -11,6 +11,7 @@ jest.mock('electron', () => ({
 }))
 
 const loginMock = jest.fn()
+const registerMock = jest.fn()
 const logoutMock = jest.fn()
 const sessionMock = jest.fn()
 const listUsersMock = jest.fn()
@@ -21,6 +22,7 @@ jest.mock('../appContext', () => ({
   appContext: {
     authService: {
       login: loginMock,
+      register: registerMock,
       logout: logoutMock,
       currentSession: sessionMock,
       listUsers: listUsersMock,
@@ -37,6 +39,7 @@ describe('auth ipc handlers', () => {
   beforeEach(() => {
     handlers.clear()
     loginMock.mockReset()
+    registerMock.mockReset()
     logoutMock.mockReset()
     sessionMock.mockReset()
     listUsersMock.mockReset()
@@ -46,6 +49,7 @@ describe('auth ipc handlers', () => {
 
   it('registers auth handlers and returns success payloads', async () => {
     loginMock.mockResolvedValue({ token: 't', user: { id: '1' } })
+    registerMock.mockResolvedValue({ token: 't', user: { id: '2' } })
     logoutMock.mockResolvedValue(undefined)
     sessionMock.mockResolvedValue(null)
     listUsersMock.mockResolvedValue([])
@@ -57,6 +61,11 @@ describe('auth ipc handlers', () => {
     await expect(handlers.get('auth:login')!(undefined, { username: 'a', password: 'b' })).resolves.toEqual({
       ok: true,
       data: { token: 't', user: { id: '1' } }
+    })
+
+    await expect(handlers.get('auth:register')!(undefined, { username: 'b', password: 'c' })).resolves.toEqual({
+      ok: true,
+      data: { token: 't', user: { id: '2' } }
     })
 
     await handlers.get('auth:logout')!(undefined, 'token')
