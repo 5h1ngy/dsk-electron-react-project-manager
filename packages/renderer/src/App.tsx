@@ -7,21 +7,29 @@ import { AppRoutes } from '@renderer/pages/routes'
 import { createThemeConfig } from '@renderer/theme/themeConfig'
 import { useAppDispatch, useAppSelector } from '@renderer/store/hooks'
 import { restoreSession } from '@renderer/store/slices/auth'
-import { selectThemeMode } from '@renderer/store/slices/theme'
+import { selectAccentColor, selectThemeMode } from '@renderer/store/slices/theme'
 
 const App = () => {
   const dispatch = useAppDispatch()
   const mode = useAppSelector(selectThemeMode)
+  const accentColor = useAppSelector(selectAccentColor)
 
   useEffect(() => {
     document.body.dataset.theme = mode
   }, [mode])
 
   useEffect(() => {
+    document.documentElement.style.setProperty('--accent-color', accentColor)
+  }, [accentColor])
+
+  useEffect(() => {
     dispatch(restoreSession())
   }, [dispatch])
 
-  const themeConfig = useMemo(() => createThemeConfig(mode), [mode])
+  const themeConfig = useMemo(
+    () => createThemeConfig(mode, accentColor),
+    [mode, accentColor]
+  )
 
   return (
     <ErrorBoundary>

@@ -1,0 +1,62 @@
+{
+  "actionBar": {
+    "create": "Neuer Benutzer",
+    "refresh": "Aktualisieren"
+  },
+  "table": {
+    "username": "Benutzername",
+    "displayName": "Name",
+    "roles": "Rollen",
+    "status": "Status",
+    "actions": "Aktionen",
+    "empty": "Keine Benutzer"
+  },
+  "status": {
+    "active": "Aktiv",
+    "inactive": "Inaktiv"
+  },
+  "actions": {
+    "edit": "Bearbeiten"
+  },
+  "modals": {
+    "create": {
+      "title": "Benutzer erstellen",
+      "confirm": "Erstellen",
+      "fields": {
+        "username": "Benutzername",
+        "displayName": "Name",
+        "password": "Passwort",
+        "roles": "Rollen",
+        "rolesPlaceholder": "Rollen auswählen",
+        "active": "Aktiv"
+      }
+    },
+    "edit": {
+      "title": "Benutzer {{username}} bearbeiten",
+      "confirm": "Speichern",
+      "fields": {
+        "displayName": "Name",
+        "password": "Neues Passwort",
+        "passwordHint": "Leer lassen, um das aktuelle Passwort zu behalten",
+        "roles": "Rollen",
+        "rolesPlaceholder": "Rollen auswählen",
+        "active": "Aktiv"
+      }
+    }
+  },
+  "messages": {
+    "createSuccess": "Benutzer erfolgreich erstellt",
+    "createErrorFallback": "Benutzer konnte nicht erstellt werden",
+    "updateSuccess": "Benutzer erfolgreich aktualisiert",
+    "updateErrorFallback": "Benutzer konnte nicht aktualisiert werden"
+  },
+  "error": {
+    "title": "Fehler"
+  },
+  "roles": {
+    "Admin": "Administrator",
+    "Maintainer": "Betreuer",
+    "Contributor": "Mitwirkender",
+    "Viewer": "Betrachter"
+  }
+}

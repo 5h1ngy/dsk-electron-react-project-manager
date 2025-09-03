@@ -1,7 +1,7 @@
 import { useCallback } from 'react'
 import { Navigate, Outlet } from 'react-router-dom'
 
-import { AppShell } from '@renderer/layout/AppShell'
+import Shell from '@renderer/layout/Shell'
 import { useAppDispatch, useAppSelector } from '@renderer/store/hooks'
 import { logout, selectCurrentUser, selectIsAuthenticated } from '@renderer/store/slices/auth'
 
@@ -19,8 +19,8 @@ export const ProtectedRoute = () => {
   }
 
   return (
-    <AppShell currentUser={currentUser} onLogout={handleLogout}>
+    <Shell currentUser={currentUser} onLogout={handleLogout}>
       <Outlet />
-    </AppShell>
+    </Shell>
   )
 }

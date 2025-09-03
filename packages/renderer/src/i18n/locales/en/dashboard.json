@@ -1,0 +1,62 @@
+{
+  "actionBar": {
+    "create": "New user",
+    "refresh": "Refresh"
+  },
+  "table": {
+    "username": "Username",
+    "displayName": "Name",
+    "roles": "Roles",
+    "status": "Status",
+    "actions": "Actions",
+    "empty": "No users yet"
+  },
+  "status": {
+    "active": "Active",
+    "inactive": "Inactive"
+  },
+  "actions": {
+    "edit": "Edit"
+  },
+  "modals": {
+    "create": {
+      "title": "Create user",
+      "confirm": "Create",
+      "fields": {
+        "username": "Username",
+        "displayName": "Name",
+        "password": "Password",
+        "roles": "Roles",
+        "rolesPlaceholder": "Select roles",
+        "active": "Active"
+      }
+    },
+    "edit": {
+      "title": "Edit user {{username}}",
+      "confirm": "Save",
+      "fields": {
+        "displayName": "Name",
+        "password": "New password",
+        "passwordHint": "Leave blank to keep the current password",
+        "roles": "Roles",
+        "rolesPlaceholder": "Select roles",
+        "active": "Active"
+      }
+    }
+  },
+  "messages": {
+    "createSuccess": "User created successfully",
+    "createErrorFallback": "Unable to create user",
+    "updateSuccess": "User updated successfully",
+    "updateErrorFallback": "Unable to update user"
+  },
+  "error": {
+    "title": "Error"
+  },
+  "roles": {
+    "Admin": "Administrator",
+    "Maintainer": "Maintainer",
+    "Contributor": "Contributor",
+    "Viewer": "Viewer"
+  }
+}

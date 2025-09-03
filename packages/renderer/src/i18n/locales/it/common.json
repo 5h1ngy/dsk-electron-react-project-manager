@@ -3,14 +3,39 @@
     "ariaLabel": "Seleziona lingua",
     "options": {
       "it": "Italiano",
-      "en": "English",
-      "de": "Deutsch",
-      "fr": "Franais"
+      "en": "Inglese",
+      "de": "Tedesco",
+      "fr": "Francese"
     }
   },
   "theme": {
     "switchToDark": "Passa al tema scuro",
     "switchToLight": "Passa al tema chiaro",
     "ariaLabel": "Commuta tema"
+  },
+  "appShell": {
+    "title": "DSK Project Manager",
+    "welcome": "Benvenuto, {{name}}",
+    "logout": "Esci",
+    "navigation": {
+      "dashboard": "Dashboard"
+    },
+    "collapseSidebar": "Comprimi navigazione",
+    "expandSidebar": "Espandi navigazione",
+    "theme": {
+      "title": "Aspetto",
+      "mode": "Modalità scura",
+      "accent": "Colore secondario"
+    },
+    "accent": {
+      "ariaLabel": "Scegli il colore secondario",
+      "option": "Opzione colore {{index}}"
+    }
+  },
+  "roles": {
+    "Admin": "Amministratore",
+    "Maintainer": "Manutentore",
+    "Contributor": "Collaboratore",
+    "Viewer": "Visualizzatore"
   }
 }
