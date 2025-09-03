@@ -40,7 +40,9 @@ describe('AuthService', () => {
   })
 
   it('rejects invalid credentials', async () => {
-    await expect(authService.login({ username: 'admin', password: 'wrong' })).rejects.toBeInstanceOf(AppError)
+    await expect(
+      authService.login({ username: 'admin', password: 'wrong' })
+    ).rejects.toBeInstanceOf(AppError)
   })
 
   it('lists users only for admin', async () => {
@@ -56,8 +58,13 @@ describe('AuthService', () => {
       roles: ['Viewer']
     })
 
-    const viewerLogin = await authService.login({ username: viewer.username, password: 'Viewer123!' })
-    await expect(authService.listUsers(viewerLogin.token)).rejects.toMatchObject({ code: 'ERR_PERMISSION' })
+    const viewerLogin = await authService.login({
+      username: viewer.username,
+      password: 'Viewer123!'
+    })
+    await expect(authService.listUsers(viewerLogin.token)).rejects.toMatchObject({
+      code: 'ERR_PERMISSION'
+    })
   })
 
   it('creates and updates users', async () => {

@@ -88,8 +88,8 @@ let autoFillWarningLogged = false
 export const shouldSuppressDevtoolsMessage = (sourceId: string, message: string): boolean => {
   const isDevtools = sourceId.startsWith('devtools://')
   const isAutofillNoise =
-    message.includes("Request Autofill.enable failed") ||
-    message.includes("Request Autofill.setAddresses failed")
+    message.includes('Request Autofill.enable failed') ||
+    message.includes('Request Autofill.setAddresses failed')
 
   if (isDevtools && isAutofillNoise) {
     if (!autoFillWarningLogged) {

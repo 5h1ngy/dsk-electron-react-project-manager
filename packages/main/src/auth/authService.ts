@@ -88,7 +88,9 @@ export class AuthService {
   }
 
   private async getContext(token: string, options: { touch?: boolean } = {}): Promise<AuthContext> {
-    const session = options.touch ? this.sessionManager.touchSession(token) : this.sessionManager.getSession(token)
+    const session = options.touch
+      ? this.sessionManager.touchSession(token)
+      : this.sessionManager.getSession(token)
     if (!session) {
       throw new AppError('ERR_PERMISSION', 'Sessione non valida o scaduta')
     }
@@ -127,7 +129,9 @@ export class AuthService {
 
     const passwordMatches = await verifyPassword(user.passwordHash, input.password)
     if (!passwordMatches) {
-      await this.auditService.record(user.id, 'auth', user.id, 'login_failed', { username: input.username })
+      await this.auditService.record(user.id, 'auth', user.id, 'login_failed', {
+        username: input.username
+      })
       throw new AppError('ERR_VALIDATION', 'Credenziali non valide')
     }
 

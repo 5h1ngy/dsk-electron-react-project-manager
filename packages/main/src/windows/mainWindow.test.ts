@@ -81,11 +81,13 @@ beforeEach(() => {
     }
   })
   windowOnMock.mockReset()
-  webContentsOnMock.mockReset().mockImplementation((event: string, handler: (...args: any[]) => void) => {
-    if (event === 'console-message') {
-      consoleMessageHandlers.push(handler as any)
-    }
-  })
+  webContentsOnMock
+    .mockReset()
+    .mockImplementation((event: string, handler: (...args: any[]) => void) => {
+      if (event === 'console-message') {
+        consoleMessageHandlers.push(handler as any)
+      }
+    })
   showMock.mockReset()
   destroyMock.mockReset()
   loadURLMock.mockResolvedValue(undefined)
@@ -176,4 +178,3 @@ describe('createMainWindow', () => {
     expect(rendererMock).not.toHaveBeenCalled()
   })
 })
-
