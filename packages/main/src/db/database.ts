@@ -18,9 +18,7 @@ export interface DatabaseInitializationOptions {
 
 export const MIGRATIONS_TABLE = 'migrations'
 
-export const createSequelizeInstance = (
-  options: DatabaseInitializationOptions
-): Sequelize => {
+export const createSequelizeInstance = (options: DatabaseInitializationOptions): Sequelize => {
   const storagePath = options.resolveStoragePath()
   mkdirSync(dirname(storagePath), { recursive: true })
 
@@ -36,7 +34,11 @@ export const runMigrations = async (sequelize: Sequelize): Promise<void> => {
   const migrator = new Umzug<QueryInterface>({
     migrations,
     context: sequelize.getQueryInterface(),
-    storage: new SequelizeStorage({ sequelize, modelName: 'MigrationMeta', tableName: MIGRATIONS_TABLE }),
+    storage: new SequelizeStorage({
+      sequelize,
+      modelName: 'MigrationMeta',
+      tableName: MIGRATIONS_TABLE
+    }),
     logger: undefined
   })
 

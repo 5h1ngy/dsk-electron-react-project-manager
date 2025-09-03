@@ -31,10 +31,9 @@ describe('database initialization', () => {
         ])
       )
 
-      const executedMigrations = (await sequelize.query(
-        `SELECT name FROM ${MIGRATIONS_TABLE}`,
-        { type: QueryTypes.SELECT }
-      )) as Array<{ name: string }>
+      const executedMigrations = (await sequelize.query(`SELECT name FROM ${MIGRATIONS_TABLE}`, {
+        type: QueryTypes.SELECT
+      })) as Array<{ name: string }>
 
       const migrationNames = executedMigrations.map((row) => row.name)
       expect(migrationNames).toEqual(

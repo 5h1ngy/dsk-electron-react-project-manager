@@ -12,7 +12,14 @@ import {
   setMode
 } from '@renderer/store/slices/theme'
 
-export const ACCENT_COLORS = ['#00F5D4', '#00D4FF', '#5BFF70', '#FF00C8', '#FFB400', '#C0FF00'] as const
+export const ACCENT_COLORS = [
+  '#00F5D4',
+  '#00D4FF',
+  '#5BFF70',
+  '#FF00C8',
+  '#FFB400',
+  '#C0FF00'
+] as const
 
 export const ThemeControls = (): JSX.Element => {
   const { t } = useTranslation()
@@ -51,17 +58,9 @@ export const ThemeControls = (): JSX.Element => {
     }
 
     return (
-      <Card
-        size="small"
-        bordered
-        style={cardStyle}
-        onClick={(event) => event.stopPropagation()}
-      >
+      <Card size="small" bordered style={cardStyle} onClick={(event) => event.stopPropagation()}>
         <Space direction="vertical" size="middle" style={{ width: '100%' }}>
-          <Space
-            align="center"
-            style={{ width: '100%', justifyContent: 'space-between' }}
-          >
+          <Space align="center" style={{ width: '100%', justifyContent: 'space-between' }}>
             <Typography.Text strong>{t('appShell.theme.mode')}</Typography.Text>
             <Switch
               checkedChildren={<MoonOutlined />}

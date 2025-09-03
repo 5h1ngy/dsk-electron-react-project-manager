@@ -15,7 +15,22 @@ describe('auth preload api', () => {
   })
 
   it('invokes login channel with credentials', async () => {
-    const response = { ok: true, data: { token: 'abc', user: { id: '1', username: 'admin', displayName: 'Admin', isActive: true, roles: ['Admin'], lastLoginAt: null, createdAt: new Date(), updatedAt: new Date() } } }
+    const response = {
+      ok: true,
+      data: {
+        token: 'abc',
+        user: {
+          id: '1',
+          username: 'admin',
+          displayName: 'Admin',
+          isActive: true,
+          roles: ['Admin'],
+          lastLoginAt: null,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        }
+      }
+    }
     invokeMock.mockResolvedValue(response)
     const payload = { username: 'admin', password: 'secret123' }
 
@@ -27,6 +42,8 @@ describe('auth preload api', () => {
 
   it('throws when response is not in the expected format', async () => {
     invokeMock.mockResolvedValue({ invalid: true })
-    await expect(authApi.login({ username: 'admin', password: 'secret123' })).rejects.toThrow('ERR_INVALID_AUTH_RESPONSE')
+    await expect(authApi.login({ username: 'admin', password: 'secret123' })).rejects.toThrow(
+      'ERR_INVALID_AUTH_RESPONSE'
+    )
   })
 })

@@ -58,12 +58,16 @@ describe('auth ipc handlers', () => {
 
     registerAuthIpc()
 
-    await expect(handlers.get('auth:login')!(undefined, { username: 'a', password: 'b' })).resolves.toEqual({
+    await expect(
+      handlers.get('auth:login')!(undefined, { username: 'a', password: 'b' })
+    ).resolves.toEqual({
       ok: true,
       data: { token: 't', user: { id: '1' } }
     })
 
-    await expect(handlers.get('auth:register')!(undefined, { username: 'b', password: 'c' })).resolves.toEqual({
+    await expect(
+      handlers.get('auth:register')!(undefined, { username: 'b', password: 'c' })
+    ).resolves.toEqual({
       ok: true,
       data: { token: 't', user: { id: '2' } }
     })
@@ -71,8 +75,14 @@ describe('auth ipc handlers', () => {
     await handlers.get('auth:logout')!(undefined, 'token')
     expect(logoutMock).toHaveBeenCalledWith('token')
 
-    await expect(handlers.get('auth:list-users')!(undefined, 'token')).resolves.toEqual({ ok: true, data: [] })
-    await expect(handlers.get('auth:create-user')!(undefined, 'token', {})).resolves.toEqual({ ok: true, data: { id: '2' } })
+    await expect(handlers.get('auth:list-users')!(undefined, 'token')).resolves.toEqual({
+      ok: true,
+      data: []
+    })
+    await expect(handlers.get('auth:create-user')!(undefined, 'token', {})).resolves.toEqual({
+      ok: true,
+      data: { id: '2' }
+    })
   })
 
   it('formats application errors', async () => {

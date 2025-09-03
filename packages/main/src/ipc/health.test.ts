@@ -1,4 +1,3 @@
-
 import { registerHealthIpc } from './health'
 
 const handlerRegistry = new Map<string, () => Promise<unknown>>()
