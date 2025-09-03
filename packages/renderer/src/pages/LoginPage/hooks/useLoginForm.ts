@@ -4,8 +4,14 @@ import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useTranslation } from 'react-i18next'
 
-import { useAuthStore } from '@renderer/store/authStore'
-import { useLocaleStore } from '@renderer/store/localeStore'
+import { useAppDispatch, useAppSelector } from '@renderer/store/hooks'
+import {
+  clearError as clearAuthError,
+  login,
+  selectAuthError,
+  selectAuthStatus
+} from '@renderer/store/slices/authSlice'
+import { selectLocale } from '@renderer/store/slices/localeSlice'
 
 interface LoginValidationMessages {
   usernameRequired: string
@@ -34,11 +40,10 @@ const createLoginSchema = (messages: LoginValidationMessages) =>
 export type LoginFormValues = z.infer<ReturnType<typeof createLoginSchema>>
 
 export const useLoginForm = () => {
-  const locale = useLocaleStore((state) => state.locale)
-  const login = useAuthStore((state) => state.login)
-  const status = useAuthStore((state) => state.status)
-  const error = useAuthStore((state) => state.error)
-  const clearError = useAuthStore((state) => state.clearError)
+  const dispatch = useAppDispatch()
+  const locale = useAppSelector(selectLocale)
+  const status = useAppSelector(selectAuthStatus)
+  const error = useAppSelector(selectAuthError)
   const { t } = useTranslation(['login', 'common'])
 
   const validationMessages = useMemo(
@@ -71,7 +76,7 @@ export const useLoginForm = () => {
 
   useEffect(() => {
     if (hasMountedRef.current) {
-      trigger()
+      void trigger()
     } else {
       hasMountedRef.current = true
     }
@@ -79,10 +84,18 @@ export const useLoginForm = () => {
 
   const onSubmit = useCallback(
     async (values: LoginFormValues) => {
-      await login(values)
+      try {
+        await dispatch(login(values)).unwrap()
+      } catch {
+        // errors are handled via slice state
+      }
     },
-    [login]
+    [dispatch]
   )
+
+  const clearError = useCallback(() => {
+    dispatch(clearAuthError())
+  }, [dispatch])
 
   return {
     t,

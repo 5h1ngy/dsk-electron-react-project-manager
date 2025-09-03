@@ -4,9 +4,18 @@ import type { ColumnsType } from 'antd/es/table'
 import { useForm, Controller } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useAuthStore } from '../../../store/authStore'
+
 import type { UserDTO } from '@main/auth/authService'
 import { ROLE_NAMES, type RoleName } from '@main/auth/constants'
+import { useAppDispatch, useAppSelector } from '@renderer/store/hooks'
+import {
+  clearError as clearAuthError,
+  createUser as createUserThunk,
+  loadUsers,
+  selectAuthError,
+  selectUsers,
+  updateUser as updateUserThunk
+} from '@renderer/store/slices/authSlice'
 
 const createUserSchema = z.object({
   username: z.string().min(3).max(32),
@@ -29,20 +38,17 @@ type UpdateUserValues = z.infer<typeof updateUserSchema>
 const roleOptions = ROLE_NAMES.map((role) => ({ label: role, value: role }))
 
 export const UserManagementPanel = () => {
-  const users = useAuthStore((state) => state.users)
-  const loadUsers = useAuthStore((state) => state.loadUsers)
-  const createUser = useAuthStore((state) => state.createUser)
-  const updateUser = useAuthStore((state) => state.updateUser)
-  const clearError = useAuthStore((state) => state.clearError)
-  const error = useAuthStore((state) => state.error)
+  const dispatch = useAppDispatch()
+  const users = useAppSelector(selectUsers)
+  const error = useAppSelector(selectAuthError)
 
   const [messageApi, contextHolder] = message.useMessage()
   const [isCreateOpen, setCreateOpen] = useState(false)
   const [editingUser, setEditingUser] = useState<UserDTO | null>(null)
 
   useEffect(() => {
-    void loadUsers()
-  }, [loadUsers])
+    void dispatch(loadUsers())
+  }, [dispatch])
 
   const {
     control: createControl,
@@ -67,7 +73,7 @@ export const UserManagementPanel = () => {
   })
 
   const openCreateModal = () => {
-    clearError()
+    dispatch(clearAuthError())
     resetCreate()
     setCreateOpen(true)
   }
@@ -75,7 +81,7 @@ export const UserManagementPanel = () => {
   const closeCreateModal = () => setCreateOpen(false)
 
   const openEditModal = (user: UserDTO) => {
-    clearError()
+    dispatch(clearAuthError())
     setEditingUser(user)
     resetUpdate({
       displayName: user.displayName,
@@ -89,12 +95,13 @@ export const UserManagementPanel = () => {
 
   const onCreateSubmit = async (values: CreateUserValues) => {
     try {
-      await createUser(values)
+      await dispatch(createUserThunk(values)).unwrap()
       messageApi.success('Utente creato correttamente')
       closeCreateModal()
-      await loadUsers()
+      await dispatch(loadUsers())
     } catch (err) {
-      messageApi.error((err as Error).message ?? 'Errore creazione utente')
+      const messageText = typeof err === 'string' ? err : (err as Error).message ?? 'Errore creazione utente'
+      messageApi.error(messageText)
     }
   }
 
@@ -107,12 +114,13 @@ export const UserManagementPanel = () => {
       if (!values.password) {
         delete (payload as Partial<UpdateUserValues>).password
       }
-      await updateUser(editingUser.id, payload)
+      await dispatch(updateUserThunk({ userId: editingUser.id, input: payload })).unwrap()
       messageApi.success('Utente aggiornato')
       closeEditModal()
-      await loadUsers()
+      await dispatch(loadUsers())
     } catch (err) {
-      messageApi.error((err as Error).message ?? 'Errore aggiornamento utente')
+      const messageText = typeof err === 'string' ? err : (err as Error).message ?? 'Errore aggiornamento utente'
+      messageApi.error(messageText)
     }
   }
 
@@ -127,7 +135,9 @@ export const UserManagementPanel = () => {
         render: (roles: RoleName[]) => (
           <Space size={4} wrap>
             {roles.map((role) => (
-              <Tag key={role}>{role}</Tag>
+              <Tag key={role} color="blue">
+                {role}
+              </Tag>
             ))}
           </Space>
         )
@@ -163,10 +173,22 @@ export const UserManagementPanel = () => {
           <Button type="primary" onClick={openCreateModal}>
             Nuovo utente
           </Button>
-          <Button onClick={loadUsers}>Aggiorna</Button>
+          <Button
+            onClick={() => {
+              void dispatch(loadUsers())
+            }}
+          >
+            Aggiorna
+          </Button>
         </div>
         {error && (
-          <Alert type="error" message="Errore" description={error} onClose={clearError} closable />
+          <Alert
+            type="error"
+            message="Errore"
+            description={error}
+            onClose={() => dispatch(clearAuthError())}
+            closable
+          />
         )}
         <Table<UserDTO>
           rowKey="id"
@@ -232,9 +254,19 @@ export const UserManagementPanel = () => {
           <Form.Item label="Nome" validateStatus={updateErrors.displayName ? 'error' : undefined} help={updateErrors.displayName?.message}>
             <Input {...registerUpdate('displayName', { setValueAs: (value) => value.trim() })} autoComplete="off" />
           </Form.Item>
-          <Form.Item label="Nuova password" validateStatus={updateErrors.password ? 'error' : undefined} help={updateErrors.password?.message}
-            extra="Lascia vuoto per mantenere la password attuale">
-            <Input.Password {...registerUpdate('password', { setValueAs: (value) => (value ? value : undefined) })} autoComplete="new-password" allowClear />
+          <Form.Item
+            label="Nuova password"
+            validateStatus={updateErrors.password ? 'error' : undefined}
+            help={updateErrors.password?.message}
+            extra="Lascia vuoto per mantenere la password attuale"
+          >
+            <Input.Password
+              {...registerUpdate('password', {
+                setValueAs: (value) => (value ? value : undefined)
+              })}
+              autoComplete="new-password"
+              allowClear
+            />
           </Form.Item>
           <Form.Item label="Ruoli" validateStatus={updateErrors.roles ? 'error' : undefined} help={updateErrors.roles?.message}>
             <Controller
@@ -262,4 +294,3 @@ export const UserManagementPanel = () => {
     </div>
   )
 }
-

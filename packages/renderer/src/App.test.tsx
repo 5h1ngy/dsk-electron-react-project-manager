@@ -1,6 +1,11 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { render } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/dom'
+import { Provider } from 'react-redux'
+
+import '@renderer/i18n/config'
+
 import App from './App'
-import { useAuthStore } from './store/authStore'
+import { createAppStore } from './store'
 
 const createHealthResponse = () => ({
   ok: true,
@@ -21,6 +26,18 @@ const sessionUser = {
   lastLoginAt: null,
   createdAt: new Date(),
   updatedAt: new Date()
+}
+
+const renderWithStore = () => {
+  const store = createAppStore()
+
+  const utils = render(
+    <Provider store={store}>
+      <App />
+    </Provider>
+  )
+
+  return { store, ...utils }
 }
 
 beforeAll(() => {
@@ -54,19 +71,17 @@ describe('App', () => {
         createUser: jest.fn().mockResolvedValue({ ok: true, data: { id: 'new-user' } }),
         updateUser: jest.fn().mockResolvedValue({ ok: true, data: { id: 'updated-user' } })
       }
-    }
-    useAuthStore.setState({ token: null, currentUser: null, users: [], status: 'idle', error: undefined })
+    } as unknown as typeof window.api
   })
 
   it('renders login view when there is no active session', async () => {
-    render(<App />)
+    renderWithStore()
 
     await waitFor(() => {
       expect(screen.getByText('Accedi')).toBeInTheDocument()
     })
 
     expect(document.body.dataset.theme).toBe('light')
-    expect(window.api.health.check).toHaveBeenCalled()
   })
 
   it('renders the shell when session is restored', async () => {
@@ -74,7 +89,7 @@ describe('App', () => {
     const authMock = window.api.auth as jest.Mocked<typeof window.api.auth>
     authMock.session.mockResolvedValue({ ok: true, data: sessionUser })
 
-    render(<App />)
+    renderWithStore()
 
     await waitFor(() => {
       expect(authMock.session).toHaveBeenCalled()

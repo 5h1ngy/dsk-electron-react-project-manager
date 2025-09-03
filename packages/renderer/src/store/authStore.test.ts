@@ -1,5 +1,6 @@
-import { act } from '@testing-library/react'
-import { useAuthStore } from './authStore'
+import { createAppStore } from './index'
+
+import { login, logout } from './slices/authSlice'
 
 const sessionPayload = {
   ok: true,
@@ -18,7 +19,7 @@ const sessionPayload = {
   }
 }
 
-describe('auth store', () => {
+describe('auth slice', () => {
   beforeEach(() => {
     sessionStorage.clear()
     window.api = {
@@ -31,33 +32,30 @@ describe('auth store', () => {
         createUser: jest.fn(),
         updateUser: jest.fn()
       }
-    }
-    useAuthStore.setState({ token: null, currentUser: null, users: [], status: 'idle', error: undefined })
+    } as unknown as typeof window.api
   })
 
   it('stores token and user on login', async () => {
-    await act(async () => {
-      const success = await useAuthStore.getState().login({ username: 'admin', password: 'changeme!' })
-      expect(success).toBe(true)
-    })
+    const store = createAppStore()
 
-    const state = useAuthStore.getState()
+    await store.dispatch(login({ username: 'admin', password: 'changeme!' }))
+
+    const state = store.getState().auth
     expect(state.token).toBe('token-123')
     expect(state.currentUser?.username).toBe('admin')
     expect(sessionStorage.getItem('dsk-auth-token')).toBe('token-123')
   })
 
   it('clears token on logout', async () => {
-    useAuthStore.setState({ token: 'token-123', currentUser: sessionPayload.data.user, users: [], status: 'idle' })
+    const store = createAppStore()
+
     sessionStorage.setItem('dsk-auth-token', 'token-123')
+    store.dispatch({ type: login.fulfilled.type, payload: sessionPayload.data })
 
-    await act(async () => {
-      await useAuthStore.getState().logout()
-    })
+    await store.dispatch(logout())
 
-    const state = useAuthStore.getState()
+    const state = store.getState().auth
     expect(state.token).toBeNull()
     expect(sessionStorage.getItem('dsk-auth-token')).toBeNull()
   })
 })
-

@@ -1,23 +1,39 @@
-import { fireEvent, render } from '@testing-library/react'
+import { fireEvent } from '@testing-library/dom'
+import { render } from '@testing-library/react'
+import { Provider } from 'react-redux'
+
+import '@renderer/i18n/config'
+
 import { ThemeToggle } from './ThemeToggle'
-import { useThemeStore } from '../store/themeStore'
+import { createAppStore } from '@renderer/store'
+
+const renderWithStore = () => {
+  const store = createAppStore()
+
+  const utils = render(
+    <Provider store={store}>
+      <ThemeToggle />
+    </Provider>
+  )
+
+  return { store, ...utils }
+}
 
 describe('ThemeToggle', () => {
   beforeEach(() => {
-    useThemeStore.setState({ mode: 'light' })
     localStorage.clear()
   })
 
-  it('toggles the theme store value', () => {
-    const { getByRole } = render(<ThemeToggle />)
+  it('toggles the theme mode in the store', () => {
+    const { getByRole, store } = renderWithStore()
 
     const toggle = getByRole('switch')
-    expect(useThemeStore.getState().mode).toBe('light')
+    expect(store.getState().theme.mode).toBe('light')
 
     fireEvent.click(toggle)
-    expect(useThemeStore.getState().mode).toBe('dark')
+    expect(store.getState().theme.mode).toBe('dark')
 
     fireEvent.click(toggle)
-    expect(useThemeStore.getState().mode).toBe('light')
+    expect(store.getState().theme.mode).toBe('light')
   })
 })

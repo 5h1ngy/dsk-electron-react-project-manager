@@ -1,6 +1,6 @@
 import type { ThemeConfig } from 'antd'
 import { theme as antdTheme } from 'antd'
-import type { ThemeMode } from '../store/themeStore'
+import type { ThemeMode } from '../store/slices/themeSlice'
 
 const { darkAlgorithm, defaultAlgorithm } = antdTheme
 

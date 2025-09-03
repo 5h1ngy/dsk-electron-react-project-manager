@@ -3,11 +3,12 @@ import { Switch, Tooltip } from 'antd'
 import type { JSX } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { useThemeStore } from '../store/themeStore'
+import { useAppDispatch, useAppSelector } from '@renderer/store/hooks'
+import { selectThemeMode, toggleMode } from '@renderer/store/slices/themeSlice'
 
 export const ThemeToggle = (): JSX.Element => {
-  const mode = useThemeStore((state) => state.mode)
-  const toggle = useThemeStore((state) => state.toggle)
+  const dispatch = useAppDispatch()
+  const mode = useAppSelector(selectThemeMode)
   const { t } = useTranslation()
 
   const tooltipTitle = mode === 'light' ? t('theme.switchToDark') : t('theme.switchToLight')
@@ -18,7 +19,9 @@ export const ThemeToggle = (): JSX.Element => {
         checkedChildren={<MoonOutlined />}
         unCheckedChildren={<BulbOutlined />}
         checked={mode === 'dark'}
-        onChange={toggle}
+        onChange={() => {
+          dispatch(toggleMode())
+        }}
         aria-label={t('theme.ariaLabel')}
       />
     </Tooltip>

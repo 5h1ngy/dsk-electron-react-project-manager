@@ -1,14 +1,14 @@
 import { Navigate, Outlet } from 'react-router-dom'
 
-import { useAuthStore } from '@renderer/store/authStore'
+import { useAppSelector } from '@renderer/store/hooks'
+import { selectIsAuthenticated } from '@renderer/store/slices/authSlice'
 
 interface PublicRouteProps {
   redirectTo?: string
 }
 
 export const PublicRoute = ({ redirectTo = '/' }: PublicRouteProps) => {
-  const token = useAuthStore((state) => state.token)
-  const currentUser = useAuthStore((state) => state.currentUser)
+  const isAuthenticated = useAppSelector(selectIsAuthenticated)
 
-  return token && currentUser ? <Navigate to={redirectTo} replace /> : <Outlet />
+  return isAuthenticated ? <Navigate to={redirectTo} replace /> : <Outlet />
 }

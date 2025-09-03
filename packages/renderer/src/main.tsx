@@ -4,8 +4,10 @@ import './styles/global.css'
 import './i18n/config'
 
 import { StrictMode } from 'react'
+import { Provider } from 'react-redux'
 import { createRoot } from 'react-dom/client'
 import App from './App'
+import { store } from './store'
 
 const container = document.getElementById('root')
 
@@ -15,6 +17,8 @@ if (!container) {
 
 createRoot(container).render(
   <StrictMode>
-    <App />
+    <Provider store={store}>
+      <App />
+    </Provider>
   </StrictMode>
 )

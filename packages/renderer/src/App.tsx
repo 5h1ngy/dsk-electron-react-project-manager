@@ -2,23 +2,24 @@ import { useEffect, useMemo } from 'react'
 import { HashRouter } from 'react-router-dom'
 import { App as AntdApp, ConfigProvider } from 'antd'
 
-import { useThemeStore } from '@renderer/store/themeStore'
-import { useAuthStore } from '@renderer/store/authStore'
-import { createThemeConfig } from '@renderer/theme/themeConfig'
 import { ErrorBoundary } from '@renderer/components/ErrorBoundary'
 import { AppRoutes } from '@renderer/pages/routes'
+import { createThemeConfig } from '@renderer/theme/themeConfig'
+import { useAppDispatch, useAppSelector } from '@renderer/store/hooks'
+import { restoreSession } from '@renderer/store/slices/authSlice'
+import { selectThemeMode } from '@renderer/store/slices/themeSlice'
 
 const App = () => {
-  const mode = useThemeStore((state) => state.mode)
-  const restoreSession = useAuthStore((state) => state.restoreSession)
+  const dispatch = useAppDispatch()
+  const mode = useAppSelector(selectThemeMode)
 
   useEffect(() => {
     document.body.dataset.theme = mode
   }, [mode])
 
   useEffect(() => {
-    restoreSession()
-  }, [restoreSession])
+    dispatch(restoreSession())
+  }, [dispatch])
 
   const themeConfig = useMemo(() => createThemeConfig(mode), [mode])
 

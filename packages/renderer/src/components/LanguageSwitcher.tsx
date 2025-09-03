@@ -3,31 +3,34 @@ import type { JSX } from 'react'
 import { useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { useAppDispatch, useAppSelector } from '@renderer/store/hooks'
 import {
-  supportedLocaleOptions,
-  type SupportedLocale,
-  useLocaleStore
-} from '@renderer/store/localeStore'
+  changeLocale,
+  selectLocale,
+  selectSupportedLocales,
+  type SupportedLocale
+} from '@renderer/store/slices/localeSlice'
 
 export const LanguageSwitcher = (): JSX.Element => {
-  const locale = useLocaleStore((state) => state.locale)
-  const setLocale = useLocaleStore((state) => state.setLocale)
+  const dispatch = useAppDispatch()
+  const locale = useAppSelector(selectLocale)
+  const supportedLocales = selectSupportedLocales()
   const { t } = useTranslation()
 
   const options = useMemo(
     () =>
-      supportedLocaleOptions.map((value) => ({
+      supportedLocales.map((value) => ({
         value,
         label: t(`language.options.${value}`)
       })),
-    [t]
+    [supportedLocales, t]
   )
 
   const handleChange = useCallback(
     (value: SupportedLocale) => {
-      setLocale(value)
+      dispatch(changeLocale(value))
     },
-    [setLocale]
+    [dispatch]
   )
 
   return (
@@ -37,7 +40,7 @@ export const LanguageSwitcher = (): JSX.Element => {
       onChange={handleChange}
       options={options}
       aria-label={t('language.ariaLabel')}
-      dropdownMatchSelectWidth={false}
+      popupMatchSelectWidth={false}
       style={{ minWidth: 140 }}
     />
   )
