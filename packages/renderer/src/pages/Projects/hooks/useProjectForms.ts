@@ -24,7 +24,8 @@ export const useProjectForms = (): ProjectForms => {
     defaultValues: {
       key: '',
       name: '',
-      description: null
+      description: null,
+      tags: []
     }
   })
 
@@ -33,7 +34,8 @@ export const useProjectForms = (): ProjectForms => {
     mode: 'onChange',
     defaultValues: {
       name: '',
-      description: null
+      description: null,
+      tags: []
     }
   })
 

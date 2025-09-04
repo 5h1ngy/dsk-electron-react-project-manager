@@ -1,66 +1,74 @@
 {
-  "actionBar": {
-    "create": "Nouvel utilisateur",
-    "refresh": "Actualiser"
-  },
-  "table": {
-    "username": "Nom d'utilisateur",
-    "displayName": "Nom",
-    "roles": "Rôles",
-    "status": "Statut",
-    "actions": "Actions",
-    "empty": "Aucun utilisateur"
-  },
-  "status": {
-    "active": "Actif",
-    "inactive": "Inactif"
-  },
-  "actions": {
-    "edit": "Modifier"
-  },
-  "modals": {
-    "create": {
-      "title": "Créer un utilisateur",
-      "confirm": "Créer",
-      "fields": {
-        "username": "Nom d'utilisateur",
-        "displayName": "Nom",
-        "password": "Mot de passe",
-        "roles": "Rôles",
-        "rolesPlaceholder": "Sélectionnez les rôles",
-        "active": "Actif"
-      }
-    },
-    "edit": {
-      "title": "Modifier l'utilisateur {{username}}",
-      "confirm": "Enregistrer",
-      "fields": {
-        "displayName": "Nom",
-        "password": "Nouveau mot de passe",
-        "passwordHint": "Laissez vide pour conserver le mot de passe actuel",
-        "roles": "Rôles",
-        "rolesPlaceholder": "Sélectionnez les rôles",
-        "active": "Actif"
-      }
-    }
-  },
-  "messages": {
-    "createSuccess": "Utilisateur créé avec succès",
-    "createErrorFallback": "Impossible de créer l'utilisateur",
-    "updateSuccess": "Utilisateur mis à jour avec succès",
-    "updateErrorFallback": "Impossible de mettre à jour l'utilisateur"
-  },
-  "error": {
-    "title": "Erreur"
-  },
-  "roles": {
-    "Admin": "Administrateur",
-    "Maintainer": "Mainteneur",
-    "Contributor": "Contributeur",
-    "Viewer": "Lecteur"
-  },
-  "permissions": {
-    "title": "Permissions insuffisantes",
-    "description": "Seuls les administrateurs peuvent gérer les utilisateurs."
-  }
+    "actionBar":  {
+                      "create":  "Nouvel utilisateur",
+                      "refresh":  "Actualiser"
+                  },
+    "table":  {
+                  "username":  "Nom d\u0027utilisateur",
+                  "displayName":  "Nom",
+                  "roles":  "Rles",
+                  "status":  "Statut",
+                  "actions":  "Actions",
+                  "empty":  "Aucun utilisateur"
+              },
+    "status":  {
+                   "active":  "Actif",
+                   "inactive":  "Inactif"
+               },
+    "actions":  {
+                    "edit":  "Modifier"
+                },
+    "modals":  {
+                   "create":  {
+                                  "title":  "Crer un utilisateur",
+                                  "confirm":  "Crer",
+                                  "fields":  {
+                                                 "username":  "Nom d\u0027utilisateur",
+                                                 "displayName":  "Nom",
+                                                 "password":  "Mot de passe",
+                                                 "roles":  "Rles",
+                                                 "rolesPlaceholder":  "Slectionnez les rles",
+                                                 "active":  "Actif"
+                                             }
+                              },
+                   "edit":  {
+                                "title":  "Modifier l\u0027utilisateur {{username}}",
+                                "confirm":  "Enregistrer",
+                                "fields":  {
+                                               "displayName":  "Nom",
+                                               "password":  "Nouveau mot de passe",
+                                               "passwordHint":  "Laissez vide pour conserver le mot de passe actuel",
+                                               "roles":  "Rles",
+                                               "rolesPlaceholder":  "Slectionnez les rles",
+                                               "active":  "Actif"
+                                           }
+                            }
+               },
+    "messages":  {
+                     "createSuccess":  "Utilisateur cr avec succs",
+                     "createErrorFallback":  "Impossible de crer l\u0027utilisateur",
+                     "updateSuccess":  "Utilisateur mis  jour avec succs",
+                     "updateErrorFallback":  "Impossible de mettre  jour l\u0027utilisateur"
+                 },
+    "error":  {
+                  "title":  "Erreur"
+              },
+    "roles":  {
+                  "Admin":  "Administrateur",
+                  "Maintainer":  "Mainteneur",
+                  "Contributor":  "Contributeur",
+                  "Viewer":  "Lecteur"
+              },
+    "permissions":  {
+                        "title":  "Permissions insuffisantes",
+                        "description":  "Seuls les administrateurs peuvent grer les utilisateurs."
+                    },
+    "personal":  {
+                     "projectsTitle":  "Mes projets",
+                     "profileTitle":  "Rsum du profil",
+                     "username":  "Connect en tant que {{username}}",
+                     "noDescription":  "Aucune description disponible",
+                     "noProjects":  "Vous ne participez  aucun projet pour le moment.",
+                     "heading":  "Vue personnelle"
+                 }
 }

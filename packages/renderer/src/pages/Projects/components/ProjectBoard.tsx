@@ -1,32 +1,25 @@
 import { Alert, Col, Empty, Row, Spin } from 'antd'
+import { useTranslation } from 'react-i18next'
 
 import type { ProjectDetails } from '@renderer/store/slices/projects'
+import type { TaskDetails } from '@renderer/store/slices/tasks'
 import { KanbanColumn } from './KanbanColumn'
 import { TaskComposer } from './TaskComposer'
-import { TaskDetailDrawer } from './TaskDetailDrawer'
 import { useProjectBoard } from '../hooks/useProjectBoard'
 
 export interface ProjectBoardProps {
   project: ProjectDetails | null
   canManageTasks: boolean
+  onTaskSelect: (task: TaskDetails) => void
 }
 
-export const ProjectBoard = ({ project, canManageTasks }: ProjectBoardProps): JSX.Element => {
-  const {
-    messageContext,
-    columns,
-    boardStatus,
-    createTaskForm,
-    handleCreateTask,
-    handleMoveTask,
-    selectTask,
-    selectedTask
-  } = useProjectBoard(project, canManageTasks)
+export const ProjectBoard = ({ project, canManageTasks, onTaskSelect }: ProjectBoardProps): JSX.Element => {
+  const { t } = useTranslation('projects')
+  const { messageContext, columns, boardStatus, createTaskForm, handleCreateTask, handleMoveTask } =
+    useProjectBoard(project, canManageTasks)
 
   if (!project) {
-    return (
-      <Empty description="Seleziona un progetto per visualizzare la board" style={{ marginTop: 32 }} />
-    )
+    return <Empty description={t('board.empty')} style={{ marginTop: 32 }} />
   }
 
   const isLoading = boardStatus === 'loading'
@@ -38,8 +31,8 @@ export const ProjectBoard = ({ project, canManageTasks }: ProjectBoardProps): JS
         <Alert
           type="info"
           showIcon
-          message="Permessi limitati"
-          description="Non hai i permessi necessari per creare o modificare i task di questo progetto."
+          message={t('board.permissions.title')}
+          description={t('board.permissions.description')}
           style={{ marginBottom: 16 }}
         />
       ) : null}
@@ -52,7 +45,7 @@ export const ProjectBoard = ({ project, canManageTasks }: ProjectBoardProps): JS
                 label={column.label}
                 tasks={column.tasks}
                 onTaskDrop={handleMoveTask}
-                onTaskSelect={selectTask}
+                onTaskSelect={onTaskSelect}
                 canManage={canManageTasks}
                 renderComposer={
                   canManageTasks && column.status === 'todo'
@@ -70,8 +63,6 @@ export const ProjectBoard = ({ project, canManageTasks }: ProjectBoardProps): JS
           ))}
         </Row>
       </Spin>
-      <TaskDetailDrawer task={selectedTask} open={Boolean(selectedTask)} onClose={() => selectTask(null)} />
     </>
   )
 }
-

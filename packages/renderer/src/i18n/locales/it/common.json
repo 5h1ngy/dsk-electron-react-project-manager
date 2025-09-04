@@ -17,14 +17,12 @@
     "title": "DSK Project Manager",
     "welcome": "Benvenuto, {{name}}",
     "logout": "Esci",
-    "navigation": {
-      "dashboard": "Dashboard"
-    },
+    "navigation": {"dashboard": "Dashboard", "projects": "Progetti"},
     "collapseSidebar": "Comprimi navigazione",
     "expandSidebar": "Espandi navigazione",
     "theme": {
       "title": "Aspetto",
-      "mode": "Modalità scura",
+      "mode": "Modalit scura",
       "accent": "Colore secondario"
     },
     "accent": {
@@ -39,3 +37,4 @@
     "Viewer": "Visualizzatore"
   }
 }
+

@@ -71,10 +71,12 @@ describe('ProjectService', () => {
       const project = await projectService.createProject(actor, {
         key: 'KP',
         name: 'Kanban Project',
-        description: 'Test'
+        description: 'Test',
+        tags: ['kanban', 'ops']
       })
 
       expect(project.key).toBe('KP')
+      expect(project.tags).toEqual(expect.arrayContaining(['kanban', 'ops']))
       expect(project.members).toEqual(
         expect.arrayContaining([
           expect.objectContaining({ userId: admin.id, role: 'admin' })
@@ -167,6 +169,38 @@ describe('ProjectService', () => {
       expect(afterRemoval.members).not.toEqual(
         expect.arrayContaining([expect.objectContaining({ userId: maintainer.id })])
       )
+    } finally {
+      await sequelize.close()
+      await rm(directory, { recursive: true, force: true })
+    }
+  })
+
+  it('synchronizes project tags on update', async () => {
+    const { sequelize, directory, projectService, admin } = await setup()
+
+    try {
+      const actor = createActor(admin.id, ['Admin'])
+      const project = await projectService.createProject(actor, {
+        key: 'TG',
+        name: 'Taggable',
+        description: null,
+        tags: ['initial']
+      })
+
+      expect(project.tags).toEqual(['initial'])
+
+      const updated = await projectService.updateProject(actor, project.id, {
+        description: 'Updated',
+        tags: ['updated', 'initial']
+      })
+
+      expect(updated.tags).toEqual(expect.arrayContaining(['initial', 'updated']))
+
+      const pruned = await projectService.updateProject(actor, project.id, {
+        tags: ['final']
+      })
+
+      expect(pruned.tags).toEqual(['final'])
     } finally {
       await sequelize.close()
       await rm(directory, { recursive: true, force: true })

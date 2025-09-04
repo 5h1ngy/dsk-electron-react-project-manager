@@ -1,11 +1,11 @@
 {
   "language": {
-    "ariaLabel": "Sprache wählen",
+    "ariaLabel": "Sprache whlen",
     "options": {
       "it": "Italienisch",
       "en": "Englisch",
       "de": "Deutsch",
-      "fr": "Französisch"
+      "fr": "Franzsisch"
     }
   },
   "theme": {
@@ -17,18 +17,16 @@
     "title": "DSK Project Manager",
     "welcome": "Willkommen, {{name}}",
     "logout": "Abmelden",
-    "navigation": {
-      "dashboard": "Dashboard"
-    },
+    "navigation": {"dashboard": "Dashboard", "projects": "Projekte"},
     "collapseSidebar": "Navigation einklappen",
     "expandSidebar": "Navigation ausklappen",
     "theme": {
       "title": "Darstellung",
       "mode": "Dunkler Modus",
-      "accent": "Sekundärfarbe"
+      "accent": "Sekundrfarbe"
     },
     "accent": {
-      "ariaLabel": "Sekundäre Akzentfarbe wählen",
+      "ariaLabel": "Sekundre Akzentfarbe whlen",
       "option": "Farboption {{index}}"
     }
   },
@@ -39,3 +37,4 @@
     "Viewer": "Betrachter"
   }
 }
+

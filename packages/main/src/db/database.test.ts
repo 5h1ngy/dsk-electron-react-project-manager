@@ -30,6 +30,7 @@ describe('database initialization', () => {
           'projects',
           'project_members',
           'tasks',
+          'project_tags',
           'comments',
           MIGRATIONS_TABLE
         ])
@@ -44,7 +45,8 @@ describe('database initialization', () => {
         expect.arrayContaining([
           '0001-create-system-settings',
           '0002-create-auth-tables',
-          '0003-create-project-task-tables'
+          '0003-create-project-task-tables',
+          '0004-add-project-tags'
         ])
       )
 

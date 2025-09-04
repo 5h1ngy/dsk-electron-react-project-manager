@@ -9,7 +9,7 @@ export interface KanbanColumnProps {
   label: string
   tasks: TaskDetails[]
   onTaskDrop: (taskId: string, status: TaskStatus) => void
-  onTaskSelect: (taskId: string) => void
+  onTaskSelect: (task: TaskDetails) => void
   canManage: boolean
   renderComposer?: () => JSX.Element | null
 }
@@ -62,7 +62,7 @@ export const KanbanColumn = ({
           <TaskCard
             key={task.id}
             task={task}
-            onSelect={onTaskSelect}
+            onSelect={() => onTaskSelect(task)}
             onDragStart={handleDragStart}
             draggable={canManage}
           />

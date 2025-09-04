@@ -1,4 +1,5 @@
-import { Modal, Form, Input } from 'antd'
+import { Modal, Form, Input, Select } from 'antd'
+import { useTranslation } from 'react-i18next'
 import { Controller, type UseFormReturn } from 'react-hook-form'
 
 import type { CreateProjectValues } from '../schemas/projectSchemas'
@@ -18,12 +19,14 @@ export const CreateProjectModal = ({
   form,
   submitting
 }: CreateProjectModalProps): JSX.Element => {
+  const { t } = useTranslation('projects')
+
   return (
     <Modal
-      title="Nuovo progetto"
+      title={t('form.createTitle')}
       open={open}
       onCancel={onCancel}
-      okText="Crea"
+      okText={t('form.createAction')}
       onOk={onSubmit}
       confirmLoading={submitting}
       destroyOnHidden
@@ -35,7 +38,7 @@ export const CreateProjectModal = ({
         initialValues={form.getValues()}
       >
         <Form.Item
-          label="Key"
+          label={t('form.fields.key.label')}
           validateStatus={form.formState.errors.key ? 'error' : ''}
           help={form.formState.errors.key?.message}
           required
@@ -47,7 +50,7 @@ export const CreateProjectModal = ({
               <Input
                 {...field}
                 value={field.value ?? ''}
-                placeholder="ES. PROG"
+                placeholder={t('form.fields.key.placeholder')}
                 autoFocus
                 maxLength={10}
               />
@@ -55,7 +58,7 @@ export const CreateProjectModal = ({
           />
         </Form.Item>
         <Form.Item
-          label="Nome"
+          label={t('form.fields.name.label')}
           validateStatus={form.formState.errors.name ? 'error' : ''}
           help={form.formState.errors.name?.message}
           required
@@ -64,12 +67,12 @@ export const CreateProjectModal = ({
             control={form.control}
             name="name"
             render={({ field }) => (
-              <Input {...field} value={field.value ?? ''} placeholder="Nome del progetto" />
+              <Input {...field} value={field.value ?? ''} placeholder={t('form.fields.name.placeholder')} />
             )}
           />
         </Form.Item>
         <Form.Item
-          label="Descrizione"
+          label={t('form.fields.description.label')}
           validateStatus={form.formState.errors.description ? 'error' : ''}
           help={form.formState.errors.description?.message}
         >
@@ -80,8 +83,27 @@ export const CreateProjectModal = ({
               <Input.TextArea
                 {...field}
                 value={field.value ?? ''}
-                placeholder="Descrizione (opzionale)"
+                placeholder={t('form.fields.description.placeholder')}
                 autoSize={{ minRows: 3, maxRows: 6 }}
+              />
+            )}
+          />
+        </Form.Item>
+        <Form.Item
+          label={t('form.fields.tags.label')}
+          validateStatus={form.formState.errors.tags ? 'error' : ''}
+          help={form.formState.errors.tags?.message}
+        >
+          <Controller
+            control={form.control}
+            name="tags"
+            render={({ field }) => (
+              <Select
+                {...field}
+                mode="tags"
+                value={field.value ?? []}
+                tokenSeparators={[',']}
+                placeholder={t('form.fields.tags.placeholder')}
               />
             )}
           />

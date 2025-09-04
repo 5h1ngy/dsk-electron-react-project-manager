@@ -1,88 +1,105 @@
 import { Table, Tag, Typography } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
-import { useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import type { ProjectSummary } from '@renderer/store/slices/projects'
 
+type ProjectRow = ProjectSummary
+
 export interface ProjectListProps {
-  projects: ProjectSummary[]
-  selectedProjectId: string | null
-  onSelect: (projectId: string) => void
+  projects: ProjectRow[]
   loading: boolean
+  onSelect: (projectId: string) => void
 }
 
-const formatDate = (value: Date | string): string => {
+const formatDate = (value: Date | string, locale: string): string => {
   const date = value instanceof Date ? value : new Date(value)
-  return new Intl.DateTimeFormat('it-IT', {
+  return new Intl.DateTimeFormat(locale, {
     day: '2-digit',
     month: 'short',
     year: 'numeric'
   }).format(date)
 }
 
-export const ProjectList = ({
-  projects,
-  selectedProjectId,
-  onSelect,
-  loading
-}: ProjectListProps): JSX.Element => {
-  const columns = useMemo<ColumnsType<ProjectSummary>>(
-    () => [
-      {
-        title: 'Key',
-        dataIndex: 'key',
-        key: 'key',
-        width: 120,
-        render: (value: string) => <Tag color="blue">{value}</Tag>
-      },
-      {
-        title: 'Nome',
-        dataIndex: 'name',
-        key: 'name',
-        ellipsis: true,
-        render: (value: string, record) => (
-          <div>
-            <Typography.Text strong>{value}</Typography.Text>
-            {record.description ? (
-              <Typography.Paragraph type="secondary" style={{ marginBottom: 0 }}>
-                {record.description}
-              </Typography.Paragraph>
-            ) : null}
-          </div>
+export const ProjectList = ({ projects, loading, onSelect }: ProjectListProps): JSX.Element => {
+  const { t, i18n } = useTranslation('projects')
+
+  const columns: ColumnsType<ProjectRow> = [
+    {
+      title: t('list.columns.key'),
+      dataIndex: 'key',
+      key: 'key',
+      width: 120,
+      render: (value: string) => <Tag color="blue">{value}</Tag>
+    },
+    {
+      title: t('list.columns.name'),
+      dataIndex: 'name',
+      key: 'name',
+      ellipsis: true,
+      render: (_value: string, record) => (
+        <div style={{ maxWidth: 360 }}>
+          <Typography.Text strong>{record.name}</Typography.Text>
+          {record.description ? (
+            <Typography.Paragraph type="secondary" style={{ marginBottom: 0 }}>
+              {record.description}
+            </Typography.Paragraph>
+          ) : null}
+        </div>
+      )
+    },
+    {
+      title: t('list.columns.tags'),
+      dataIndex: 'tags',
+      key: 'tags',
+      render: (tags: string[] | undefined) =>
+        tags && tags.length > 0 ? (
+          <span>
+            {tags.map((tag) => (
+              <Tag key={tag}>{tag}</Tag>
+            ))}
+          </span>
+        ) : (
+          <Typography.Text type="secondary">{t('list.noTags')}</Typography.Text>
         )
-      },
-      {
-        title: 'Creato da',
-        dataIndex: 'createdBy',
-        key: 'createdBy',
-        width: 160,
-        render: (value: string) => <Typography.Text>{value}</Typography.Text>
-      },
-      {
-        title: 'Creato il',
-        dataIndex: 'createdAt',
-        key: 'createdAt',
-        width: 140,
-        render: (value: Date | string) => formatDate(value)
-      }
-    ],
-    []
-  )
+    },
+    {
+      title: t('list.columns.role'),
+      dataIndex: 'role',
+      key: 'role',
+      width: 140,
+      render: (value: ProjectRow['role']) => <Tag>{t(`list.role.${value}`)}</Tag>
+    },
+    {
+      title: t('list.columns.members'),
+      dataIndex: 'memberCount',
+      key: 'memberCount',
+      width: 140,
+      render: (value: number) => t('list.memberCount', { count: value })
+    },
+    {
+      title: t('list.columns.createdAt'),
+      dataIndex: 'createdAt',
+      key: 'createdAt',
+      width: 160,
+      render: (value: Date | string) => formatDate(value, i18n.language)
+    }
+  ]
 
   return (
-    <Table<ProjectSummary>
+    <Table<ProjectRow>
       rowKey="id"
       columns={columns}
       dataSource={projects}
       loading={loading}
       pagination={false}
       size="middle"
-      rowClassName={(record) => (record.id === selectedProjectId ? 'ant-table-row-selected' : '')}
       onRow={(record) => ({
-        onClick: () => onSelect(record.id)
+        onClick: () => onSelect(record.id),
+        style: { cursor: 'pointer' }
       })}
       locale={{
-        emptyText: loading ? 'Caricamento...' : 'Nessun progetto disponibile'
+        emptyText: loading ? t('list.loading') : t('list.empty')
       }}
     />
   )

@@ -1,0 +1,171 @@
+{
+    "title":  "Projects",
+    "viewSwitcher":  {
+                         "table":  "Table view",
+                         "cards":  "Card view"
+                     },
+    "actions":  {
+                    "refresh":  "Refresh",
+                    "refreshHint":  "Reload the project list",
+                    "create":  "New project",
+                    "createHint":  "Create a new project"
+                },
+    "filters":  {
+                    "searchPlaceholder":  "Search by name, key or tag",
+                    "tagsPlaceholder":  "Filter by tags",
+                    "roleOptions":  {
+                                        "all":  "All roles",
+                                        "admin":  "Administrator",
+                                        "edit":  "Editor",
+                                        "view":  "Viewer"
+                                    },
+                    "ownedOnly":  "Created by me"
+                },
+    "permissions":  {
+                        "createDenied":  "Only administrators or maintainers can create projects.",
+                        "createDeniedTooltip":  "You do not have permissions to create projects.",
+                        "updateDenied":  "Only administrators or maintainers can update projects.",
+                        "manageMembersDenied":  "Only administrators or maintainers can manage project members.",
+                        "tasksCreateDenied":  "You do not have permissions to create tasks in this project.",
+                        "tasksUpdateDenied":  "You do not have permissions to update tasks in this project."
+                    },
+    "errors":  {
+                   "generic":  "Operation failed"
+               },
+    "create":  {
+                   "success":  "Project created"
+               },
+    "update":  {
+                   "success":  "Project updated"
+               },
+    "members":  {
+                    "addSuccess":  "Member added",
+                    "removeSuccess":  "Member removed"
+                },
+    "list":  {
+                 "loading":  "Loading projects...",
+                 "empty":  "No projects found",
+                 "noTags":  "No tags",
+                 "memberCount_one":  "{{count}} member",
+                 "memberCount_other":  "{{count}} members",
+                 "createdOn":  "Created on {{date}}",
+                 "columns":  {
+                                 "key":  "Key",
+                                 "name":  "Name",
+                                 "tags":  "Tags",
+                                 "role":  "Role",
+                                 "members":  "Members",
+                                 "createdAt":  "Created"
+                             },
+                 "role":  {
+                              "admin":  "Administrator",
+                              "edit":  "Editor",
+                              "view":  "Viewer"
+                          }
+             },
+    "cards":  {
+                  "noDescription":  "No description provided"
+              },
+    "details":  {
+                    "title":  "Project details",
+                    "loading":  "Loading...",
+                    "refresh":  "Refresh",
+                    "tasksTitle":  "Project tasks",
+                    "kanbanTitle":  "Kanban board",
+                    "tasksLoading":  "Loading tasks...",
+                    "tasksEmpty":  "No tasks available",
+                    "noAssignee":  "Unassigned",
+                    "noDueDate":  "No due date",
+                    "status":  {
+                                   "todo":  "To do",
+                                   "in_progress":  "In progress",
+                                   "blocked":  "Blocked",
+                                   "done":  "Completed"
+                               },
+                    "priority":  {
+                                     "low":  "Low priority",
+                                     "medium":  "Medium priority",
+                                     "high":  "High priority",
+                                     "critical":  "Critical priority"
+                                 },
+                    "summary":  {
+                                    "title":  "Project overview",
+                                    "empty":  "Select a project to view details",
+                                    "createdOn":  "Created",
+                                    "createdBy":  "{{date}} by {{user}}",
+                                    "description":  "Description",
+                                    "noDescription":  "No description available",
+                                    "tags":  "Tags",
+                                    "noTags":  "No tags",
+                                    "members":  "Members",
+                                    "noMembers":  "No members assigned"
+                                },
+                    "tasksColumns":  {
+                                         "key":  "Key",
+                                         "title":  "Title",
+                                         "status":  "Status",
+                                         "priority":  "Priority",
+                                         "assignee":  "Assignee",
+                                         "dueDate":  "Due date"
+                                     },
+                    "drawer":  {
+                                   "title":  "Task details",
+                                   "description":  "Description",
+                                   "assignment":  "Assignment",
+                                   "owner":  "Owner: {{owner}}",
+                                   "assignee":  "Assigned to: {{assignee}}",
+                                   "timing":  "Timeline",
+                                   "createdAt":  "Created on {{date}}",
+                                   "dueDate":  "Due by {{date}}",
+                                   "empty":  "Select a task to view details"
+                               },
+                    "missingId":  "Project identifier is missing",
+                    "notFound":  "Project not found",
+                    "backToList":  "Back to projects"
+                },
+    "board":  {
+                  "empty":  "Select a project to open the Kanban board",
+                  "permissions":  {
+                                      "title":  "Limited permissions",
+                                      "description":  "You don\u0027t have the permissions required to modify tasks in this project."
+                                  },
+                  "columns":  {
+                                  "todo":  "To do",
+                                  "inProgress":  "In progress",
+                                  "blocked":  "Blocked",
+                                  "done":  "Completed"
+                              },
+                  "composer":  {
+                                   "title":  "Create a new task",
+                                   "titlePlaceholder":  "Task title",
+                                   "descriptionPlaceholder":  "Description (optional)",
+                                   "submit":  "Add task"
+                               }
+              },
+    "notifications":  {
+                          "taskCreated":  "Task created",
+                          "taskUpdated":  "Task updated"
+                      },
+    "form":  {
+                 "createTitle":  "New project",
+                 "fields":  {
+                                "key":  {
+                                            "placeholder":  "e.g. PROJ",
+                                            "label":  "Key"
+                                        },
+                                "name":  {
+                                             "placeholder":  "Project name",
+                                             "label":  "Name"
+                                         },
+                                "description":  {
+                                                    "placeholder":  "Description (optional)",
+                                                    "label":  "Description"
+                                                },
+                                "tags":  {
+                                             "placeholder":  "Add tags (press Enter to confirm)",
+                                             "label":  "Tags"
+                                         }
+                            },
+                 "createAction":  "Create"
+             }
+}
