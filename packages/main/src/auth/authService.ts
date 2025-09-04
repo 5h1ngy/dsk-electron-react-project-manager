@@ -19,6 +19,7 @@ import {
 } from './validation'
 import { ROLE_NAMES, type RoleName } from './constants'
 import { logger } from '../utils/logger'
+import type { ServiceActor } from '../services/types'
 
 export interface SessionPayload {
   token: string
@@ -178,6 +179,14 @@ export class AuthService {
 
     const roles = extractRoleNames(user)
     return sanitizeUser(user, roles)
+  }
+
+  async resolveActor(token: string, options: { touch?: boolean } = {}): Promise<ServiceActor> {
+    const context = await this.getContext(token, options)
+    return {
+      userId: context.user.id,
+      roles: context.roles
+    }
   }
 
   async listUsers(token: string): Promise<UserDTO[]> {

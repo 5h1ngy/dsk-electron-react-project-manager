@@ -16,14 +16,21 @@ export const handleResponse = async <T>(responsePromise: Promise<IpcResponse<T>>
 export const extractErrorMessage = (error: unknown): string => {
   if (error instanceof Error) {
     const [, message] = error.message.split(':')
-    return message ?? error.message
+    return (message ?? error.message).trim()
   }
   return 'Operazione non riuscita'
 }
 
 export const isSessionExpiredError = (error: unknown): boolean => {
   const code = (error as { code?: string })?.code
-  return code === 'ERR_PERMISSION' || code === 'ERR_SESSION'
+  if (code === 'ERR_SESSION') {
+    return true
+  }
+  if (code === 'ERR_PERMISSION') {
+    const message = error instanceof Error ? error.message : ''
+    return /Sessione (non valida|scaduta)/i.test(message)
+  }
+  return false
 }
 
 export const persistToken = (payload: SessionPayload | null | string | undefined): void => {

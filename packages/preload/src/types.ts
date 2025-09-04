@@ -6,6 +6,23 @@ import type {
   LoginInput,
   RegisterUserInput
 } from '@main/auth/validation'
+import type {
+  CreateProjectInput,
+  UpdateProjectInput,
+  ProjectMemberRoleInput
+} from '@main/services/projectValidation'
+import type {
+  ProjectDetailsDTO,
+  ProjectSummaryDTO
+} from '@main/services/projectService'
+import type {
+  CreateTaskInput,
+  UpdateTaskInput,
+  MoveTaskInput,
+  CreateCommentInput,
+  SearchTasksInput
+} from '@main/services/taskValidation'
+import type { TaskDetailsDTO, CommentDTO } from '@main/services/taskService'
 
 export interface IpcSuccess<T> {
   ok: true
@@ -38,7 +55,56 @@ export interface AuthApi {
   ) => Promise<IpcResponse<UserDTO>>
 }
 
+export interface ProjectMemberPayload {
+  userId: string
+  role: ProjectMemberRoleInput
+}
+
+export interface ProjectApi {
+  list: (token: string) => Promise<IpcResponse<ProjectSummaryDTO[]>>
+  get: (token: string, projectId: string) => Promise<IpcResponse<ProjectDetailsDTO>>
+  create: (token: string, payload: CreateProjectInput) => Promise<IpcResponse<ProjectDetailsDTO>>
+  update: (
+    token: string,
+    projectId: string,
+    payload: UpdateProjectInput
+  ) => Promise<IpcResponse<ProjectDetailsDTO>>
+  remove: (token: string, projectId: string) => Promise<IpcResponse<{ success: boolean }>>
+  addMember: (
+    token: string,
+    projectId: string,
+    payload: ProjectMemberPayload
+  ) => Promise<IpcResponse<ProjectDetailsDTO>>
+  removeMember: (
+    token: string,
+    projectId: string,
+    userId: string
+  ) => Promise<IpcResponse<ProjectDetailsDTO>>
+}
+
+export interface TaskApi {
+  list: (token: string, projectId: string) => Promise<IpcResponse<TaskDetailsDTO[]>>
+  get: (token: string, taskId: string) => Promise<IpcResponse<TaskDetailsDTO>>
+  create: (token: string, payload: CreateTaskInput) => Promise<IpcResponse<TaskDetailsDTO>>
+  update: (
+    token: string,
+    taskId: string,
+    payload: UpdateTaskInput
+  ) => Promise<IpcResponse<TaskDetailsDTO>>
+  move: (
+    token: string,
+    taskId: string,
+    payload: MoveTaskInput
+  ) => Promise<IpcResponse<TaskDetailsDTO>>
+  remove: (token: string, taskId: string) => Promise<IpcResponse<{ success: boolean }>>
+  listComments: (token: string, taskId: string) => Promise<IpcResponse<CommentDTO[]>>
+  addComment: (token: string, payload: CreateCommentInput) => Promise<IpcResponse<CommentDTO>>
+  search: (token: string, payload: SearchTasksInput) => Promise<IpcResponse<TaskDetailsDTO[]>>
+}
+
 export interface PreloadApi {
   health: HealthApi
   auth: AuthApi
+  project: ProjectApi
+  task: TaskApi
 }
