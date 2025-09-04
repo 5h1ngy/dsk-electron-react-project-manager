@@ -1,3 +1,4 @@
+import { seedDevData } from './seeds/devSeed'
 import { mkdirSync } from 'node:fs'
 import { dirname } from 'node:path'
 import { Sequelize } from 'sequelize-typescript'
@@ -11,6 +12,7 @@ import { UserRole } from './models/UserRole'
 import { AuditLog } from './models/AuditLog'
 import { Project } from './models/Project'
 import { ProjectMember } from './models/ProjectMember'
+import { ProjectTag } from './models/ProjectTag'
 import { Task } from './models/Task'
 import { Comment } from './models/Comment'
 import { migrations } from './migrations'
@@ -38,6 +40,7 @@ export const createSequelizeInstance = (options: DatabaseInitializationOptions):
       AuditLog,
       Project,
       ProjectMember,
+      ProjectTag,
       Task,
       Comment
     ],
@@ -70,5 +73,9 @@ export const initializeDatabase = async (
 
   await runMigrations(sequelize)
 
+  await seedDevData(sequelize)
+
   return sequelize
 }
+
+

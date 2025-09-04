@@ -10,6 +10,7 @@ import {
 import { User } from './User'
 import { ProjectMember } from './ProjectMember'
 import { Task } from './Task'
+import { ProjectTag } from './ProjectTag'
 
 @Table({
   tableName: 'projects',
@@ -56,4 +57,7 @@ export class Project extends Model {
 
   @HasMany(() => Task)
   declare tasks?: Task[]
+
+  @HasMany(() => ProjectTag)
+  declare tags?: ProjectTag[]
 }

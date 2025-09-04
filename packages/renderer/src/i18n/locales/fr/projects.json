@@ -1,0 +1,171 @@
+{
+    "title":  "Projets",
+    "viewSwitcher":  {
+                         "table":  "Vue tableau",
+                         "cards":  "Vue cartes"
+                     },
+    "actions":  {
+                    "refresh":  "Actualiser",
+                    "refreshHint":  "Recharger la liste des projets",
+                    "create":  "Nouveau projet",
+                    "createHint":  "Crer un nouveau projet"
+                },
+    "filters":  {
+                    "searchPlaceholder":  "Rechercher par nom, cl ou tag",
+                    "tagsPlaceholder":  "Filtrer par tags",
+                    "roleOptions":  {
+                                        "all":  "Tous les rles",
+                                        "admin":  "Administrateur",
+                                        "edit":  "diteur",
+                                        "view":  "Lecteur"
+                                    },
+                    "ownedOnly":  "Crs par moi"
+                },
+    "permissions":  {
+                        "createDenied":  "Seuls les administrateurs ou mainteneurs peuvent crer des projets.",
+                        "createDeniedTooltip":  "Vous n\u0027avez pas les droits pour crer des projets.",
+                        "updateDenied":  "Seuls les administrateurs ou mainteneurs peuvent modifier les projets.",
+                        "manageMembersDenied":  "Seuls les administrateurs ou mainteneurs peuvent grer les membres du projet.",
+                        "tasksCreateDenied":  "Vous n\u0027avez pas les droits pour crer des tches dans ce projet.",
+                        "tasksUpdateDenied":  "Vous n\u0027avez pas les droits pour modifier les tches dans ce projet."
+                    },
+    "errors":  {
+                   "generic":  "chec de l\u0027opration"
+               },
+    "create":  {
+                   "success":  "Projet cr"
+               },
+    "update":  {
+                   "success":  "Projet mis  jour"
+               },
+    "members":  {
+                    "addSuccess":  "Membre ajout",
+                    "removeSuccess":  "Membre supprim"
+                },
+    "list":  {
+                 "loading":  "Chargement des projets...",
+                 "empty":  "Aucun projet trouv",
+                 "noTags":  "Aucun tag",
+                 "memberCount_one":  "{{count}} membre",
+                 "memberCount_other":  "{{count}} membres",
+                 "createdOn":  "Cr le {{date}}",
+                 "columns":  {
+                                 "key":  "Key",
+                                 "name":  "Nom",
+                                 "tags":  "Tags",
+                                 "role":  "Rle",
+                                 "members":  "Membres",
+                                 "createdAt":  "Cr"
+                             },
+                 "role":  {
+                              "admin":  "Administrateur",
+                              "edit":  "diteur",
+                              "view":  "Lecteur"
+                          }
+             },
+    "cards":  {
+                  "noDescription":  "Aucune description disponible"
+              },
+    "details":  {
+                    "title":  "Dtails du projet",
+                    "loading":  "Chargement...",
+                    "refresh":  "Actualiser",
+                    "tasksTitle":  "Tches du projet",
+                    "kanbanTitle":  "Tableau Kanban",
+                    "tasksLoading":  "Chargement des tches...",
+                    "tasksEmpty":  "Aucune tche disponible",
+                    "noAssignee":  "Non assigne",
+                    "noDueDate":  "Pas d\u0027chance",
+                    "status":  {
+                                   "todo":  " faire",
+                                   "in_progress":  "En cours",
+                                   "blocked":  "Bloque",
+                                   "done":  "Termine"
+                               },
+                    "priority":  {
+                                     "low":  "Priorit basse",
+                                     "medium":  "Priorit moyenne",
+                                     "high":  "Priorit haute",
+                                     "critical":  "Priorit critique"
+                                 },
+                    "summary":  {
+                                    "title":  "Vue d\u0027ensemble",
+                                    "empty":  "Slectionnez un projet pour afficher les dtails",
+                                    "createdOn":  "Cr",
+                                    "createdBy":  "{{date}} par {{user}}",
+                                    "description":  "Description",
+                                    "noDescription":  "Aucune description disponible",
+                                    "tags":  "Tags",
+                                    "noTags":  "Aucun tag",
+                                    "members":  "Membres",
+                                    "noMembers":  "Aucun membre assign"
+                                },
+                    "tasksColumns":  {
+                                         "key":  "Key",
+                                         "title":  "Titre",
+                                         "status":  "Statut",
+                                         "priority":  "Priorit",
+                                         "assignee":  "Assign ",
+                                         "dueDate":  "chance"
+                                     },
+                    "drawer":  {
+                                   "title":  "Dtails de la tche",
+                                   "description":  "Description",
+                                   "assignment":  "Affectation",
+                                   "owner":  "Propritaire : {{owner}}",
+                                   "assignee":  "Assign  : {{assignee}}",
+                                   "timing":  "Chronologie",
+                                   "createdAt":  "Cre le {{date}}",
+                                   "dueDate":  "chance : {{date}}",
+                                   "empty":  "Slectionnez une tche pour afficher les dtails"
+                               },
+                    "missingId":  "Identifiant du projet manquant",
+                    "notFound":  "Projet introuvable",
+                    "backToList":  "Retour aux projets"
+                },
+    "board":  {
+                  "empty":  "Slectionnez un projet pour ouvrir le tableau Kanban",
+                  "permissions":  {
+                                      "title":  "Permissions limites",
+                                      "description":  "Vous n\u0027avez pas les permissions ncessaires pour modifier les tches de ce projet."
+                                  },
+                  "columns":  {
+                                  "todo":  " faire",
+                                  "inProgress":  "En cours",
+                                  "blocked":  "Bloque",
+                                  "done":  "Termine"
+                              },
+                  "composer":  {
+                                   "title":  "Crer une nouvelle tche",
+                                   "titlePlaceholder":  "Titre de la tche",
+                                   "descriptionPlaceholder":  "Description (optionnelle)",
+                                   "submit":  "Ajouter la tche"
+                               }
+              },
+    "notifications":  {
+                          "taskCreated":  "Tche cre",
+                          "taskUpdated":  "Tche mise  jour"
+                      },
+    "form":  {
+                 "createTitle":  "Nouveau projet",
+                 "fields":  {
+                                "key":  {
+                                            "placeholder":  "ex. PROJ",
+                                            "label":  "Key"
+                                        },
+                                "name":  {
+                                             "placeholder":  "Nom du projet",
+                                             "label":  "Nom"
+                                         },
+                                "description":  {
+                                                    "placeholder":  "Description (optionnelle)",
+                                                    "label":  "Description"
+                                                },
+                                "tags":  {
+                                             "placeholder":  "Ajouter des tags (Entre pour valider)",
+                                             "label":  "Tags"
+                                         }
+                            },
+                 "createAction":  "Crer"
+             }
+}

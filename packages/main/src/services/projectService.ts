@@ -6,6 +6,7 @@ import type { RoleName } from '../auth/constants'
 import { AuditService } from '../audit/auditService'
 import { Project } from '../db/models/Project'
 import { ProjectMember, type ProjectMembershipRole } from '../db/models/ProjectMember'
+import { ProjectTag } from '../db/models/ProjectTag'
 import { User } from '../db/models/User'
 import { AppError, wrapError } from '../errors/appError'
 import {
@@ -50,6 +51,7 @@ export interface ProjectSummaryDTO {
   updatedAt: Date
   role: ProjectMembershipRole
   memberCount: number
+  tags: string[]
 }
 
 export interface ProjectMemberDTO {
@@ -64,6 +66,9 @@ export interface ProjectMemberDTO {
 export interface ProjectDetailsDTO extends ProjectSummaryDTO {
   members: ProjectMemberDTO[]
 }
+
+const collectTags = (project: Project & { tags?: ProjectTag[] }): string[] =>
+  (project.tags ?? []).map((tag) => tag.tag)
 
 const sanitizeMember = (member: ProjectMember): ProjectMemberDTO => {
   const user = member.user
@@ -81,7 +86,7 @@ const sanitizeMember = (member: ProjectMember): ProjectMemberDTO => {
 }
 
 const sanitizeProject = (
-  project: Project,
+  project: Project & { tags?: ProjectTag[] },
   role: ProjectMembershipRole,
   memberCount: number
 ): ProjectSummaryDTO => ({
@@ -93,7 +98,8 @@ const sanitizeProject = (
   createdAt: project.createdAt!,
   updatedAt: project.updatedAt!,
   role,
-  memberCount
+  memberCount,
+  tags: collectTags(project)
 })
 
 const isSystemAdmin = (actor: ProjectActor): boolean => actor.roles.includes('Admin')
@@ -173,6 +179,48 @@ export class ProjectService {
     return membershipRole ?? DEFAULT_MEMBER_ROLE
   }
 
+  private async syncProjectTags(
+    projectId: string,
+    tags: string[],
+    transaction: Transaction
+  ): Promise<void> {
+    const normalized = Array.from(
+      new Set(
+        tags
+          .map((tag) => tag.trim().toLowerCase())
+          .filter((tag) => tag.length > 0)
+          .slice(0, 20)
+      )
+    )
+
+    const existing = await ProjectTag.findAll({ where: { projectId }, transaction })
+    const existingSet = new Set(existing.map((tag) => tag.tag))
+    const targetSet = new Set(normalized)
+
+    const toRemove = existing.filter((tag) => !targetSet.has(tag.tag))
+    const toAdd = normalized.filter((tag) => !existingSet.has(tag))
+
+    if (toRemove.length > 0) {
+      await ProjectTag.destroy({
+        where: {
+          id: toRemove.map((tag) => tag.id)
+        },
+        transaction
+      })
+    }
+
+    for (const tag of toAdd) {
+      await ProjectTag.create(
+        {
+          id: randomUUID(),
+          projectId,
+          tag
+        },
+        { transaction }
+      )
+    }
+  }
+
   async listProjects(actor: ProjectActor): Promise<ProjectSummaryDTO[]> {
     try {
       if (isSystemAdmin(actor)) {
@@ -180,6 +228,10 @@ export class ProjectService {
           include: [
             {
               model: ProjectMember,
+              required: false
+            },
+            {
+              model: ProjectTag,
               required: false
             }
           ],
@@ -212,6 +264,10 @@ export class ProjectService {
           {
             model: ProjectMember,
             required: false
+          },
+          {
+            model: ProjectTag,
+            required: false
           }
         ],
         order: [['createdAt', 'ASC']]
@@ -233,14 +289,17 @@ export class ProjectService {
 
   async getProject(actor: ProjectActor, projectId: string): Promise<ProjectDetailsDTO> {
     try {
-      const project = await Project.findByPk(projectId, {
-        include: [
-          {
-            model: ProjectMember,
-            include: [User]
-          }
-        ]
-      })
+    const project = await Project.findByPk(projectId, {
+      include: [
+        {
+          model: ProjectMember,
+          include: [User]
+        },
+        {
+          model: ProjectTag
+        }
+      ]
+    })
 
       if (!project) {
         throw new AppError('ERR_NOT_FOUND', 'Progetto non trovato')
@@ -294,6 +353,8 @@ export class ProjectService {
           { transaction }
         )
 
+        await this.syncProjectTags(created.id, input.tags ?? [], transaction)
+
         return created
       })
 
@@ -329,9 +390,15 @@ export class ProjectService {
       const membership = await this.loadMembership(projectId, actor.userId)
       this.assertProjectRole(actor, membership?.role ?? null, 'admin')
 
-      const project = await this.getProjectOrFail(projectId)
-      Object.assign(project, input)
-      await project.save()
+      await this.withTransaction(async (transaction) => {
+        const project = await this.getProjectOrFail(projectId, transaction)
+        Object.assign(project, input)
+        await project.save({ transaction })
+
+        if (input.tags) {
+          await this.syncProjectTags(projectId, input.tags, transaction)
+        }
+      })
 
       await this.auditService.record(actor.userId, 'project', projectId, 'update', input)
 
@@ -460,4 +527,5 @@ export class ProjectService {
     }
   }
 }
+
 

@@ -18,7 +18,8 @@ describe('projects slice', () => {
     createdAt: now,
     updatedAt: now,
     role: 'admin',
-    memberCount: 1
+    memberCount: 1,
+    tags: ['alpha']
   }
 
   const details: ProjectDetails = {
@@ -32,7 +33,8 @@ describe('projects slice', () => {
         role: 'admin',
         createdAt: now
       }
-    ]
+    ],
+    tags: ['alpha']
   }
 
   it('returns the initial state', () => {
@@ -61,7 +63,8 @@ describe('projects slice', () => {
       createProject.fulfilled(details, 'request-id', {
         key: details.key,
         name: details.name,
-        description: details.description
+        description: details.description,
+        tags: details.tags
       })
     )
 

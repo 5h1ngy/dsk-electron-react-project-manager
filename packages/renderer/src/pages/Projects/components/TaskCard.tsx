@@ -1,11 +1,12 @@
 import { Card, Space, Tag, Typography } from 'antd'
 import type { DragEvent } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import type { TaskDetails } from '@renderer/store/slices/tasks'
 
 export interface TaskCardProps {
   task: TaskDetails
-  onSelect: (taskId: string) => void
+  onSelect: () => void
   onDragStart: (taskId: string, event: DragEvent<HTMLDivElement>) => void
   draggable?: boolean
 }
@@ -23,6 +24,8 @@ export const TaskCard = ({
   onDragStart,
   draggable = true
 }: TaskCardProps): JSX.Element => {
+  const { t, i18n } = useTranslation('projects')
+
   const handleDragStart = (event: DragEvent<HTMLDivElement>) => {
     if (!draggable) {
       event.preventDefault()
@@ -38,26 +41,28 @@ export const TaskCard = ({
       hoverable
       draggable={draggable}
       onDragStart={handleDragStart}
-      onClick={() => onSelect(task.id)}
+      onClick={onSelect}
     >
       <Space direction="vertical" size={4} style={{ width: '100%' }}>
         <Space align="baseline" style={{ justifyContent: 'space-between', width: '100%' }}>
           <Typography.Text strong>{task.title}</Typography.Text>
-          <Tag color={priorityColors[task.priority] ?? 'blue'}>{task.priority}</Tag>
+          <Tag color={priorityColors[task.priority] ?? 'blue'}>
+            {t(`details.priority.${task.priority}`)}
+          </Tag>
         </Space>
         {task.assignee?.displayName ? (
           <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-            Assegnato a {task.assignee.displayName}
+            {t('details.drawer.assignee', { assignee: task.assignee.displayName })}
           </Typography.Text>
         ) : null}
         {task.dueDate ? (
           <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-            Scadenza: {new Intl.DateTimeFormat('it-IT').format(new Date(task.dueDate))}
+            {t('details.drawer.dueDate', {
+              date: new Intl.DateTimeFormat(i18n.language).format(new Date(task.dueDate))
+            })}
           </Typography.Text>
         ) : null}
       </Space>
     </Card>
   )
 }
-
-

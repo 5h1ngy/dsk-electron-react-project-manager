@@ -4,106 +4,89 @@ import { useTranslation } from 'react-i18next'
 
 import { useAppDispatch, useAppSelector } from '@renderer/store/hooks'
 import {
-  addProjectMember,
   clearProjectsError,
   createProject,
-  fetchProjectById,
   fetchProjects,
-  removeProjectMember,
-  selectProject,
   selectProjects,
   selectProjectsError,
   selectProjectsMutationStatus,
-  selectProjectsStatus,
-  selectSelectedProject,
-  selectSelectedProjectId,
-  updateProject
+  selectProjectsStatus
 } from '@renderer/store/slices/projects'
-import type { ProjectDetails } from '@renderer/store/slices/projects'
-import { useProjectForms } from './useProjectForms'
-import type { CreateProjectValues, UpdateProjectValues } from '../schemas/projectSchemas'
-import type { ProjectMemberRoleInput } from '@main/services/projectValidation'
+import type { ProjectSummary } from '@renderer/store/slices/projects'
 import { selectCurrentUser } from '@renderer/store/slices/auth/selectors'
+import { useProjectForms } from './useProjectForms'
+import type { CreateProjectValues } from '../schemas/projectSchemas'
+
+type ViewMode = 'table' | 'cards'
+type RoleFilter = 'all' | 'admin' | 'edit' | 'view'
+
+export interface UseProjectsPageOptions {
+  onProjectCreated?: (projectId: string) => void
+}
 
 export interface UseProjectsPageResult {
   messageContext: ReactNode
-  projects: ReturnType<typeof selectProjects>
-  filteredProjects: ReturnType<typeof selectProjects>
-  selectedProject: ProjectDetails | null
-  selectedProjectId: string | null
+  projects: ProjectSummary[]
+  filteredProjects: ProjectSummary[]
   listStatus: ReturnType<typeof selectProjectsStatus>
   mutationStatus: ReturnType<typeof selectProjectsMutationStatus>
-  filter: string
-  setFilter: (value: string) => void
-  isCreateModalOpen: boolean
+  search: string
+  setSearch: (value: string) => void
+  selectedTags: string[]
+  setSelectedTags: (tags: string[]) => void
+  availableTags: string[]
+  roleFilter: RoleFilter
+  setRoleFilter: (role: RoleFilter) => void
+  ownedOnly: boolean
+  setOwnedOnly: (value: boolean) => void
+  viewMode: ViewMode
+  setViewMode: (mode: ViewMode) => void
   openCreateModal: () => void
   closeCreateModal: () => void
-  handleCreateSubmit: () => void
-  handleUpdateSubmit: () => void
-  selectProjectById: (projectId: string) => void
+  isCreateModalOpen: boolean
+  handleCreateSubmit: () => Promise<void>
+  createForm: ReturnType<typeof useProjectForms>['createForm']
+  canManageProjects: boolean
   refreshProjects: () => void
   isLoading: boolean
-  createForm: ReturnType<typeof useProjectForms>['createForm']
-  updateForm: ReturnType<typeof useProjectForms>['updateForm']
-  addMember: (projectId: string, userId: string, role: ProjectMemberRoleInput) => Promise<void>
-  removeMember: (projectId: string, userId: string) => Promise<void>
-  canManageProjects: boolean
 }
 
-export const useProjectsPage = (initialProjectId?: string | null): UseProjectsPageResult => {
+const matchesSearch = (project: ProjectSummary, needle: string): boolean => {
+  const haystacks = [project.name, project.key, ...(project.tags ?? [])]
+  return haystacks.some((value) => value.toLowerCase().includes(needle))
+}
+
+export const useProjectsPage = (options?: UseProjectsPageOptions): UseProjectsPageResult => {
   const dispatch = useAppDispatch()
   const { t } = useTranslation('projects')
   const projects = useAppSelector(selectProjects)
   const listStatus = useAppSelector(selectProjectsStatus)
   const mutationStatus = useAppSelector(selectProjectsMutationStatus)
-  const selectedProjectId = useAppSelector(selectSelectedProjectId)
-  const selectedProject = useAppSelector(selectSelectedProject)
   const error = useAppSelector(selectProjectsError)
   const currentUser = useAppSelector(selectCurrentUser)
-  const canManageProjects = (currentUser?.roles ?? []).some(
-    (role) => role === 'Admin' || role === 'Maintainer'
-  )
-  const [filter, setFilter] = useState('')
-  const [messageApi, messageContext] = message.useMessage()
-  const [isCreateModalOpen, setCreateModalOpen] = useState(false)
 
-  const { createForm, updateForm } = useProjectForms()
+  const [search, setSearch] = useState('')
+  const [selectedTags, setSelectedTags] = useState<string[]>([])
+  const [roleFilter, setRoleFilter] = useState<RoleFilter>('all')
+  const [ownedOnly, setOwnedOnly] = useState(false)
+  const [viewMode, setViewMode] = useState<ViewMode>('table')
+  const [isCreateModalOpen, setCreateModalOpen] = useState(false)
+  const [messageApi, messageContext] = message.useMessage()
+
+  const { createForm } = useProjectForms()
+
+  const canManageProjects = useMemo(
+    () => (currentUser?.roles ?? []).some((role) => role === 'Admin' || role === 'Maintainer'),
+    [currentUser?.roles]
+  )
 
   const isLoading = listStatus === 'loading'
-
-  useEffect(() => {
-    if (selectedProject) {
-      updateForm.reset({
-        name: selectedProject.name,
-        description: selectedProject.description ?? null
-      })
-    }
-  }, [selectedProject, updateForm])
 
   useEffect(() => {
     if (listStatus === 'idle') {
       void dispatch(fetchProjects())
     }
   }, [dispatch, listStatus])
-
-  useEffect(() => {
-    if (initialProjectId) {
-      dispatch(selectProject(initialProjectId))
-      void dispatch(fetchProjectById(initialProjectId))
-    }
-  }, [dispatch, initialProjectId])
-
-  useEffect(() => {
-    if (!selectedProjectId && projects.length > 0) {
-      dispatch(selectProject(projects[0].id))
-    }
-  }, [dispatch, projects, selectedProjectId])
-
-  useEffect(() => {
-    if (selectedProjectId && !selectedProject) {
-      void dispatch(fetchProjectById(selectedProjectId))
-    }
-  }, [dispatch, selectedProjectId, selectedProject])
 
   useEffect(() => {
     if (error) {
@@ -113,17 +96,38 @@ export const useProjectsPage = (initialProjectId?: string | null): UseProjectsPa
     }
   }, [dispatch, error, messageApi])
 
-  const filteredProjects = useMemo(() => {
-    if (!filter.trim()) {
-      return projects
+  const availableTags = useMemo(() => {
+    const set = new Set<string>()
+    for (const project of projects) {
+      for (const tag of project.tags ?? []) {
+        set.add(tag)
+      }
     }
-    const lowerFilter = filter.trim().toLowerCase()
-    return projects.filter(
-      (project) =>
-        project.name.toLowerCase().includes(lowerFilter) ||
-        project.key.toLowerCase().includes(lowerFilter)
-    )
-  }, [filter, projects])
+    return Array.from(set).sort((a, b) => a.localeCompare(b))
+  }, [projects])
+
+  const filteredProjects = useMemo(() => {
+    const needle = search.trim().toLowerCase()
+    return projects.filter((project) => {
+      if (needle && !matchesSearch(project, needle)) {
+        return false
+      }
+      if (selectedTags.length > 0) {
+        const projectTags = project.tags ?? []
+        const hasAllTags = selectedTags.every((tag) => projectTags.includes(tag))
+        if (!hasAllTags) {
+          return false
+        }
+      }
+      if (roleFilter !== 'all' && project.role !== roleFilter) {
+        return false
+      }
+      if (ownedOnly && project.createdBy !== currentUser?.id) {
+        return false
+      }
+      return true
+    })
+  }, [projects, search, selectedTags, roleFilter, ownedOnly, currentUser?.id])
 
   const openCreateModal = useCallback(() => {
     if (!canManageProjects) {
@@ -137,7 +141,8 @@ export const useProjectsPage = (initialProjectId?: string | null): UseProjectsPa
     createForm.reset({
       key: '',
       name: '',
-      description: null
+      description: null,
+      tags: []
     })
     setCreateModalOpen(true)
   }, [canManageProjects, createForm, messageApi, t])
@@ -148,53 +153,23 @@ export const useProjectsPage = (initialProjectId?: string | null): UseProjectsPa
 
   const refreshProjects = useCallback(() => {
     void dispatch(fetchProjects())
-    if (selectedProjectId) {
-      void dispatch(fetchProjectById(selectedProjectId))
-    }
-  }, [dispatch, selectedProjectId])
+  }, [dispatch])
 
   const handleCreateSubmit = createForm.handleSubmit(async (values: CreateProjectValues) => {
-    try {
-      if (!canManageProjects) {
-        messageApi.warning(
-          t('permissions.createDenied', {
-            defaultValue: 'Solo gli amministratori o i manutentori possono creare progetti.'
-          })
-        )
-        return
-      }
-      const project = await dispatch(createProject(values)).unwrap()
-      messageApi.success(t('create.success', { defaultValue: 'Progetto creato' }))
-      setCreateModalOpen(false)
-      createForm.reset()
-      dispatch(selectProject(project.id))
-    } catch (err) {
-      const messageText =
-        typeof err === 'string'
-          ? err
-          : err instanceof Error
-            ? err.message
-            : t('errors.generic', { defaultValue: 'Operazione non riuscita' })
-      messageApi.error(messageText)
-    }
-  })
-  const handleUpdateSubmit = updateForm.handleSubmit(async (values: UpdateProjectValues) => {
-    if (!selectedProjectId) {
-      return
-    }
     if (!canManageProjects) {
       messageApi.warning(
-        t('permissions.updateDenied', {
-          defaultValue:
-            'Solo gli amministratori o i manutentori possono modificare i progetti.'
+        t('permissions.createDenied', {
+          defaultValue: 'Solo gli amministratori o i manutentori possono creare progetti.'
         })
       )
       return
     }
     try {
-      await dispatch(updateProject({ projectId: selectedProjectId, input: values })).unwrap()
-      messageApi.success(t('update.success', { defaultValue: 'Progetto aggiornato' }))
-      updateForm.reset(values)
+      const project = await dispatch(createProject(values)).unwrap()
+      messageApi.success(t('create.success', { defaultValue: 'Progetto creato' }))
+      setCreateModalOpen(false)
+      createForm.reset()
+      options?.onProjectCreated?.(project.id)
     } catch (err) {
       const messageText =
         typeof err === 'string'
@@ -206,97 +181,30 @@ export const useProjectsPage = (initialProjectId?: string | null): UseProjectsPa
     }
   })
 
-  const selectProjectById = useCallback(
-    (projectId: string) => {
-      dispatch(selectProject(projectId))
-      void dispatch(fetchProjectById(projectId))
-    },
-    [dispatch]
-  )
-  const addMember = useCallback(
-    async (projectId: string, userId: string, role: ProjectMemberRoleInput) => {
-      if (!canManageProjects) {
-        messageApi.warning(
-          t('permissions.manageMembersDenied', {
-            defaultValue:
-              'Solo gli amministratori o i manutentori possono gestire i membri del progetto.'
-          })
-        )
-        return
-      }
-      try {
-        await dispatch(addProjectMember({ projectId, userId, role })).unwrap()
-        messageApi.success(t('members.addSuccess', { defaultValue: 'Membro aggiunto' }))
-      } catch (err) {
-        const messageText =
-          typeof err === 'string'
-            ? err
-            : err instanceof Error
-              ? err.message
-              : t('errors.generic', { defaultValue: 'Operazione non riuscita' })
-        messageApi.error(messageText)
-      }
-    },
-    [canManageProjects, dispatch, messageApi, t]
-  )
-  const removeMember = useCallback(
-    async (projectId: string, userId: string) => {
-      if (!canManageProjects) {
-        messageApi.warning(
-          t('permissions.manageMembersDenied', {
-            defaultValue:
-              'Solo gli amministratori o i manutentori possono gestire i membri del progetto.'
-          })
-        )
-        return
-      }
-      try {
-        await dispatch(removeProjectMember({ projectId, userId })).unwrap()
-        messageApi.success(t('members.removeSuccess', { defaultValue: 'Membro rimosso' }))
-      } catch (err) {
-        const messageText =
-          typeof err === 'string'
-            ? err
-            : err instanceof Error
-              ? err.message
-              : t('errors.generic', { defaultValue: 'Operazione non riuscita' })
-        messageApi.error(messageText)
-      }
-    },
-    [canManageProjects, dispatch, messageApi, t]
-  )
-
   return {
     messageContext,
     projects,
     filteredProjects,
-    selectedProject,
-    selectedProjectId,
     listStatus,
     mutationStatus,
-    filter,
-    setFilter,
-    isCreateModalOpen,
+    search,
+    setSearch,
+    selectedTags,
+    setSelectedTags,
+    availableTags,
+    roleFilter,
+    setRoleFilter,
+    ownedOnly,
+    setOwnedOnly,
+    viewMode,
+    setViewMode,
     openCreateModal,
     closeCreateModal,
+    isCreateModalOpen,
     handleCreateSubmit,
-    handleUpdateSubmit,
-    selectProjectById,
-    refreshProjects,
-    isLoading,
     createForm,
-    updateForm,
-    addMember,
-    removeMember,
-    canManageProjects
+    canManageProjects,
+    refreshProjects,
+    isLoading
   }
 }
-
-
-
-
-
-
-
-
-

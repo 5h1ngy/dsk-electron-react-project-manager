@@ -1,75 +1,88 @@
-import { Col, Empty, Row, Typography } from 'antd'
-import { useParams } from 'react-router-dom'
+import type { JSX } from 'react'
+import { Typography } from 'antd'
+import { useTranslation } from 'react-i18next'
+import { useNavigate } from 'react-router-dom'
 
 import { ProjectsActionBar } from './components/ProjectsActionBar'
-import { ProjectDetailsCard } from './components/ProjectDetailsCard'
 import { ProjectList } from './components/ProjectList'
+import { ProjectCardsGrid } from './components/ProjectCardsGrid'
 import { CreateProjectModal } from './components/CreateProjectModal'
-import { ProjectBoard } from './components/ProjectBoard'
 import { useProjectsPage } from './hooks/useProjectsPage'
 
 const ProjectsPage = (): JSX.Element => {
-  const { projectId: routeProjectId } = useParams<{ projectId?: string }>()
+  const { t } = useTranslation('projects')
+  const navigate = useNavigate()
   const {
     messageContext,
     filteredProjects,
-    selectedProject,
-    selectedProjectId,
     listStatus,
     mutationStatus,
-    filter,
-    setFilter,
-    isCreateModalOpen,
+    search,
+    setSearch,
+    selectedTags,
+    setSelectedTags,
+    availableTags,
+    roleFilter,
+    setRoleFilter,
+    ownedOnly,
+    setOwnedOnly,
+    viewMode,
+    setViewMode,
     openCreateModal,
     closeCreateModal,
+    isCreateModalOpen,
     handleCreateSubmit,
-    selectProjectById,
-    refreshProjects,
-    isLoading,
     createForm,
-    canManageProjects
-  } = useProjectsPage(routeProjectId ?? null)
+    canManageProjects,
+    refreshProjects,
+    isLoading
+  } = useProjectsPage({
+    onProjectCreated: (projectId) => navigate(`/projects/${projectId}`)
+  })
 
-  const detailsLoading = mutationStatus === 'loading' && !selectedProject
-  const projectRole = selectedProject?.role ?? 'view'
-  const canManageTasks =
-    canManageProjects || (projectRole === 'admin' || projectRole === 'edit')
+  const handleOpenProject = (projectId: string) => {
+    navigate(`/projects/${projectId}`)
+  }
 
   return (
-    <>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
       {messageContext}
-      <Row gutter={24}>
-        <Col span={16}>
-          <Typography.Title level={3} style={{ marginBottom: 24 }}>
-            Progetti
-          </Typography.Title>
-          <ProjectsActionBar
-            onCreate={openCreateModal}
-            onRefresh={refreshProjects}
-            searchValue={filter}
-            onSearchChange={setFilter}
-            isRefreshing={listStatus === 'loading'}
-            isCreating={mutationStatus === 'loading' && isCreateModalOpen}
-            canCreate={canManageProjects}
-          />
-          {filteredProjects.length === 0 && !isLoading ? (
-            <Empty description="Nessun progetto trovato" />
-          ) : (
-            <ProjectList
-              projects={filteredProjects}
-              selectedProjectId={selectedProjectId}
-              onSelect={selectProjectById}
-              loading={isLoading}
-            />
-          )}
-        </Col>
-        <Col span={8}>
-          <ProjectDetailsCard project={selectedProject} loading={detailsLoading} />
-        </Col>
-      </Row>
-      <div style={{ marginTop: 32 }}>
-        <ProjectBoard project={selectedProject} canManageTasks={canManageTasks} />
+      <div>
+        <Typography.Title level={3} style={{ marginBottom: 16 }}>
+          {t('title')}
+        </Typography.Title>
+        <ProjectsActionBar
+          onCreate={openCreateModal}
+          onRefresh={refreshProjects}
+          searchValue={search}
+          onSearchChange={setSearch}
+          isRefreshing={listStatus === 'loading'}
+          isCreating={mutationStatus === 'loading' && isCreateModalOpen}
+          canCreate={canManageProjects}
+          viewMode={viewMode}
+          onViewModeChange={setViewMode}
+          availableTags={availableTags}
+          selectedTags={selectedTags}
+          onTagsChange={setSelectedTags}
+          roleFilter={roleFilter}
+          onRoleFilterChange={setRoleFilter}
+          ownedOnly={ownedOnly}
+          onOwnedOnlyChange={setOwnedOnly}
+        />
       </div>
+      {viewMode === 'table' ? (
+        <ProjectList
+          projects={filteredProjects}
+          loading={isLoading}
+          onSelect={handleOpenProject}
+        />
+      ) : (
+        <ProjectCardsGrid
+          projects={filteredProjects}
+          loading={isLoading}
+          onSelect={handleOpenProject}
+        />
+      )}
       <CreateProjectModal
         open={isCreateModalOpen}
         onCancel={closeCreateModal}
@@ -77,8 +90,12 @@ const ProjectsPage = (): JSX.Element => {
         form={createForm}
         submitting={mutationStatus === 'loading'}
       />
-    </>
+    </div>
   )
 }
 
 export default ProjectsPage
+
+
+
+

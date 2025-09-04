@@ -3,6 +3,7 @@ import type { QueryInterface } from 'sequelize'
 import * as createSystemSettings from './0001-create-system-settings'
 import * as createAuthTables from './0002-create-auth-tables'
 import * as createProjectTaskTables from './0003-create-project-task-tables'
+import * as addProjectTags from './0004-add-project-tags'
 
 interface NamedMigration {
   name: string
@@ -25,6 +26,11 @@ export const migrations: NamedMigration[] = [
     name: createProjectTaskTables.name,
     up: createProjectTaskTables.up,
     down: createProjectTaskTables.down
+  },
+  {
+    name: addProjectTags.name,
+    up: addProjectTags.up,
+    down: addProjectTags.down
   }
 ]
 
