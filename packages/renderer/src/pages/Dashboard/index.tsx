@@ -27,37 +27,49 @@ const Dashboard = (): JSX.Element => {
     createForm,
     updateForm,
     refreshUsers,
-    clearError
+    clearError,
+    isAdmin
   } = useUserManagement()
 
   return (
     <Space direction="vertical" size="large" style={{ width: '100%' }}>
       {messageContext}
       <HealthStatusCard />
-      <ActionBar onCreate={openCreateModal} onRefresh={refreshUsers} />
-      {error && (
+      {isAdmin ? (
+        <>
+          <ActionBar onCreate={openCreateModal} onRefresh={refreshUsers} />
+          {error && (
+            <Alert
+              type="error"
+              message={t('dashboard:error.title')}
+              description={error}
+              onClose={clearError}
+              closable
+            />
+          )}
+          <UserTable columns={columns} users={users} />
+          <CreateUserModal
+            open={isCreateOpen}
+            onCancel={closeCreateModal}
+            onSubmit={submitCreate}
+            form={createForm}
+          />
+          <EditUserModal
+            user={editingUser}
+            open={Boolean(editingUser)}
+            onCancel={closeEditModal}
+            onSubmit={submitUpdate}
+            form={updateForm}
+          />
+        </>
+      ) : (
         <Alert
-          type="error"
-          message={t('dashboard:error.title')}
-          description={error}
-          onClose={clearError}
-          closable
+          type="info"
+          showIcon
+          message={t('dashboard:permissions.title')}
+          description={t('dashboard:permissions.description')}
         />
       )}
-      <UserTable columns={columns} users={users} />
-      <CreateUserModal
-        open={isCreateOpen}
-        onCancel={closeCreateModal}
-        onSubmit={submitCreate}
-        form={createForm}
-      />
-      <EditUserModal
-        user={editingUser}
-        open={Boolean(editingUser)}
-        onCancel={closeEditModal}
-        onSubmit={submitUpdate}
-        form={updateForm}
-      />
     </Space>
   )
 }

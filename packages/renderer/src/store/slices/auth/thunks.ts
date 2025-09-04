@@ -9,14 +9,26 @@ import type {
 } from '@main/auth/validation'
 
 import type { AppThunk, RootState } from '../../types'
-import { extractErrorMessage, getStoredToken, handleResponse, persistToken } from './helpers'
+import {
+  extractErrorMessage,
+  getStoredToken,
+  handleResponse,
+  isSessionExpiredError,
+  persistToken
+} from './helpers'
+import { forceLogout } from './slice'
 
 export const fetchUsers = createAsyncThunk<UserDTO[], string, { rejectValue: string }>(
   'auth/fetchUsers',
-  async (token, { rejectWithValue }) => {
+  async (token, { dispatch, rejectWithValue }) => {
     try {
       return await handleResponse(window.api.auth.listUsers(token))
     } catch (error) {
+      if (isSessionExpiredError(error)) {
+        persistToken(null)
+        dispatch(forceLogout())
+        return rejectWithValue('Sessione scaduta')
+      }
       return rejectWithValue(extractErrorMessage(error))
     }
   }
@@ -79,13 +91,17 @@ export const restoreSession = createAsyncThunk<
     const user = await handleResponse(window.api.auth.session(storedToken))
     if (!user) {
       persistToken(null)
+      dispatch(forceLogout())
       return null
     }
     persistToken(storedToken)
     await dispatch(fetchUsers(storedToken))
     return { token: storedToken, user }
-  } catch {
+  } catch (error) {
     persistToken(null)
+    if (isSessionExpiredError(error)) {
+      dispatch(forceLogout())
+    }
     return rejectWithValue()
   }
 })
@@ -94,7 +110,7 @@ export const createUser = createAsyncThunk<
   UserDTO,
   CreateUserInput,
   { state: RootState; rejectValue: string }
->('auth/createUser', async (input, { getState, rejectWithValue }) => {
+>('auth/createUser', async (input, { getState, dispatch, rejectWithValue }) => {
   const token = getState().auth.token
   if (!token) {
     return rejectWithValue('Sessione non valida')
@@ -102,6 +118,11 @@ export const createUser = createAsyncThunk<
   try {
     return await handleResponse(window.api.auth.createUser(token, input))
   } catch (error) {
+    if (isSessionExpiredError(error)) {
+      persistToken(null)
+      dispatch(forceLogout())
+      return rejectWithValue('Sessione scaduta')
+    }
     return rejectWithValue(extractErrorMessage(error))
   }
 })
@@ -110,7 +131,7 @@ export const updateUser = createAsyncThunk<
   UserDTO,
   { userId: string; input: UpdateUserInput },
   { state: RootState; rejectValue: string }
->('auth/updateUser', async ({ userId, input }, { getState, rejectWithValue }) => {
+>('auth/updateUser', async ({ userId, input }, { getState, dispatch, rejectWithValue }) => {
   const token = getState().auth.token
   if (!token) {
     return rejectWithValue('Sessione non valida')
@@ -118,6 +139,11 @@ export const updateUser = createAsyncThunk<
   try {
     return await handleResponse(window.api.auth.updateUser(token, userId, input))
   } catch (error) {
+    if (isSessionExpiredError(error)) {
+      persistToken(null)
+      dispatch(forceLogout())
+      return rejectWithValue('Sessione scaduta')
+    }
     return rejectWithValue(extractErrorMessage(error))
   }
 })

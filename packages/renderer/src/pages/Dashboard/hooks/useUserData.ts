@@ -13,6 +13,10 @@ import {
 
 import type { CreateUserValues, UpdateUserValues } from '../schemas/userSchemas'
 
+export interface UseUserDataOptions {
+  enabled: boolean
+}
+
 export interface UserDataState {
   users: UserDTO[]
   error?: string
@@ -22,18 +26,24 @@ export interface UserDataState {
   updateUser: (userId: string, values: UpdateUserValues) => Promise<void>
 }
 
-export const useUserData = () => {
+export const useUserData = ({ enabled }: UseUserDataOptions): UserDataState => {
   const dispatch = useAppDispatch()
   const users = useAppSelector(selectUsers)
   const error = useAppSelector(selectAuthError)
 
   useEffect(() => {
+    if (!enabled) {
+      return
+    }
     void dispatch(loadUsers())
-  }, [dispatch])
+  }, [dispatch, enabled])
 
   const refreshUsers = useCallback(() => {
+    if (!enabled) {
+      return
+    }
     void dispatch(loadUsers())
-  }, [dispatch])
+  }, [dispatch, enabled])
 
   const clearError = useCallback(() => {
     dispatch(clearAuthError())
@@ -41,20 +51,26 @@ export const useUserData = () => {
 
   const createUser = useCallback(
     async (values: CreateUserValues) => {
+      if (!enabled) {
+        throw new Error('ERR_PERMISSION:utente non autorizzato')
+      }
       await dispatch(createUserThunk(values)).unwrap()
     },
-    [dispatch]
+    [dispatch, enabled]
   )
 
   const updateUser = useCallback(
     async (userId: string, values: UpdateUserValues) => {
+      if (!enabled) {
+        throw new Error('ERR_PERMISSION:utente non autorizzato')
+      }
       await dispatch(updateUserThunk({ userId, input: values })).unwrap()
     },
-    [dispatch]
+    [dispatch, enabled]
   )
 
   return {
-    users,
+    users: enabled ? users : [],
     error,
     refreshUsers,
     clearError,

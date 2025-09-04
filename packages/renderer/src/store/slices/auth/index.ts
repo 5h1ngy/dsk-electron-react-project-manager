@@ -1,4 +1,4 @@
-export { authReducer, clearError, setStatus } from './slice'
+export { authReducer, clearError, setStatus, forceLogout } from './slice'
 export {
   fetchUsers,
   login,

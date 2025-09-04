@@ -12,7 +12,7 @@ export interface SessionRecord {
 
 export class SessionManager {
   private readonly sessions = new Map<string, SessionRecord>()
-  private readonly timeoutMs: number
+  private timeoutMs: number
 
   constructor(timeoutMinutes: number = SESSION_TIMEOUT_MINUTES) {
     this.timeoutMs = timeoutMinutes * 60 * 1000
@@ -92,5 +92,12 @@ export class SessionManager {
       }
     }
     return removed
+  }
+
+  setTimeoutMinutes(minutes: number): void {
+    if (!Number.isFinite(minutes) || minutes <= 0) {
+      throw new Error('Invalid session timeout value')
+    }
+    this.timeoutMs = minutes * 60 * 1000
   }
 }

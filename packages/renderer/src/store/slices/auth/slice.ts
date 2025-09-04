@@ -28,6 +28,13 @@ const authSlice = createSlice({
     },
     setStatus: (state, action: PayloadAction<AuthState['status']>) => {
       state.status = action.payload
+    },
+    forceLogout: (state) => {
+      state.token = null
+      state.currentUser = null
+      state.users = []
+      state.status = 'idle'
+      state.error = undefined
     }
   },
   extraReducers: (builder) => {
@@ -107,4 +114,4 @@ const authSlice = createSlice({
 })
 
 export const authReducer = authSlice.reducer
-export const { clearError, setStatus } = authSlice.actions
+export const { clearError, setStatus, forceLogout } = authSlice.actions

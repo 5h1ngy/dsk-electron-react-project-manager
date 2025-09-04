@@ -7,8 +7,15 @@ import { initializeDatabase } from './db/database'
 import { registerHealthIpc } from './ipc/health'
 import { registerAuthIpc } from './ipc/auth'
 import { logger } from './utils/logger'
+import { SystemSetting } from './db/models/SystemSetting'
+import { SESSION_TIMEOUT_MINUTES } from './auth/constants'
+import { appContext } from './appContext'
 
 let mainWindow: BrowserWindow | null = null
+let cleanupTimer: NodeJS.Timeout | null = null
+
+const SESSION_TIMEOUT_SETTING_KEY = 'auth.sessionTimeoutMinutes'
+const SESSION_CLEANUP_INTERVAL_MS = 5 * 60 * 1000
 
 const gotLock = app.requestSingleInstanceLock()
 
@@ -39,6 +46,41 @@ app.on('window-all-closed', () => {
   }
 })
 
+const configureSessionTimeout = async () => {
+  const fallback = Number(process.env.SESSION_TIMEOUT_MINUTES ?? SESSION_TIMEOUT_MINUTES)
+  let timeout = Number.isFinite(fallback) && fallback > 0 ? fallback : SESSION_TIMEOUT_MINUTES
+
+  try {
+    const setting = await SystemSetting.findByPk(SESSION_TIMEOUT_SETTING_KEY)
+    if (setting?.value) {
+      const parsed = Number(setting.value)
+      if (Number.isFinite(parsed) && parsed > 0) {
+        timeout = parsed
+      } else {
+        logger.warn(
+          `Session timeout setting value invalid (${setting.value}); using ${timeout} minutes`,
+          'Auth'
+        )
+      }
+    }
+  } catch (error) {
+    logger.warn('Failed to load session timeout setting; using default value', 'Auth', error)
+  }
+
+  appContext.sessionManager.setTimeoutMinutes(timeout)
+  logger.info(`Session timeout configured to ${timeout} minutes`, 'Auth')
+}
+
+const scheduleSessionCleanup = () => {
+  cleanupTimer = setInterval(() => {
+    const removed = appContext.sessionManager.cleanupExpired()
+    if (removed > 0) {
+      logger.debug(`Expired sessions cleaned: ${removed}`, 'Auth')
+    }
+  }, SESSION_CLEANUP_INTERVAL_MS)
+  cleanupTimer.unref()
+}
+
 app
   .whenReady()
   .then(async () => {
@@ -58,6 +100,9 @@ app
     registerAuthIpc()
     logger.debug('Auth IPC channels registered', 'IPC')
 
+    await configureSessionTimeout()
+    scheduleSessionCleanup()
+
     mainWindow = await createMainWindow()
     logger.success('Main window created', 'Window')
 
@@ -70,6 +115,13 @@ app
     logger.error('Failed to start application', 'Bootstrap', error)
     app.quit()
   })
+
+app.on('before-quit', () => {
+  if (cleanupTimer) {
+    clearInterval(cleanupTimer)
+    cleanupTimer = null
+  }
+})
 
 process.on('uncaughtException', (error) => {
   logger.error('Uncaught exception', 'Process', error)

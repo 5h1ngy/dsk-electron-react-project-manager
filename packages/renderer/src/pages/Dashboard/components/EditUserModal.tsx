@@ -46,7 +46,7 @@ export const EditUserModal = ({
       okText={t('dashboard:modals.edit.confirm')}
       onOk={onSubmit}
       confirmLoading={isSubmitting}
-      destroyOnClose
+      destroyOnHidden
     >
       <Form layout="vertical" onFinish={() => void onSubmit()}>
         <Form.Item
