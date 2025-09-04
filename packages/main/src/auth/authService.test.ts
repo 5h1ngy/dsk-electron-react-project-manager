@@ -88,4 +88,31 @@ describe('AuthService', () => {
     expect(updated.displayName).toBe('Maintainer Uno')
     expect(updated.roles).toEqual(expect.arrayContaining(['Contributor', 'Maintainer']))
   })
+
+  it('allows admin to reset a user password', async () => {
+    const { token } = await authService.login(ADMIN_CREDENTIALS)
+
+    const created = await authService.createUser(token, {
+      username: 'resettable',
+      password: 'Initial123!',
+      displayName: 'Reset Target',
+      isActive: true,
+      roles: ['Viewer']
+    })
+
+    await authService.updateUser(token, created.id, {
+      password: 'NewSecret456!'
+    })
+
+    await expect(
+      authService.login({ username: created.username, password: 'Initial123!' })
+    ).rejects.toMatchObject({ code: 'ERR_VALIDATION' })
+
+    const reLogin = await authService.login({
+      username: created.username,
+      password: 'NewSecret456!'
+    })
+
+    expect(reLogin.user.id).toBe(created.id)
+  })
 })
