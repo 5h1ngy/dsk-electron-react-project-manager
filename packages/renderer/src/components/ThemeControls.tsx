@@ -1,7 +1,7 @@
 import { BgColorsOutlined, BulbOutlined, MoonOutlined } from '@ant-design/icons'
 import { Button, Card, Dropdown, Space, Switch, Typography } from 'antd'
 import type { DropdownProps } from 'antd'
-import { useCallback, useMemo, useState, type JSX } from 'react'
+import { useCallback, useMemo, useState, type CSSProperties, type JSX } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { useAppDispatch, useAppSelector } from '@renderer/store/hooks'
@@ -47,7 +47,7 @@ export const ThemeControls = (): JSX.Element => {
   )
 
   const popupRender: DropdownProps['popupRender'] = useCallback(() => {
-    const cardStyle: React.CSSProperties = {
+    const cardStyle: CSSProperties = {
       width: 240,
       boxShadow: '0 8px 24px rgba(15, 23, 42, 0.12)'
     }

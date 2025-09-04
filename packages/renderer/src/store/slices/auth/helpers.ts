@@ -8,15 +8,22 @@ export const handleResponse = async <T>(responsePromise: Promise<IpcResponse<T>>
   if (response.ok) {
     return response.data
   }
-  throw new Error(`${response.code}:${response.message}`)
+  const error = new Error(`${response.code}:${response.message}`)
+  ;(error as { code?: string }).code = response.code
+  throw error
 }
 
 export const extractErrorMessage = (error: unknown): string => {
   if (error instanceof Error) {
-    const [code, message] = error.message.split(':')
-    return message ?? code
+    const [, message] = error.message.split(':')
+    return message ?? error.message
   }
   return 'Operazione non riuscita'
+}
+
+export const isSessionExpiredError = (error: unknown): boolean => {
+  const code = (error as { code?: string })?.code
+  return code === 'ERR_PERMISSION' || code === 'ERR_SESSION'
 }
 
 export const persistToken = (payload: SessionPayload | null | string | undefined): void => {

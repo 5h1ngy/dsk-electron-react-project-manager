@@ -58,5 +58,9 @@
     "Maintainer": "Mainteneur",
     "Contributor": "Contributeur",
     "Viewer": "Lecteur"
+  },
+  "permissions": {
+    "title": "Permissions insuffisantes",
+    "description": "Seuls les administrateurs peuvent gérer les utilisateurs."
   }
 }

@@ -6,6 +6,9 @@ import type { ColumnsType } from 'antd/es/table'
 import type { UserDTO } from '@main/auth/authService'
 import type { RoleName } from '@main/auth/constants'
 
+import { useAppSelector } from '@renderer/store/hooks'
+import { selectCurrentUser } from '@renderer/store/slices/auth'
+
 import type { CreateUserValues, UpdateUserValues } from '../schemas/userSchemas'
 import { useUserForms } from './useUserForms'
 import { useUserData } from './useUserData'
@@ -27,26 +30,43 @@ interface UserManagementState {
   refreshUsers: () => void
   clearError: () => void
   messageContext: JSX.Element
+  isAdmin: boolean
 }
 
 export const useUserManagement = (): UserManagementState => {
-  const { users, error, refreshUsers, clearError, createUser, updateUser } = useUserData()
+  const currentUser = useAppSelector(selectCurrentUser)
+  const isAdmin = (currentUser?.roles ?? []).includes('Admin')
+  const { users, error, refreshUsers, clearError, createUser, updateUser } = useUserData({
+    enabled: isAdmin
+  })
   const { createForm, updateForm, resetCreateForm, resetUpdateForm } = useUserForms()
   const [messageApi, messageContext] = message.useMessage()
   const [isCreateOpen, setCreateOpen] = useState(false)
   const [editingUser, setEditingUser] = useState<UserDTO | null>(null)
   const { t } = useTranslation('dashboard')
 
+  const normalizeMessage = useCallback(
+    (value: string) =>
+      value.includes('ERR_PERMISSION') ? t('dashboard:permissions.description') : value,
+    [t]
+  )
+
   const openCreateModal = useCallback(() => {
+    if (!isAdmin) {
+      return
+    }
     clearError()
     resetCreateForm()
     setCreateOpen(true)
-  }, [clearError, resetCreateForm])
+  }, [clearError, resetCreateForm, isAdmin])
 
   const closeCreateModal = useCallback(() => setCreateOpen(false), [])
 
   const openEditModal = useCallback(
     (user: UserDTO) => {
+      if (!isAdmin) {
+        return
+      }
       clearError()
       setEditingUser(user)
       resetUpdateForm({
@@ -56,7 +76,7 @@ export const useUserManagement = (): UserManagementState => {
         password: undefined
       })
     },
-    [clearError, resetUpdateForm]
+    [clearError, resetUpdateForm, isAdmin]
   )
 
   const closeEditModal = useCallback(() => setEditingUser(null), [])
@@ -71,8 +91,8 @@ export const useUserManagement = (): UserManagementState => {
       const messageText =
         typeof error === 'string'
           ? error
-          : ((error as Error).message ?? t('dashboard:messages.createErrorFallback'))
-      messageApi.error(messageText)
+          : (error as Error).message ?? t('dashboard:messages.createErrorFallback')
+      messageApi.error(normalizeMessage(messageText))
     }
   })
 
@@ -93,8 +113,8 @@ export const useUserManagement = (): UserManagementState => {
       const messageText =
         typeof error === 'string'
           ? error
-          : ((error as Error).message ?? t('dashboard:messages.updateErrorFallback'))
-      messageApi.error(messageText)
+          : (error as Error).message ?? t('dashboard:messages.updateErrorFallback')
+      messageApi.error(normalizeMessage(messageText))
     }
   })
 
@@ -155,6 +175,7 @@ export const useUserManagement = (): UserManagementState => {
     updateForm,
     refreshUsers,
     clearError,
-    messageContext
+    messageContext,
+    isAdmin
   }
 }

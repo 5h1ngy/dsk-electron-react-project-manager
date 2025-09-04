@@ -34,4 +34,13 @@ describe('SessionManager', () => {
     expect(manager.getSession(a.token)).toBeNull()
     expect(manager.getSession(b.token)).toBeNull()
   })
+
+  it('allows updating timeout at runtime', () => {
+    const manager = new SessionManager(10)
+    const session = manager.createSession('user-1', [])
+
+    manager.setTimeoutMinutes(0)
+
+    expect(manager.getSession(session.token)).toBeNull()
+  })
 })
