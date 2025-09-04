@@ -43,7 +43,7 @@ describe('auth preload api', () => {
   it('throws when response is not in the expected format', async () => {
     invokeMock.mockResolvedValue({ invalid: true })
     await expect(authApi.login({ username: 'admin', password: 'secret123' })).rejects.toThrow(
-      'ERR_INVALID_AUTH_RESPONSE'
+      'ERR_INVALID_IPC_RESPONSE:auth:login'
     )
   })
 })

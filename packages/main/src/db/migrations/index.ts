@@ -2,6 +2,7 @@ import type { MigrationFn } from 'umzug'
 import type { QueryInterface } from 'sequelize'
 import * as createSystemSettings from './0001-create-system-settings'
 import * as createAuthTables from './0002-create-auth-tables'
+import * as createProjectTaskTables from './0003-create-project-task-tables'
 
 interface NamedMigration {
   name: string
@@ -19,5 +20,11 @@ export const migrations: NamedMigration[] = [
     name: createAuthTables.name,
     up: createAuthTables.up,
     down: createAuthTables.down
+  },
+  {
+    name: createProjectTaskTables.name,
+    up: createProjectTaskTables.up,
+    down: createProjectTaskTables.down
   }
 ]
+

@@ -1,4 +1,4 @@
-import { DashboardOutlined } from '@ant-design/icons'
+import { AppstoreOutlined, DashboardOutlined } from '@ant-design/icons'
 import type { MenuProps } from 'antd'
 import type { TFunction } from 'i18next'
 import type { ReactNode } from 'react'
@@ -14,6 +14,11 @@ const NAVIGATION: NavigationDefinition[] = [
     path: '/',
     labelKey: 'appShell.navigation.dashboard',
     icon: <DashboardOutlined />
+  },
+  {
+    path: '/projects',
+    labelKey: 'appShell.navigation.projects',
+    icon: <AppstoreOutlined />
   }
 ]
 

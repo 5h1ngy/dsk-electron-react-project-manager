@@ -1,11 +1,15 @@
 import { contextBridge } from 'electron'
 import { healthApi } from './api/health'
 import { authApi } from './api/auth'
+import { projectApi } from './api/project'
+import { taskApi } from './api/task'
 import type { PreloadApi } from './types'
 
 const api: PreloadApi = Object.freeze({
   health: healthApi,
-  auth: authApi
+  auth: authApi,
+  project: projectApi,
+  task: taskApi
 })
 
 if (process.contextIsolated) {

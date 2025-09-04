@@ -6,6 +6,8 @@ import { registerSecurityHooks } from './security/hardening'
 import { initializeDatabase } from './db/database'
 import { registerHealthIpc } from './ipc/health'
 import { registerAuthIpc } from './ipc/auth'
+import { registerProjectIpc } from './ipc/project'
+import { registerTaskIpc } from './ipc/task'
 import { logger } from './utils/logger'
 import { SystemSetting } from './db/models/SystemSetting'
 import { SESSION_TIMEOUT_MINUTES } from './auth/constants'
@@ -95,10 +97,15 @@ app
     })
     logger.success('Database connection established', 'Database')
 
+    appContext.setDatabase(database)
+    logger.debug('Application context initialized', 'Bootstrap')
+
     registerHealthIpc(database)
     logger.debug('Health IPC channel registered', 'IPC')
     registerAuthIpc()
-    logger.debug('Auth IPC channels registered', 'IPC')
+    registerProjectIpc()
+    registerTaskIpc()
+    logger.debug('Auth, Project and Task IPC channels registered', 'IPC')
 
     await configureSessionTimeout()
     scheduleSessionCleanup()

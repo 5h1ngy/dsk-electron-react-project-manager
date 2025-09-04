@@ -27,6 +27,10 @@ describe('database initialization', () => {
           'users',
           'user_roles',
           'audit_logs',
+          'projects',
+          'project_members',
+          'tasks',
+          'comments',
           MIGRATIONS_TABLE
         ])
       )
@@ -37,7 +41,11 @@ describe('database initialization', () => {
 
       const migrationNames = executedMigrations.map((row) => row.name)
       expect(migrationNames).toEqual(
-        expect.arrayContaining(['0001-create-system-settings', '0002-create-auth-tables'])
+        expect.arrayContaining([
+          '0001-create-system-settings',
+          '0002-create-auth-tables',
+          '0003-create-project-task-tables'
+        ])
       )
 
       const roleCount = await Role.count()
@@ -52,3 +60,4 @@ describe('database initialization', () => {
     }
   })
 })
+

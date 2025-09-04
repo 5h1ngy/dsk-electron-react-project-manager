@@ -9,6 +9,10 @@ import { Role } from './models/Role'
 import { User } from './models/User'
 import { UserRole } from './models/UserRole'
 import { AuditLog } from './models/AuditLog'
+import { Project } from './models/Project'
+import { ProjectMember } from './models/ProjectMember'
+import { Task } from './models/Task'
+import { Comment } from './models/Comment'
 import { migrations } from './migrations'
 
 export interface DatabaseInitializationOptions {
@@ -25,7 +29,18 @@ export const createSequelizeInstance = (options: DatabaseInitializationOptions):
   return new Sequelize({
     dialect: 'sqlite',
     storage: storagePath,
-    models: [MigrationMeta, SystemSetting, Role, User, UserRole, AuditLog],
+    models: [
+      MigrationMeta,
+      SystemSetting,
+      Role,
+      User,
+      UserRole,
+      AuditLog,
+      Project,
+      ProjectMember,
+      Task,
+      Comment
+    ],
     logging: options.logging ?? false
   })
 }
