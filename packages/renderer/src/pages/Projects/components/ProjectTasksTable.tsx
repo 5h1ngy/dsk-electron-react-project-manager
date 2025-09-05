@@ -1,5 +1,5 @@
-import { Table, Tag, Typography } from 'antd'
-import type { ColumnsType } from 'antd/es/table'
+import { Card, Table, Tag, Typography } from 'antd'
+import type { ColumnsType, TablePaginationConfig } from 'antd/es/table'
 import { useTranslation } from 'react-i18next'
 
 import type { TaskDetails } from '@renderer/store/slices/tasks'
@@ -8,6 +8,7 @@ export interface ProjectTasksTableProps {
   tasks: TaskDetails[]
   loading: boolean
   onSelect: (task: TaskDetails) => void
+  pagination?: TablePaginationConfig | false
 }
 
 const priorityColors: Record<TaskDetails['priority'], string> = {
@@ -27,8 +28,9 @@ const statusColors: Record<TaskDetails['status'], string> = {
 export const ProjectTasksTable = ({
   tasks,
   loading,
-  onSelect
-}: ProjectTasksTableProps): JSX.Element => {
+  onSelect,
+  pagination
+}: ProjectTasksTableProps) => {
   const { t, i18n } = useTranslation('projects')
 
   const columns: ColumnsType<TaskDetails> = [
@@ -97,19 +99,22 @@ export const ProjectTasksTable = ({
   ]
 
   return (
-    <Table<TaskDetails>
-      rowKey="id"
-      columns={columns}
-      dataSource={tasks}
-      loading={loading}
-      pagination={false}
-      size="middle"
-      onRow={(record) => ({
-        onClick: () => onSelect(record)
-      })}
-      locale={{
-        emptyText: loading ? t('details.tasksLoading') : t('details.tasksEmpty')
-      }}
-    />
+    <Card bodyStyle={{ padding: 0 }}>
+      <Table<TaskDetails>
+        rowKey="id"
+        columns={columns}
+        dataSource={tasks}
+        loading={loading}
+        pagination={pagination ?? false}
+        size="middle"
+        scroll={{ x: 960 }}
+        onRow={(record) => ({
+          onClick: () => onSelect(record)
+        })}
+        locale={{
+          emptyText: loading ? t('details.tasksLoading') : t('details.tasksEmpty')
+        }}
+      />
+    </Card>
   )
 }

@@ -25,6 +25,13 @@ export class ProjectTag extends Model {
   })
   declare tag: string
 
+  @Column({
+    type: DataType.DATE,
+    allowNull: false,
+    defaultValue: DataType.NOW
+  })
+  declare createdAt: Date
+
   @BelongsTo(() => Project)
   declare project?: Project
 }

@@ -7,8 +7,8 @@ const selectProjectsState = (state: RootState) => state.projects
 
 const adapterSelectors = projectsAdapter.getSelectors(selectProjectsState)
 
-export const selectProjects = adapterSelectors.selectAll
-export const selectProjectsMap = adapterSelectors.selectEntities
+export const selectProjects = (state: RootState) => adapterSelectors.selectAll(state)
+export const selectProjectsMap = (state: RootState) => adapterSelectors.selectEntities(state)
 export const selectProjectsStatus = (state: RootState) => state.projects.listStatus
 export const selectProjectsError = (state: RootState) => state.projects.error
 export const selectProjectsMutationStatus = (state: RootState) => state.projects.mutationStatus

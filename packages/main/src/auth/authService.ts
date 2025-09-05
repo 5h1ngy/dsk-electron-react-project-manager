@@ -334,7 +334,9 @@ export class AuthService {
       user.isActive = input.isActive
     }
     if (input.password) {
-      user.passwordHash = await hashPassword(input.password)
+      const hashedPassword = await hashPassword(input.password)
+      user.setDataValue('passwordHash', hashedPassword)
+      user.changed('passwordHash', true)
       this.sessionManager.endSessionsForUser(user.id)
     }
 

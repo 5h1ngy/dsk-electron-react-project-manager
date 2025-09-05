@@ -70,6 +70,19 @@
                     "title":  "Project details",
                     "loading":  "Loading...",
                     "refresh":  "Refresh",
+                    "tabs":  {
+                                "overview":  "Overview",
+                                "tasks":  "Tasks",
+                                "board":  "Kanban"
+                            },
+                    "overview":  {
+                                     "metrics":  {
+                                                     "title":  "Workload snapshot",
+                                                     "total":  "Total tasks",
+                                                     "active":  "In progress",
+                                                     "done":  "Completed"
+                                                 }
+                                 },
                     "tasksTitle":  "Project tasks",
                     "kanbanTitle":  "Kanban board",
                     "tasksLoading":  "Loading tasks...",

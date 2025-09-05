@@ -26,7 +26,6 @@ export const EditUserModal = ({
   const { t } = useTranslation('dashboard')
   const {
     control,
-    register,
     formState: { errors, isSubmitting }
   } = form
   const roleOptions = useMemo(
@@ -54,9 +53,18 @@ export const EditUserModal = ({
           validateStatus={errors.displayName ? 'error' : undefined}
           help={errors.displayName?.message}
         >
-          <Input
-            {...register('displayName', { setValueAs: (value) => value.trim() })}
-            autoComplete="off"
+          <Controller
+            control={control}
+            name="displayName"
+            render={({ field }) => (
+              <Input
+                {...field}
+                value={field.value ?? ''}
+                onChange={(event) => field.onChange(event.target.value)}
+                onBlur={(event) => field.onChange(event.target.value.trim())}
+                autoComplete="off"
+              />
+            )}
           />
         </Form.Item>
         <Form.Item
@@ -65,12 +73,18 @@ export const EditUserModal = ({
           help={errors.password?.message}
           extra={t('dashboard:modals.edit.fields.passwordHint')}
         >
-          <Input.Password
-            {...register('password', {
-              setValueAs: (value) => (value ? value : undefined)
-            })}
-            autoComplete="new-password"
-            allowClear
+          <Controller
+            control={control}
+            name="password"
+            render={({ field }) => (
+              <Input.Password
+                {...field}
+                value={field.value ?? ''}
+                onChange={(event) => field.onChange(event.target.value || undefined)}
+                autoComplete="new-password"
+                allowClear
+              />
+            )}
           />
         </Form.Item>
         <Form.Item
