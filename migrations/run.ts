@@ -1,17 +1,12 @@
-import { join } from 'node:path'
-
-import { createSequelizeInstance, runMigrations } from '@main/db/database'
-
-const resolveStoragePath = (): string => {
-  const customPath = process.env.DB_STORAGE_PATH?.trim()
-  return customPath && customPath.length > 0
-    ? customPath
-    : join(process.cwd(), 'storage', 'app.sqlite')
-}
+import { createSequelizeInstance, runMigrations } from '../packages/main/src/db/database'
+import { resolveAppStoragePath } from '../packages/main/src/db/storagePath'
 
 const bootstrap = async (): Promise<void> => {
+  const storagePath = resolveAppStoragePath({ overridePath: process.env.DB_STORAGE_PATH?.trim() ?? null })
+  console.log(`Using database at: ${storagePath}`)
+
   const sequelize = createSequelizeInstance({
-    resolveStoragePath,
+    resolveStoragePath: () => storagePath,
     logging: true
   })
 

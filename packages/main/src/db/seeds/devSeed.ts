@@ -100,7 +100,7 @@ interface ProjectSeedDefinition {
 }
 
 const pickWeighted = <T>(values: ReadonlyArray<WeightedValue<T>>): T =>
-  faker.helpers.weightedArrayElement(values).value
+  (faker.helpers.weightedArrayElement(values) as WeightedValue<T>).value
 
 const capitalize = (value: string): string => {
   if (!value) {

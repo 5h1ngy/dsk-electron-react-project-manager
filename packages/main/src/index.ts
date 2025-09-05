@@ -1,9 +1,9 @@
 import 'reflect-metadata'
 import { app, BrowserWindow } from 'electron'
-import { join } from 'node:path'
 import { createMainWindow } from './windows/mainWindow'
 import { registerSecurityHooks } from './security/hardening'
 import { initializeDatabase } from './db/database'
+import { resolveAppStoragePath } from './db/storagePath'
 import { registerHealthIpc } from './ipc/health'
 import { registerAuthIpc } from './ipc/auth'
 import { registerProjectIpc } from './ipc/project'
@@ -89,10 +89,11 @@ app
     logger.info('Application ready. Applying security hardening.', 'Bootstrap')
     registerSecurityHooks()
 
+    const storagePath = resolveAppStoragePath({ userDataDir: app.getPath('userData') })
+
     const database = await initializeDatabase({
       resolveStoragePath() {
-        const userData = app.getPath('userData')
-        return join(userData, 'storage', 'app.sqlite')
+        return storagePath
       }
     })
     logger.success('Database connection established', 'Database')
