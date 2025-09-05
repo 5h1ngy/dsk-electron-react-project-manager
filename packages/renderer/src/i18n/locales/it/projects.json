@@ -1,5 +1,5 @@
 {
-    "title":  "Progetti",
+"title":  "Progetti",
     "viewSwitcher":  {
                          "table":  "Vista tabellare",
                          "cards":  "Vista a card"
@@ -70,6 +70,19 @@
                     "title":  "Dettagli progetto",
                     "loading":  "Caricamento...",
                     "refresh":  "Aggiorna",
+                    "tabs":  {
+                                "overview":  "Panoramica",
+                                "tasks":  "Task",
+                                "board":  "Kanban"
+                            },
+                    "overview":  {
+                                     "metrics":  {
+                                                     "title":  "Stato del lavoro",
+                                                     "total":  "Task totali",
+                                                     "active":  "In lavorazione",
+                                                     "done":  "Completati"
+                                                 }
+                                 },
                     "tasksTitle":  "Task del progetto",
                     "kanbanTitle":  "Board Kanban",
                     "tasksLoading":  "Caricamento task...",
@@ -169,3 +182,4 @@
                  "createAction":  "Crea"
              }
 }
+

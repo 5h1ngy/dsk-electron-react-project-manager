@@ -26,7 +26,6 @@ export const EditUserModal = ({
   const { t } = useTranslation('dashboard')
   const {
     control,
-    register,
     formState: { errors, isSubmitting }
   } = form
   const roleOptions = useMemo(
