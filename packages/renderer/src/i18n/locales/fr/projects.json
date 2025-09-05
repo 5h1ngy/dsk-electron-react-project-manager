@@ -135,7 +135,17 @@
         "missingId": "Identifiant du projet manquant",
         "notFound": "Projet introuvable",
         "backToList": "Retour aux projets",
-        "tasksSearchPlaceholder": "Rechercher dans les taches..."
+        "tasksSearchPlaceholder": "Rechercher dans les taches...",
+        "filters": {
+            "status": "Statut",
+            "statusOptions": {
+                "all": "Tous les statuts"
+            },
+            "priority": "Priorite",
+            "priorityOptions": {
+                "all": "Toutes les priorites"
+            }
+        }
     },
     "board": {
         "empty": "Sï¿½lectionnez un projet pour ouvrir le tableau Kanban",

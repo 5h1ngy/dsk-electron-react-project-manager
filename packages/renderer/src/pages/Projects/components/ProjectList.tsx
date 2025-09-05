@@ -1,7 +1,6 @@
 import { Table, Tag, Typography } from 'antd'
-import type { ColumnsType, TablePaginationConfig } from 'antd/es/table'
+import type { ColumnsType } from 'antd/es/table'
 import { useTranslation } from 'react-i18next'
-import { useEffect, useMemo, useState } from 'react'
 
 import type { ProjectSummary } from '@renderer/store/slices/projects'
 
@@ -22,40 +21,8 @@ const formatDate = (value: Date | string, locale: string): string => {
   }).format(date)
 }
 
-const DEFAULT_PAGE_SIZE = 10
-
 export const ProjectList = ({ projects, loading, onSelect }: ProjectListProps) => {
   const { t, i18n } = useTranslation('projects')
-  const [pagination, setPagination] = useState<Required<Pick<TablePaginationConfig, 'current' | 'pageSize'>>>({
-    current: 1,
-    pageSize: DEFAULT_PAGE_SIZE
-  })
-
-  const paginationConfig: TablePaginationConfig = useMemo(
-    () => ({
-      current: pagination.current,
-      pageSize: pagination.pageSize,
-      total: projects.length,
-      showSizeChanger: true,
-      pageSizeOptions: ['10', '20', '50', '100'],
-      showTotal: (total: number, range?: [number, number]) =>
-        `${range?.[0] ?? 0}-${range?.[1] ?? 0} / ${total}`,
-      onChange: (page, pageSize) => {
-        setPagination({
-          current: page,
-          pageSize: pageSize ?? DEFAULT_PAGE_SIZE
-        })
-      }
-    }),
-    [pagination.current, pagination.pageSize, projects.length]
-  )
-
-  useEffect(() => {
-    setPagination((prev) => {
-      const totalPages = Math.max(1, Math.ceil(projects.length / prev.pageSize))
-      return prev.current > totalPages ? { ...prev, current: totalPages } : prev
-    })
-  }, [projects.length])
 
   const columns: ColumnsType<ProjectRow> = [
     {
@@ -125,7 +92,6 @@ export const ProjectList = ({ projects, loading, onSelect }: ProjectListProps) =
       columns={columns}
       dataSource={projects}
       loading={loading}
-      pagination={paginationConfig}
       size="middle"
       scroll={{ x: 1024 }}
       onRow={(record) => ({

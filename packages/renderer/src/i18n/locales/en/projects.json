@@ -94,6 +94,16 @@
         "tasksLoading": "Loading tasks...",
         "tasksEmpty": "No tasks available",
         "tasksSearchPlaceholder": "Search tasks...",
+        "filters": {
+            "status": "Status",
+            "statusOptions": {
+                "all": "All statuses"
+            },
+            "priority": "Priority",
+            "priorityOptions": {
+                "all": "All priorities"
+            }
+        },
         "noAssignee": "Unassigned",
         "noDueDate": "No due date",
         "status": {

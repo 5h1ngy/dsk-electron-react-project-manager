@@ -68,17 +68,30 @@ const ProjectLayout = (): JSX.Element => {
     board: t('breadcrumbs.board')
   }
 
+  const renderBreadcrumbLink = (label: string, path?: string) => (
+    <span
+      className={path ? 'breadcrumb-link' : undefined}
+      role={path ? 'link' : undefined}
+      onClick={path ? () => navigate(path) : undefined}
+    >
+      {label}
+    </span>
+  )
+
   const breadcrumbItems = useMemo(() => {
     const items = [
       {
-        title: t('breadcrumbs.projects'),
-        onClick: () => navigate('/projects')
+        title: renderBreadcrumbLink(t('breadcrumbs.projects'), '/projects')
       }
     ]
     if (project) {
-      items.push({ title: project.name })
+      items.push({
+        title: renderBreadcrumbLink(project.name, `/projects/${project.id}`)
+      })
     }
-    items.push({ title: tabLabelMap[activeKey] })
+    items.push({
+      title: renderBreadcrumbLink(tabLabelMap[activeKey])
+    })
     return items
   }, [t, project, tabLabelMap, activeKey, navigate])
 

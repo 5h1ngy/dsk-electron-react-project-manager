@@ -1,25 +1,20 @@
-import { Empty, Input, Space, Typography } from 'antd'
-import type { TablePaginationConfig } from 'antd/es/table'
+import { Empty, Input, Select, Space, Typography } from 'antd'
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useNavigate } from 'react-router-dom'
 
 import type { TaskDetails } from '@renderer/store/slices/tasks'
 
 import { ProjectTasksTable } from './components/ProjectTasksTable'
-import { TaskDetailDrawer } from './components/TaskDetailDrawer'
 import { useProjectRouteContext } from './ProjectLayout'
-
-const DEFAULT_PAGE_SIZE = 10
 
 const ProjectTasksPage = () => {
   const { project, projectLoading, tasks, tasksStatus } = useProjectRouteContext()
   const { t } = useTranslation('projects')
-  const [selectedTask, setSelectedTask] = useState<TaskDetails | null>(null)
-  const [pagination, setPagination] = useState<{ current: number; pageSize: number }>({
-    current: 1,
-    pageSize: DEFAULT_PAGE_SIZE
-  })
+  const navigate = useNavigate()
   const [searchQuery, setSearchQuery] = useState('')
+  const [statusFilter, setStatusFilter] = useState<'all' | TaskDetails['status']>('all')
+  const [priorityFilter, setPriorityFilter] = useState<'all' | TaskDetails['priority']>('all')
 
   const effectiveTitle = useMemo(
     () => project?.name ?? t('details.tasksTitle'),
@@ -36,6 +31,28 @@ const ProjectTasksPage = () => {
     )
   }
 
+  const statusOptions = useMemo(
+    () => [
+      { value: 'all', label: t('details.filters.statusOptions.all') },
+      { value: 'todo', label: t('details.status.todo') },
+      { value: 'in_progress', label: t('details.status.in_progress') },
+      { value: 'blocked', label: t('details.status.blocked') },
+      { value: 'done', label: t('details.status.done') }
+    ],
+    [t]
+  )
+
+  const priorityOptions = useMemo(
+    () => [
+      { value: 'all', label: t('details.filters.priorityOptions.all') },
+      { value: 'low', label: t('details.priority.low') },
+      { value: 'medium', label: t('details.priority.medium') },
+      { value: 'high', label: t('details.priority.high') },
+      { value: 'critical', label: t('details.priority.critical') }
+    ],
+    [t]
+  )
+
   const filteredTasks = useMemo(() => {
     const needle = searchQuery.trim().toLowerCase()
     if (!needle) {
@@ -48,49 +65,52 @@ const ProjectTasksPage = () => {
         task.description ?? '',
         task.assignee?.displayName ?? ''
       ]
-      return haystacks.some((value) => value.toLowerCase().includes(needle))
+      const matchesSearch = haystacks.some((value) => value.toLowerCase().includes(needle))
+      const matchesStatus = statusFilter === 'all' || task.status === statusFilter
+      const matchesPriority = priorityFilter === 'all' || task.priority === priorityFilter
+      return matchesSearch && matchesStatus && matchesPriority
     })
-  }, [tasks, searchQuery])
+  }, [tasks, searchQuery, statusFilter, priorityFilter])
 
   const loading = tasksStatus === 'loading'
 
   const handleSearch = (value: string) => {
-    setPagination((prev) => ({ ...prev, current: 1 }))
     setSearchQuery(value)
   }
 
-  const paginationConfig: TablePaginationConfig = {
-    current: pagination.current,
-    pageSize: pagination.pageSize,
-    total: filteredTasks.length,
-    showSizeChanger: true,
-    pageSizeOptions: ['10', '20', '50'],
-    onChange: (page, pageSize) => {
-      setPagination({ current: page, pageSize: pageSize ?? DEFAULT_PAGE_SIZE })
-    }
+  const handleTaskNavigate = (taskId: string) => {
+    navigate(`/tasks/${taskId}`)
   }
 
   return (
     <Space direction="vertical" size={24} style={{ width: '100%' }}>
       <Typography.Title level={4}>{effectiveTitle}</Typography.Title>
-      <Input.Search
-        allowClear
-        placeholder={t('details.tasksSearchPlaceholder')}
-        value={searchQuery}
-        onChange={(event) => handleSearch(event.target.value)}
-        onSearch={handleSearch}
-        style={{ maxWidth: 320 }}
-      />
+      <Space size="middle" wrap>
+        <Input.Search
+          allowClear
+          placeholder={t('details.tasksSearchPlaceholder')}
+          value={searchQuery}
+          onChange={(event) => handleSearch(event.target.value)}
+          onSearch={handleSearch}
+          style={{ maxWidth: 320 }}
+        />
+        <Select
+          value={statusFilter}
+          options={statusOptions}
+          onChange={(value) => setStatusFilter(value as typeof statusFilter)}
+          style={{ width: 200 }}
+        />
+        <Select
+          value={priorityFilter}
+          options={priorityOptions}
+          onChange={(value) => setPriorityFilter(value as typeof priorityFilter)}
+          style={{ width: 200 }}
+        />
+      </Space>
       <ProjectTasksTable
         tasks={filteredTasks}
         loading={loading || projectLoading}
-        onSelect={(task) => setSelectedTask(task)}
-        pagination={paginationConfig}
-      />
-      <TaskDetailDrawer
-        task={selectedTask}
-        open={Boolean(selectedTask)}
-        onClose={() => setSelectedTask(null)}
+        onSelect={(task) => handleTaskNavigate(task.id)}
       />
     </Space>
   )

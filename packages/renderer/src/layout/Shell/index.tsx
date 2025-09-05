@@ -54,6 +54,8 @@ const Shell = ({ currentUser, onLogout, children }: ShellProps): JSX.Element => 
   const layoutStyle = useMemo(
     () => ({
       minHeight: '100vh',
+      height: '100vh',
+      overflow: 'hidden',
       background: token.colorBgLayout
     }),
     [token]
@@ -62,7 +64,10 @@ const Shell = ({ currentUser, onLogout, children }: ShellProps): JSX.Element => 
   const contentStyle = useMemo(
     () => ({
       background: token.colorBgLayout,
-      padding: 24
+      padding: 24,
+      overflowY: 'auto',
+      minHeight: 0,
+      flex: '1 1 auto'
     }),
     [token]
   )
@@ -92,7 +97,7 @@ const Shell = ({ currentUser, onLogout, children }: ShellProps): JSX.Element => 
         title={t('appShell.title')}
         onSelect={handleMenuSelect}
       />
-      <Layout>
+      <Layout style={{ overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
         <ShellHeader
           collapsed={collapsed}
           onToggleCollapse={handleToggleCollapse}

@@ -8,6 +8,7 @@ import ProjectLayout from '@renderer/pages/Projects/ProjectLayout'
 import ProjectOverviewPage from '@renderer/pages/Projects/Overview'
 import ProjectTasksPage from '@renderer/pages/Projects/Tasks'
 import ProjectBoardPage from '@renderer/pages/Projects/Board'
+import TaskDetailsPage from '@renderer/pages/Tasks/Details'
 import { ProtectedRoute } from '@renderer/pages/ProtectedRoute'
 import { PublicRoute } from '@renderer/pages/PublicRoute'
 
@@ -25,6 +26,7 @@ export const AppRoutes = () => (
         <Route path="tasks" element={<ProjectTasksPage />} />
         <Route path="board" element={<ProjectBoardPage />} />
       </Route>
+      <Route path="/tasks/:taskId" element={<TaskDetailsPage />} />
     </Route>
     <Route path="*" element={<Navigate to="/" replace />} />
   </Routes>

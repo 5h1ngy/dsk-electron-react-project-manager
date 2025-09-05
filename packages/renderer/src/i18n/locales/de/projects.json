@@ -94,6 +94,16 @@
         "tasksLoading": "Aufgaben werden geladen...",
         "tasksEmpty": "Keine Aufgaben vorhanden",
         "tasksSearchPlaceholder": "Aufgaben durchsuchen...",
+        "filters": {
+            "status": "Status",
+            "statusOptions": {
+                "all": "Alle Status"
+            },
+            "priority": "Prioritat",
+            "priorityOptions": {
+                "all": "Alle Prioritaten"
+            }
+        },
         "noAssignee": "Nicht zugewiesen",
         "noDueDate": "Kein Fï¿½lligkeitsdatum",
         "status": {

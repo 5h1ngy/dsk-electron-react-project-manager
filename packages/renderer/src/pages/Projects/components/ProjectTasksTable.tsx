@@ -108,9 +108,9 @@ export const ProjectTasksTable = ({
       columns={columns}
       dataSource={tasks}
       loading={loading}
-      pagination={pagination ?? false}
+      pagination={pagination}
       size="middle"
-      scroll={{ x: 960 }}
+      scroll={{ x: 'max-content' }}
       onRow={(record) => ({
         onClick: () => onSelect(record)
       })}

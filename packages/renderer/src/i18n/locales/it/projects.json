@@ -94,6 +94,16 @@
         "tasksLoading": "Caricamento task...",
         "tasksEmpty": "Nessun task disponibile",
         "tasksSearchPlaceholder": "Cerca nei task...",
+        "filters": {
+            "status": "Stato",
+            "statusOptions": {
+                "all": "Tutti gli stati"
+            },
+            "priority": "Priorita",
+            "priorityOptions": {
+                "all": "Tutte le priorita"
+            }
+        },
         "noAssignee": "Non assegnato",
         "noDueDate": "Nessuna scadenza",
         "status": {
