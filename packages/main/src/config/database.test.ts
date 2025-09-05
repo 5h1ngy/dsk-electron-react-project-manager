@@ -3,8 +3,8 @@ import { tmpdir } from 'node:os'
 import { mkdtemp, rm } from 'node:fs/promises'
 import { QueryTypes } from 'sequelize'
 import { initializeDatabase, MIGRATIONS_TABLE } from './database'
-import { Role } from './models/Role'
-import { User } from './models/User'
+import { Role } from '../db/models/Role'
+import { User } from '../db/models/User'
 
 describe('database initialization', () => {
   it('creates sqlite database and runs migrations', async () => {

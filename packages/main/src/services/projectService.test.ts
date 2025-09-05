@@ -3,7 +3,7 @@ import { join } from 'node:path'
 import { tmpdir } from 'node:os'
 import { mkdtemp, rm } from 'node:fs/promises'
 
-import { initializeDatabase } from '../db/database'
+import { initializeDatabase } from '../config/database'
 import { AuditService } from '../audit/auditService'
 import { ProjectService, type ProjectActor } from './projectService'
 import { ProjectMember } from '../db/models/ProjectMember'

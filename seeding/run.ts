@@ -1,6 +1,6 @@
-import { createSequelizeInstance, runMigrations } from '../packages/main/src/db/database'
-import { resolveAppStoragePath } from '../packages/main/src/db/storagePath'
-import { seedDevData } from '../packages/main/src/db/seeds/devSeed'
+import { createSequelizeInstance, runMigrations } from '../packages/main/src/config/database'
+import { resolveAppStoragePath } from '../packages/main/src/config/storagePath'
+import { seedDevData } from './devSeed'
 
 const bootstrap = async (): Promise<void> => {
   const storagePath = resolveAppStoragePath({ overridePath: process.env.DB_STORAGE_PATH?.trim() ?? null })
