@@ -10,6 +10,7 @@ import { selectAccentColor, selectThemeMode } from '@renderer/store/slices/theme
 
 import { ShellHeader } from './components/ShellHeader'
 import { ShellSider } from './components/ShellSider'
+import { ShellSiderFooter } from './components/ShellSiderFooter'
 import { buildNavigationItems, resolveSelectedKey } from './helpers/navigation'
 
 const { Content } = Layout
@@ -81,9 +82,18 @@ const Shell = ({ currentUser, onLogout, children }: ShellProps): JSX.Element => 
     [currentUser.roles, t]
   )
 
-  const welcomeMessage = useMemo(
-    () => t('appShell.welcome', { name: currentUser.displayName }),
-    [currentUser.displayName, t]
+  const siderFooter = useMemo(
+    () => (
+      <ShellSiderFooter
+        displayName={currentUser.displayName}
+        username={currentUser.username}
+        roles={roles}
+        accentColor={accentColor}
+        onLogout={onLogout}
+        logoutLabel={t('appShell.logout')}
+      />
+    ),
+    [currentUser.displayName, currentUser.username, roles, accentColor, onLogout, t]
   )
 
   return (
@@ -96,16 +106,12 @@ const Shell = ({ currentUser, onLogout, children }: ShellProps): JSX.Element => 
         themeMode={menuTheme}
         title={t('appShell.title')}
         onSelect={handleMenuSelect}
+        footer={siderFooter}
       />
       <Layout style={{ overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
         <ShellHeader
           collapsed={collapsed}
           onToggleCollapse={handleToggleCollapse}
-          welcomeMessage={welcomeMessage}
-          roles={roles}
-          accentColor={accentColor}
-          onLogout={onLogout}
-          logoutLabel={t('appShell.logout')}
           expandLabel={t('appShell.expandSidebar')}
           collapseLabel={t('appShell.collapseSidebar')}
         />

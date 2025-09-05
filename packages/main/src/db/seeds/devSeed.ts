@@ -4,7 +4,6 @@ import { Sequelize } from 'sequelize-typescript'
 import { Op, type Transaction } from 'sequelize'
 import type { RoleName } from '../../auth/constants'
 import { hashPassword } from '../../auth/password'
-import { env } from '../../config/env'
 import { logger } from '../../utils/logger'
 import { Role } from '../models/Role'
 import { User } from '../models/User'
@@ -458,11 +457,6 @@ const upsertProjectSeed = async (
 }
 
 export const seedDevData = async (sequelize: Sequelize): Promise<void> => {
-  if (!env.seedDevData) {
-    logger.debug('Development data seeding disabled (SEED_DEV_DATA=false)', 'Seed')
-    return
-  }
-
   await sequelize.transaction(async (transaction) => {
     faker.seed(FAKER_SEED)
 

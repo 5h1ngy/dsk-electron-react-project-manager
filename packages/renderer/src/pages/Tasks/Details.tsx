@@ -76,21 +76,18 @@ const TaskDetailsPage = () => {
     const items = [
       {
         title: (
-          <span className="breadcrumb-link" onClick={() => navigate('/projects')}>
+          <Typography.Link onClick={() => navigate('/projects')}>
             {t('breadcrumbs.projects')}
-          </span>
+          </Typography.Link>
         )
       }
     ]
     if (task) {
       items.push({
         title: (
-          <span
-            className="breadcrumb-link"
-            onClick={() => navigate(`/projects/${task.projectId}/tasks`)}
-          >
+          <Typography.Link onClick={() => navigate(`/projects/${task.projectId}/tasks`)}>
             {task.projectKey ?? t('breadcrumbs.tasks')}
-          </span>
+          </Typography.Link>
         )
       })
       items.push({ title: task.key })

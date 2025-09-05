@@ -1,3 +1,5 @@
+import { env, type LogLevelSetting } from '../config/env'
+
 const RESET = '\x1b[0m'
 const COLORS = {
   info: '\x1b[36m',
@@ -11,6 +13,7 @@ const COLORS = {
 } as const
 
 type LogLevel = 'info' | 'warn' | 'error' | 'success' | 'debug'
+type LogFilter = LogLevelSetting
 
 const LEVEL_TAG: Record<LogLevel, string> = {
   info: 'INFO',
@@ -20,7 +23,41 @@ const LEVEL_TAG: Record<LogLevel, string> = {
   debug: 'DEBUG'
 }
 
+const LEVEL_PRIORITY: Record<LogLevel, number> = {
+  error: 40,
+  warn: 30,
+  info: 20,
+  success: 20,
+  debug: 10
+}
+
+const FILTER_PRIORITY: Record<LogFilter, number> = {
+  debug: 10,
+  info: 20,
+  warn: 30,
+  error: 40,
+  silent: Number.POSITIVE_INFINITY
+}
+
 const levelToColor = (level: LogLevel): string => COLORS[level]
+
+const shouldLog = (level: LogLevel): boolean => {
+  const threshold = FILTER_PRIORITY[env.logLevel]
+  return LEVEL_PRIORITY[level] >= threshold && threshold !== Number.POSITIVE_INFINITY
+}
+
+const pad = (value: number, size = 2): string => value.toString().padStart(size, '0')
+
+const formatTimestamp = (date = new Date()): string => {
+  const y = date.getFullYear()
+  const m = pad(date.getMonth() + 1)
+  const d = pad(date.getDate())
+  const h = pad(date.getHours())
+  const min = pad(date.getMinutes())
+  const s = pad(date.getSeconds())
+  const ms = pad(date.getMilliseconds(), 3)
+  return `${y}-${m}-${d} ${h}:${min}:${s}.${ms}`
+}
 
 const formatContext = (context?: string): string => {
   if (!context) {
@@ -34,7 +71,7 @@ const writeLine = (formatted: string): void => {
 }
 
 const formatLine = (level: LogLevel, message: string, context?: string): string => {
-  const timestamp = `${COLORS.timestamp}${new Date().toISOString()}${RESET}`
+  const timestamp = `${COLORS.timestamp}${formatTimestamp()}${RESET}`
   const tag = `${levelToColor(level)}${LEVEL_TAG[level].padEnd(5)}${RESET}`
   return `${timestamp} ${tag}${formatContext(context)} ${message}`
 }
@@ -47,6 +84,9 @@ const serializeError = (error: unknown): string | undefined => {
 }
 
 const log = (level: LogLevel, message: string, context?: string, error?: unknown): void => {
+  if (!shouldLog(level)) {
+    return
+  }
   writeLine(formatLine(level, message, context))
   const serializedError = serializeError(error)
   if (serializedError) {

@@ -1,4 +1,3 @@
-import { seedDevData } from './seeds/devSeed'
 import { mkdirSync } from 'node:fs'
 import { dirname } from 'node:path'
 import { Sequelize } from 'sequelize-typescript'
@@ -72,8 +71,6 @@ export const initializeDatabase = async (
   await sequelize.query('PRAGMA foreign_keys = ON;')
 
   await runMigrations(sequelize)
-
-  await seedDevData(sequelize)
 
   return sequelize
 }

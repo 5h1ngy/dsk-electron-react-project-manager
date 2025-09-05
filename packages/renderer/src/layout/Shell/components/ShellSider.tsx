@@ -1,6 +1,6 @@
 import { Flex, Layout, Menu, Typography, theme } from 'antd'
 import type { MenuProps } from 'antd'
-import type { JSX } from 'react'
+import type { JSX, ReactNode } from 'react'
 
 const { Sider } = Layout
 
@@ -12,6 +12,7 @@ interface ShellSiderProps {
   themeMode: 'light' | 'dark'
   title: string
   onSelect: NonNullable<MenuProps['onClick']>
+  footer?: ReactNode
 }
 
 export const ShellSider = ({
@@ -21,7 +22,8 @@ export const ShellSider = ({
   items,
   themeMode,
   title,
-  onSelect
+  onSelect,
+  footer
 }: ShellSiderProps): JSX.Element => {
   const { token } = theme.useToken()
   const background = themeMode === 'dark' ? token.colorBgElevated : token.colorBgContainer
@@ -38,7 +40,9 @@ export const ShellSider = ({
       theme={themeMode}
       style={{
         background,
-        borderRight: `1px solid ${borderColor}`
+        borderRight: `1px solid ${borderColor}`,
+        display: 'flex',
+        flexDirection: 'column'
       }}
     >
       {!collapsed && (
@@ -52,13 +56,31 @@ export const ShellSider = ({
           </Typography.Title>
         </Flex>
       )}
-      <Menu
-        mode="inline"
-        theme={themeMode}
-        items={items}
-        selectedKeys={selectedKeys}
-        onClick={onSelect}
-      />
+      <div style={{ flex: 1, overflowY: 'auto' }}>
+        <Menu
+          mode="inline"
+          theme={themeMode}
+          items={items}
+          selectedKeys={selectedKeys}
+          onClick={onSelect}
+          style={{ borderInlineEnd: 'none', background: 'transparent' }}
+        />
+      </div>
+      {footer && (
+        <div
+          style={{
+            padding: 16,
+            borderTop: `1px solid ${borderColor}`,
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 12,
+            marginTop: 'auto',
+            flexShrink: 0
+          }}
+        >
+          {footer}
+        </div>
+      )}
     </Sider>
   )
 }

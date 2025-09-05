@@ -68,15 +68,12 @@ const ProjectLayout = (): JSX.Element => {
     board: t('breadcrumbs.board')
   }
 
-  const renderBreadcrumbLink = (label: string, path?: string) => (
-    <span
-      className={path ? 'breadcrumb-link' : undefined}
-      role={path ? 'link' : undefined}
-      onClick={path ? () => navigate(path) : undefined}
-    >
-      {label}
-    </span>
-  )
+  const renderBreadcrumbLink = (label: string, path?: string) =>
+    path ? (
+      <Typography.Link onClick={() => navigate(path)}>{label}</Typography.Link>
+    ) : (
+      <Typography.Text>{label}</Typography.Text>
+    )
 
   const breadcrumbItems = useMemo(() => {
     const items = [
