@@ -1,185 +1,191 @@
 {
-"title":  "Projets",
-    "viewSwitcher":  {
-                         "table":  "Vue tableau",
-                         "cards":  "Vue cartes"
-                     },
-    "actions":  {
-                    "refresh":  "Actualiser",
-                    "tabs":  {
-                                "overview":  "Vue generale",
-                                "tasks":  "Taches",
-                                "board":  "Kanban"
-                            },
-                    "overview":  {
-                                     "metrics":  {
-                                                     "title":  "Charge de travail",
-                                                     "total":  "Taches totales",
-                                                     "active":  "En cours",
-                                                     "done":  "Terminees"
-                                                 }
-                                 },
-                    "refreshHint":  "Recharger la liste des projets",
-                    "create":  "Nouveau projet",
-                    "createHint":  "Crï¿½er un nouveau projet"
-                },
-    "filters":  {
-                    "searchPlaceholder":  "Rechercher par nom, clï¿½ ou tag",
-                    "tagsPlaceholder":  "Filtrer par tags",
-                    "roleOptions":  {
-                                        "all":  "Tous les rï¿½les",
-                                        "admin":  "Administrateur",
-                                        "edit":  "ï¿½diteur",
-                                        "view":  "Lecteur"
-                                    },
-                    "ownedOnly":  "Crï¿½ï¿½s par moi"
-                },
-    "permissions":  {
-                        "createDenied":  "Seuls les administrateurs ou mainteneurs peuvent crï¿½er des projets.",
-                        "createDeniedTooltip":  "Vous n\u0027avez pas les droits pour crï¿½er des projets.",
-                        "updateDenied":  "Seuls les administrateurs ou mainteneurs peuvent modifier les projets.",
-                        "manageMembersDenied":  "Seuls les administrateurs ou mainteneurs peuvent gï¿½rer les membres du projet.",
-                        "tasksCreateDenied":  "Vous n\u0027avez pas les droits pour crï¿½er des tï¿½ches dans ce projet.",
-                        "tasksUpdateDenied":  "Vous n\u0027avez pas les droits pour modifier les tï¿½ches dans ce projet."
-                    },
-    "errors":  {
-                   "generic":  "ï¿½chec de l\u0027opï¿½ration"
-               },
-    "create":  {
-                   "success":  "Projet crï¿½ï¿½"
-               },
-    "update":  {
-                   "success":  "Projet mis ï¿½ jour"
-               },
-    "members":  {
-                    "addSuccess":  "Membre ajoutï¿½",
-                    "removeSuccess":  "Membre supprimï¿½"
-                },
-    "list":  {
-                 "loading":  "Chargement des projets...",
-                 "empty":  "Aucun projet trouvï¿½",
-                 "noTags":  "Aucun tag",
-                 "memberCount_one":  "{{count}} membre",
-                 "memberCount_other":  "{{count}} membres",
-                 "createdOn":  "Crï¿½ï¿½ le {{date}}",
-                 "columns":  {
-                                 "key":  "Key",
-                                 "name":  "Nom",
-                                 "tags":  "Tags",
-                                 "role":  "Rï¿½le",
-                                 "members":  "Membres",
-                                 "createdAt":  "Crï¿½ï¿½"
-                             },
-                 "role":  {
-                              "admin":  "Administrateur",
-                              "edit":  "ï¿½diteur",
-                              "view":  "Lecteur"
-                          }
-             },
-    "cards":  {
-                  "noDescription":  "Aucune description disponible"
-              },
-    "details":  {
-                    "title":  "Dï¿½tails du projet",
-                    "loading":  "Chargement...",
-                    "refresh":  "Actualiser",
-                    "tasksTitle":  "Tï¿½ches du projet",
-                    "kanbanTitle":  "Tableau Kanban",
-                    "tasksLoading":  "Chargement des tï¿½ches...",
-                    "tasksEmpty":  "Aucune tï¿½che disponible",
-                    "noAssignee":  "Non assignï¿½e",
-                    "noDueDate":  "Pas d\u0027ï¿½chï¿½ance",
-                    "status":  {
-                                   "todo":  "ï¿½ faire",
-                                   "in_progress":  "En cours",
-                                   "blocked":  "Bloquï¿½e",
-                                   "done":  "Terminï¿½e"
-                               },
-                    "priority":  {
-                                     "low":  "Prioritï¿½ basse",
-                                     "medium":  "Prioritï¿½ moyenne",
-                                     "high":  "Prioritï¿½ haute",
-                                     "critical":  "Prioritï¿½ critique"
-                                 },
-                    "summary":  {
-                                    "title":  "Vue d\u0027ensemble",
-                                    "empty":  "Sï¿½lectionnez un projet pour afficher les dï¿½tails",
-                                    "createdOn":  "Crï¿½ï¿½",
-                                    "createdBy":  "{{date}} par {{user}}",
-                                    "description":  "Description",
-                                    "noDescription":  "Aucune description disponible",
-                                    "tags":  "Tags",
-                                    "noTags":  "Aucun tag",
-                                    "members":  "Membres",
-                                    "noMembers":  "Aucun membre assignï¿½"
-                                },
-                    "tasksColumns":  {
-                                         "key":  "Key",
-                                         "title":  "Titre",
-                                         "status":  "Statut",
-                                         "priority":  "Prioritï¿½",
-                                         "assignee":  "Assignï¿½ ï¿½",
-                                         "dueDate":  "ï¿½chï¿½ance"
-                                     },
-                    "drawer":  {
-                                   "title":  "Dï¿½tails de la tï¿½che",
-                                   "description":  "Description",
-                                   "assignment":  "Affectation",
-                                   "owner":  "Propriï¿½taire : {{owner}}",
-                                   "assignee":  "Assignï¿½ ï¿½ : {{assignee}}",
-                                   "timing":  "Chronologie",
-                                   "createdAt":  "Crï¿½ï¿½e le {{date}}",
-                                   "dueDate":  "ï¿½chï¿½ance : {{date}}",
-                                   "empty":  "Sï¿½lectionnez une tï¿½che pour afficher les dï¿½tails"
-                               },
-                    "missingId":  "Identifiant du projet manquant",
-                    "notFound":  "Projet introuvable",
-                    "backToList":  "Retour aux projets"
-                },
-    "board":  {
-                  "empty":  "Sï¿½lectionnez un projet pour ouvrir le tableau Kanban",
-                  "permissions":  {
-                                      "title":  "Permissions limitï¿½es",
-                                      "description":  "Vous n\u0027avez pas les permissions nï¿½cessaires pour modifier les tï¿½ches de ce projet."
-                                  },
-                  "columns":  {
-                                  "todo":  "ï¿½ faire",
-                                  "inProgress":  "En cours",
-                                  "blocked":  "Bloquï¿½e",
-                                  "done":  "Terminï¿½e"
-                              },
-                  "composer":  {
-                                   "title":  "Crï¿½er une nouvelle tï¿½che",
-                                   "titlePlaceholder":  "Titre de la tï¿½che",
-                                   "descriptionPlaceholder":  "Description (optionnelle)",
-                                   "submit":  "Ajouter la tï¿½che"
-                               }
-              },
-    "notifications":  {
-                          "taskCreated":  "Tï¿½che crï¿½ï¿½e",
-                          "taskUpdated":  "Tï¿½che mise ï¿½ jour"
-                      },
-    "form":  {
-                 "createTitle":  "Nouveau projet",
-                 "fields":  {
-                                "key":  {
-                                            "placeholder":  "ex. PROJ",
-                                            "label":  "Key"
-                                        },
-                                "name":  {
-                                             "placeholder":  "Nom du projet",
-                                             "label":  "Nom"
-                                         },
-                                "description":  {
-                                                    "placeholder":  "Description (optionnelle)",
-                                                    "label":  "Description"
-                                                },
-                                "tags":  {
-                                             "placeholder":  "Ajouter des tags (Entrï¿½e pour valider)",
-                                             "label":  "Tags"
-                                         }
-                            },
-                 "createAction":  "Crï¿½er"
-             }
+    "title": "Projets",
+    "viewSwitcher": {
+        "table": "Vue tableau",
+        "cards": "Vue cartes"
+    },
+    "actions": {
+        "refresh": "Actualiser",
+        "tabs": {
+            "overview": "Vue generale",
+            "tasks": "Taches",
+            "board": "Kanban"
+        },
+        "overview": {
+            "metrics": {
+                "title": "Charge de travail",
+                "total": "Taches totales",
+                "active": "En cours",
+                "done": "Terminees"
+            }
+        },
+        "refreshHint": "Recharger la liste des projets",
+        "create": "Nouveau projet",
+        "createHint": "Crï¿½er un nouveau projet"
+    },
+    "filters": {
+        "searchPlaceholder": "Rechercher par nom, clï¿½ ou tag",
+        "tagsPlaceholder": "Filtrer par tags",
+        "roleOptions": {
+            "all": "Tous les rï¿½les",
+            "admin": "Administrateur",
+            "edit": "ï¿½diteur",
+            "view": "Lecteur"
+        },
+        "ownedOnly": "Crï¿½ï¿½s par moi"
+    },
+    "permissions": {
+        "createDenied": "Seuls les administrateurs ou mainteneurs peuvent crï¿½er des projets.",
+        "createDeniedTooltip": "Vous n'avez pas les droits pour crï¿½er des projets.",
+        "updateDenied": "Seuls les administrateurs ou mainteneurs peuvent modifier les projets.",
+        "manageMembersDenied": "Seuls les administrateurs ou mainteneurs peuvent gï¿½rer les membres du projet.",
+        "tasksCreateDenied": "Vous n'avez pas les droits pour crï¿½er des tï¿½ches dans ce projet.",
+        "tasksUpdateDenied": "Vous n'avez pas les droits pour modifier les tï¿½ches dans ce projet."
+    },
+    "errors": {
+        "generic": "ï¿½chec de l'opï¿½ration"
+    },
+    "create": {
+        "success": "Projet crï¿½ï¿½"
+    },
+    "update": {
+        "success": "Projet mis ï¿½ jour"
+    },
+    "members": {
+        "addSuccess": "Membre ajoutï¿½",
+        "removeSuccess": "Membre supprimï¿½"
+    },
+    "list": {
+        "loading": "Chargement des projets...",
+        "empty": "Aucun projet trouvï¿½",
+        "noTags": "Aucun tag",
+        "memberCount_one": "{{count}} membre",
+        "memberCount_other": "{{count}} membres",
+        "createdOn": "Crï¿½ï¿½ le {{date}}",
+        "columns": {
+            "key": "Key",
+            "name": "Nom",
+            "tags": "Tags",
+            "role": "Rï¿½le",
+            "members": "Membres",
+            "createdAt": "Crï¿½ï¿½"
+        },
+        "role": {
+            "admin": "Administrateur",
+            "edit": "ï¿½diteur",
+            "view": "Lecteur"
+        }
+    },
+    "cards": {
+        "noDescription": "Aucune description disponible"
+    },
+    "details": {
+        "title": "Dï¿½tails du projet",
+        "loading": "Chargement...",
+        "refresh": "Actualiser",
+        "tasksTitle": "Tï¿½ches du projet",
+        "kanbanTitle": "Tableau Kanban",
+        "tasksLoading": "Chargement des tï¿½ches...",
+        "tasksEmpty": "Aucune tï¿½che disponible",
+        "noAssignee": "Non assignï¿½e",
+        "noDueDate": "Pas d'ï¿½chï¿½ance",
+        "status": {
+            "todo": "ï¿½ faire",
+            "in_progress": "En cours",
+            "blocked": "Bloquï¿½e",
+            "done": "Terminï¿½e"
+        },
+        "priority": {
+            "low": "Prioritï¿½ basse",
+            "medium": "Prioritï¿½ moyenne",
+            "high": "Prioritï¿½ haute",
+            "critical": "Prioritï¿½ critique"
+        },
+        "summary": {
+            "title": "Vue d'ensemble",
+            "empty": "Sï¿½lectionnez un projet pour afficher les dï¿½tails",
+            "createdOn": "Crï¿½ï¿½",
+            "createdBy": "{{date}} par {{user}}",
+            "description": "Description",
+            "noDescription": "Aucune description disponible",
+            "tags": "Tags",
+            "noTags": "Aucun tag",
+            "members": "Membres",
+            "noMembers": "Aucun membre assignï¿½"
+        },
+        "tasksColumns": {
+            "key": "Key",
+            "title": "Titre",
+            "status": "Statut",
+            "priority": "Prioritï¿½",
+            "assignee": "Assignï¿½ ï¿½",
+            "dueDate": "ï¿½chï¿½ance"
+        },
+        "drawer": {
+            "title": "Dï¿½tails de la tï¿½che",
+            "description": "Description",
+            "assignment": "Affectation",
+            "owner": "Propriï¿½taire : {{owner}}",
+            "assignee": "Assignï¿½ ï¿½ : {{assignee}}",
+            "timing": "Chronologie",
+            "createdAt": "Crï¿½ï¿½e le {{date}}",
+            "dueDate": "ï¿½chï¿½ance : {{date}}",
+            "empty": "Sï¿½lectionnez une tï¿½che pour afficher les dï¿½tails"
+        },
+        "missingId": "Identifiant du projet manquant",
+        "notFound": "Projet introuvable",
+        "backToList": "Retour aux projets",
+        "tasksSearchPlaceholder": "Rechercher dans les taches..."
+    },
+    "board": {
+        "empty": "Sï¿½lectionnez un projet pour ouvrir le tableau Kanban",
+        "permissions": {
+            "title": "Permissions limitï¿½es",
+            "description": "Vous n'avez pas les permissions nï¿½cessaires pour modifier les tï¿½ches de ce projet."
+        },
+        "columns": {
+            "todo": "ï¿½ faire",
+            "inProgress": "En cours",
+            "blocked": "Bloquï¿½e",
+            "done": "Terminï¿½e"
+        },
+        "composer": {
+            "title": "Crï¿½er une nouvelle tï¿½che",
+            "titlePlaceholder": "Titre de la tï¿½che",
+            "descriptionPlaceholder": "Description (optionnelle)",
+            "submit": "Ajouter la tï¿½che"
+        }
+    },
+    "notifications": {
+        "taskCreated": "Tï¿½che crï¿½ï¿½e",
+        "taskUpdated": "Tï¿½che mise ï¿½ jour"
+    },
+    "form": {
+        "createTitle": "Nouveau projet",
+        "fields": {
+            "key": {
+                "placeholder": "ex. PROJ",
+                "label": "Key"
+            },
+            "name": {
+                "placeholder": "Nom du projet",
+                "label": "Nom"
+            },
+            "description": {
+                "placeholder": "Description (optionnelle)",
+                "label": "Description"
+            },
+            "tags": {
+                "placeholder": "Ajouter des tags (Entrï¿½e pour valider)",
+                "label": "Tags"
+            }
+        },
+        "createAction": "Crï¿½er"
+    },
+    "breadcrumbs": {
+        "projects": "Projets",
+        "overview": "Vue generale",
+        "tasks": "Taches",
+        "board": "Kanban"
+    }
 }
-

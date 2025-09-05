@@ -1,185 +1,191 @@
 {
-"title":  "Projekte",
-    "viewSwitcher":  {
-                         "table":  "Tabellenansicht",
-                         "cards":  "Kartenansicht"
-                     },
-    "actions":  {
-                    "refresh":  "Aktualisieren",
-                    "tabs":  {
-                                "overview":  "Uebersicht",
-                                "tasks":  "Aufgaben",
-                                "board":  "Kanban"
-                            },
-                    "overview":  {
-                                     "metrics":  {
-                                                     "title":  "Arbeitsstatus",
-                                                     "total":  "Gesamtaufgaben",
-                                                     "active":  "In Arbeit",
-                                                     "done":  "Abgeschlossen"
-                                                 }
-                                 },
-                    "refreshHint":  "Projektliste neu laden",
-                    "create":  "Neues Projekt",
-                    "createHint":  "Ein neues Projekt anlegen"
-                },
-    "filters":  {
-                    "searchPlaceholder":  "Nach Name, Schlï¿½ssel oder Tag suchen",
-                    "tagsPlaceholder":  "Nach Tags filtern",
-                    "roleOptions":  {
-                                        "all":  "Alle Rollen",
-                                        "admin":  "Administrator",
-                                        "edit":  "Bearbeiter",
-                                        "view":  "Betrachter"
-                                    },
-                    "ownedOnly":  "Von mir erstellt"
-                },
-    "permissions":  {
-                        "createDenied":  "Nur Administratoren oder Maintainer kï¿½nnen Projekte erstellen.",
-                        "createDeniedTooltip":  "Keine Berechtigung zum Erstellen von Projekten.",
-                        "updateDenied":  "Nur Administratoren oder Maintainer kï¿½nnen Projekte bearbeiten.",
-                        "manageMembersDenied":  "Nur Administratoren oder Maintainer kï¿½nnen Projektmitglieder verwalten.",
-                        "tasksCreateDenied":  "Keine Berechtigung, Aufgaben in diesem Projekt zu erstellen.",
-                        "tasksUpdateDenied":  "Keine Berechtigung, Aufgaben in diesem Projekt zu bearbeiten."
-                    },
-    "errors":  {
-                   "generic":  "Vorgang fehlgeschlagen"
-               },
-    "create":  {
-                   "success":  "Projekt erstellt"
-               },
-    "update":  {
-                   "success":  "Projekt aktualisiert"
-               },
-    "members":  {
-                    "addSuccess":  "Mitglied hinzugefï¿½gt",
-                    "removeSuccess":  "Mitglied entfernt"
-                },
-    "list":  {
-                 "loading":  "Projekte werden geladen...",
-                 "empty":  "Keine Projekte gefunden",
-                 "noTags":  "Keine Tags",
-                 "memberCount_one":  "{{count}} Mitglied",
-                 "memberCount_other":  "{{count}} Mitglieder",
-                 "createdOn":  "Erstellt am {{date}}",
-                 "columns":  {
-                                 "key":  "Key",
-                                 "name":  "Name",
-                                 "tags":  "Tags",
-                                 "role":  "Rolle",
-                                 "members":  "Mitglieder",
-                                 "createdAt":  "Erstellt"
-                             },
-                 "role":  {
-                              "admin":  "Administrator",
-                              "edit":  "Bearbeiter",
-                              "view":  "Betrachter"
-                          }
-             },
-    "cards":  {
-                  "noDescription":  "Keine Beschreibung vorhanden"
-              },
-    "details":  {
-                    "title":  "Projektdetails",
-                    "loading":  "Wird geladen...",
-                    "refresh":  "Aktualisieren",
-                    "tasksTitle":  "Projektaufgaben",
-                    "kanbanTitle":  "Kanban-Board",
-                    "tasksLoading":  "Aufgaben werden geladen...",
-                    "tasksEmpty":  "Keine Aufgaben vorhanden",
-                    "noAssignee":  "Nicht zugewiesen",
-                    "noDueDate":  "Kein Fï¿½lligkeitsdatum",
-                    "status":  {
-                                   "todo":  "Offen",
-                                   "in_progress":  "In Arbeit",
-                                   "blocked":  "Blockiert",
-                                   "done":  "Abgeschlossen"
-                               },
-                    "priority":  {
-                                     "low":  "Niedrige Prioritï¿½t",
-                                     "medium":  "Mittlere Prioritï¿½t",
-                                     "high":  "Hohe Prioritï¿½t",
-                                     "critical":  "Kritische Prioritï¿½t"
-                                 },
-                    "summary":  {
-                                    "title":  "Projektï¿½bersicht",
-                                    "empty":  "Wï¿½hlen Sie ein Projekt aus, um Details zu sehen",
-                                    "createdOn":  "Erstellt",
-                                    "createdBy":  "{{date}} von {{user}}",
-                                    "description":  "Beschreibung",
-                                    "noDescription":  "Keine Beschreibung verfï¿½gbar",
-                                    "tags":  "Tags",
-                                    "noTags":  "Keine Tags",
-                                    "members":  "Mitglieder",
-                                    "noMembers":  "Keine Mitglieder zugewiesen"
-                                },
-                    "tasksColumns":  {
-                                         "key":  "Key",
-                                         "title":  "Titel",
-                                         "status":  "Status",
-                                         "priority":  "Prioritï¿½t",
-                                         "assignee":  "Zustï¿½ndig",
-                                         "dueDate":  "Fï¿½llig am"
-                                     },
-                    "drawer":  {
-                                   "title":  "Aufgabendetails",
-                                   "description":  "Beschreibung",
-                                   "assignment":  "Zuweisung",
-                                   "owner":  "Eigentï¿½mer: {{owner}}",
-                                   "assignee":  "Zustï¿½ndig: {{assignee}}",
-                                   "timing":  "Zeitplan",
-                                   "createdAt":  "Erstellt am {{date}}",
-                                   "dueDate":  "Fï¿½llig am {{date}}",
-                                   "empty":  "Wï¿½hlen Sie eine Aufgabe aus, um Details zu sehen"
-                               },
-                    "missingId":  "Projekt-ID fehlt",
-                    "notFound":  "Projekt nicht gefunden",
-                    "backToList":  "Zurï¿½ck zu den Projekten"
-                },
-    "board":  {
-                  "empty":  "Wï¿½hlen Sie ein Projekt, um das Kanban-Board zu ï¿½ffnen",
-                  "permissions":  {
-                                      "title":  "Eingeschrï¿½nkte Berechtigungen",
-                                      "description":  "Sie verfï¿½gen nicht ï¿½ber die nï¿½tigen Berechtigungen, um Aufgaben dieses Projekts zu bearbeiten."
-                                  },
-                  "columns":  {
-                                  "todo":  "Offen",
-                                  "inProgress":  "In Arbeit",
-                                  "blocked":  "Blockiert",
-                                  "done":  "Abgeschlossen"
-                              },
-                  "composer":  {
-                                   "title":  "Neue Aufgabe erstellen",
-                                   "titlePlaceholder":  "Titel der Aufgabe",
-                                   "descriptionPlaceholder":  "Beschreibung (optional)",
-                                   "submit":  "Aufgabe hinzufï¿½gen"
-                               }
-              },
-    "notifications":  {
-                          "taskCreated":  "Aufgabe erstellt",
-                          "taskUpdated":  "Aufgabe aktualisiert"
-                      },
-    "form":  {
-                 "createTitle":  "Neues Projekt",
-                 "fields":  {
-                                "key":  {
-                                            "placeholder":  "z. B. PROJ",
-                                            "label":  "Key"
-                                        },
-                                "name":  {
-                                             "placeholder":  "Projektname",
-                                             "label":  "Name"
-                                         },
-                                "description":  {
-                                                    "placeholder":  "Beschreibung (optional)",
-                                                    "label":  "Beschreibung"
-                                                },
-                                "tags":  {
-                                             "placeholder":  "Tags hinzufï¿½gen (Enter zum Bestï¿½tigen)",
-                                             "label":  "Tags"
-                                         }
-                            },
-                 "createAction":  "Erstellen"
-             }
+    "title": "Projekte",
+    "viewSwitcher": {
+        "table": "Tabellenansicht",
+        "cards": "Kartenansicht"
+    },
+    "actions": {
+        "refresh": "Aktualisieren",
+        "tabs": {
+            "overview": "Uebersicht",
+            "tasks": "Aufgaben",
+            "board": "Kanban"
+        },
+        "overview": {
+            "metrics": {
+                "title": "Arbeitsstatus",
+                "total": "Gesamtaufgaben",
+                "active": "In Arbeit",
+                "done": "Abgeschlossen"
+            }
+        },
+        "refreshHint": "Projektliste neu laden",
+        "create": "Neues Projekt",
+        "createHint": "Ein neues Projekt anlegen"
+    },
+    "filters": {
+        "searchPlaceholder": "Nach Name, Schlï¿½ssel oder Tag suchen",
+        "tagsPlaceholder": "Nach Tags filtern",
+        "roleOptions": {
+            "all": "Alle Rollen",
+            "admin": "Administrator",
+            "edit": "Bearbeiter",
+            "view": "Betrachter"
+        },
+        "ownedOnly": "Von mir erstellt"
+    },
+    "permissions": {
+        "createDenied": "Nur Administratoren oder Maintainer kï¿½nnen Projekte erstellen.",
+        "createDeniedTooltip": "Keine Berechtigung zum Erstellen von Projekten.",
+        "updateDenied": "Nur Administratoren oder Maintainer kï¿½nnen Projekte bearbeiten.",
+        "manageMembersDenied": "Nur Administratoren oder Maintainer kï¿½nnen Projektmitglieder verwalten.",
+        "tasksCreateDenied": "Keine Berechtigung, Aufgaben in diesem Projekt zu erstellen.",
+        "tasksUpdateDenied": "Keine Berechtigung, Aufgaben in diesem Projekt zu bearbeiten."
+    },
+    "errors": {
+        "generic": "Vorgang fehlgeschlagen"
+    },
+    "create": {
+        "success": "Projekt erstellt"
+    },
+    "update": {
+        "success": "Projekt aktualisiert"
+    },
+    "members": {
+        "addSuccess": "Mitglied hinzugefï¿½gt",
+        "removeSuccess": "Mitglied entfernt"
+    },
+    "list": {
+        "loading": "Projekte werden geladen...",
+        "empty": "Keine Projekte gefunden",
+        "noTags": "Keine Tags",
+        "memberCount_one": "{{count}} Mitglied",
+        "memberCount_other": "{{count}} Mitglieder",
+        "createdOn": "Erstellt am {{date}}",
+        "columns": {
+            "key": "Key",
+            "name": "Name",
+            "tags": "Tags",
+            "role": "Rolle",
+            "members": "Mitglieder",
+            "createdAt": "Erstellt"
+        },
+        "role": {
+            "admin": "Administrator",
+            "edit": "Bearbeiter",
+            "view": "Betrachter"
+        }
+    },
+    "breadcrumbs": {
+        "projects": "Projekte",
+        "overview": "Uebersicht",
+        "tasks": "Aufgaben",
+        "board": "Kanban"
+    },
+    "cards": {
+        "noDescription": "Keine Beschreibung vorhanden"
+    },
+    "details": {
+        "title": "Projektdetails",
+        "loading": "Wird geladen...",
+        "refresh": "Aktualisieren",
+        "tasksTitle": "Projektaufgaben",
+        "kanbanTitle": "Kanban-Board",
+        "tasksLoading": "Aufgaben werden geladen...",
+        "tasksEmpty": "Keine Aufgaben vorhanden",
+        "tasksSearchPlaceholder": "Aufgaben durchsuchen...",
+        "noAssignee": "Nicht zugewiesen",
+        "noDueDate": "Kein Fï¿½lligkeitsdatum",
+        "status": {
+            "todo": "Offen",
+            "in_progress": "In Arbeit",
+            "blocked": "Blockiert",
+            "done": "Abgeschlossen"
+        },
+        "priority": {
+            "low": "Niedrige Prioritï¿½t",
+            "medium": "Mittlere Prioritï¿½t",
+            "high": "Hohe Prioritï¿½t",
+            "critical": "Kritische Prioritï¿½t"
+        },
+        "summary": {
+            "title": "Projektï¿½bersicht",
+            "empty": "Wï¿½hlen Sie ein Projekt aus, um Details zu sehen",
+            "createdOn": "Erstellt",
+            "createdBy": "{{date}} von {{user}}",
+            "description": "Beschreibung",
+            "noDescription": "Keine Beschreibung verfï¿½gbar",
+            "tags": "Tags",
+            "noTags": "Keine Tags",
+            "members": "Mitglieder",
+            "noMembers": "Keine Mitglieder zugewiesen"
+        },
+        "tasksColumns": {
+            "key": "Key",
+            "title": "Titel",
+            "status": "Status",
+            "priority": "Prioritï¿½t",
+            "assignee": "Zustï¿½ndig",
+            "dueDate": "Fï¿½llig am"
+        },
+        "drawer": {
+            "title": "Aufgabendetails",
+            "description": "Beschreibung",
+            "assignment": "Zuweisung",
+            "owner": "Eigentï¿½mer: {{owner}}",
+            "assignee": "Zustï¿½ndig: {{assignee}}",
+            "timing": "Zeitplan",
+            "createdAt": "Erstellt am {{date}}",
+            "dueDate": "Fï¿½llig am {{date}}",
+            "empty": "Wï¿½hlen Sie eine Aufgabe aus, um Details zu sehen"
+        },
+        "missingId": "Projekt-ID fehlt",
+        "notFound": "Projekt nicht gefunden",
+        "backToList": "Zurï¿½ck zu den Projekten"
+    },
+    "board": {
+        "empty": "Wï¿½hlen Sie ein Projekt, um das Kanban-Board zu ï¿½ffnen",
+        "permissions": {
+            "title": "Eingeschrï¿½nkte Berechtigungen",
+            "description": "Sie verfï¿½gen nicht ï¿½ber die nï¿½tigen Berechtigungen, um Aufgaben dieses Projekts zu bearbeiten."
+        },
+        "columns": {
+            "todo": "Offen",
+            "inProgress": "In Arbeit",
+            "blocked": "Blockiert",
+            "done": "Abgeschlossen"
+        },
+        "composer": {
+            "title": "Neue Aufgabe erstellen",
+            "titlePlaceholder": "Titel der Aufgabe",
+            "descriptionPlaceholder": "Beschreibung (optional)",
+            "submit": "Aufgabe hinzufï¿½gen"
+        }
+    },
+    "notifications": {
+        "taskCreated": "Aufgabe erstellt",
+        "taskUpdated": "Aufgabe aktualisiert"
+    },
+    "form": {
+        "createTitle": "Neues Projekt",
+        "fields": {
+            "key": {
+                "placeholder": "z. B. PROJ",
+                "label": "Key"
+            },
+            "name": {
+                "placeholder": "Projektname",
+                "label": "Name"
+            },
+            "description": {
+                "placeholder": "Beschreibung (optional)",
+                "label": "Beschreibung"
+            },
+            "tags": {
+                "placeholder": "Tags hinzufï¿½gen (Enter zum Bestï¿½tigen)",
+                "label": "Tags"
+            }
+        },
+        "createAction": "Erstellen"
+    }
 }
-

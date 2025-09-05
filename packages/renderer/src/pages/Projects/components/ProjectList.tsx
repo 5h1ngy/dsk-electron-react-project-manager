@@ -1,7 +1,7 @@
 import { Table, Tag, Typography } from 'antd'
 import type { ColumnsType, TablePaginationConfig } from 'antd/es/table'
 import { useTranslation } from 'react-i18next'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 import type { ProjectSummary } from '@renderer/store/slices/projects'
 
@@ -49,6 +49,13 @@ export const ProjectList = ({ projects, loading, onSelect }: ProjectListProps) =
     }),
     [pagination.current, pagination.pageSize, projects.length]
   )
+
+  useEffect(() => {
+    setPagination((prev) => {
+      const totalPages = Math.max(1, Math.ceil(projects.length / prev.pageSize))
+      return prev.current > totalPages ? { ...prev, current: totalPages } : prev
+    })
+  }, [projects.length])
 
   const columns: ColumnsType<ProjectRow> = [
     {

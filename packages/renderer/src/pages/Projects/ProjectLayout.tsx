@@ -1,5 +1,5 @@
 import { ReloadOutlined } from '@ant-design/icons'
-import { Button, Empty, Space, Tabs, Typography } from 'antd'
+import { Breadcrumb, Button, Empty, Space, Tabs, Typography } from 'antd'
 import type { TabsProps } from 'antd'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -62,6 +62,26 @@ const ProjectLayout = (): JSX.Element => {
 
   const tabItems = useMemo(() => buildTabItems(t), [t])
 
+  const tabLabelMap: Record<ProjectTabKey, string> = {
+    overview: t('breadcrumbs.overview'),
+    tasks: t('breadcrumbs.tasks'),
+    board: t('breadcrumbs.board')
+  }
+
+  const breadcrumbItems = useMemo(() => {
+    const items = [
+      {
+        title: t('breadcrumbs.projects'),
+        onClick: () => navigate('/projects')
+      }
+    ]
+    if (project) {
+      items.push({ title: project.name })
+    }
+    items.push({ title: tabLabelMap[activeKey] })
+    return items
+  }, [t, project, tabLabelMap, activeKey, navigate])
+
   if (!projectId) {
     return (
       <Empty
@@ -114,6 +134,7 @@ const ProjectLayout = (): JSX.Element => {
   return (
     <Space direction="vertical" size={24} style={{ width: '100%' }}>
       {messageContext}
+      <Breadcrumb items={breadcrumbItems} />
       <Space
         align="center"
         style={{
@@ -146,4 +167,3 @@ const ProjectLayout = (): JSX.Element => {
 }
 
 export default ProjectLayout
-

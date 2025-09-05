@@ -1,4 +1,4 @@
-import { Card, Table, Tag, Typography } from 'antd'
+import { Table, Tag, Typography } from 'antd'
 import type { ColumnsType, TablePaginationConfig } from 'antd/es/table'
 import { useTranslation } from 'react-i18next'
 
@@ -46,10 +46,14 @@ export const ProjectTasksTable = ({
       dataIndex: 'title',
       key: 'title',
       render: (value: string, record) => (
-        <div>
-          <Typography.Text>{value}</Typography.Text>
+        <div style={{ maxWidth: 480 }}>
+          <Typography.Text ellipsis={{ tooltip: value }}>{value}</Typography.Text>
           {record.description ? (
-            <Typography.Paragraph type="secondary" ellipsis style={{ marginBottom: 0 }}>
+            <Typography.Paragraph
+              type="secondary"
+              ellipsis={{ rows: 1, tooltip: record.description }}
+              style={{ marginBottom: 0 }}
+            >
               {record.description}
             </Typography.Paragraph>
           ) : null}
@@ -99,22 +103,20 @@ export const ProjectTasksTable = ({
   ]
 
   return (
-    <Card bodyStyle={{ padding: 0 }}>
-      <Table<TaskDetails>
-        rowKey="id"
-        columns={columns}
-        dataSource={tasks}
-        loading={loading}
-        pagination={pagination ?? false}
-        size="middle"
-        scroll={{ x: 960 }}
-        onRow={(record) => ({
-          onClick: () => onSelect(record)
-        })}
-        locale={{
-          emptyText: loading ? t('details.tasksLoading') : t('details.tasksEmpty')
-        }}
-      />
-    </Card>
+    <Table<TaskDetails>
+      rowKey="id"
+      columns={columns}
+      dataSource={tasks}
+      loading={loading}
+      pagination={pagination ?? false}
+      size="middle"
+      scroll={{ x: 960 }}
+      onRow={(record) => ({
+        onClick: () => onSelect(record)
+      })}
+      locale={{
+        emptyText: loading ? t('details.tasksLoading') : t('details.tasksEmpty')
+      }}
+    />
   )
 }

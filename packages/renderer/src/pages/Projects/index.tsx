@@ -2,6 +2,8 @@ import type { JSX } from 'react'
 import { Typography } from 'antd'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
+import { Breadcrumb } from 'antd'
+import { useMemo } from 'react'
 
 import { ProjectsActionBar } from './components/ProjectsActionBar'
 import { ProjectList } from './components/ProjectList'
@@ -44,9 +46,19 @@ const ProjectsPage = (): JSX.Element => {
     navigate(`/projects/${projectId}`)
   }
 
+  const breadcrumbItems = useMemo(
+    () => [
+      {
+        title: t('breadcrumbs.projects')
+      }
+    ],
+    [t]
+  )
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
       {messageContext}
+      <Breadcrumb items={breadcrumbItems} />
       <div>
         <Typography.Title level={3} style={{ marginBottom: 16 }}>
           {t('title')}
