@@ -8,16 +8,28 @@ if (existsSync(rootEnvPath)) {
   dotenv.config({ path: rootEnvPath })
 }
 
-const toBoolean = (value: string | undefined, fallback: boolean): boolean => {
-  if (value === undefined) {
-    return fallback
+export type LogLevelSetting = 'debug' | 'info' | 'warn' | 'error' | 'silent'
+
+const parseLogLevel = (value?: string): LogLevelSetting => {
+  const normalized = value?.trim().toLowerCase()
+  switch (normalized) {
+    case 'debug':
+      return 'debug'
+    case 'info':
+      return 'info'
+    case 'warn':
+      return 'warn'
+    case 'error':
+      return 'error'
+    case 'silent':
+      return 'silent'
+    default:
+      return 'info'
   }
-  const normalized = value.trim().toLowerCase()
-  return ['1', 'true', 'yes', 'on'].includes(normalized)
 }
 
 export const env = {
-  seedDevData: toBoolean(process.env.SEED_DEV_DATA, process.env.NODE_ENV === 'development')
+  logLevel: parseLogLevel(process.env.LOG_LEVEL)
 }
 
 export type Env = typeof env

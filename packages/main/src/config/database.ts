@@ -1,21 +1,20 @@
-import { seedDevData } from './seeds/devSeed'
 import { mkdirSync } from 'node:fs'
 import { dirname } from 'node:path'
 import { Sequelize } from 'sequelize-typescript'
 import { Umzug, SequelizeStorage } from 'umzug'
 import type { QueryInterface } from 'sequelize'
-import { MigrationMeta } from './models/MigrationMeta'
-import { SystemSetting } from './models/SystemSetting'
-import { Role } from './models/Role'
-import { User } from './models/User'
-import { UserRole } from './models/UserRole'
-import { AuditLog } from './models/AuditLog'
-import { Project } from './models/Project'
-import { ProjectMember } from './models/ProjectMember'
-import { ProjectTag } from './models/ProjectTag'
-import { Task } from './models/Task'
-import { Comment } from './models/Comment'
-import { migrations } from './migrations'
+import { MigrationMeta } from '../db/models/MigrationMeta'
+import { SystemSetting } from '../db/models/SystemSetting'
+import { Role } from '../db/models/Role'
+import { User } from '../db/models/User'
+import { UserRole } from '../db/models/UserRole'
+import { AuditLog } from '../db/models/AuditLog'
+import { Project } from '../db/models/Project'
+import { ProjectMember } from '../db/models/ProjectMember'
+import { ProjectTag } from '../db/models/ProjectTag'
+import { Task } from '../db/models/Task'
+import { Comment } from '../db/models/Comment'
+import { migrations } from '../db/migrations'
 
 export interface DatabaseInitializationOptions {
   resolveStoragePath: () => string
@@ -72,8 +71,6 @@ export const initializeDatabase = async (
   await sequelize.query('PRAGMA foreign_keys = ON;')
 
   await runMigrations(sequelize)
-
-  await seedDevData(sequelize)
 
   return sequelize
 }

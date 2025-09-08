@@ -1,7 +1,7 @@
 import { join } from 'node:path'
 import { tmpdir } from 'node:os'
 import { mkdtemp, rm } from 'node:fs/promises'
-import { initializeDatabase } from '../db/database'
+import { initializeDatabase } from '../config/database'
 import { SessionManager } from './sessionManager'
 import { AuditService } from '../audit/auditService'
 import { AuthService } from './authService'

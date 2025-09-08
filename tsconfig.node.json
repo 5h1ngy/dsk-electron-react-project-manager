@@ -2,7 +2,10 @@
     "extends":  "@electron-toolkit/tsconfig/tsconfig.node.json",
     "include":  [
         "electron.vite.config.*",
-        "packages/main/src/**/*","packages/preload/src/**/*"
+        "packages/main/src/**/*",
+        "packages/preload/src/**/*",
+        "migrations/**/*",
+        "seeding/**/*"
     ],
     "compilerOptions":  {
         "composite":  true,

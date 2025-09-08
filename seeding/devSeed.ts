@@ -2,17 +2,16 @@ import { randomUUID } from 'node:crypto'
 import { faker } from '@faker-js/faker'
 import { Sequelize } from 'sequelize-typescript'
 import { Op, type Transaction } from 'sequelize'
-import type { RoleName } from '../../auth/constants'
-import { hashPassword } from '../../auth/password'
-import { env } from '../../config/env'
-import { logger } from '../../utils/logger'
-import { Role } from '../models/Role'
-import { User } from '../models/User'
-import { UserRole } from '../models/UserRole'
-import { Project } from '../models/Project'
-import { ProjectMember, type ProjectMembershipRole } from '../models/ProjectMember'
-import { ProjectTag } from '../models/ProjectTag'
-import { Task, type TaskPriority, type TaskStatus } from '../models/Task'
+import type { RoleName } from '../packages/main/src/auth/constants'
+import { hashPassword } from '../packages/main/src/auth/password'
+import { logger } from '../packages/main/src/utils/logger'
+import { Role } from '../packages/main/src/db/models/Role'
+import { User } from '../packages/main/src/db/models/User'
+import { UserRole } from '../packages/main/src/db/models/UserRole'
+import { Project } from '../packages/main/src/db/models/Project'
+import { ProjectMember, type ProjectMembershipRole } from '../packages/main/src/db/models/ProjectMember'
+import { ProjectTag } from '../packages/main/src/db/models/ProjectTag'
+import { Task, type TaskPriority, type TaskStatus } from '../packages/main/src/db/models/Task'
 
 const PASSWORD_SEED = 'changeme!'
 const FAKER_SEED = 20251018
@@ -101,7 +100,7 @@ interface ProjectSeedDefinition {
 }
 
 const pickWeighted = <T>(values: ReadonlyArray<WeightedValue<T>>): T =>
-  faker.helpers.weightedArrayElement(values).value
+  (faker.helpers.weightedArrayElement(values) as WeightedValue<T>).value
 
 const capitalize = (value: string): string => {
   if (!value) {
@@ -458,11 +457,6 @@ const upsertProjectSeed = async (
 }
 
 export const seedDevData = async (sequelize: Sequelize): Promise<void> => {
-  if (!env.seedDevData) {
-    logger.debug('Development data seeding disabled (SEED_DEV_DATA=false)', 'Seed')
-    return
-  }
-
   await sequelize.transaction(async (transaction) => {
     faker.seed(FAKER_SEED)
 
