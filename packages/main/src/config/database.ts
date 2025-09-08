@@ -23,56 +23,91 @@ export interface DatabaseInitializationOptions {
 
 export const MIGRATIONS_TABLE = 'migrations'
 
-export const createSequelizeInstance = (options: DatabaseInitializationOptions): Sequelize => {
-  const storagePath = options.resolveStoragePath()
-  mkdirSync(dirname(storagePath), { recursive: true })
+/**
+ * Coordinates database creation/migration while keeping the procedural
+ * interface backward compatible for existing call sites.
+ */
+export class DatabaseManager {
+  private readonly options: DatabaseInitializationOptions
 
-  return new Sequelize({
-    dialect: 'sqlite',
-    storage: storagePath,
-    models: [
-      MigrationMeta,
-      SystemSetting,
-      Role,
-      User,
-      UserRole,
-      AuditLog,
-      Project,
-      ProjectMember,
-      ProjectTag,
-      Task,
-      Comment
-    ],
-    logging: options.logging ?? false
-  })
+  constructor(options: DatabaseInitializationOptions) {
+    this.options = options
+  }
+
+  /**
+   * Creates a fully configured Sequelize instance, ensuring the target
+   * directory for the SQLite file exists before connecting.
+   */
+  createInstance(): Sequelize {
+    const storagePath = this.options.resolveStoragePath()
+    mkdirSync(dirname(storagePath), { recursive: true })
+
+    return new Sequelize({
+      dialect: 'sqlite',
+      storage: storagePath,
+      models: DatabaseManager.models,
+      logging: this.options.logging ?? false
+    })
+  }
+
+  /**
+   * Builds a migrator that shares the Sequelize connection, so migrations run
+   * within the same transaction scope and logging configuration.
+   */
+  private static createMigrator(sequelize: Sequelize): Umzug<QueryInterface> {
+    return new Umzug<QueryInterface>({
+      migrations,
+      context: sequelize.getQueryInterface(),
+      storage: new SequelizeStorage({
+        sequelize,
+        modelName: 'MigrationMeta',
+        tableName: MIGRATIONS_TABLE
+      }),
+      logger: undefined
+    })
+  }
+
+  /**
+   * Applies pending migrations against the provided Sequelize instance.
+   */
+  static async runMigrations(sequelize: Sequelize): Promise<void> {
+    const migrator = DatabaseManager.createMigrator(sequelize)
+    await migrator.up()
+  }
+
+  /**
+   * Authenticates the connection, enforces FK constraints, runs migrations and
+   * hands the ready-to-use Sequelize instance back to the caller.
+   */
+  async initialize(): Promise<Sequelize> {
+    const sequelize = this.createInstance()
+    await sequelize.authenticate()
+    await sequelize.query('PRAGMA foreign_keys = ON;')
+    await DatabaseManager.runMigrations(sequelize)
+    return sequelize
+  }
+
+  private static readonly models = [
+    MigrationMeta,
+    SystemSetting,
+    Role,
+    User,
+    UserRole,
+    AuditLog,
+    Project,
+    ProjectMember,
+    ProjectTag,
+    Task,
+    Comment
+  ]
 }
 
-export const runMigrations = async (sequelize: Sequelize): Promise<void> => {
-  const migrator = new Umzug<QueryInterface>({
-    migrations,
-    context: sequelize.getQueryInterface(),
-    storage: new SequelizeStorage({
-      sequelize,
-      modelName: 'MigrationMeta',
-      tableName: MIGRATIONS_TABLE
-    }),
-    logger: undefined
-  })
+export const createSequelizeInstance = (options: DatabaseInitializationOptions): Sequelize =>
+  new DatabaseManager(options).createInstance()
 
-  await migrator.up()
-}
+export const runMigrations = async (sequelize: Sequelize): Promise<void> =>
+  DatabaseManager.runMigrations(sequelize)
 
 export const initializeDatabase = async (
   options: DatabaseInitializationOptions
-): Promise<Sequelize> => {
-  const sequelize = createSequelizeInstance(options)
-
-  await sequelize.authenticate()
-  await sequelize.query('PRAGMA foreign_keys = ON;')
-
-  await runMigrations(sequelize)
-
-  return sequelize
-}
-
-
+): Promise<Sequelize> => new DatabaseManager(options).initialize()

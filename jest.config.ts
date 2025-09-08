@@ -19,9 +19,11 @@ const config: Config = {
   ],
   collectCoverageFrom: [
     'packages/**/*.{ts,tsx}',
+    'seeding/**/*.ts',
     '!**/*.d.ts',
     '!**/*.test.ts',
     '!**/*.test.tsx',
+    '!seeding/**/*.test.ts',
     '!packages/main/src/index.ts',
     '!packages/preload/src/types.ts',
     '!packages/renderer/src/main.tsx'
@@ -41,7 +43,8 @@ const config: Config = {
       testEnvironment: 'node',
       testMatch: [
         '<rootDir>/packages/main/**/*.test.ts',
-        '<rootDir>/packages/preload/**/*.test.ts'
+        '<rootDir>/packages/preload/**/*.test.ts',
+        '<rootDir>/seeding/**/*.test.ts'
       ],
       moduleNameMapper: sharedModuleNameMapper,
       transform: {

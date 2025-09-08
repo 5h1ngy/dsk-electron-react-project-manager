@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto'
 import { faker } from '@faker-js/faker'
 import { Sequelize } from 'sequelize-typescript'
 import { Op, type Transaction } from 'sequelize'
+
 import type { RoleName } from '../packages/main/src/auth/constants'
 import { hashPassword } from '../packages/main/src/auth/password'
 import { logger } from '../packages/main/src/utils/logger'
@@ -9,7 +10,10 @@ import { Role } from '../packages/main/src/db/models/Role'
 import { User } from '../packages/main/src/db/models/User'
 import { UserRole } from '../packages/main/src/db/models/UserRole'
 import { Project } from '../packages/main/src/db/models/Project'
-import { ProjectMember, type ProjectMembershipRole } from '../packages/main/src/db/models/ProjectMember'
+import {
+  ProjectMember,
+  type ProjectMembershipRole
+} from '../packages/main/src/db/models/ProjectMember'
 import { ProjectTag } from '../packages/main/src/db/models/ProjectTag'
 import { Task, type TaskPriority, type TaskStatus } from '../packages/main/src/db/models/Task'
 
@@ -99,429 +103,453 @@ interface ProjectSeedDefinition {
   tasks: TaskSeedDefinition[]
 }
 
-const pickWeighted = <T>(values: ReadonlyArray<WeightedValue<T>>): T =>
-  (faker.helpers.weightedArrayElement(values) as WeightedValue<T>).value
-
-const capitalize = (value: string): string => {
-  if (!value) {
-    return value
-  }
-  return value[0].toUpperCase() + value.slice(1)
+export interface DevelopmentSeederOptions {
+  fakerSeed?: number
+  passwordSeed?: string
 }
+/**
+ * High-level orchestrator that generates deterministic demo data for local use.
+ */
+export class DevelopmentSeeder {
+  private readonly random = faker
+  private readonly options: Required<DevelopmentSeederOptions>
 
-const buildTaskTitle = (): string => {
-  const verb = capitalize(faker.hacker.verb())
-  const noun = faker.hacker.noun().replace(/_/g, ' ')
-  const suffix = faker.helpers.maybe(() => ` (${faker.hacker.abbreviation()})`, {
-    probability: 0.2
-  })
-  const title = `${verb} ${noun}${suffix ?? ''}`
-  return title.slice(0, 160)
-}
-
-const buildTaskDescription = (): string => {
-  const overview = faker.lorem.paragraphs({ min: 1, max: 2 }, '\n\n')
-  const checklist = faker.helpers
-    .multiple(() => `- ${faker.hacker.phrase()}`, { count: 3 })
-    .join('\n')
-  const acceptance = faker.lorem.sentences({ min: 2, max: 3 })
-
-  return `${overview}\n\n${checklist}\n\n**Acceptance Criteria**\n${acceptance}`
-}
-
-const formatDate = (date: Date): string => date.toISOString().slice(0, 10)
-
-const createUniqueUsername = (existing: Set<string>): string => {
-  let attempts = 0
-  while (attempts < 20) {
-    const first = faker.person.firstName()
-    const last = faker.person.lastName()
-    const normalized = `${first}.${last}`
-      .normalize('NFKD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/[^a-zA-Z0-9_.-]/g, '')
-      .replace(/\.+/g, '.')
-      .replace(/^\./, '')
-      .replace(/\.$/, '')
-      .toLowerCase()
-    const base = normalized.slice(0, 28) || `user${faker.number.int({ min: 1000, max: 9999 })}`
-    let candidate = base
-    let suffix = 1
-
-    while ((candidate.length < 3 || existing.has(candidate)) && suffix < 100) {
-      const suffixText = suffix.toString().padStart(2, '0')
-      candidate = `${base.slice(0, 32 - suffixText.length)}${suffixText}`
-      suffix += 1
-    }
-
-    if (!existing.has(candidate) && candidate.length >= 3) {
-      existing.add(candidate)
-      const displayName = `${capitalize(first)} ${capitalize(last)}`.slice(0, 64)
-      return `${candidate}|${displayName}`
-    }
-
-    attempts += 1
-  }
-
-  const fallback = `user${faker.number.int({ min: 1000, max: 9999 })}`
-  existing.add(fallback)
-  return `${fallback}|User ${fallback.slice(-4)}`
-}
-
-const generateUserSeeds = (): UserSeedDefinition[] => {
-  const seeds: UserSeedDefinition[] = []
-  const seenUsernames = new Set<string>()
-
-  for (const profile of ROLE_PROFILES) {
-    for (let index = 0; index < profile.count; index += 1) {
-      const composite = createUniqueUsername(seenUsernames)
-      const [username, displayName] = composite.split('|')
-      seeds.push({
-        username,
-        displayName,
-        roles: [...profile.roles]
-      })
+  constructor(private readonly sequelize: Sequelize, options: DevelopmentSeederOptions = {}) {
+    this.options = {
+      fakerSeed: options.fakerSeed ?? FAKER_SEED,
+      passwordSeed: options.passwordSeed ?? PASSWORD_SEED
     }
   }
 
-  return seeds
-}
+  /**
+   * Executes the entire seeding workflow inside a single transaction.
+   */
+  async run(): Promise<void> {
+    this.random.seed(this.options.fakerSeed)
 
-const createUniqueProjectKey = (usedKeys: Set<string>): string => {
-  for (let attempt = 0; attempt < 30; attempt += 1) {
-    const length = faker.number.int({ min: 3, max: 5 })
-    const candidate = faker.string.alpha({ length, casing: 'upper' })
-    if (!usedKeys.has(candidate)) {
-      usedKeys.add(candidate)
-      return candidate
-    }
-  }
-
-  const fallback = `PRJ${String(usedKeys.size + 1).padStart(3, '0')}`
-  usedKeys.add(fallback)
-  return fallback
-}
-
-const buildRolePools = (
-  seededUsers: Record<string, User>,
-  userRoles: Map<string, RoleName[]>
-): Map<RoleName, User[]> => {
-  const pools = new Map<RoleName, User[]>()
-  for (const [username, user] of Object.entries(seededUsers)) {
-    const roles = userRoles.get(username) ?? []
-    for (const role of roles) {
-      const current = pools.get(role) ?? []
-      current.push(user)
-      pools.set(role, current)
-    }
-  }
-  return pools
-}
-
-const addMembersFromPool = (
-  members: Map<string, ProjectMembershipRole>,
-  pools: Map<RoleName, User[]>,
-  sourceRole: RoleName,
-  membershipRole: ProjectMembershipRole,
-  range: { min: number; max: number },
-  excludedUserId?: string
-): void => {
-  const pool = pools.get(sourceRole) ?? []
-  const available = pool.filter(
-    (user) => !members.has(user.id) && (!excludedUserId || user.id !== excludedUserId)
-  )
-  if (!available.length) {
-    return
-  }
-
-  const max = Math.min(range.max, available.length)
-  const min = Math.min(range.min, max)
-  if (max === 0) {
-    return
-  }
-
-  const count = min === max ? max : faker.number.int({ min, max })
-  const selected = faker.helpers.arrayElements(available, count)
-  for (const user of selected) {
-    members.set(user.id, membershipRole)
-  }
-}
-
-const generateProjectSeeds = (
-  seededUsers: Record<string, User>,
-  userRoles: Map<string, RoleName[]>,
-  adminUser: User
-): ProjectSeedDefinition[] => {
-  const seeds: ProjectSeedDefinition[] = []
-  const pools = buildRolePools(seededUsers, userRoles)
-  const usedKeys = new Set<string>()
-  const projectCount = faker.number.int({ min: MIN_PROJECTS, max: MAX_PROJECTS })
-
-  for (let index = 0; index < projectCount; index += 1) {
-    const key = createUniqueProjectKey(usedKeys)
-    const maintainers = (pools.get('Maintainer') ?? []).filter((user) => user.id !== adminUser.id)
-    const primaryOwner =
-      maintainers.length > 0 ? faker.helpers.arrayElement(maintainers) : adminUser
-
-    const members = new Map<string, ProjectMembershipRole>()
-    members.set(adminUser.id, 'admin')
-    members.set(primaryOwner.id, 'admin')
-
-    addMembersFromPool(members, pools, 'Maintainer', 'admin', { min: 0, max: 1 }, adminUser.id)
-    addMembersFromPool(members, pools, 'Contributor', 'edit', { min: 2, max: 5 })
-    addMembersFromPool(members, pools, 'Viewer', 'view', { min: 1, max: 3 })
-
-    const tags = Array.from(
-      new Set(faker.helpers.arrayElements(TAG_CATALOG, faker.number.int({ min: 2, max: 5 })))
-    )
-
-    const assigneeCandidates = Array.from(members.entries())
-      .filter(([, role]) => role !== 'view')
-      .map(([userId]) => userId)
-
-    const taskCount = faker.number.int({
-      min: MIN_TASKS_PER_PROJECT,
-      max: MAX_TASKS_PER_PROJECT
-    })
-    const tasks: TaskSeedDefinition[] = []
-
-    for (let taskIndex = 0; taskIndex < taskCount; taskIndex += 1) {
-      const status = pickWeighted(STATUS_WEIGHTS)
-      const priority = pickWeighted(PRIORITY_WEIGHTS)
-      const dueDate = faker.helpers.maybe(() => formatDate(faker.date.soon({ days: 120 })), {
-        probability: 0.7
-      })
-
-      const assigneeId =
-        assigneeCandidates.length > 0
-          ? (faker.helpers.maybe(() => faker.helpers.arrayElement(assigneeCandidates), {
-              probability: 0.85
-            }) ?? null)
-          : null
-
-      tasks.push({
-        title: buildTaskTitle(),
-        description: buildTaskDescription(),
-        status,
-        priority,
-        dueDate: dueDate ?? null,
-        assigneeId
-      })
-    }
-
-    seeds.push({
-      key,
-      name: faker.company.catchPhrase(),
-      description: faker.lorem.paragraphs({ min: 1, max: 2 }, '\n\n'),
-      createdBy: primaryOwner.id,
-      members: Array.from(members.entries()).map(([userId, role]) => ({
-        userId,
-        role
-      })),
-      tags,
-      tasks
-    })
-  }
-
-  return seeds
-}
-
-const upsertUser = async (
-  transaction: Transaction,
-  username: string,
-  displayName: string,
-  password: string,
-  roles: readonly RoleName[]
-): Promise<{ user: User; created: boolean }> => {
-  const existing = await User.findOne({ where: { username }, transaction })
-  if (existing) {
-    logger.debug(`User ${username} already present`, 'Seed')
-    return { user: existing, created: false }
-  }
-
-  const hashed = await hashPassword(password)
-  const user = await User.create(
-    {
-      id: randomUUID(),
-      username,
-      displayName,
-      passwordHash: hashed,
-      isActive: true
-    },
-    { transaction }
-  )
-
-  const dbRoles = await Role.findAll({
-    where: {
-      name: {
-        [Op.in]: roles
+    await this.sequelize.transaction(async (transaction) => {
+      const adminUser = await this.findAdminUser(transaction)
+      const existingProjects = await Project.count({ transaction })
+      if (existingProjects > 0) {
+        logger.info(
+          `Skipping development data seeding: already ${existingProjects} projects in storage`,
+          'Seed'
+        )
+        return
       }
-    },
-    transaction
-  })
 
-  await Promise.all(
-    dbRoles.map((role) =>
-      UserRole.create(
-        {
-          userId: user.id,
-          roleId: role.id,
-          createdAt: new Date()
-        },
-        { transaction }
-      )
-    )
-  )
+      logger.info('Seeding development data...', 'Seed')
 
-  logger.debug(`Seeded user ${username} (${roles.join(', ')})`, 'Seed')
-  return { user, created: true }
-}
+      const seededUsers: Record<string, User> = { [adminUser.username]: adminUser }
+      const userRoles = new Map<string, RoleName[]>([['admin', ['Admin']]])
 
-const upsertProjectSeed = async (
-  transaction: Transaction,
-  seed: ProjectSeedDefinition
-): Promise<Project | null> => {
-  const existing = await Project.findOne({ where: { key: seed.key }, transaction })
-  if (existing) {
-    logger.debug(`Project ${seed.key} already present, skipping`, 'Seed')
-    return null
-  }
+      const userSeeds = this.generateUserSeeds()
+      logger.debug(`Generated ${userSeeds.length} user seeds`, 'Seed')
 
-  const project = await Project.create(
-    {
-      id: randomUUID(),
-      key: seed.key,
-      name: seed.name,
-      description: seed.description,
-      createdBy: seed.createdBy
-    },
-    { transaction }
-  )
+      let createdUsers = 0
+      for (const seed of userSeeds) {
+        const result = await this.upsertUser(transaction, seed)
+        seededUsers[seed.username] = result.user
+        userRoles.set(seed.username, seed.roles)
+        if (result.created) {
+          createdUsers += 1
+        }
+      }
 
-  await Promise.all(
-    seed.members.map((member) =>
-      ProjectMember.create(
-        {
-          projectId: project.id,
-          userId: member.userId,
-          role: member.role,
-          createdAt: new Date()
-        },
-        { transaction }
-      )
-    )
-  )
+      logger.debug(`Upserted ${createdUsers} new users`, 'Seed')
 
-  await ProjectTag.destroy({ where: { projectId: project.id }, transaction })
+      const projectSeeds = this.generateProjectSeeds(seededUsers, userRoles, adminUser)
+      logger.debug(`Generated ${projectSeeds.length} project seeds`, 'Seed')
 
-  await Promise.all(
-    seed.tags.map((tag) =>
-      ProjectTag.create(
-        {
-          id: randomUUID(),
-          projectId: project.id,
-          tag,
-          createdAt: new Date()
-        },
-        { transaction }
-      )
-    )
-  )
+      let createdProjects = 0
+      let taskTotal = 0
+      for (const projectSeed of projectSeeds) {
+        const project = await this.upsertProject(transaction, projectSeed)
+        taskTotal += projectSeed.tasks.length
+        if (project) {
+          createdProjects += 1
+        }
+      }
 
-  let taskIndex = 1
-  for (const taskSeed of seed.tasks) {
-    await Task.create(
-      {
-        id: randomUUID(),
-        projectId: project.id,
-        key: `${project.key}-${String(taskIndex).padStart(3, '0')}`,
-        parentId: null,
-        title: taskSeed.title,
-        description: taskSeed.description,
-        status: taskSeed.status,
-        priority: taskSeed.priority,
-        dueDate: taskSeed.dueDate,
-        assigneeId: taskSeed.assigneeId,
-        ownerUserId: seed.createdBy
-      },
-      { transaction }
-    )
-    taskIndex += 1
-  }
-
-  logger.debug(
-    `Seeded project ${seed.key} with ${seed.members.length} members, ${seed.tags.length} tags and ${seed.tasks.length} tasks`,
-    'Seed'
-  )
-  return project
-}
-
-export const seedDevData = async (sequelize: Sequelize): Promise<void> => {
-  await sequelize.transaction(async (transaction) => {
-    faker.seed(FAKER_SEED)
-
-    const adminUser = await User.findOne({
-      where: { username: 'admin' },
-      transaction
-    })
-
-    if (!adminUser) {
-      throw new Error('Default admin user not found; cannot seed data')
-    }
-
-    const existingProjects = await Project.count({ transaction })
-    if (existingProjects > 0) {
-      logger.info(
-        `Skipping development data seeding: already ${existingProjects} projects in storage`,
+      logger.success(
+        `Seed complete: ${createdUsers} users, ${createdProjects} projects, ${taskTotal} tasks`,
         'Seed'
       )
+    })
+  }
+
+  private async findAdminUser(transaction: Transaction): Promise<User> {
+    const admin = await User.findOne({ where: { username: 'admin' }, transaction })
+    if (!admin) {
+      throw new Error('Default admin user not found; cannot seed data')
+    }
+    return admin
+  }
+
+  private pickWeighted<T>(values: ReadonlyArray<WeightedValue<T>>): T {
+    return (this.random.helpers.weightedArrayElement(values) as WeightedValue<T>).value
+  }
+
+  private capitalize(value: string): string {
+    if (!value) {
+      return value
+    }
+    return value[0].toUpperCase() + value.slice(1)
+  }
+
+  private formatDate(date: Date): string {
+    return date.toISOString().slice(0, 10)
+  }
+  private createUniqueUsername(existing: Set<string>): { username: string; displayName: string } {
+    let attempts = 0
+    while (attempts < 20) {
+      const first = this.random.person.firstName()
+      const last = this.random.person.lastName()
+      const normalized = `${first}.${last}`
+        .normalize('NFKD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-zA-Z0-9_.-]/g, '')
+        .replace(/\.+/g, '.')
+        .replace(/^\./, '')
+        .replace(/\.$/, '')
+        .toLowerCase()
+      const base =
+        normalized.slice(0, 28) || `user${this.random.number.int({ min: 1000, max: 9999 })}`
+      let candidate = base
+      let suffix = 1
+
+      while ((candidate.length < 3 || existing.has(candidate)) && suffix < 100) {
+        const suffixText = suffix.toString().padStart(2, '0')
+        candidate = `${base.slice(0, 32 - suffixText.length)}${suffixText}`
+        suffix += 1
+      }
+
+      if (!existing.has(candidate) && candidate.length >= 3) {
+        existing.add(candidate)
+        const displayName = `${this.capitalize(first)} ${this.capitalize(last)}`.slice(0, 64)
+        return { username: candidate, displayName }
+      }
+
+      attempts += 1
+    }
+
+    const fallback = `user${this.random.number.int({ min: 1000, max: 9999 })}`
+    existing.add(fallback)
+    return { username: fallback, displayName: `User ${fallback.slice(-4)}` }
+  }
+
+  private generateUserSeeds(): UserSeedDefinition[] {
+    const seeds: UserSeedDefinition[] = []
+    const seenUsernames = new Set<string>()
+
+    for (const profile of ROLE_PROFILES) {
+      for (let index = 0; index < profile.count; index += 1) {
+        const composite = this.createUniqueUsername(seenUsernames)
+        seeds.push({
+          username: composite.username,
+          displayName: composite.displayName,
+          roles: [...profile.roles]
+        })
+      }
+    }
+
+    return seeds
+  }
+  private createUniqueProjectKey(usedKeys: Set<string>): string {
+    for (let attempt = 0; attempt < 30; attempt += 1) {
+      const length = this.random.number.int({ min: 3, max: 5 })
+      const candidate = this.random.string.alpha({ length, casing: 'upper' })
+      if (!usedKeys.has(candidate)) {
+        usedKeys.add(candidate)
+        return candidate
+      }
+    }
+
+    const fallback = `PRJ${String(usedKeys.size + 1).padStart(3, '0')}`
+    usedKeys.add(fallback)
+    return fallback
+  }
+
+  private buildRolePools(
+    seededUsers: Record<string, User>,
+    userRoles: Map<string, RoleName[]>
+  ): Map<RoleName, User[]> {
+    const pools = new Map<RoleName, User[]>()
+    for (const [username, user] of Object.entries(seededUsers)) {
+      const roles = userRoles.get(username) ?? []
+      for (const role of roles) {
+        const current = pools.get(role) ?? []
+        current.push(user)
+        pools.set(role, current)
+      }
+    }
+    return pools
+  }
+
+  private addMembersFromPool(
+    members: Map<string, ProjectMembershipRole>,
+    pools: Map<RoleName, User[]>,
+    sourceRole: RoleName,
+    membershipRole: ProjectMembershipRole,
+    range: { min: number; max: number },
+    excludedUserId?: string
+  ): void {
+    const pool = pools.get(sourceRole) ?? []
+    const available = pool.filter(
+      (user) => !members.has(user.id) && (!excludedUserId || user.id !== excludedUserId)
+    )
+    if (!available.length) {
       return
     }
 
-    logger.info('Seeding development data...', 'Seed')
-
-    const seededUsers: Record<string, User> = {
-      [adminUser.username]: adminUser
+    const max = Math.min(range.max, available.length)
+    const min = Math.min(range.min, max)
+    if (max === 0) {
+      return
     }
-    const userRoles = new Map<string, RoleName[]>([['admin', ['Admin']]])
 
-    const userSeeds = generateUserSeeds()
-    logger.debug(`Generated ${userSeeds.length} user seeds`, 'Seed')
+    const count = min === max ? max : this.random.number.int({ min, max })
+    const selected = this.random.helpers.arrayElements(available, count)
+    for (const user of selected) {
+      members.set(user.id, membershipRole)
+    }
+  }
 
-    let createdUsers = 0
-    for (const userSeed of userSeeds) {
-      const { user, created } = await upsertUser(
-        transaction,
-        userSeed.username,
-        userSeed.displayName,
-        PASSWORD_SEED,
-        userSeed.roles
+  /**
+   * Produces project/task blueprints by combining role pools, weighted
+   * priorities and random dates to keep the generated data varied yet coherent.
+   */
+  private generateProjectSeeds(
+    seededUsers: Record<string, User>,
+    userRoles: Map<string, RoleName[]>,
+    adminUser: User
+  ): ProjectSeedDefinition[] {
+    const seeds: ProjectSeedDefinition[] = []
+    const pools = this.buildRolePools(seededUsers, userRoles)
+    const usedKeys = new Set<string>()
+    const projectCount = this.random.number.int({ min: MIN_PROJECTS, max: MAX_PROJECTS })
+
+    for (let index = 0; index < projectCount; index += 1) {
+      const key = this.createUniqueProjectKey(usedKeys)
+      const maintainers = (pools.get('Maintainer') ?? []).filter(
+        (user) => user.id !== adminUser.id
       )
-      seededUsers[userSeed.username] = user
-      userRoles.set(userSeed.username, userSeed.roles)
-      if (created) {
-        createdUsers += 1
+      const primaryOwner =
+        maintainers.length > 0 ? this.random.helpers.arrayElement(maintainers) : adminUser
+
+      const members = new Map<string, ProjectMembershipRole>()
+      members.set(adminUser.id, 'admin')
+      members.set(primaryOwner.id, 'admin')
+
+      this.addMembersFromPool(members, pools, 'Maintainer', 'admin', { min: 0, max: 1 }, adminUser.id)
+      this.addMembersFromPool(members, pools, 'Contributor', 'edit', { min: 2, max: 5 })
+      this.addMembersFromPool(members, pools, 'Viewer', 'view', { min: 1, max: 3 })
+
+      const tags = Array.from(
+        new Set(
+          this.random.helpers.arrayElements(
+            TAG_CATALOG,
+            this.random.number.int({ min: 2, max: 5 })
+          )
+        )
+      )
+
+      const assigneeCandidates = Array.from(members.entries())
+        .filter(([, role]) => role !== 'view')
+        .map(([userId]) => userId)
+
+      const taskCount = this.random.number.int({
+        min: MIN_TASKS_PER_PROJECT,
+        max: MAX_TASKS_PER_PROJECT
+      })
+      const tasks: TaskSeedDefinition[] = []
+
+      for (let taskIndex = 0; taskIndex < taskCount; taskIndex += 1) {
+        const status = this.pickWeighted(STATUS_WEIGHTS)
+        const priority = this.pickWeighted(PRIORITY_WEIGHTS)
+        const dueDate = this.random.helpers.maybe(
+          () => this.formatDate(this.random.date.soon({ days: 120 })),
+          { probability: 0.7 }
+        )
+
+        const assigneeId =
+          assigneeCandidates.length > 0
+            ? (
+                this.random.helpers.maybe(
+                  () => this.random.helpers.arrayElement(assigneeCandidates),
+                  {
+                    probability: 0.85
+                  }
+                ) ?? null
+              )
+            : null
+
+        tasks.push({
+          title: this.buildTaskTitle(),
+          description: this.buildTaskDescription(),
+          status,
+          priority,
+          dueDate: dueDate ?? null,
+          assigneeId
+        })
       }
+
+      seeds.push({
+        key,
+        name: this.random.company.catchPhrase(),
+        description: this.random.lorem.paragraphs({ min: 1, max: 2 }, '\n\n'),
+        createdBy: primaryOwner.id,
+        members: Array.from(members.entries()).map(([userId, role]) => ({
+          userId,
+          role
+        })),
+        tags,
+        tasks
+      })
     }
 
-    logger.debug(`Upserted ${createdUsers} new users`, 'Seed')
+    return seeds
+  }
+  private buildTaskTitle(): string {
+    const verb = this.capitalize(this.random.hacker.verb())
+    const noun = this.random.hacker.noun().replace(/_/g, ' ')
+    const suffix = this.random.helpers.maybe(() => ` (${this.random.hacker.abbreviation()})`, {
+      probability: 0.2
+    })
+    const title = `${verb} ${noun}${suffix ?? ''}`
+    return title.slice(0, 160)
+  }
 
-    const projectSeeds = generateProjectSeeds(seededUsers, userRoles, adminUser)
-    logger.debug(`Generated ${projectSeeds.length} project seeds`, 'Seed')
+  private buildTaskDescription(): string {
+    const overview = this.random.lorem.paragraphs({ min: 1, max: 2 }, '\n\n')
+    const checklist = this.random.helpers
+      .multiple(() => `- ${this.random.hacker.phrase()}`, { count: 3 })
+      .join('\n')
+    const acceptance = this.random.lorem.sentences({ min: 2, max: 3 })
 
-    let createdProjects = 0
-    let taskTotal = 0
-    for (const projectSeed of projectSeeds) {
-      const project = await upsertProjectSeed(transaction, projectSeed)
-      taskTotal += projectSeed.tasks.length
-      if (project) {
-        createdProjects += 1
-      }
+    return `${overview}\n\n${checklist}\n\n**Acceptance Criteria**\n${acceptance}`
+  }
+  private async upsertUser(transaction: Transaction, seed: UserSeedDefinition) {
+    const existing = await User.findOne({ where: { username: seed.username }, transaction })
+    if (existing) {
+      logger.debug(`User ${seed.username} already present`, 'Seed')
+      return { user: existing, created: false }
     }
 
-    logger.success(
-      `Seed complete: ${createdUsers} users, ${createdProjects} projects, ${taskTotal} tasks`,
+    const hashed = await hashPassword(this.options.passwordSeed)
+    const user = await User.create(
+      {
+        id: randomUUID(),
+        username: seed.username,
+        displayName: seed.displayName,
+        passwordHash: hashed,
+        isActive: true
+      },
+      { transaction }
+    )
+
+    const dbRoles = await Role.findAll({
+      where: {
+        name: {
+          [Op.in]: seed.roles
+        }
+      },
+      transaction
+    })
+
+    await Promise.all(
+      dbRoles.map((role) =>
+        UserRole.create(
+          {
+            userId: user.id,
+            roleId: role.id,
+            createdAt: new Date()
+          },
+          { transaction }
+        )
+      )
+    )
+
+    logger.debug(`Seeded user ${seed.username} (${seed.roles.join(', ')})`, 'Seed')
+    return { user, created: true }
+  }
+
+  private async upsertProject(transaction: Transaction, seed: ProjectSeedDefinition) {
+    const existing = await Project.findOne({ where: { key: seed.key }, transaction })
+    if (existing) {
+      logger.debug(`Project ${seed.key} already present, skipping`, 'Seed')
+      return null
+    }
+
+    const project = await Project.create(
+      {
+        id: randomUUID(),
+        key: seed.key,
+        name: seed.name,
+        description: seed.description,
+        createdBy: seed.createdBy
+      },
+      { transaction }
+    )
+
+    await Promise.all(
+      seed.members.map((member) =>
+        ProjectMember.create(
+          {
+            projectId: project.id,
+            userId: member.userId,
+            role: member.role,
+            createdAt: new Date()
+          },
+          { transaction }
+        )
+      )
+    )
+
+    await ProjectTag.destroy({ where: { projectId: project.id }, transaction })
+
+    await Promise.all(
+      seed.tags.map((tag) =>
+        ProjectTag.create(
+          {
+            id: randomUUID(),
+            projectId: project.id,
+            tag,
+            createdAt: new Date()
+          },
+          { transaction }
+        )
+      )
+    )
+
+    let taskIndex = 1
+    for (const taskSeed of seed.tasks) {
+      await Task.create(
+        {
+          id: randomUUID(),
+          projectId: project.id,
+          key: `${project.key}-${String(taskIndex).padStart(3, '0')}`,
+          parentId: null,
+          title: taskSeed.title,
+          description: taskSeed.description,
+          status: taskSeed.status,
+          priority: taskSeed.priority,
+          dueDate: taskSeed.dueDate,
+          assigneeId: taskSeed.assigneeId,
+          ownerUserId: seed.createdBy
+        },
+        { transaction }
+      )
+      taskIndex += 1
+    }
+
+    logger.debug(
+      `Seeded project ${seed.key} with ${seed.members.length} members, ${seed.tags.length} tags and ${seed.tasks.length} tasks`,
       'Seed'
     )
-  })
+    return project
+  }
+}
+export const seedDevData = async (sequelize: Sequelize): Promise<void> => {
+  await new DevelopmentSeeder(sequelize).run()
 }
