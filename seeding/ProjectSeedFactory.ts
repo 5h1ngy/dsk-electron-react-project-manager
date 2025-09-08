@@ -7,8 +7,7 @@ import type {
   ProjectMemberSeed,
   TaskSeedDefinition
 } from './DevelopmentSeeder.types'
-
-type WeightedValue<T> = { value: T; weight: number }
+import { capitalize, formatIsoDate, pickWeighted, type WeightedValue } from './seed.helpers'
 
 const TAG_CATALOG = [
   'analytics',
@@ -102,10 +101,10 @@ export class ProjectSeedFactory {
       const tasks: TaskSeedDefinition[] = []
 
       for (let taskIndex = 0; taskIndex < taskCount; taskIndex += 1) {
-        const status = this.pickWeighted(STATUS_WEIGHTS)
-        const priority = this.pickWeighted(PRIORITY_WEIGHTS)
+        const status = pickWeighted(this.random, STATUS_WEIGHTS)
+        const priority = pickWeighted(this.random, PRIORITY_WEIGHTS)
         const dueDate = this.random.helpers.maybe(
-          () => this.random.date.soon({ days: 120 }).toISOString().slice(0, 10),
+          () => formatIsoDate(this.random.date.soon({ days: 120 })),
           { probability: 0.7 }
         )
 
@@ -206,7 +205,7 @@ export class ProjectSeedFactory {
   }
 
   private buildTaskTitle(): string {
-    const verb = this.capitalize(this.random.hacker.verb())
+    const verb = capitalize(this.random.hacker.verb())
     const noun = this.random.hacker.noun().replace(/_/g, ' ')
     const suffix = this.random.helpers.maybe(() => ` (${this.random.hacker.abbreviation()})`, {
       probability: 0.2
@@ -223,16 +222,5 @@ export class ProjectSeedFactory {
     const acceptance = this.random.lorem.sentences({ min: 2, max: 3 })
 
     return `${overview}\n\n${checklist}\n\n**Acceptance Criteria**\n${acceptance}`
-  }
-
-  private pickWeighted<T>(values: ReadonlyArray<WeightedValue<T>>): T {
-    return (this.random.helpers.weightedArrayElement(values) as WeightedValue<T>).value
-  }
-
-  private capitalize(value: string): string {
-    if (!value) {
-      return value
-    }
-    return value[0].toUpperCase() + value.slice(1)
   }
 }

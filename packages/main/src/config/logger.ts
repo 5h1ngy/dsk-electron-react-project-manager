@@ -1,6 +1,7 @@
 import { env } from './env'
 import type { LogLevelSetting } from './env.types'
 import type { LogLevel, LoggerOptions } from './logger.types'
+import { formatLogContext, padNumber } from './logger.helpers'
 
 const RESET = '\x1b[0m'
 const COLORS = {
@@ -38,11 +39,6 @@ const FILTER_PRIORITY: Record<LogLevelSetting, number> = {
   silent: Number.POSITIVE_INFINITY
 }
 
-const formatContext = (context?: string): string =>
-  context ? ` ${COLORS.context}[${context}]${RESET}` : ''
-
-const pad = (value: number, size = 2): string => value.toString().padStart(size, '0')
-
 export class AppLogger {
   private readonly level: LogLevelSetting
   private readonly writer: (line: string) => void
@@ -77,10 +73,9 @@ export class AppLogger {
   renderer(level: number, message: string, sourceId: string, line: number): void {
     const mappedLevel = this.mapConsoleLevel(level)
     const formatted = `${COLORS.renderer}${message}${RESET}`
+    const rendererContext = sourceId ? `renderer:${sourceId}${line ? `:${line}` : ''}` : undefined
     this.write(
-      `${this.formatLine(mappedLevel, formatted)}${
-        sourceId ? ` ${formatContext(`renderer:${sourceId}${line ? `:${line}` : ''}`)}` : ''
-      }`
+      `${this.formatLine(mappedLevel, formatted, rendererContext)}`
     )
   }
 
@@ -110,18 +105,19 @@ export class AppLogger {
   private formatLine(level: LogLevel, message: string, context?: string): string {
     const timestamp = `${COLORS.timestamp}${this.formatTimestamp()}${RESET}`
     const tag = `${this.levelColor(level)}${LEVEL_TAG[level].padEnd(5)}${RESET}`
-    return `${timestamp} ${tag}${formatContext(context)} ${message}`
+    const contextual = context ? `${COLORS.context}${formatLogContext(context)}${RESET}` : ''
+    return `${timestamp} ${tag}${contextual} ${message}`
   }
 
   private formatTimestamp(): string {
     const date = this.clock()
     const y = date.getFullYear()
-    const m = pad(date.getMonth() + 1)
-    const d = pad(date.getDate())
-    const h = pad(date.getHours())
-    const min = pad(date.getMinutes())
-    const s = pad(date.getSeconds())
-    const ms = pad(date.getMilliseconds(), 3)
+    const m = padNumber(date.getMonth() + 1)
+    const d = padNumber(date.getDate())
+    const h = padNumber(date.getHours())
+    const min = padNumber(date.getMinutes())
+    const s = padNumber(date.getSeconds())
+    const ms = padNumber(date.getMilliseconds(), 3)
     return `${y}-${m}-${d} ${h}:${min}:${s}.${ms}`
   }
 
@@ -176,4 +172,3 @@ export const shouldSuppressDevtoolsMessage = (sourceId: string, message: string)
 
   return false
 }
-

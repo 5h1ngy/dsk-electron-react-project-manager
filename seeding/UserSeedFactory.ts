@@ -3,6 +3,7 @@ import type { Faker } from '@faker-js/faker'
 import type { RoleName } from '../packages/main/src/auth/constants'
 
 import type { UserSeedDefinition } from './DevelopmentSeeder.types'
+import { capitalize, stripAccents } from './seed.helpers'
 
 const ROLE_PROFILES: ReadonlyArray<{ roles: RoleName[]; count: number }> = [
   { roles: ['Maintainer', 'Contributor'], count: 4 },
@@ -39,9 +40,7 @@ export class UserSeedFactory {
     while (attempts < 20) {
       const first = this.random.person.firstName()
       const last = this.random.person.lastName()
-      const normalized = `${first}.${last}`
-        .normalize('NFKD')
-        .replace(/[\u0300-\u036f]/g, '')
+      const normalized = stripAccents(`${first}.${last}`)
         .replace(/[^a-zA-Z0-9_.-]/g, '')
         .replace(/\.+/g, '.')
         .replace(/^\./, '')
@@ -60,7 +59,7 @@ export class UserSeedFactory {
 
       if (!existing.has(candidate) && candidate.length >= 3) {
         existing.add(candidate)
-        const displayName = `${this.capitalize(first)} ${this.capitalize(last)}`.slice(0, 64)
+        const displayName = `${capitalize(first)} ${capitalize(last)}`.slice(0, 64)
         return { username: candidate, displayName }
       }
 
@@ -70,12 +69,5 @@ export class UserSeedFactory {
     const fallback = `user${this.random.number.int({ min: 1000, max: 9999 })}`
     existing.add(fallback)
     return { username: fallback, displayName: `User ${fallback.slice(-4)}` }
-  }
-
-  private capitalize(value: string): string {
-    if (!value) {
-      return value
-    }
-    return value[0].toUpperCase() + value.slice(1)
   }
 }
