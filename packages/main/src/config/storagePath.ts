@@ -2,22 +2,16 @@ import { join } from 'node:path'
 import { homedir } from 'node:os'
 
 import packageJson from '../../../../package.json'
+import { logger } from './logger'
+
+import type {
+  StoragePathOptions,
+  StoragePathResolverOptions
+} from './storagePath.types'
 
 interface PackageMetadata {
   name?: string
   productName?: string
-}
-
-export interface StoragePathOptions {
-  userDataDir?: string
-  overridePath?: string | null
-}
-
-interface StoragePathResolverOptions {
-  appIdentifier?: string
-  platform?: NodeJS.Platform
-  environment?: NodeJS.ProcessEnv
-  homeDirectoryProvider?: () => string
 }
 
 /**
@@ -43,10 +37,13 @@ export class StoragePathResolver {
    */
   resolve(options: StoragePathOptions = {}): string {
     if (options.overridePath && options.overridePath.trim().length > 0) {
+      logger.debug(`Using custom storage path override: ${options.overridePath}`, 'Storage')
       return options.overridePath
     }
     const baseDir = options.userDataDir ?? this.resolvePlatformUserDataDir()
-    return join(baseDir, 'storage', 'app.sqlite')
+    const resolved = join(baseDir, 'storage', 'app.sqlite')
+    logger.debug(`Resolved storage path to ${resolved}`, 'Storage')
+    return resolved
   }
 
   /**

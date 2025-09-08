@@ -1,5 +1,5 @@
 import { ipcMain } from 'electron'
-import { logger } from '../utils/logger'
+import { logger } from '../config/logger'
 import { AppError, wrapError } from '../errors/appError'
 
 export interface IpcSuccessResponse<T> {

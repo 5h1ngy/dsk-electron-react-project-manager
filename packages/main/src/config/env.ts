@@ -2,11 +2,7 @@ import { existsSync } from 'node:fs'
 import { join } from 'node:path'
 import dotenv from 'dotenv'
 
-export type LogLevelSetting = 'debug' | 'info' | 'warn' | 'error' | 'silent'
-
-export interface Env {
-  logLevel: LogLevelSetting
-}
+import type { Env, LogLevelSetting } from './env.types'
 
 /**
  * Encapsulates access to environment configuration, ensuring we only expose

@@ -27,7 +27,7 @@ const debugMock = jest.fn()
 const rendererMock = jest.fn()
 const suppressMock = jest.fn().mockReturnValue(false)
 
-jest.mock('../utils/logger', () => ({
+jest.mock('../config/logger', () => ({
   logger: {
     info: infoMock,
     warn: warnMock,
