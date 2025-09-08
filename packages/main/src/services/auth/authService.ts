@@ -6,7 +6,7 @@ import { UserRole } from '../db/models/UserRole'
 import { hashPassword, verifyPassword } from './password'
 import { SessionManager, SessionRecord } from './sessionManager'
 import { AuditService } from '../audit/auditService'
-import { AppError, wrapError } from '../errors/appError'
+import { AppError, wrapError } from '../../errors/appError'
 import {
   LoginSchema,
   CreateUserSchema,
@@ -18,8 +18,8 @@ import {
   type RegisterUserInput
 } from './validation'
 import { ROLE_NAMES, type RoleName } from './constants'
-import { logger } from '../config/logger'
-import type { ServiceActor } from '../services/types'
+import { logger } from '../../config/logger'
+import type { ServiceActor } from '../types'
 
 export interface SessionPayload {
   token: string

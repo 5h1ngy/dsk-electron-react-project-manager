@@ -1,12 +1,12 @@
 import { randomUUID } from 'node:crypto'
 import { Op, QueryTypes, type Sequelize, type Transaction } from 'sequelize'
-import { AuditService } from '../audit/auditService'
+import { AuditService } from './audit/auditService'
 import { Project } from '../db/models/Project'
 import { ProjectMember, type ProjectMembershipRole } from '../db/models/ProjectMember'
 import { Task } from '../db/models/Task'
 import { Comment } from '../db/models/Comment'
 import { User } from '../db/models/User'
-import { AppError, wrapError } from '../errors/appError'
+import { AppError, wrapError } from '../config/appError'
 import {
   createTaskSchema,
   updateTaskSchema,

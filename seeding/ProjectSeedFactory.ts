@@ -1,6 +1,6 @@
 import type { Faker } from '@faker-js/faker'
 
-import type { RoleName } from '../packages/main/src/auth/constants'
+import type { RoleName } from '../packages/main/src/services/auth/constants'
 import type { User } from '../packages/main/src/db/models/User'
 import type {
   ProjectSeedDefinition,

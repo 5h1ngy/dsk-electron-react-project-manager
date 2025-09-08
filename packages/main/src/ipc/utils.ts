@@ -1,6 +1,6 @@
 import { ipcMain } from 'electron'
 import { logger } from '../config/logger'
-import { AppError, wrapError } from '../errors/appError'
+import { AppError, wrapError } from '../config/appError'
 
 export interface IpcSuccessResponse<T> {
   ok: true

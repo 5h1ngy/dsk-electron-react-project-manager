@@ -1,4 +1,4 @@
-import type { RoleName } from '../packages/main/src/auth/constants'
+import type { RoleName } from '../packages/main/src/services/auth/constants'
 import type { ProjectMembershipRole } from '../packages/main/src/db/models/ProjectMember'
 import type { TaskPriority, TaskStatus } from '../packages/main/src/db/models/Task'
 import type { User } from '../packages/main/src/db/models/User'

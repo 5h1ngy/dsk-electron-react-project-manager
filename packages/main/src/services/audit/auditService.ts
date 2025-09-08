@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto'
 import { AuditLog } from '../db/models/AuditLog'
-import { logger } from '../config/logger'
+import { logger } from '../../config/logger'
 
 export class AuditService {
   async record(

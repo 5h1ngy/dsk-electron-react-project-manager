@@ -33,7 +33,7 @@ jest.mock('../appContext', () => ({
 }))
 
 import { registerAuthIpc } from './auth'
-import { AppError } from '../errors/appError'
+import { AppError } from '../config/appError'
 
 describe('auth ipc handlers', () => {
   beforeEach(() => {

@@ -14,8 +14,8 @@ import { Task } from '../db/models/Task'
 import { Comment } from '../db/models/Comment'
 import type { DatabaseInitializationOptions } from './database.types'
 import { logger } from './logger'
-import { ROLE_NAMES } from '../auth/constants'
-import { hashPassword } from '../auth/password'
+import { ROLE_NAMES } from '../services/auth/constants'
+import { hashPassword } from '../services/auth/password'
 
 /**
  * Coordinates database creation/migration while keeping the procedural

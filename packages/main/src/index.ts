@@ -1,7 +1,7 @@
 import 'reflect-metadata'
 import { app, BrowserWindow } from 'electron'
-import { createMainWindow } from './windows/mainWindow'
-import { registerSecurityHooks } from './security/hardening'
+import { createMainWindow } from './mainWindow'
+import { registerSecurityHooks } from './services/security/hardening'
 import { initializeDatabase } from './config/database'
 import { resolveAppStoragePath } from './config/storagePath'
 import { registerHealthIpc } from './ipc/health'
@@ -10,7 +10,7 @@ import { registerProjectIpc } from './ipc/project'
 import { registerTaskIpc } from './ipc/task'
 import { logger } from './config/logger'
 import { SystemSetting } from './db/models/SystemSetting'
-import { SESSION_TIMEOUT_MINUTES } from './auth/constants'
+import { SESSION_TIMEOUT_MINUTES } from './services/auth/constants'
 import { appContext } from './appContext'
 
 let mainWindow: BrowserWindow | null = null

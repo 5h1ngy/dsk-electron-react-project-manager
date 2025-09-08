@@ -2,13 +2,13 @@ import { randomUUID } from 'node:crypto'
 import { UniqueConstraintError, Op } from 'sequelize'
 import type { Sequelize, Transaction } from 'sequelize'
 import { z } from 'zod'
-import type { RoleName } from '../auth/constants'
-import { AuditService } from '../audit/auditService'
+import type { RoleName } from './auth/constants'
+import { AuditService } from './audit/auditService'
 import { Project } from '../db/models/Project'
 import { ProjectMember, type ProjectMembershipRole } from '../db/models/ProjectMember'
 import { ProjectTag } from '../db/models/ProjectTag'
 import { User } from '../db/models/User'
-import { AppError, wrapError } from '../errors/appError'
+import { AppError, wrapError } from '../config/appError'
 import {
   createProjectSchema,
   memberRoleSchema,

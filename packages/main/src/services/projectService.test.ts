@@ -4,13 +4,13 @@ import { tmpdir } from 'node:os'
 import { mkdtemp, rm } from 'node:fs/promises'
 
 import { initializeDatabase } from '../config/database'
-import { AuditService } from '../audit/auditService'
+import { AuditService } from './audit/auditService'
 import { ProjectService, type ProjectActor } from './projectService'
 import { ProjectMember } from '../db/models/ProjectMember'
 import { User } from '../db/models/User'
 import { Role } from '../db/models/Role'
 import { UserRole } from '../db/models/UserRole'
-import type { RoleName } from '../auth/constants'
+import type { RoleName } from './auth/constants'
 
 const createActor = (userId: string, roles: RoleName[]): ProjectActor => ({
   userId,

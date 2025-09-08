@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto'
 import { Op, type Transaction } from 'sequelize'
 
-import { hashPassword } from '../packages/main/src/auth/password'
+import { hashPassword } from '../packages/main/src/services/auth/password'
 import { Role } from '../packages/main/src/db/models/Role'
 import { User } from '../packages/main/src/db/models/User'
 import { UserRole } from '../packages/main/src/db/models/UserRole'
