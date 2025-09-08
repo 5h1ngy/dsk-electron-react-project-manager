@@ -15,11 +15,8 @@ import { ProjectTag } from '../db/models/ProjectTag'
 import { Task } from '../db/models/Task'
 import { Comment } from '../db/models/Comment'
 import { migrations } from '../db/migrations'
-
-export interface DatabaseInitializationOptions {
-  resolveStoragePath: () => string
-  logging?: boolean
-}
+import type { DatabaseInitializationOptions } from './database.types'
+import { logger } from './logger'
 
 export const MIGRATIONS_TABLE = 'migrations'
 
@@ -40,6 +37,7 @@ export class DatabaseManager {
    */
   createInstance(): Sequelize {
     const storagePath = this.options.resolveStoragePath()
+    logger.debug(`Opening SQLite storage at ${storagePath}`, 'Database')
     mkdirSync(dirname(storagePath), { recursive: true })
 
     return new Sequelize({
@@ -72,7 +70,9 @@ export class DatabaseManager {
    */
   static async runMigrations(sequelize: Sequelize): Promise<void> {
     const migrator = DatabaseManager.createMigrator(sequelize)
+    logger.debug('Applying pending migrations', 'Database')
     await migrator.up()
+    logger.success('Migrations applied', 'Database')
   }
 
   /**
@@ -83,7 +83,9 @@ export class DatabaseManager {
     const sequelize = this.createInstance()
     await sequelize.authenticate()
     await sequelize.query('PRAGMA foreign_keys = ON;')
+    logger.debug('Foreign key constraints enabled', 'Database')
     await DatabaseManager.runMigrations(sequelize)
+    logger.success('Database ready', 'Database')
     return sequelize
   }
 

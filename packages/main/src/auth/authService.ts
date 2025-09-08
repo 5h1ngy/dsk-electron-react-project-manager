@@ -18,7 +18,7 @@ import {
   type RegisterUserInput
 } from './validation'
 import { ROLE_NAMES, type RoleName } from './constants'
-import { logger } from '../utils/logger'
+import { logger } from '../config/logger'
 import type { ServiceActor } from '../services/types'
 
 export interface SessionPayload {

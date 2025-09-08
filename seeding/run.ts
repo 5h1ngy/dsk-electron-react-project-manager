@@ -1,6 +1,16 @@
+import type { Sequelize } from 'sequelize-typescript'
+
 import { DatabaseManager } from '../packages/main/src/config/database'
 import { resolveAppStoragePath } from '../packages/main/src/config/storagePath'
-import { DevelopmentSeeder } from './devSeed'
+import { DevelopmentSeeder } from './DevelopmentSeeder'
+import type { DevelopmentSeederOptions } from './DevelopmentSeeder.types'
+
+export const seedDevData = async (
+  sequelize: Sequelize,
+  options?: DevelopmentSeederOptions
+): Promise<void> => {
+  await new DevelopmentSeeder(sequelize, options).run()
+}
 
 class SeedCommand {
   async execute(): Promise<void> {
@@ -17,7 +27,7 @@ class SeedCommand {
     const sequelize = await manager.initialize()
 
     try {
-      await new DevelopmentSeeder(sequelize).run()
+      await seedDevData(sequelize)
       console.log('Database seeding completed successfully')
     } finally {
       await sequelize.close()

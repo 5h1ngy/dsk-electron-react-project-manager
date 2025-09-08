@@ -3,7 +3,7 @@ import { join } from 'node:path'
 import { tmpdir } from 'node:os'
 
 import { DatabaseManager } from '../packages/main/src/config/database'
-import { DevelopmentSeeder } from './devSeed'
+import { DevelopmentSeeder } from './DevelopmentSeeder'
 import { Project } from '../packages/main/src/db/models/Project'
 import { Task } from '../packages/main/src/db/models/Task'
 
