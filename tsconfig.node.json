@@ -4,7 +4,6 @@
         "electron.vite.config.*",
         "packages/main/src/**/*",
         "packages/preload/src/**/*",
-        "migrations/**/*",
         "seeding/**/*"
     ],
     "compilerOptions":  {

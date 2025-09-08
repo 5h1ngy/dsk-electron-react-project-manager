@@ -1,9 +1,7 @@
+import { randomUUID } from 'node:crypto'
 import { mkdirSync } from 'node:fs'
 import { dirname } from 'node:path'
 import { Sequelize } from 'sequelize-typescript'
-import { Umzug, SequelizeStorage } from 'umzug'
-import type { QueryInterface } from 'sequelize'
-import { MigrationMeta } from '../db/models/MigrationMeta'
 import { SystemSetting } from '../db/models/SystemSetting'
 import { Role } from '../db/models/Role'
 import { User } from '../db/models/User'
@@ -14,11 +12,10 @@ import { ProjectMember } from '../db/models/ProjectMember'
 import { ProjectTag } from '../db/models/ProjectTag'
 import { Task } from '../db/models/Task'
 import { Comment } from '../db/models/Comment'
-import { migrations } from '../db/migrations'
 import type { DatabaseInitializationOptions } from './database.types'
 import { logger } from './logger'
-
-export const MIGRATIONS_TABLE = 'migrations'
+import { ROLE_NAMES } from '../auth/constants'
+import { hashPassword } from '../auth/password'
 
 /**
  * Coordinates database creation/migration while keeping the procedural
@@ -49,34 +46,7 @@ export class DatabaseManager {
   }
 
   /**
-   * Builds a migrator that shares the Sequelize connection, so migrations run
-   * within the same transaction scope and logging configuration.
-   */
-  private static createMigrator(sequelize: Sequelize): Umzug<QueryInterface> {
-    return new Umzug<QueryInterface>({
-      migrations,
-      context: sequelize.getQueryInterface(),
-      storage: new SequelizeStorage({
-        sequelize,
-        modelName: 'MigrationMeta',
-        tableName: MIGRATIONS_TABLE
-      }),
-      logger: undefined
-    })
-  }
-
-  /**
-   * Applies pending migrations against the provided Sequelize instance.
-   */
-  static async runMigrations(sequelize: Sequelize): Promise<void> {
-    const migrator = DatabaseManager.createMigrator(sequelize)
-    logger.debug('Applying pending migrations', 'Database')
-    await migrator.up()
-    logger.success('Migrations applied', 'Database')
-  }
-
-  /**
-   * Authenticates the connection, enforces FK constraints, runs migrations and
+   * Authenticates the connection, enforces FK constraints, syncs schema and
    * hands the ready-to-use Sequelize instance back to the caller.
    */
   async initialize(): Promise<Sequelize> {
@@ -84,13 +54,14 @@ export class DatabaseManager {
     await sequelize.authenticate()
     await sequelize.query('PRAGMA foreign_keys = ON;')
     logger.debug('Foreign key constraints enabled', 'Database')
-    await DatabaseManager.runMigrations(sequelize)
+    logger.debug('Synchronizing Sequelize models with storage', 'Database')
+    await sequelize.sync()
+    await this.ensureCoreData()
     logger.success('Database ready', 'Database')
     return sequelize
   }
 
   private static readonly models = [
-    MigrationMeta,
     SystemSetting,
     Role,
     User,
@@ -102,13 +73,62 @@ export class DatabaseManager {
     Task,
     Comment
   ]
+
+  private async ensureCoreData(): Promise<void> {
+    await this.ensureRoles()
+    await this.ensureAdminUser()
+  }
+
+  private async ensureRoles(): Promise<void> {
+    const existingRoles = await Role.findAll({
+      where: { name: ROLE_NAMES }
+    })
+    const existingNames = new Set(existingRoles.map((role) => role.name))
+    const missing = ROLE_NAMES.filter((name) => !existingNames.has(name))
+    if (!missing.length) {
+      return
+    }
+    logger.warn(`Missing base roles detected, seeding: ${missing.join(', ')}`, 'Database')
+    await Role.bulkCreate(
+      missing.map((name) => ({
+        id: randomUUID(),
+        name,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      }))
+    )
+  }
+
+  private async ensureAdminUser(): Promise<void> {
+    const existingAdmin = await User.findOne({ where: { username: 'admin' } })
+    if (existingAdmin) {
+      return
+    }
+    const adminRole = await Role.findOne({ where: { name: 'Admin' } })
+    if (!adminRole) {
+      throw new Error('Admin role missing; cannot create default admin user')
+    }
+    const passwordHash = await hashPassword('changeme!')
+    const adminUser = await User.create({
+      id: randomUUID(),
+      username: 'admin',
+      displayName: 'Administrator',
+      passwordHash,
+      isActive: true
+    })
+
+    await UserRole.create({
+      userId: adminUser.id,
+      roleId: adminRole.id,
+      createdAt: new Date()
+    })
+
+    logger.warn('No admin user found; created default admin account (changeme!)', 'Database')
+  }
 }
 
 export const createSequelizeInstance = (options: DatabaseInitializationOptions): Sequelize =>
   new DatabaseManager(options).createInstance()
-
-export const runMigrations = async (sequelize: Sequelize): Promise<void> =>
-  DatabaseManager.runMigrations(sequelize)
 
 export const initializeDatabase = async (
   options: DatabaseInitializationOptions

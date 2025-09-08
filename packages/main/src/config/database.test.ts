@@ -1,13 +1,12 @@
 import { join } from 'node:path'
 import { tmpdir } from 'node:os'
 import { mkdtemp, rm } from 'node:fs/promises'
-import { QueryTypes } from 'sequelize'
-import { initializeDatabase, MIGRATIONS_TABLE } from './database'
+import { initializeDatabase } from './database'
 import { Role } from '../db/models/Role'
 import { User } from '../db/models/User'
 
 describe('database initialization', () => {
-  it('creates sqlite database and runs migrations', async () => {
+  it('creates sqlite database schema and seeds base data', async () => {
     const directory = await mkdtemp(join(tmpdir(), 'dsk-db-'))
     const storagePath = join(directory, 'data.sqlite')
 
@@ -31,22 +30,7 @@ describe('database initialization', () => {
           'project_members',
           'tasks',
           'project_tags',
-          'comments',
-          MIGRATIONS_TABLE
-        ])
-      )
-
-      const executedMigrations = (await sequelize.query(`SELECT name FROM ${MIGRATIONS_TABLE}`, {
-        type: QueryTypes.SELECT
-      })) as Array<{ name: string }>
-
-      const migrationNames = executedMigrations.map((row) => row.name)
-      expect(migrationNames).toEqual(
-        expect.arrayContaining([
-          '0001-create-system-settings',
-          '0002-create-auth-tables',
-          '0003-create-project-task-tables',
-          '0004-add-project-tags'
+          'comments'
         ])
       )
 
