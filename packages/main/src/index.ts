@@ -9,7 +9,7 @@ import { registerAuthIpc } from './ipc/auth'
 import { registerProjectIpc } from './ipc/project'
 import { registerTaskIpc } from './ipc/task'
 import { logger } from './config/logger'
-import { SystemSetting } from './db/models/SystemSetting'
+import { SystemSetting } from './models/SystemSetting'
 import { SESSION_TIMEOUT_MINUTES } from './services/auth/constants'
 import { appContext } from './appContext'
 

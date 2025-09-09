@@ -4,8 +4,8 @@ import { tmpdir } from 'node:os'
 
 import { DatabaseManager } from '../packages/main/src/config/database'
 import { DevelopmentSeeder } from './DevelopmentSeeder'
-import { Project } from '../packages/main/src/db/models/Project'
-import { Task } from '../packages/main/src/db/models/Task'
+import { Project } from '../packages/main/src/models/Project'
+import { Task } from '../packages/main/src/models/Task'
 
 const createTestDatabase = async () => {
   const directory = await mkdtemp(join(tmpdir(), 'dev-seeder-'))

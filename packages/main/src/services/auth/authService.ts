@@ -1,12 +1,12 @@
 import { randomUUID } from 'node:crypto'
 import { UniqueConstraintError } from 'sequelize'
-import { Role } from '../db/models/Role'
-import { User } from '../db/models/User'
-import { UserRole } from '../db/models/UserRole'
+import { Role } from '../../models/Role'
+import { User } from '../../models/User'
+import { UserRole } from '../../models/UserRole'
 import { hashPassword, verifyPassword } from './password'
 import { SessionManager, SessionRecord } from './sessionManager'
 import { AuditService } from '../audit/auditService'
-import { AppError, wrapError } from '../../errors/appError'
+import { AppError, wrapError } from '../../config/appError'
 import {
   LoginSchema,
   CreateUserSchema,
