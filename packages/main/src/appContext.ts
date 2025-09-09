@@ -1,7 +1,7 @@
 import type { Sequelize } from 'sequelize-typescript'
-import { SessionManager } from './auth/sessionManager'
-import { AuditService } from './audit/auditService'
-import { AuthService } from './auth/authService'
+import { SessionManager } from './services/auth/sessionManager'
+import { AuditService } from './services/audit/auditService'
+import { AuthService } from './services/auth/authService'
 import { ProjectService } from './services/projectService'
 import { TaskService } from './services/taskService'
 

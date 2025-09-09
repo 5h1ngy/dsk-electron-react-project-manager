@@ -3,8 +3,8 @@ import type { Sequelize } from 'sequelize-typescript'
 import type { Transaction } from 'sequelize'
 
 import { logger } from '../packages/main/src/config/logger'
-import { Project } from '../packages/main/src/db/models/Project'
-import { User } from '../packages/main/src/db/models/User'
+import { Project } from '../packages/main/src/models/Project'
+import { User } from '../packages/main/src/models/User'
 
 import type {
   DevelopmentSeederOptions,

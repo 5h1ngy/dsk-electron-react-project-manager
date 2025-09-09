@@ -1,10 +1,10 @@
 import { randomUUID } from 'node:crypto'
 import type { Transaction } from 'sequelize'
 
-import { Project } from '../packages/main/src/db/models/Project'
-import { ProjectMember } from '../packages/main/src/db/models/ProjectMember'
-import { ProjectTag } from '../packages/main/src/db/models/ProjectTag'
-import { Task } from '../packages/main/src/db/models/Task'
+import { Project } from '../packages/main/src/models/Project'
+import { ProjectMember } from '../packages/main/src/models/ProjectMember'
+import { ProjectTag } from '../packages/main/src/models/ProjectTag'
+import { Task } from '../packages/main/src/models/Task'
 import { logger } from '../packages/main/src/config/logger'
 
 import type { ProjectSeedDefinition } from './DevelopmentSeeder.types'

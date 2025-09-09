@@ -1,7 +1,7 @@
 import { BrowserWindow } from 'electron'
 import { join } from 'node:path'
 import { is } from '@electron-toolkit/utils'
-import { logger, shouldSuppressDevtoolsMessage } from '../config/logger'
+import { logger, shouldSuppressDevtoolsMessage } from './config/logger'
 
 export const MAIN_WINDOW_OPTIONS: Electron.BrowserWindowConstructorOptions = {
   width: 1280,

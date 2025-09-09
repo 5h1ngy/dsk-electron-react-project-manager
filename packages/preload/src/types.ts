@@ -1,11 +1,11 @@
 import type { HealthResponse } from '@main/ipc/health'
-import type { SessionPayload, UserDTO } from '@main/auth/authService'
+import type { SessionPayload, UserDTO } from '@main/services/auth/authService'
 import type {
   CreateUserInput,
   UpdateUserInput,
   LoginInput,
   RegisterUserInput
-} from '@main/auth/validation'
+} from '@main/services/auth/validation'
 import type {
   CreateProjectInput,
   UpdateProjectInput,
