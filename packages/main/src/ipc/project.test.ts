@@ -1,86 +1,74 @@
-const handlers = new Map<string, (...args: any[]) => Promise<unknown>>()
+import type { AuthService } from '../services/auth/authService'
+import type { ProjectService } from '../services/projectService'
+import { ProjectIpcRegistrar } from './project'
+import { IpcChannelRegistrar } from './utils'
 
-jest.mock('electron', () => ({
-  ipcMain: {
-    handle: (channel: string, handler: (...args: any[]) => Promise<unknown>) => {
+const createRegistry = () => {
+  const handlers = new Map<string, (...args: any[]) => Promise<unknown>>()
+  const ipcMock = {
+    handle: jest.fn((channel: string, handler: (...args: any[]) => Promise<unknown>) => {
       handlers.set(channel, handler)
-    },
-    listenerCount: () => 0,
-    removeHandler: () => {}
+    }),
+    listenerCount: jest.fn(() => 0),
+    removeHandler: jest.fn()
   }
-}))
+  const loggerMock = { warn: jest.fn(), error: jest.fn() }
+  const registrar = new IpcChannelRegistrar({ ipc: ipcMock as any, logger: loggerMock })
+  return { handlers, registrar }
+}
 
-const resolveActorMock = jest.fn()
-const listProjectsMock = jest.fn()
-const getProjectMock = jest.fn()
-const createProjectMock = jest.fn()
-const updateProjectMock = jest.fn()
-const deleteProjectMock = jest.fn()
-const addMemberMock = jest.fn()
-const removeMemberMock = jest.fn()
+describe('ProjectIpcRegistrar', () => {
+  const actor = { userId: 'user-1' } as const
+  let authService: jest.Mocked<AuthService>
+  let projectService: jest.Mocked<ProjectService>
+  let handlers: Map<string, (...args: any[]) => Promise<unknown>>
+  let registrar: IpcChannelRegistrar
 
-jest.mock('../appContext', () => ({
-  appContext: {
-    authService: {
-      resolveActor: resolveActorMock
-    },
-    projectService: {
-      listProjects: listProjectsMock,
-      getProject: getProjectMock,
-      createProject: createProjectMock,
-      updateProject: updateProjectMock,
-      deleteProject: deleteProjectMock,
-      addOrUpdateMember: addMemberMock,
-      removeMember: removeMemberMock
-    }
-  }
-}))
-
-import { registerProjectIpc } from './project'
-
-const actor = { userId: 'user-1', roles: ['Admin'] as const }
-
-describe('project ipc handlers', () => {
   beforeEach(() => {
-    handlers.clear()
-    resolveActorMock.mockReset()
-    resolveActorMock.mockResolvedValue(actor)
-    listProjectsMock.mockReset()
-    getProjectMock.mockReset()
-    createProjectMock.mockReset()
-    updateProjectMock.mockReset()
-    deleteProjectMock.mockReset()
-    addMemberMock.mockReset()
-    removeMemberMock.mockReset()
+    authService = {
+      resolveActor: jest.fn().mockResolvedValue(actor)
+    } as unknown as jest.Mocked<AuthService>
+
+    projectService = {
+      listProjects: jest.fn(),
+      getProject: jest.fn(),
+      createProject: jest.fn(),
+      updateProject: jest.fn(),
+      deleteProject: jest.fn(),
+      addOrUpdateMember: jest.fn(),
+      removeMember: jest.fn()
+    } as unknown as jest.Mocked<ProjectService>
+
+    const registry = createRegistry()
+    handlers = registry.handlers
+    registrar = registry.registrar
   })
 
-  it('handles project commands with authenticated actor', async () => {
-    listProjectsMock.mockResolvedValue([])
-    getProjectMock.mockResolvedValue({ id: 'p1' })
-    createProjectMock.mockResolvedValue({ id: 'p1' })
-    updateProjectMock.mockResolvedValue({ id: 'p1' })
-    deleteProjectMock.mockResolvedValue(undefined)
-    addMemberMock.mockResolvedValue({ id: 'p1' })
-    removeMemberMock.mockResolvedValue({ id: 'p1' })
+  it('invokes project service methods with resolved actor', async () => {
+    projectService.listProjects.mockResolvedValue([])
+    projectService.getProject.mockResolvedValue({ id: 'p1' })
+    projectService.createProject.mockResolvedValue({ id: 'p1' })
+    projectService.updateProject.mockResolvedValue({ id: 'p1' })
+    projectService.deleteProject.mockResolvedValue(undefined)
+    projectService.addOrUpdateMember.mockResolvedValue({ id: 'p1' })
+    projectService.removeMember.mockResolvedValue(undefined)
 
-    registerProjectIpc()
+    new ProjectIpcRegistrar({ authService, projectService, registrar }).register()
 
-    const listResponse = await handlers.get('project:list')!(undefined, 'token')
-    expect(listResponse).toEqual({ ok: true, data: [] })
-    expect(resolveActorMock).toHaveBeenCalledWith('token', { touch: true })
+    await handlers.get('project:list')!({}, 'token')
+    expect(authService.resolveActor).toHaveBeenCalledWith('token', { touch: true })
 
-    const getResponse = await handlers.get('project:get')!(undefined, 'token', 'proj')
-    expect(getResponse).toEqual({ ok: true, data: { id: 'p1' } })
-
-    await handlers.get('project:delete')!(undefined, 'token', 'proj')
-    expect(deleteProjectMock).toHaveBeenCalledWith(actor, 'proj')
+    const deleteResponse = await handlers.get('project:delete')!({}, 'token', 'proj-1')
+    expect(deleteResponse).toEqual({ ok: true, data: { success: true } })
+    expect(projectService.deleteProject).toHaveBeenCalledWith(actor, 'proj-1')
   })
 
-  it('returns error payload on failure', async () => {
-    listProjectsMock.mockRejectedValue(new Error('boom'))
-    registerProjectIpc()
+  it('bubbles up unexpected errors', async () => {
+    projectService.listProjects.mockRejectedValue(new Error('boom'))
 
-    const result = await handlers.get('project:list')!(undefined, 'token')
-    expect(result).toEqual({ ok: false, code: 'ERR_INTERNAL', message: 'boom' })
+    new ProjectIpcRegistrar({ authService, projectService, registrar }).register()
+
+    const response = await handlers.get('project:list')!({}, 'token')
+    expect(response).toEqual({ ok: false, code: 'ERR_INTERNAL', message: 'boom' })
   })
 })

@@ -1,55 +1,63 @@
-import { registerHealthIpc } from './health'
+import type { Sequelize } from 'sequelize-typescript'
 
-const handlerRegistry = new Map<string, () => Promise<unknown>>()
+import { HealthIpcRegistrar, HEALTH_CHANNEL } from './health'
+import { IpcChannelRegistrar } from './utils'
 
-jest.mock('electron', () => ({
-  app: {
-    getVersion: () => '1.0.0'
-  },
-  ipcMain: {
-    listenerCount: jest.fn().mockReturnValue(0),
-    removeHandler: jest.fn(),
-    handle: (channel: string, handler: () => Promise<unknown>) => {
-      handlerRegistry.set(channel, handler)
-    }
+const createRegistry = () => {
+  const handlers = new Map<string, (...args: any[]) => Promise<unknown>>()
+  const ipcMock = {
+    handle: jest.fn((channel: string, handler: (...args: any[]) => Promise<unknown>) => {
+      handlers.set(channel, handler)
+    }),
+    listenerCount: jest.fn(() => 0),
+    removeHandler: jest.fn()
   }
-}))
+  const loggerMock = { warn: jest.fn(), error: jest.fn() }
+  const registrar = new IpcChannelRegistrar({ ipc: ipcMock as any, logger: loggerMock })
+  return { handlers, registrar }
+}
 
-describe('registerHealthIpc', () => {
+describe('HealthIpcRegistrar', () => {
+  let sequelize: { authenticate: jest.Mock } & Partial<Sequelize>
+  let handlers: Map<string, (...args: any[]) => Promise<unknown>>
+  let registrar: IpcChannelRegistrar
+  const appRef = { getVersion: () => '1.2.3' }
+
   beforeEach(() => {
-    handlerRegistry.clear()
-  })
-
-  it('returns a healthy payload when the database authenticates', async () => {
-    const sequelize = {
+    sequelize = {
       authenticate: jest.fn().mockResolvedValue(undefined)
-    } as any
+    } as unknown as { authenticate: jest.Mock } & Partial<Sequelize>
 
-    registerHealthIpc(sequelize)
-
-    const handler = handlerRegistry.get('system:health')
-    expect(handler).toBeDefined()
-
-    const response = (await handler?.()) as { ok: boolean; data: { version: string } }
-
-    expect(response.ok).toBe(true)
-    expect(response.data.version).toBe('1.0.0')
+    const registry = createRegistry()
+    handlers = registry.handlers
+    registrar = registry.registrar
   })
 
-  it('returns an error payload when authentication fails', async () => {
-    const sequelize = {
-      authenticate: jest.fn().mockRejectedValue(new Error('boom'))
-    } as any
+  it('reports healthy status when authentication succeeds', async () => {
+    new HealthIpcRegistrar({ sequelize: sequelize as Sequelize, appRef, registrar }).register()
 
-    registerHealthIpc(sequelize)
+    const response = await handlers.get(HEALTH_CHANNEL)!({})
 
-    const handler = handlerRegistry.get('system:health')
-    expect(handler).toBeDefined()
+    expect(response).toMatchObject({
+      ok: true,
+      data: {
+        status: 'healthy',
+        version: '1.2.3'
+      }
+    })
+    expect(sequelize.authenticate).toHaveBeenCalledTimes(1)
+  })
 
-    const response = (await handler?.()) as { ok: boolean; message: string; code: string }
+  it('returns an error response when authentication fails', async () => {
+    sequelize.authenticate.mockRejectedValue(new Error('boom'))
 
-    expect(response.ok).toBe(false)
-    expect(response.code).toBe('ERR_INTERNAL')
-    expect(response.message).toBe('boom')
+    new HealthIpcRegistrar({ sequelize: sequelize as Sequelize, appRef, registrar }).register()
+
+    const response = await handlers.get(HEALTH_CHANNEL)!({})
+    expect(response).toEqual({
+      ok: false,
+      code: 'ERR_INTERNAL',
+      message: 'boom'
+    })
   })
 })

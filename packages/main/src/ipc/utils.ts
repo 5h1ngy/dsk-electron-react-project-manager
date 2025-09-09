@@ -15,37 +15,66 @@ export interface IpcErrorResponse {
 
 export type IpcResponse<T> = IpcSuccessResponse<T> | IpcErrorResponse
 
-export const success = <T>(data: T): IpcSuccessResponse<T> => ({
-  ok: true,
-  data
-})
+export interface IpcChannelRegistrarOptions {
+  ipc?: Pick<typeof ipcMain, 'listenerCount' | 'removeHandler' | 'handle'>
+  logger?: Pick<typeof logger, 'warn' | 'error'>
+}
 
-export const error = (appError: AppError): IpcErrorResponse => ({
-  ok: false,
-  code: appError.code,
-  message: appError.message
-})
-
-export const registerIpcHandler = <Args extends unknown[], Result>(
-  channel: string,
-  handler: (...args: Args) => Promise<Result>
-): void => {
-  if (ipcMain.listenerCount(channel) > 0) {
-    ipcMain.removeHandler(channel)
+class IpcResponseFactory {
+  success<T>(data: T): IpcSuccessResponse<T> {
+    return {
+      ok: true,
+      data
+    }
   }
 
-  ipcMain.handle(channel, async (_event, ...args: Args) => {
-    try {
-      const data = await handler(...args)
-      return success(data)
-    } catch (unknownError) {
-      const appError = wrapError(unknownError)
-      if (appError.code === 'ERR_INTERNAL') {
-        logger.error(appError.message, 'IPC', appError)
-      } else {
-        logger.warn(appError.message, 'IPC')
-      }
-      return error(appError)
+  error(appError: AppError): IpcErrorResponse {
+    return {
+      ok: false,
+      code: appError.code,
+      message: appError.message
     }
-  })
+  }
 }
+
+export class IpcChannelRegistrar {
+  private readonly ipc: Pick<typeof ipcMain, 'listenerCount' | 'removeHandler' | 'handle'>
+  private readonly logger: Pick<typeof logger, 'warn' | 'error'>
+  private readonly responses: IpcResponseFactory
+
+  constructor(options: IpcChannelRegistrarOptions = {}) {
+    this.ipc = options.ipc ?? ipcMain
+    this.logger = options.logger ?? logger
+    this.responses = new IpcResponseFactory()
+  }
+
+  register<Args extends unknown[], Result>(
+    channel: string,
+    handler: (...args: Args) => Promise<Result>
+  ): void {
+    if (this.ipc.listenerCount(channel) > 0) {
+      this.ipc.removeHandler(channel)
+    }
+
+    this.ipc.handle(channel, async (_event, ...args: Args) => {
+      try {
+        const data = await handler(...args)
+        return this.responses.success(data)
+      } catch (unknownError) {
+        const appError = wrapError(unknownError)
+        this.logFailure(appError)
+        return this.responses.error(appError)
+      }
+    })
+  }
+
+  private logFailure(appError: AppError): void {
+    if (appError.code === 'ERR_INTERNAL') {
+      this.logger.error(appError.message, 'IPC', appError)
+      return
+    }
+    this.logger.warn(appError.message, 'IPC')
+  }
+}
+
+export const ipcChannelRegistrar = new IpcChannelRegistrar()

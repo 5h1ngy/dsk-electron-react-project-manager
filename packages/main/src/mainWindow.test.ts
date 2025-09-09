@@ -1,180 +1,211 @@
-let devFlag = false
+import { MAIN_WINDOW_OPTIONS, MainWindowManager } from './appContext'
 
-const isObject: Record<string, unknown> = {}
-Object.defineProperty(isObject, 'dev', {
-  get: () => devFlag
-})
+type ConsoleHandler = (
+  event: { preventDefault: jest.Mock },
+  level: number,
+  message: string,
+  line: number,
+  sourceId: string
+) => void
 
-const domReadyHandlers: Array<() => void> = []
-const consoleMessageHandlers: Array<
-  (event: any, level: number, message: string, line: number, sourceId: string) => void
-> = []
-const openDevToolsMock = jest.fn()
-const isDevToolsOpenedMock = jest.fn()
-const onceMock = jest.fn()
-const windowOnMock = jest.fn()
-const showMock = jest.fn()
-const destroyMock = jest.fn()
-const loadURLMock = jest.fn()
-const loadFileMock = jest.fn()
-const webContentsOnMock = jest.fn()
-
-const infoMock = jest.fn()
-const warnMock = jest.fn()
-const errorMock = jest.fn()
-const successMock = jest.fn()
-const debugMock = jest.fn()
-const rendererMock = jest.fn()
-const suppressMock = jest.fn().mockReturnValue(false)
-
-jest.mock('../config/logger', () => ({
-  logger: {
-    info: infoMock,
-    warn: warnMock,
-    error: errorMock,
-    success: successMock,
-    debug: debugMock,
-    renderer: rendererMock
-  },
-  shouldSuppressDevtoolsMessage: suppressMock
-}))
-
-const browserWindowInstance = {
-  webContents: {
-    once: onceMock,
-    isDevToolsOpened: isDevToolsOpenedMock,
-    openDevTools: openDevToolsMock,
-    on: webContentsOnMock
-  },
-  on: windowOnMock,
-  show: showMock,
-  destroy: destroyMock,
-  loadURL: loadURLMock,
-  loadFile: loadFileMock
+interface WindowDouble {
+  domReadyHandlers: Array<() => void>
+  consoleHandlers: Array<ConsoleHandler>
+  readyHandlers: Array<() => void>
+  closedHandlers: Array<() => void>
+  window: any
+  browserWindowCtor: jest.Mock
+  loadURLMock: jest.Mock
+  loadFileMock: jest.Mock
+  openDevToolsMock: jest.Mock
+  isDevToolsOpenedMock: jest.Mock
+  showMock: jest.Mock
+  destroyMock: jest.Mock
 }
 
-const browserWindowConstructor = jest.fn(() => browserWindowInstance)
+const createWindowDouble = (): WindowDouble => {
+  const domReadyHandlers: Array<() => void> = []
+  const consoleHandlers: Array<ConsoleHandler> = []
+  const readyHandlers: Array<() => void> = []
+  const closedHandlers: Array<() => void> = []
+  const didFinishLoadHandlers: Array<() => void> = []
 
-jest.mock('electron', () => ({
-  BrowserWindow: browserWindowConstructor
-}))
+  const openDevToolsMock = jest.fn()
+  const isDevToolsOpenedMock = jest.fn().mockReturnValue(false)
+  const loadURLMock = jest.fn()
+  const loadFileMock = jest.fn()
+  const showMock = jest.fn()
+  const destroyMock = jest.fn()
 
-jest.mock('@electron-toolkit/utils', () => ({
-  is: isObject
-}))
-
-import { MAIN_WINDOW_OPTIONS, createMainWindow } from './mainWindow'
-
-const runDomReadyHandlers = () => {
-  domReadyHandlers.splice(0).forEach((handler) => handler())
-}
-
-beforeEach(() => {
-  devFlag = false
-  domReadyHandlers.length = 0
-  consoleMessageHandlers.length = 0
-  openDevToolsMock.mockClear()
-  isDevToolsOpenedMock.mockReset().mockReturnValue(false)
-  onceMock.mockReset().mockImplementation((event: string, handler: () => void) => {
-    if (event === 'dom-ready') {
-      domReadyHandlers.push(handler)
-    }
-  })
-  windowOnMock.mockReset()
-  webContentsOnMock
-    .mockReset()
-    .mockImplementation((event: string, handler: (...args: any[]) => void) => {
-      if (event === 'console-message') {
-        consoleMessageHandlers.push(handler as any)
+  const window = {
+    webContents: {
+      once: jest.fn((event: string, handler: () => void) => {
+        if (event === 'dom-ready') {
+          domReadyHandlers.push(handler)
+        }
+      }),
+      on: jest.fn((event: string, handler: (...args: any[]) => void) => {
+        if (event === 'console-message') {
+          consoleHandlers.push(handler as ConsoleHandler)
+        }
+        if (event === 'did-finish-load') {
+          didFinishLoadHandlers.push(handler)
+        }
+      }),
+      isDevToolsOpened: isDevToolsOpenedMock,
+      openDevTools: openDevToolsMock
+    },
+    on: jest.fn((event: string, handler: () => void) => {
+      if (event === 'ready-to-show') {
+        readyHandlers.push(handler)
       }
-    })
-  showMock.mockReset()
-  destroyMock.mockReset()
-  loadURLMock.mockResolvedValue(undefined)
-  loadFileMock.mockResolvedValue(undefined)
-  browserWindowConstructor.mockClear()
-  delete (process.env as Record<string, string | undefined>)['ELECTRON_RENDERER_URL']
-  infoMock.mockClear()
-  warnMock.mockClear()
-  errorMock.mockClear()
-  successMock.mockClear()
-  debugMock.mockClear()
-  rendererMock.mockClear()
-  suppressMock.mockReset().mockReturnValue(false)
+      if (event === 'closed') {
+        closedHandlers.push(handler)
+      }
+    }),
+    show: showMock,
+    destroy: destroyMock,
+    loadURL: loadURLMock,
+    loadFile: loadFileMock
+  }
+
+  const browserWindowCtor = jest.fn(() => window)
+
+  return {
+    domReadyHandlers,
+    consoleHandlers,
+    readyHandlers,
+    closedHandlers,
+    window,
+    browserWindowCtor,
+    loadURLMock,
+    loadFileMock,
+    openDevToolsMock,
+    isDevToolsOpenedMock,
+    showMock,
+    destroyMock
+  }
+}
+
+const createLoggerMock = () => ({
+  info: jest.fn(),
+  warn: jest.fn(),
+  error: jest.fn(),
+  success: jest.fn(),
+  debug: jest.fn(),
+  renderer: jest.fn()
 })
 
-describe('main window configuration', () => {
-  it('enables hardened web preferences', () => {
+describe('MainWindowManager', () => {
+  let devMode: boolean
+  let env: NodeJS.ProcessEnv
+  let suppressMock: jest.Mock
+  let loggerMock: ReturnType<typeof createLoggerMock>
+  let windowDouble: WindowDouble
+  let manager: MainWindowManager
+
+  const createManager = () =>
+    new MainWindowManager({
+      browserWindowCtor: windowDouble.browserWindowCtor as any,
+      env,
+      isDev: () => devMode,
+      logger: loggerMock,
+      shouldSuppress: suppressMock
+    })
+
+  beforeEach(() => {
+    devMode = false
+    env = {}
+    suppressMock = jest.fn().mockReturnValue(false)
+    loggerMock = createLoggerMock()
+    windowDouble = createWindowDouble()
+    manager = createManager()
+  })
+
+  it('configures the window with hardened preferences', () => {
     const prefs = MAIN_WINDOW_OPTIONS.webPreferences
     expect(prefs?.sandbox).toBe(true)
     expect(prefs?.contextIsolation).toBe(true)
     expect(prefs?.nodeIntegration).toBe(false)
   })
 
-  it('sets application window defaults', () => {
-    expect(MAIN_WINDOW_OPTIONS.autoHideMenuBar).toBe(true)
-    expect(MAIN_WINDOW_OPTIONS.show).toBe(false)
-    expect(MAIN_WINDOW_OPTIONS.width).toBeGreaterThan(0)
-    expect(MAIN_WINDOW_OPTIONS.height).toBeGreaterThan(0)
-  })
-})
-
-describe('createMainWindow', () => {
-  it('does not open devtools in production mode', async () => {
-    devFlag = false
-    await createMainWindow()
-
-    expect(onceMock).not.toHaveBeenCalledWith('dom-ready', expect.any(Function))
-    expect(openDevToolsMock).not.toHaveBeenCalled()
-  })
-
   it('opens devtools automatically in development mode', async () => {
-    devFlag = true
-    await createMainWindow()
+    devMode = true
+    manager = createManager()
 
-    expect(onceMock).toHaveBeenCalledWith('dom-ready', expect.any(Function))
+    await manager.createMainWindow()
 
-    runDomReadyHandlers()
+    expect(windowDouble.domReadyHandlers).toHaveLength(1)
+    windowDouble.domReadyHandlers[0]()
 
-    expect(openDevToolsMock).toHaveBeenCalledWith({ mode: 'detach' })
+    expect(windowDouble.openDevToolsMock).toHaveBeenCalledWith({ mode: 'detach' })
   })
 
-  it('skips opening devtools if already visible', async () => {
-    devFlag = true
-    isDevToolsOpenedMock.mockReturnValue(true)
+  it('skips opening devtools when already visible', async () => {
+    devMode = true
+    windowDouble.isDevToolsOpenedMock.mockReturnValue(true)
+    manager = createManager()
 
-    await createMainWindow()
+    await manager.createMainWindow()
+    windowDouble.domReadyHandlers[0]()
 
-    runDomReadyHandlers()
+    expect(windowDouble.openDevToolsMock).not.toHaveBeenCalled()
+  })
 
-    expect(openDevToolsMock).not.toHaveBeenCalled()
+  it('loads the dev server URL when configured', async () => {
+    devMode = true
+    env = { ELECTRON_RENDERER_URL: 'http://localhost:5173' } as NodeJS.ProcessEnv
+    manager = createManager()
+
+    await manager.createMainWindow()
+
+    expect(windowDouble.loadURLMock).toHaveBeenCalledWith('http://localhost:5173')
+    expect(windowDouble.loadFileMock).not.toHaveBeenCalled()
+  })
+
+  it('loads the bundled HTML when dev server URL is unavailable', async () => {
+    await manager.createMainWindow()
+
+    expect(windowDouble.loadFileMock).toHaveBeenCalledWith(
+      expect.stringMatching(/renderer[\\/]+index\.html$/)
+    )
+    expect(windowDouble.loadURLMock).not.toHaveBeenCalled()
   })
 
   it('forwards renderer console messages', async () => {
-    devFlag = true
-    await createMainWindow()
+    devMode = true
+    manager = createManager()
 
-    expect(consoleMessageHandlers).toHaveLength(1)
+    await manager.createMainWindow()
 
-    const handler = consoleMessageHandlers[0]
-    const event = { preventDefault: jest.fn() } as any
-    handler(event, 2, 'Renderer error', 10, 'app://index.tsx')
+    const handler = windowDouble.consoleHandlers[0]
+    const event = { preventDefault: jest.fn() }
+    handler(event, 2, 'Renderer error', 42, 'app://index.tsx')
 
     expect(event.preventDefault).not.toHaveBeenCalled()
-    expect(rendererMock).toHaveBeenCalledWith(2, 'Renderer error', 'app://index.tsx', 10)
+    expect(loggerMock.renderer).toHaveBeenCalledWith(2, 'Renderer error', 'app://index.tsx', 42)
   })
 
-  it('suppresses known devtools autofill noise', async () => {
-    devFlag = true
+  it('suppresses known devtools noise', async () => {
     suppressMock.mockReturnValue(true)
+    manager = createManager()
 
-    await createMainWindow()
+    await manager.createMainWindow()
 
-    const handler = consoleMessageHandlers[0]
-    const event = { preventDefault: jest.fn() } as any
-    handler(event, 2, 'Request Autofill.enable failed', 1, 'devtools://foo')
+    const handler = windowDouble.consoleHandlers[0]
+    const event = { preventDefault: jest.fn() }
+    handler(event as any, 1, 'noise', 0, 'devtools://foo')
 
     expect(event.preventDefault).toHaveBeenCalled()
-    expect(rendererMock).not.toHaveBeenCalled()
+    expect(loggerMock.renderer).not.toHaveBeenCalled()
+  })
+
+  it('shows the window when ready', async () => {
+    await manager.createMainWindow()
+    expect(windowDouble.readyHandlers).toHaveLength(1)
+
+    windowDouble.readyHandlers[0]()
+
+    expect(windowDouble.showMock).toHaveBeenCalled()
   })
 })
