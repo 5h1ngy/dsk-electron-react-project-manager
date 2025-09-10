@@ -1,35 +1,59 @@
+import type { AuthService } from '../services/auth/authService'
 import { appContext } from '../appContext'
-import { registerIpcHandler } from './utils'
+import { IpcChannelRegistrar, ipcChannelRegistrar } from './utils'
+
+export interface AuthIpcDependencies {
+  authService: AuthService
+  registrar: IpcChannelRegistrar
+}
+
+export class AuthIpcRegistrar {
+  private readonly authService: AuthService
+  private readonly registrar: IpcChannelRegistrar
+
+  constructor(dependencies: AuthIpcDependencies) {
+    this.authService = dependencies.authService
+    this.registrar = dependencies.registrar
+  }
+
+  register(): void {
+    this.registrar.register('auth:login', async (payload: unknown) => {
+      return await this.authService.login(payload)
+    })
+
+    this.registrar.register('auth:register', async (payload: unknown) => {
+      return await this.authService.register(payload)
+    })
+
+    this.registrar.register('auth:logout', async (token: string) => {
+      await this.authService.logout(token)
+      return { success: true }
+    })
+
+    this.registrar.register('auth:session', async (token: string) => {
+      return await this.authService.currentSession(token)
+    })
+
+    this.registrar.register('auth:list-users', async (token: string) => {
+      return await this.authService.listUsers(token)
+    })
+
+    this.registrar.register('auth:create-user', async (token: string, payload: unknown) => {
+      return await this.authService.createUser(token, payload)
+    })
+
+    this.registrar.register(
+      'auth:update-user',
+      async (token: string, userId: string, payload: unknown) => {
+        return await this.authService.updateUser(token, userId, payload)
+      }
+    )
+  }
+}
 
 export const registerAuthIpc = (): void => {
-  const { authService } = appContext
-
-  registerIpcHandler('auth:login', async (payload: unknown) => {
-    return await authService.login(payload)
-  })
-
-  registerIpcHandler('auth:register', async (payload: unknown) => {
-    return await authService.register(payload)
-  })
-
-  registerIpcHandler('auth:logout', async (token: string) => {
-    await authService.logout(token)
-    return { success: true }
-  })
-
-  registerIpcHandler('auth:session', async (token: string) => {
-    return await authService.currentSession(token)
-  })
-
-  registerIpcHandler('auth:list-users', async (token: string) => {
-    return await authService.listUsers(token)
-  })
-
-  registerIpcHandler('auth:create-user', async (token: string, payload: unknown) => {
-    return await authService.createUser(token, payload)
-  })
-
-  registerIpcHandler('auth:update-user', async (token: string, userId: string, payload: unknown) => {
-    return await authService.updateUser(token, userId, payload)
-  })
+  new AuthIpcRegistrar({
+    authService: appContext.authService,
+    registrar: ipcChannelRegistrar
+  }).register()
 }

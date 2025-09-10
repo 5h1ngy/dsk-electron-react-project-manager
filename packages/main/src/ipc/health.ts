@@ -1,5 +1,9 @@
-import { app, ipcMain } from 'electron'
+import type { App } from 'electron'
+import { app } from 'electron'
 import type { Sequelize } from 'sequelize-typescript'
+
+import { AppError } from '../config/appError'
+import { IpcChannelRegistrar, ipcChannelRegistrar } from './utils'
 
 export interface HealthStatus {
   status: 'healthy'
@@ -8,38 +12,50 @@ export interface HealthStatus {
   uptimeSeconds: number
 }
 
-export type HealthOkResponse = { ok: true; data: HealthStatus }
-export type HealthErrorResponse = { ok: false; code: string; message: string }
-export type HealthResponse = HealthOkResponse | HealthErrorResponse
+export const HEALTH_CHANNEL = 'system:health'
 
-const CHANNEL = 'system:health'
+export interface HealthIpcDependencies {
+  sequelize: Sequelize
+  appRef: Pick<App, 'getVersion'>
+  registrar: IpcChannelRegistrar
+  channel?: string
+}
 
-export const registerHealthIpc = (sequelize: Sequelize): void => {
-  if (ipcMain.listenerCount(CHANNEL) > 0) {
-    ipcMain.removeHandler(CHANNEL)
+export class HealthIpcRegistrar {
+  private readonly sequelize: Sequelize
+  private readonly appRef: Pick<App, 'getVersion'>
+  private readonly registrar: IpcChannelRegistrar
+  private readonly channel: string
+
+  constructor(dependencies: HealthIpcDependencies) {
+    this.sequelize = dependencies.sequelize
+    this.appRef = dependencies.appRef
+    this.registrar = dependencies.registrar
+    this.channel = dependencies.channel ?? HEALTH_CHANNEL
   }
 
-  ipcMain.handle(CHANNEL, async (): Promise<HealthResponse> => {
-    try {
-      await sequelize.authenticate()
-
-      return {
-        ok: true,
-        data: {
+  register(): void {
+    this.registrar.register(this.channel, async (): Promise<HealthStatus> => {
+      try {
+        await this.sequelize.authenticate()
+        return {
           status: 'healthy',
-          version: app.getVersion(),
+          version: this.appRef.getVersion(),
           timestamp: new Date().toISOString(),
           uptimeSeconds: process.uptime()
         }
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'Unknown error'
+        throw new AppError('ERR_INTERNAL', message, { cause: error })
       }
-    } catch (error) {
-      const message = error instanceof Error ? error.message : 'Unknown error'
+    })
+  }
+}
 
-      return {
-        ok: false,
-        code: 'ERR_INTERNAL',
-        message
-      }
-    }
-  })
+export const registerHealthIpc = (sequelize: Sequelize): void => {
+  new HealthIpcRegistrar({
+    sequelize,
+    appRef: app,
+    registrar: ipcChannelRegistrar
+  }).register()
 }
