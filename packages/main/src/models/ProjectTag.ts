@@ -1,5 +1,5 @@
 import { Column, DataType, ForeignKey, Model, Table, BelongsTo } from 'sequelize-typescript'
-import { Project } from './Project'
+import { Project } from '@main/models/Project'
 
 @Table({
   tableName: 'project_tags',

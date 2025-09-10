@@ -1,4 +1,4 @@
-import { darken, lighten } from '../utils/color'
+import { darken, lighten } from '@renderer/theme/utils/color'
 
 export interface SharedTokenOverrides {
   colorPrimary: string

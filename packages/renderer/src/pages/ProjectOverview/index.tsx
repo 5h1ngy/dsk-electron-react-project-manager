@@ -2,8 +2,8 @@ import { Card, Col, Empty, Row, Space, Statistic } from 'antd'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { ProjectDetailsCard } from '../Projects/components/ProjectDetailsCard'
-import { useProjectRouteContext } from '../ProjectLayout'
+import { ProjectDetailsCard } from '@renderer/pages/Projects/components/ProjectDetailsCard'
+import { useProjectRouteContext } from '@renderer/pages/ProjectLayout'
 
 export const ProjectOverviewPage = () => {
   const { project, projectLoading, tasks } = useProjectRouteContext()

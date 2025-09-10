@@ -7,10 +7,10 @@ import {
   Table,
   ForeignKey
 } from 'sequelize-typescript'
-import { User } from './User'
-import { ProjectMember } from './ProjectMember'
-import { Task } from './Task'
-import { ProjectTag } from './ProjectTag'
+import { User } from '@main/models/User'
+import { ProjectMember } from '@main/models/ProjectMember'
+import { Task } from '@main/models/Task'
+import { ProjectTag } from '@main/models/ProjectTag'
 
 @Table({
   tableName: 'projects',

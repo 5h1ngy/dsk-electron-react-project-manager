@@ -2,8 +2,8 @@ import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
 
 import { i18n } from '@renderer/i18n/config'
 
-import { persistLocale, readInitialLocale } from './helpers'
-import type { LocaleState, SupportedLocale } from './types'
+import { persistLocale, readInitialLocale } from '@renderer/store/slices/locale/helpers'
+import type { LocaleState, SupportedLocale } from '@renderer/store/slices/locale/types'
 
 const initialState: LocaleState = {
   locale: readInitialLocale()

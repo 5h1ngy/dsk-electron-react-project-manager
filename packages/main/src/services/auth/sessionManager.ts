@@ -1,5 +1,5 @@
 import { randomBytes } from 'node:crypto'
-import { SESSION_TIMEOUT_MINUTES, SESSION_TOKEN_BYTES } from './constants'
+import { SESSION_TIMEOUT_MINUTES, SESSION_TOKEN_BYTES } from '@main/services/auth/constants'
 
 export interface SessionRecord {
   token: string

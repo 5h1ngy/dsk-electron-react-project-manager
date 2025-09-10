@@ -8,11 +8,11 @@ import { useAppDispatch, useAppSelector } from '@renderer/store/hooks'
 import { selectCurrentUser } from '@renderer/store/slices/auth/selectors'
 import { fetchProjects, selectProjects, selectProjectsStatus } from '@renderer/store/slices/projects'
 
-import { CreateUserModal } from './components/CreateUserModal'
-import { EditUserModal } from './components/EditUserModal'
-import { UserTable } from './components/UserTable'
-import { ActionBar } from './components/ActionBar'
-import { useUserManagement } from './hooks/useUserManagement'
+import { CreateUserModal } from '@renderer/pages/Dashboard/components/CreateUserModal'
+import { EditUserModal } from '@renderer/pages/Dashboard/components/EditUserModal'
+import { UserTable } from '@renderer/pages/Dashboard/components/UserTable'
+import { ActionBar } from '@renderer/pages/Dashboard/components/ActionBar'
+import { useUserManagement } from '@renderer/pages/Dashboard/hooks/useUserManagement'
 
 const Dashboard = (): JSX.Element => {
   const { t } = useTranslation('dashboard')

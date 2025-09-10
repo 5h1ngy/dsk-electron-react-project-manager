@@ -5,8 +5,8 @@ import { useNavigate } from 'react-router-dom'
 
 import type { TaskDetails } from '@renderer/store/slices/tasks'
 
-import { ProjectTasksTable } from '../Projects/components/ProjectTasksTable'
-import { useProjectRouteContext } from '../ProjectLayout'
+import { ProjectTasksTable } from '@renderer/pages/Projects/components/ProjectTasksTable'
+import { useProjectRouteContext } from '@renderer/pages/ProjectLayout'
 
 const ProjectTasksPage = () => {
   const { project, projectLoading, tasks, tasksStatus } = useProjectRouteContext()

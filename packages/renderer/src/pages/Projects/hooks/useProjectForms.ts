@@ -7,7 +7,7 @@ import {
   updateProjectSchema,
   type CreateProjectValues,
   type UpdateProjectValues
-} from '../schemas/projectSchemas'
+} from '@renderer/pages/Projects/schemas/projectSchemas'
 
 export interface ProjectForms {
   createForm: ReturnType<typeof useForm<CreateProjectValues>>

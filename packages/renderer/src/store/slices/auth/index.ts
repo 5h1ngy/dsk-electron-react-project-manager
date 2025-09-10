@@ -1,4 +1,4 @@
-export { authReducer, clearError, setStatus, forceLogout } from './slice'
+export { authReducer, clearError, setStatus, forceLogout } from '@renderer/store/slices/auth/slice'
 export {
   fetchUsers,
   login,
@@ -8,7 +8,7 @@ export {
   createUser,
   updateUser,
   loadUsers
-} from './thunks'
+} from '@renderer/store/slices/auth/thunks'
 export {
   selectAuthState,
   selectAuthStatus,
@@ -17,5 +17,5 @@ export {
   selectUsers,
   selectToken,
   selectIsAuthenticated
-} from './selectors'
-export type { AuthState, AuthStatus } from './types'
+} from '@renderer/store/slices/auth/selectors'
+export type { AuthState, AuthStatus } from '@renderer/store/slices/auth/types'

@@ -1,7 +1,7 @@
 import { i18n } from '@renderer/i18n/config'
 
-import { DEFAULT_LOCALE, LOCALE_STORAGE_KEY, SUPPORTED_LOCALES } from './constants'
-import type { SupportedLocale } from './types'
+import { DEFAULT_LOCALE, LOCALE_STORAGE_KEY, SUPPORTED_LOCALES } from '@renderer/store/slices/locale/constants'
+import type { SupportedLocale } from '@renderer/store/slices/locale/types'
 
 export const coerceLocale = (value: string | null | undefined): SupportedLocale => {
   if (!value) {

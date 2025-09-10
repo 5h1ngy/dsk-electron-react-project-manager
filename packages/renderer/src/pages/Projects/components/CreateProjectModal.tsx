@@ -2,7 +2,7 @@ import { Modal, Form, Input, Select } from 'antd'
 import { useTranslation } from 'react-i18next'
 import { Controller, type UseFormReturn } from 'react-hook-form'
 
-import type { CreateProjectValues } from '../schemas/projectSchemas'
+import type { CreateProjectValues } from '@renderer/pages/Projects/schemas/projectSchemas'
 
 export interface CreateProjectModalProps {
   open: boolean

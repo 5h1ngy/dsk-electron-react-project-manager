@@ -1,7 +1,7 @@
-import { AppError } from '../../config/appError'
-import type { ProjectMembershipRole } from '../../models/ProjectMember'
-import type { RoleName } from '../auth/constants'
-import type { ProjectActor } from './types'
+import { AppError } from '@main/config/appError'
+import type { ProjectMembershipRole } from '@main/models/ProjectMember'
+import type { RoleName } from '@main/services/auth/constants'
+import type { ProjectActor } from '@main/services/project/types'
 
 const PROJECT_ROLE_WEIGHT: Record<ProjectMembershipRole, number> = {
   view: 0,

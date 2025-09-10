@@ -1,6 +1,6 @@
 import { createEntityAdapter, createSlice, type PayloadAction } from '@reduxjs/toolkit'
 
-import type { ProjectDetails, ProjectSummary, ProjectsState } from './types'
+import type { ProjectDetails, ProjectSummary, ProjectsState } from '@renderer/store/slices/projects/types'
 import {
   addProjectMember,
   createProject,
@@ -9,7 +9,7 @@ import {
   fetchProjects,
   removeProjectMember,
   updateProject
-} from './thunks'
+} from '@renderer/store/slices/projects/thunks'
 
 export const projectsAdapter = createEntityAdapter<ProjectSummary>({
   selectId: (project) => project.id,

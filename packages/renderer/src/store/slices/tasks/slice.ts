@@ -5,7 +5,7 @@ import type {
   TaskCommentsState,
   TaskDetails,
   TasksState
-} from './types'
+} from '@renderer/store/slices/tasks/types'
 import {
   addComment,
   createTask,
@@ -15,7 +15,7 @@ import {
   moveTask,
   searchTasks,
   updateTask
-} from './thunks'
+} from '@renderer/store/slices/tasks/thunks'
 
 const buildProjectState = (): ProjectTaskState => ({
   ids: [],

@@ -4,8 +4,8 @@ import { Provider } from 'react-redux'
 
 import '@renderer/i18n/config'
 
-import App from './App'
-import { createAppStore } from './store'
+import App from '@renderer/App'
+import { createAppStore } from '@renderer/store'
 
 const createHealthResponse = () => ({
   ok: true,

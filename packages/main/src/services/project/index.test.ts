@@ -3,14 +3,14 @@ import { join } from 'node:path'
 import { tmpdir } from 'node:os'
 import { mkdtemp, rm } from 'node:fs/promises'
 
-import { initializeDatabase } from '../../config/database'
-import { AuditService } from '../audit'
-import { ProjectService, type ProjectActor } from '.'
-import { ProjectMember } from '../../models/ProjectMember'
-import { User } from '../../models/User'
-import { Role } from '../../models/Role'
-import { UserRole } from '../../models/UserRole'
-import type { RoleName } from '../auth/constants'
+import { initializeDatabase } from '@main/config/database'
+import { AuditService } from '@main/services/audit'
+import { ProjectService, type ProjectActor } from '@main/services/project'
+import { ProjectMember } from '@main/models/ProjectMember'
+import { User } from '@main/models/User'
+import { Role } from '@main/models/Role'
+import { UserRole } from '@main/models/UserRole'
+import type { RoleName } from '@main/services/auth/constants'
 
 const createActor = (userId: string, roles: RoleName[]): ProjectActor => ({
   userId,

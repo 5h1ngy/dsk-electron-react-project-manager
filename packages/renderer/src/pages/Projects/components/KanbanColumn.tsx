@@ -2,7 +2,7 @@ import { Card, Space, Typography } from 'antd'
 import type { DragEvent } from 'react'
 
 import type { TaskDetails, TaskStatus } from '@renderer/store/slices/tasks'
-import { TaskCard } from './TaskCard'
+import { TaskCard } from '@renderer/pages/Projects/components/TaskCard'
 
 export interface KanbanColumnProps {
   status: TaskStatus

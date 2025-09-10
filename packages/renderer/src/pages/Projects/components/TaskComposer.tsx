@@ -2,7 +2,7 @@ import { Button, Form, Input, Space, Typography } from 'antd'
 import { useTranslation } from 'react-i18next'
 import { Controller, type UseFormReturn } from 'react-hook-form'
 
-import type { CreateTaskValues } from '../schemas/taskSchemas'
+import type { CreateTaskValues } from '@renderer/pages/Projects/schemas/taskSchemas'
 
 export interface TaskComposerProps {
   form: UseFormReturn<CreateTaskValues>

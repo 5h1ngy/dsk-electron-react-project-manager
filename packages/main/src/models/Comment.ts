@@ -6,8 +6,8 @@ import {
   Model,
   Table
 } from 'sequelize-typescript'
-import { Task } from './Task'
-import { User } from './User'
+import { Task } from '@main/models/Task'
+import { User } from '@main/models/User'
 
 @Table({
   tableName: 'comments',

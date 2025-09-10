@@ -1,9 +1,9 @@
 import { join } from 'node:path'
 import { tmpdir } from 'node:os'
 import { mkdtemp, rm } from 'node:fs/promises'
-import { initializeDatabase } from './database'
-import { Role } from '../models/Role'
-import { User } from '../models/User'
+import { initializeDatabase } from '@main/config/database'
+import { Role } from '@main/models/Role'
+import { User } from '@main/models/User'
 
 describe('database initialization', () => {
   it('creates sqlite database schema and seeds base data', async () => {

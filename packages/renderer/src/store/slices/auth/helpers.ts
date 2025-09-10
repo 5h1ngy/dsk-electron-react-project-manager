@@ -1,7 +1,7 @@
 import type { SessionPayload } from '@main/services/auth'
 import type { IpcResponse } from '@renderer/types'
 
-import { TOKEN_STORAGE_KEY } from './constants'
+import { TOKEN_STORAGE_KEY } from '@renderer/store/slices/auth/constants'
 
 export const handleResponse = async <T>(responsePromise: Promise<IpcResponse<T>>): Promise<T> => {
   const response = await responsePromise

@@ -6,7 +6,7 @@ import { Controller } from 'react-hook-form'
 
 import { ROLE_NAMES, type RoleName } from '@main/services/auth/constants'
 
-import type { CreateUserValues } from '../schemas/userSchemas'
+import type { CreateUserValues } from '@renderer/pages/Dashboard/schemas/userSchemas'
 
 interface CreateUserModalProps {
   open: boolean

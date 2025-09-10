@@ -1,6 +1,6 @@
-export * from './types'
-export * from './selectors'
-export { projectsReducer, selectProject, clearProjectsError } from './slice'
+export * from '@renderer/store/slices/projects/types'
+export * from '@renderer/store/slices/projects/selectors'
+export { projectsReducer, selectProject, clearProjectsError } from '@renderer/store/slices/projects/slice'
 export {
   fetchProjects,
   fetchProjectById,
@@ -9,4 +9,4 @@ export {
   deleteProject,
   addProjectMember,
   removeProjectMember
-} from './thunks'
+} from '@renderer/store/slices/projects/thunks'

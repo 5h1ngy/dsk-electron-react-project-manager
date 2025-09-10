@@ -6,8 +6,8 @@ import {
   Model,
   Table
 } from 'sequelize-typescript'
-import { Project } from './Project'
-import { User } from './User'
+import { Project } from '@main/models/Project'
+import { User } from '@main/models/User'
 
 export type ProjectMembershipRole = 'view' | 'edit' | 'admin'
 

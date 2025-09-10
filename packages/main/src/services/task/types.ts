@@ -1,4 +1,4 @@
-import type { TaskPriorityInput, TaskStatusInput } from './schemas'
+import type { TaskPriorityInput, TaskStatusInput } from '@main/services/task/schemas'
 
 export interface UserSummaryDTO {
   id: string

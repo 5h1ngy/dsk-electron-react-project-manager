@@ -1,5 +1,5 @@
-import type { RootState } from '../../types'
-import type { AuthState } from './types'
+import type { RootState } from '@renderer/store/types'
+import type { AuthState } from '@renderer/store/slices/auth/types'
 
 export const selectAuthState = (state: RootState): AuthState => state.auth
 export const selectAuthStatus = (state: RootState): AuthState['status'] => state.auth.status

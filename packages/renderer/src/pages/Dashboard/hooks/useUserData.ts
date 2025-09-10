@@ -11,7 +11,7 @@ import {
   updateUser as updateUserThunk
 } from '@renderer/store/slices/auth'
 
-import type { CreateUserValues, UpdateUserValues } from '../schemas/userSchemas'
+import type { CreateUserValues, UpdateUserValues } from '@renderer/pages/Dashboard/schemas/userSchemas'
 
 export interface UseUserDataOptions {
   enabled: boolean

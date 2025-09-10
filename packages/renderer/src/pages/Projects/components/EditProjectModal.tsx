@@ -1,7 +1,7 @@
 import { Modal, Form, Input } from 'antd'
 import { Controller, type UseFormReturn } from 'react-hook-form'
 
-import type { UpdateProjectValues } from '../schemas/projectSchemas'
+import type { UpdateProjectValues } from '@renderer/pages/Projects/schemas/projectSchemas'
 
 export interface EditProjectModalProps {
   open: boolean

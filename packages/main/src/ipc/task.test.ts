@@ -1,7 +1,7 @@
-import type { AuthService } from '../services/auth'
-import type { TaskService } from '../services/task'
-import { TaskIpcRegistrar } from './task'
-import { IpcChannelRegistrar } from './utils'
+import type { AuthService } from '@main/services/auth'
+import type { TaskService } from '@main/services/task'
+import { TaskIpcRegistrar } from '@main/ipc/task'
+import { IpcChannelRegistrar } from '@main/ipc/utils'
 
 const createRegistry = () => {
   const handlers = new Map<string, (...args: any[]) => Promise<unknown>>()

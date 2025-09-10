@@ -6,7 +6,7 @@ import { Controller } from 'react-hook-form'
 
 import { ROLE_NAMES, type RoleName } from '@main/services/auth/constants'
 
-import type { UpdateUserValues } from '../schemas/userSchemas'
+import type { UpdateUserValues } from '@renderer/pages/Dashboard/schemas/userSchemas'
 
 interface EditUserModalProps {
   user: { username: string } | null

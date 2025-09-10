@@ -2,28 +2,28 @@ import { randomUUID } from 'node:crypto'
 import { UniqueConstraintError, Op } from 'sequelize'
 import type { Sequelize, Transaction } from 'sequelize'
 import { z } from 'zod'
-import type { RoleName } from '../auth/constants'
-import { AuditService } from '../audit'
-import { Project } from '../../models/Project'
-import { ProjectMember, type ProjectMembershipRole } from '../../models/ProjectMember'
-import { ProjectTag } from '../../models/ProjectTag'
-import { User } from '../../models/User'
-import { AppError, wrapError } from '../../config/appError'
+import type { RoleName } from '@main/services/auth/constants'
+import { AuditService } from '@main/services/audit'
+import { Project } from '@main/models/Project'
+import { ProjectMember, type ProjectMembershipRole } from '@main/models/ProjectMember'
+import { ProjectTag } from '@main/models/ProjectTag'
+import { User } from '@main/models/User'
+import { AppError, wrapError } from '@main/config/appError'
 import {
   createProjectSchema,
   memberRoleSchema,
   updateProjectSchema,
   type CreateProjectInput,
   type UpdateProjectInput
-} from './schemas'
-import type { ProjectActor, ProjectDetailsDTO, ProjectMemberDTO, ProjectSummaryDTO } from './types'
+} from '@main/services/project/schemas'
+import type { ProjectActor, ProjectDetailsDTO, ProjectMemberDTO, ProjectSummaryDTO } from '@main/services/project/types'
 import {
   DEFAULT_MEMBER_ROLE,
   assertProjectRole,
   isSystemAdmin,
   requireSystemRole
-} from './roles'
-import { mapProjectDetails, mapProjectSummary } from './helpers'
+} from '@main/services/project/roles'
+import { mapProjectDetails, mapProjectSummary } from '@main/services/project/helpers'
 
 const userIdSchema = z
   .string()

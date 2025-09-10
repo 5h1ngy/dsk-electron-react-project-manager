@@ -1,10 +1,10 @@
-import { projectsReducer, selectProject } from './slice'
-import { projectsAdapter } from './slice'
+import { projectsReducer, selectProject } from '@renderer/store/slices/projects/slice'
+import { projectsAdapter } from '@renderer/store/slices/projects/slice'
 import {
   createProject,
   fetchProjects
-} from './thunks'
-import type { ProjectDetails, ProjectSummary } from './types'
+} from '@renderer/store/slices/projects/thunks'
+import type { ProjectDetails, ProjectSummary } from '@renderer/store/slices/projects/types'
 
 describe('projects slice', () => {
   const now = new Date()

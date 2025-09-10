@@ -1,5 +1,5 @@
 import { ipcRenderer } from 'electron'
-import type { IpcResponse } from '../types'
+import type { IpcResponse } from '@preload/types'
 
 const isIpcResponse = <T>(value: unknown): value is IpcResponse<T> => {
   if (!value || typeof value !== 'object') {

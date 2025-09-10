@@ -1,7 +1,7 @@
 import { Button, Card, Space, Spin, Tag, Typography } from 'antd'
 import { ReloadOutlined } from '@ant-design/icons'
 import { useMemo } from 'react'
-import { useHealthStatus } from './hooks/useHealthStatus'
+import { useHealthStatus } from '@renderer/components/HealthStatusCard/hooks/useHealthStatus'
 
 const formatTimestamp = (timestamp: string): string => {
   const date = new Date(timestamp)

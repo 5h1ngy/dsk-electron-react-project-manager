@@ -1,6 +1,6 @@
-import { tasksReducer } from './slice'
-import { addComment, fetchTasks, moveTask } from './thunks'
-import type { TaskDetails } from './types'
+import { tasksReducer } from '@renderer/store/slices/tasks/slice'
+import { addComment, fetchTasks, moveTask } from '@renderer/store/slices/tasks/thunks'
+import type { TaskDetails } from '@renderer/store/slices/tasks/types'
 
 describe('tasks slice', () => {
   const now = new Date()

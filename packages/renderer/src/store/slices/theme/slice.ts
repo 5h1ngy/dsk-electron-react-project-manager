@@ -1,7 +1,7 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
 
-import { persistAccentColor, persistMode, readInitialAccentColor, readInitialMode } from './helpers'
-import type { ThemeMode, ThemeState } from './types'
+import { persistAccentColor, persistMode, readInitialAccentColor, readInitialMode } from '@renderer/store/slices/theme/helpers'
+import type { ThemeMode, ThemeState } from '@renderer/store/slices/theme/types'
 
 const initialState: ThemeState = {
   mode: readInitialMode(),

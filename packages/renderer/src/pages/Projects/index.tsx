@@ -5,11 +5,11 @@ import { useNavigate } from 'react-router-dom'
 import { Breadcrumb } from 'antd'
 import { useMemo } from 'react'
 
-import { ProjectsActionBar } from './components/ProjectsActionBar'
-import { ProjectList } from './components/ProjectList'
-import { ProjectCardsGrid } from './components/ProjectCardsGrid'
-import { CreateProjectModal } from './components/CreateProjectModal'
-import { useProjectsPage } from './hooks/useProjectsPage'
+import { ProjectsActionBar } from '@renderer/pages/Projects/components/ProjectsActionBar'
+import { ProjectList } from '@renderer/pages/Projects/components/ProjectList'
+import { ProjectCardsGrid } from '@renderer/pages/Projects/components/ProjectCardsGrid'
+import { CreateProjectModal } from '@renderer/pages/Projects/components/CreateProjectModal'
+import { useProjectsPage } from '@renderer/pages/Projects/hooks/useProjectsPage'
 
 const ProjectsPage = (): JSX.Element => {
   const { t } = useTranslation('projects')

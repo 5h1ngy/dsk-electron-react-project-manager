@@ -1,6 +1,6 @@
 import type { ThemeConfig } from 'antd'
 
-import { darken, lighten } from '../utils/color'
+import { darken, lighten } from '@renderer/theme/utils/color'
 
 export const buildDarkComponents = (
   accent: string,

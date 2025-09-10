@@ -1,12 +1,12 @@
 import { randomUUID } from 'node:crypto'
 import { Op, QueryTypes, type Sequelize, type Transaction } from 'sequelize'
-import { AuditService } from '../audit'
-import { Project } from '../../models/Project'
-import { ProjectMember, type ProjectMembershipRole } from '../../models/ProjectMember'
-import { Task } from '../../models/Task'
-import { Comment } from '../../models/Comment'
-import { User } from '../../models/User'
-import { AppError, wrapError } from '../../config/appError'
+import { AuditService } from '@main/services/audit'
+import { Project } from '@main/models/Project'
+import { ProjectMember, type ProjectMembershipRole } from '@main/models/ProjectMember'
+import { Task } from '@main/models/Task'
+import { Comment } from '@main/models/Comment'
+import { User } from '@main/models/User'
+import { AppError, wrapError } from '@main/config/appError'
 import {
   createTaskSchema,
   updateTaskSchema,
@@ -18,11 +18,11 @@ import {
   type MoveTaskInput,
   type CreateCommentInput,
   type SearchTasksInput
-} from './schemas'
-import type { ServiceActor } from '../types'
-import type { CommentDTO, TaskDetailsDTO } from './types'
-import { mapComment, mapTaskDetails } from './helpers'
-import { isSystemAdmin, resolveRoleWeight } from '../project/roles'
+} from '@main/services/task/schemas'
+import type { ServiceActor } from '@main/services/types'
+import type { CommentDTO, TaskDetailsDTO } from '@main/services/task/types'
+import { mapComment, mapTaskDetails } from '@main/services/task/helpers'
+import { isSystemAdmin, resolveRoleWeight } from '@main/services/project/roles'
 
 export class TaskService {
   constructor(

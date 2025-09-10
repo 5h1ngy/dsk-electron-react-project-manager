@@ -3,7 +3,7 @@ import { Alert, Button, Card, Form, Input, Typography } from 'antd'
 import { Controller } from 'react-hook-form'
 import { Link } from 'react-router-dom'
 
-import { useRegisterForm } from './hooks/useRegisterForm'
+import { useRegisterForm } from '@renderer/pages/Register/hooks/useRegisterForm'
 
 const Register = (): JSX.Element => {
   const { t, status, error, clearError, control, errors, handleSubmit, onSubmit } =

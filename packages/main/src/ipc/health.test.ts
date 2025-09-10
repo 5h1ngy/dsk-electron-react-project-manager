@@ -1,7 +1,7 @@
 import type { Sequelize } from 'sequelize-typescript'
 
-import { HealthIpcRegistrar, HEALTH_CHANNEL } from './health'
-import { IpcChannelRegistrar } from './utils'
+import { HealthIpcRegistrar, HEALTH_CHANNEL } from '@main/ipc/health'
+import { IpcChannelRegistrar } from '@main/ipc/utils'
 
 const createRegistry = () => {
   const handlers = new Map<string, (...args: any[]) => Promise<unknown>>()

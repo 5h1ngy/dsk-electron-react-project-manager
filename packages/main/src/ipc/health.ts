@@ -2,8 +2,8 @@ import type { App } from 'electron'
 import { app } from 'electron'
 import type { Sequelize } from 'sequelize-typescript'
 
-import { AppError } from '../config/appError'
-import { IpcChannelRegistrar, ipcChannelRegistrar } from './utils'
+import { AppError } from '@main/config/appError'
+import { IpcChannelRegistrar, ipcChannelRegistrar } from '@main/ipc/utils'
 
 export interface HealthStatus {
   status: 'healthy'

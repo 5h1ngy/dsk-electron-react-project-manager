@@ -3,7 +3,7 @@ import { Alert, Button, Card, Form, Input, Typography } from 'antd'
 import { Controller } from 'react-hook-form'
 import { Link } from 'react-router-dom'
 
-import { useLoginForm } from './hooks/useLoginForm'
+import { useLoginForm } from '@renderer/pages/Login/hooks/useLoginForm'
 
 const Login = (): JSX.Element => {
   const { t, status, error, clearError, control, errors, handleSubmit, onSubmit } = useLoginForm()

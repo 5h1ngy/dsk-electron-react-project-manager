@@ -1,5 +1,5 @@
-import { AppLogger } from './logger'
-import type { LogLevelSetting } from './env.types'
+import { AppLogger } from '@main/config/logger'
+import type { LogLevelSetting } from '@main/config/env.types'
 
 describe('AppLogger', () => {
   const createLogger = (level: LogLevelSetting) => {

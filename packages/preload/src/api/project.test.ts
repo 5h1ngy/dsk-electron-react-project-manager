@@ -1,5 +1,5 @@
 import { ipcRenderer } from 'electron'
-import { projectApi } from './project'
+import { projectApi } from '@preload/api/project'
 
 jest.mock('electron', () => ({
   ipcRenderer: {

@@ -1,7 +1,7 @@
-import type { AuthService } from '../services/auth'
-import { AppError } from '../config/appError'
-import { AuthIpcRegistrar } from './auth'
-import { IpcChannelRegistrar } from './utils'
+import type { AuthService } from '@main/services/auth'
+import { AppError } from '@main/config/appError'
+import { AuthIpcRegistrar } from '@main/ipc/auth'
+import { IpcChannelRegistrar } from '@main/ipc/utils'
 
 interface HandlerMap {
   handlers: Map<string, (...args: any[]) => Promise<unknown>>

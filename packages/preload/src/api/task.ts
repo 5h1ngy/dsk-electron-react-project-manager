@@ -6,7 +6,7 @@ import type {
   CreateCommentInput,
   SearchTasksInput
 } from '@main/services/task/schemas'
-import { invokeIpc } from './shared'
+import { invokeIpc } from '@preload/api/shared'
 
 const CHANNELS = {
   list: 'task:list',

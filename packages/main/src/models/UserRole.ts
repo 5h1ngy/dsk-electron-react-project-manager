@@ -1,6 +1,6 @@
 import { BelongsTo, Column, DataType, ForeignKey, Model, Table } from 'sequelize-typescript'
-import { User } from './User'
-import { Role } from './Role'
+import { User } from '@main/models/User'
+import { Role } from '@main/models/Role'
 
 @Table({
   tableName: 'user_roles',
