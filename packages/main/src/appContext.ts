@@ -6,8 +6,8 @@ import { logger, shouldSuppressDevtoolsMessage } from './config/logger'
 import { SessionManager } from './services/auth/sessionManager'
 import { AuditService } from './services/audit/auditService'
 import { AuthService } from './services/auth/authService'
-import { ProjectService } from './services/projectService'
-import { TaskService } from './services/taskService'
+import { ProjectService } from './services/project'
+import { TaskService } from './services/task'
 
 export const MAIN_WINDOW_OPTIONS: Electron.BrowserWindowConstructorOptions = {
   width: 1280,

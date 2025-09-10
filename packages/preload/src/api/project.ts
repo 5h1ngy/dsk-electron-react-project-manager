@@ -1,8 +1,5 @@
-import type {
-  ProjectDetailsDTO,
-  ProjectSummaryDTO
-} from '@main/services/projectService'
-import type { CreateProjectInput, UpdateProjectInput } from '@main/services/projectValidation'
+import type { ProjectDetailsDTO, ProjectSummaryDTO } from '@main/services/project'
+import type { CreateProjectInput, UpdateProjectInput } from '@main/services/project/projectValidation'
 import type { ProjectMemberPayload } from '../types'
 import { invokeIpc } from './shared'
 

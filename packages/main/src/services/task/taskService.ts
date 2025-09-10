@@ -1,12 +1,12 @@
 import { randomUUID } from 'node:crypto'
 import { Op, QueryTypes, type Sequelize, type Transaction } from 'sequelize'
-import { AuditService } from './audit/auditService'
-import { Project } from '../models/Project'
-import { ProjectMember, type ProjectMembershipRole } from '../models/ProjectMember'
-import { Task } from '../models/Task'
-import { Comment } from '../models/Comment'
-import { User } from '../models/User'
-import { AppError, wrapError } from '../config/appError'
+import { AuditService } from '../audit/auditService'
+import { Project } from '../../models/Project'
+import { ProjectMember, type ProjectMembershipRole } from '../../models/ProjectMember'
+import { Task } from '../../models/Task'
+import { Comment } from '../../models/Comment'
+import { User } from '../../models/User'
+import { AppError, wrapError } from '../../config/appError'
 import {
   createTaskSchema,
   updateTaskSchema,
@@ -17,103 +17,12 @@ import {
   type UpdateTaskInput,
   type MoveTaskInput,
   type CreateCommentInput,
-  type SearchTasksInput,
-  type TaskPriorityInput,
-  type TaskStatusInput
+  type SearchTasksInput
 } from './taskValidation'
-import type { ServiceActor } from './types'
-
-interface UserSummaryDTO {
-  id: string
-  username: string
-  displayName: string
-}
-
-export interface TaskDTO {
-  id: string
-  projectId: string
-  key: string
-  parentId: string | null
-  title: string
-  description: string | null
-  status: TaskStatusInput
-  priority: TaskPriorityInput
-  dueDate: string | null
-  assignee: UserSummaryDTO | null
-  owner: UserSummaryDTO
-  createdAt: Date
-  updatedAt: Date
-}
-
-export interface TaskDetailsDTO extends TaskDTO {
-  projectKey: string
-}
-
-export interface CommentDTO {
-  id: string
-  taskId: string
-  author: UserSummaryDTO
-  body: string
-  createdAt: Date
-  updatedAt: Date
-}
-
-const PROJECT_ROLE_WEIGHT: Record<ProjectMembershipRole, number> = {
-  view: 0,
-  edit: 1,
-  admin: 2
-}
-
-const isSystemAdmin = (actor: ServiceActor): boolean => actor.roles.includes('Admin')
-
-const resolveRoleWeight = (role: ProjectMembershipRole): number => PROJECT_ROLE_WEIGHT[role] ?? 0
-
-const sanitizeUser = (user: User | null): UserSummaryDTO | null => {
-  if (!user) {
-    return null
-  }
-  return {
-    id: user.id,
-    username: user.username,
-    displayName: user.displayName
-  }
-}
-
-const sanitizeTask = (task: Task, projectKey: string): TaskDetailsDTO => ({
-  id: task.id,
-  projectId: task.projectId,
-  key: task.key,
-  parentId: task.parentId ?? null,
-  title: task.title,
-  description: task.description ?? null,
-  status: task.status as TaskStatusInput,
-  priority: task.priority as TaskPriorityInput,
-  dueDate: task.dueDate ?? null,
-  assignee: sanitizeUser(task.assignee ?? null),
-  owner: sanitizeUser(task.owner ?? null) ?? {
-    id: task.ownerUserId,
-    username: task.owner?.username ?? 'unknown',
-    displayName: task.owner?.displayName ?? 'Unknown'
-  },
-  createdAt: task.createdAt!,
-  updatedAt: task.updatedAt!,
-  projectKey
-})
-
-const sanitizeComment = (comment: Comment): CommentDTO => {
-  const author = comment.author
-  if (!author) {
-    throw new AppError('ERR_INTERNAL', 'Comment author relation missing')
-  }
-  return {
-    id: comment.id,
-    taskId: comment.taskId,
-    author: sanitizeUser(author)!,
-    body: comment.body,
-    createdAt: comment.createdAt!,
-    updatedAt: comment.updatedAt!
-  }
-}
+import type { ServiceActor } from '../types'
+import type { CommentDTO, TaskDetailsDTO } from './task.types'
+import { mapComment, mapTaskDetails } from './task.mappers'
+import { isSystemAdmin, resolveRoleWeight } from '../project/project.roles'
 
 export class TaskService {
   constructor(
@@ -273,7 +182,7 @@ export class TaskService {
         ]
       })
 
-      return tasks.map((task) => sanitizeTask(task, project.key))
+      return tasks.map((task) => mapTaskDetails(task, project.key))
     } catch (error) {
       throw wrapError(error)
     }
@@ -283,7 +192,7 @@ export class TaskService {
     try {
       const task = await this.loadTask(taskId)
       await this.resolveProjectAccess(actor, task.projectId, 'view')
-      return sanitizeTask(task, task.project.key)
+      return mapTaskDetails(task, task.project.key)
     } catch (error) {
       throw wrapError(error)
     }
@@ -341,10 +250,7 @@ export class TaskService {
         throw new AppError('ERR_INTERNAL', 'Task creato non reperibile')
       }
 
-      return sanitizeTask(
-        created,
-        project.key
-      )
+      return mapTaskDetails(created, project.key)
     } catch (error) {
       throw wrapError(error)
     }
@@ -377,7 +283,7 @@ export class TaskService {
       await this.auditService.record(actor.userId, 'task', taskId, 'update', input)
 
       const reloaded = await this.loadTask(taskId)
-      return sanitizeTask(reloaded, reloaded.project.key)
+      return mapTaskDetails(reloaded, reloaded.project.key)
     } catch (error) {
       throw wrapError(error)
     }
@@ -424,7 +330,7 @@ export class TaskService {
         order: [['createdAt', 'ASC']]
       })
 
-      return comments.map(sanitizeComment)
+      return comments.map(mapComment)
     } catch (error) {
       throw wrapError(error)
     }
@@ -461,7 +367,7 @@ export class TaskService {
         throw new AppError('ERR_INTERNAL', 'Commento non reperibile')
       }
 
-      return sanitizeComment(reloaded)
+      return mapComment(reloaded)
     } catch (error) {
       throw wrapError(error)
     }
@@ -477,34 +383,11 @@ export class TaskService {
 
     try {
       const accessibleProjectIds = await this.getAccessibleProjectIds(actor)
+      const taskIds = await this.searchTaskIds(input.query, accessibleProjectIds)
 
-      const escaped = `"${input.query.replace(/"/g, '""')}"`
-
-      const whereClause = accessibleProjectIds
-        ? 'AND t.projectId IN (:projectIds)'
-        : ''
-
-      const rows = await this.sequelize.query<{ taskId: string }>(
-        `SELECT t.id as taskId
-         FROM tasks_fts f
-         JOIN tasks t ON t.id = f.taskId
-         WHERE f MATCH :query
-           AND t.deletedAt IS NULL
-           ${whereClause}`,
-        {
-          replacements: {
-            query: escaped,
-            projectIds: accessibleProjectIds ?? []
-          },
-          type: QueryTypes.SELECT
-        }
-      )
-
-      if (rows.length === 0) {
+      if (!taskIds.length) {
         return []
       }
-
-      const taskIds = rows.map((row) => row.taskId)
 
       const tasks = await Task.findAll({
         where: { id: { [Op.in]: taskIds } },
@@ -517,7 +400,7 @@ export class TaskService {
 
       return tasks.map((task) => {
         const projectKey = task.project?.key ?? 'UNKNOWN'
-        return sanitizeTask(task, projectKey)
+        return mapTaskDetails(task, projectKey)
       })
     } catch (error) {
       throw wrapError(error)
@@ -535,5 +418,67 @@ export class TaskService {
     })
 
     return memberships.map((membership) => membership.projectId)
+  }
+
+  private async searchTaskIds(query: string, projectIds: string[] | null): Promise<string[]> {
+    try {
+      return await this.searchTaskIdsViaFts(query, projectIds)
+    } catch (error) {
+      if (error instanceof Error && /no such table:\s*tasks_fts/i.test(error.message)) {
+        return await this.searchTaskIdsViaLike(query, projectIds)
+      }
+      throw error
+    }
+  }
+
+  private async searchTaskIdsViaFts(
+    query: string,
+    projectIds: string[] | null
+  ): Promise<string[]> {
+    const escaped = `"${query.replace(/"/g, '""')}"`
+    const whereClause = projectIds ? 'AND t.projectId IN (:projectIds)' : ''
+
+    const rows = await this.sequelize.query<{ taskId: string }>(
+      `SELECT t.id as taskId
+         FROM tasks_fts f
+         JOIN tasks t ON t.id = f.taskId
+         WHERE f MATCH :query
+           AND t.deletedAt IS NULL
+           ${whereClause}`,
+      {
+        replacements: {
+          query: escaped,
+          projectIds: projectIds ?? []
+        },
+        type: QueryTypes.SELECT
+      }
+    )
+
+    return rows.map((row) => row.taskId)
+  }
+
+  private async searchTaskIdsViaLike(
+    query: string,
+    projectIds: string[] | null
+  ): Promise<string[]> {
+    const likePattern = `%${query}%`
+    const where: Record<string, unknown> = {
+      [Op.or]: [
+        { title: { [Op.like]: likePattern } },
+        { description: { [Op.like]: likePattern } }
+      ]
+    }
+
+    if (projectIds) {
+      where.projectId = { [Op.in]: projectIds }
+    }
+
+    const tasks = await Task.findAll({
+      attributes: ['id'],
+      where,
+      limit: 50
+    })
+
+    return tasks.map((task) => task.id)
   }
 }

@@ -2,13 +2,13 @@ import { randomUUID } from 'node:crypto'
 import { UniqueConstraintError, Op } from 'sequelize'
 import type { Sequelize, Transaction } from 'sequelize'
 import { z } from 'zod'
-import type { RoleName } from './auth/constants'
-import { AuditService } from './audit/auditService'
-import { Project } from '../models/Project'
-import { ProjectMember, type ProjectMembershipRole } from '../models/ProjectMember'
-import { ProjectTag } from '../models/ProjectTag'
-import { User } from '../models/User'
-import { AppError, wrapError } from '../config/appError'
+import type { RoleName } from '../auth/constants'
+import { AuditService } from '../audit/auditService'
+import { Project } from '../../models/Project'
+import { ProjectMember, type ProjectMembershipRole } from '../../models/ProjectMember'
+import { ProjectTag } from '../../models/ProjectTag'
+import { User } from '../../models/User'
+import { AppError, wrapError } from '../../config/appError'
 import {
   createProjectSchema,
   memberRoleSchema,
@@ -16,15 +16,14 @@ import {
   type CreateProjectInput,
   type UpdateProjectInput
 } from './projectValidation'
-import type { ServiceActor } from './types'
-
-const PROJECT_ROLE_WEIGHT: Record<ProjectMembershipRole, number> = {
-  view: 0,
-  edit: 1,
-  admin: 2
-}
-
-const DEFAULT_MEMBER_ROLE: ProjectMembershipRole = 'view'
+import type { ProjectActor, ProjectDetailsDTO, ProjectMemberDTO, ProjectSummaryDTO } from './project.types'
+import {
+  DEFAULT_MEMBER_ROLE,
+  assertProjectRole,
+  isSystemAdmin,
+  requireSystemRole
+} from './project.roles'
+import { mapProjectDetails, mapProjectSummary } from './project.mappers'
 
 const userIdSchema = z
   .string()
@@ -38,79 +37,6 @@ const addMemberSchema = z.object({
 })
 
 type AddMemberInput = z.infer<typeof addMemberSchema>
-
-export type ProjectActor = ServiceActor
-
-export interface ProjectSummaryDTO {
-  id: string
-  key: string
-  name: string
-  description: string | null
-  createdBy: string
-  createdAt: Date
-  updatedAt: Date
-  role: ProjectMembershipRole
-  memberCount: number
-  tags: string[]
-}
-
-export interface ProjectMemberDTO {
-  userId: string
-  username: string
-  displayName: string
-  isActive: boolean
-  role: ProjectMembershipRole
-  createdAt: Date
-}
-
-export interface ProjectDetailsDTO extends ProjectSummaryDTO {
-  members: ProjectMemberDTO[]
-}
-
-const collectTags = (project: Project & { tags?: ProjectTag[] }): string[] =>
-  (project.tags ?? []).map((tag) => tag.tag)
-
-const sanitizeMember = (member: ProjectMember): ProjectMemberDTO => {
-  const user = member.user
-  if (!user) {
-    throw new AppError('ERR_INTERNAL', 'Member user relation missing')
-  }
-  return {
-    userId: user.id,
-    username: user.username,
-    displayName: user.displayName,
-    isActive: user.isActive,
-    role: member.role,
-    createdAt: member.createdAt
-  }
-}
-
-const sanitizeProject = (
-  project: Project & { tags?: ProjectTag[] },
-  role: ProjectMembershipRole,
-  memberCount: number
-): ProjectSummaryDTO => ({
-  id: project.id,
-  key: project.key,
-  name: project.name,
-  description: project.description ?? null,
-  createdBy: project.createdBy,
-  createdAt: project.createdAt!,
-  updatedAt: project.updatedAt!,
-  role,
-  memberCount,
-  tags: collectTags(project)
-})
-
-const isSystemAdmin = (actor: ProjectActor): boolean => actor.roles.includes('Admin')
-
-const resolveRoleWeight = (role: ProjectMembershipRole): number => PROJECT_ROLE_WEIGHT[role] ?? 0
-
-const requireSystemRole = (actor: ProjectActor, allowed: RoleName[]): void => {
-  if (!actor.roles.some((role) => allowed.includes(role))) {
-    throw new AppError('ERR_PERMISSION', 'Operazione non autorizzata')
-  }
-}
 
 export class ProjectService {
   constructor(
@@ -149,24 +75,6 @@ export class ProjectService {
       throw new AppError('ERR_NOT_FOUND', 'Progetto non trovato')
     }
     return project
-  }
-
-  private assertProjectRole(
-    actor: ProjectActor,
-    membershipRole: ProjectMembershipRole | null,
-    minimumRole: ProjectMembershipRole
-  ): void {
-    if (isSystemAdmin(actor)) {
-      return
-    }
-
-    if (!membershipRole) {
-      throw new AppError('ERR_PERMISSION', 'Accesso al progetto negato')
-    }
-
-    if (resolveRoleWeight(membershipRole) < resolveRoleWeight(minimumRole)) {
-      throw new AppError('ERR_PERMISSION', 'Permessi insufficienti per questa operazione')
-    }
   }
 
   private resolveActorProjectRole(
@@ -243,7 +151,7 @@ export class ProjectService {
             project.members?.find((member) => member.userId === actor.userId) ?? null
           const memberCount = project.members?.length ?? 0
           const role = this.resolveActorProjectRole(actor, membership?.role ?? null)
-          return sanitizeProject(project, role, memberCount)
+          return mapProjectSummary(project, role, memberCount)
         })
       }
 
@@ -280,7 +188,7 @@ export class ProjectService {
           throw new AppError('ERR_INTERNAL', 'Permessi progetto non disponibili')
         }
         const memberCount = project.members?.length ?? 0
-        return sanitizeProject(project, membership.role, memberCount)
+        return mapProjectSummary(project, membership.role, memberCount)
       })
     } catch (error) {
       throw wrapError(error)
@@ -306,15 +214,11 @@ export class ProjectService {
       }
 
       const membership = project.members?.find((member) => member.userId === actor.userId) ?? null
-      this.assertProjectRole(actor, membership?.role ?? null, 'view')
+      assertProjectRole(actor, membership?.role ?? null, 'view')
 
       const role = this.resolveActorProjectRole(actor, membership?.role ?? null)
-      const members = (project.members ?? []).map(sanitizeMember)
-
-      return {
-        ...sanitizeProject(project, role, members.length),
-        members
-      }
+      const members = project.members ?? []
+      return mapProjectDetails(project, role, members.length, members)
     } catch (error) {
       throw wrapError(error)
     }
@@ -388,7 +292,7 @@ export class ProjectService {
 
     try {
       const membership = await this.loadMembership(projectId, actor.userId)
-      this.assertProjectRole(actor, membership?.role ?? null, 'admin')
+      assertProjectRole(actor, membership?.role ?? null, 'admin')
 
       await this.withTransaction(async (transaction) => {
         const project = await this.getProjectOrFail(projectId, transaction)
@@ -411,7 +315,7 @@ export class ProjectService {
   async deleteProject(actor: ProjectActor, projectId: string): Promise<void> {
     try {
       const membership = await this.loadMembership(projectId, actor.userId)
-      this.assertProjectRole(actor, membership?.role ?? null, 'admin')
+      assertProjectRole(actor, membership?.role ?? null, 'admin')
 
       await this.withTransaction(async (transaction) => {
         const project = await this.getProjectOrFail(projectId, transaction)
@@ -438,7 +342,7 @@ export class ProjectService {
 
     try {
       const membership = await this.loadMembership(projectId, actor.userId)
-      this.assertProjectRole(actor, membership?.role ?? null, 'admin')
+      assertProjectRole(actor, membership?.role ?? null, 'admin')
 
       const targetUser = await User.findByPk(input.userId)
       if (!targetUser) {
@@ -478,7 +382,7 @@ export class ProjectService {
   async removeMember(actor: ProjectActor, projectId: string, userId: string): Promise<ProjectDetailsDTO> {
     try {
       const membership = await this.loadMembership(projectId, actor.userId)
-      this.assertProjectRole(actor, membership?.role ?? null, 'admin')
+      assertProjectRole(actor, membership?.role ?? null, 'admin')
 
       let removedRole: ProjectMembershipRole | null = null
 

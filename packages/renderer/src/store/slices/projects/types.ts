@@ -1,8 +1,5 @@
 import type { EntityState } from '@reduxjs/toolkit'
-import type {
-  ProjectDetailsDTO,
-  ProjectSummaryDTO
-} from '@main/services/projectService'
+import type { ProjectDetailsDTO, ProjectSummaryDTO } from '@main/services/project'
 
 export type ProjectSummary = ProjectSummaryDTO
 export type ProjectDetails = ProjectDetailsDTO

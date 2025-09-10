@@ -1,4 +1,4 @@
-import type { CommentDTO, TaskDetailsDTO } from '@main/services/taskService'
+import type { CommentDTO, TaskDetailsDTO } from '@main/services/task'
 
 export type TaskDetails = TaskDetailsDTO
 export type TaskComment = CommentDTO

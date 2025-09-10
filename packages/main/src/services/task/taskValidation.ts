@@ -34,6 +34,16 @@ const dueDateSchema = z
 
 const optionalDueDateSchema = dueDateSchema.nullable().optional()
 
+const descriptionValueSchema = z
+  .string()
+  .trim()
+  .max(20000, 'Description too long')
+  .transform((value) => (value.length === 0 ? null : value))
+
+const descriptionSchema = z
+  .union([descriptionValueSchema, z.null().transform(() => null)])
+  .optional()
+
 export const createTaskSchema = z.object({
   projectId: identifierSchema,
   parentId: nullableIdentifierSchema.optional(),
@@ -42,12 +52,7 @@ export const createTaskSchema = z.object({
     .trim()
     .min(1, 'Title is required')
     .max(160, 'Title must be at most 160 characters'),
-  description: z
-    .string()
-    .trim()
-    .max(20000, 'Description too long')
-    .transform((value) => (value.length === 0 ? null : value))
-    .optional(),
+  description: descriptionSchema,
   status: taskStatusSchema.default('todo'),
   priority: taskPrioritySchema.default('medium'),
   dueDate: optionalDueDateSchema,
@@ -62,12 +67,7 @@ export const updateTaskSchema = z
       .min(1, 'Title is required')
       .max(160, 'Title must be at most 160 characters')
       .optional(),
-    description: z
-      .string()
-      .trim()
-      .max(20000, 'Description too long')
-      .transform((value) => (value.length === 0 ? null : value))
-      .optional(),
+    description: descriptionSchema,
     status: taskStatusSchema.optional(),
     priority: taskPrioritySchema.optional(),
     dueDate: optionalDueDateSchema,

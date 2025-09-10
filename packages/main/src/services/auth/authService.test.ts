@@ -4,7 +4,7 @@ import { mkdtemp, rm } from 'node:fs/promises'
 import { initializeDatabase } from '../../config/database'
 import { SessionManager } from './sessionManager'
 import { AuditService } from '../audit/auditService'
-import { AuthService } from '../../auth/authService'
+import { AuthService } from './authService'
 import { AppError } from '../../config/appError'
 import { User } from '../../models/User'
 

@@ -10,19 +10,19 @@ import type {
   CreateProjectInput,
   UpdateProjectInput,
   ProjectMemberRoleInput
-} from '@main/services/projectValidation'
+} from '@main/services/project/projectValidation'
 import type {
   ProjectDetailsDTO,
   ProjectSummaryDTO
-} from '@main/services/projectService'
+} from '@main/services/project'
 import type {
   CreateTaskInput,
   UpdateTaskInput,
   MoveTaskInput,
   CreateCommentInput,
   SearchTasksInput
-} from '@main/services/taskValidation'
-import type { TaskDetailsDTO, CommentDTO } from '@main/services/taskService'
+} from '@main/services/task/taskValidation'
+import type { TaskDetailsDTO, CommentDTO } from '@main/services/task'
 
 export interface IpcSuccess<T> {
   ok: true
