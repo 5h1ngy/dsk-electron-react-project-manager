@@ -14,8 +14,8 @@ import {
 } from '@renderer/store/slices/projects'
 import type { ProjectSummary } from '@renderer/store/slices/projects'
 import { selectCurrentUser } from '@renderer/store/slices/auth/selectors'
-import { useProjectForms } from './useProjectForms'
-import type { CreateProjectValues } from '../schemas/projectSchemas'
+import { useProjectForms } from '@renderer/pages/Projects/hooks/useProjectForms'
+import type { CreateProjectValues } from '@renderer/pages/Projects/schemas/projectSchemas'
 
 type ViewMode = 'table' | 'cards'
 type RoleFilter = 'all' | 'admin' | 'edit' | 'view'

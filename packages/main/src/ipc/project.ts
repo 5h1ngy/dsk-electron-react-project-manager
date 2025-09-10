@@ -1,7 +1,7 @@
-import type { AuthService } from '../services/auth'
-import type { ProjectService } from '../services/project'
-import { appContext } from '../appContext'
-import { IpcChannelRegistrar, ipcChannelRegistrar } from './utils'
+import type { AuthService } from '@main/services/auth'
+import type { ProjectService } from '@main/services/project'
+import { appContext } from '@main/appContext'
+import { IpcChannelRegistrar, ipcChannelRegistrar } from '@main/ipc/utils'
 
 export interface ProjectIpcDependencies {
   authService: AuthService

@@ -1,4 +1,4 @@
-import type { LogLevelSetting } from './env.types'
+import type { LogLevelSetting } from '@main/config/env.types'
 
 export type LogLevel = 'info' | 'warn' | 'error' | 'success' | 'debug'
 

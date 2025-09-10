@@ -8,10 +8,10 @@ import type { UserDTO } from '@main/services/auth'
 import { useAppSelector } from '@renderer/store/hooks'
 import { selectAccentColor, selectThemeMode } from '@renderer/store/slices/theme'
 
-import { ShellHeader } from './components/ShellHeader'
-import { ShellSider } from './components/ShellSider'
-import { ShellSiderFooter } from './components/ShellSiderFooter'
-import { buildNavigationItems, resolveSelectedKey } from './helpers/navigation'
+import { ShellHeader } from '@renderer/layout/Shell/components/ShellHeader'
+import { ShellSider } from '@renderer/layout/Shell/components/ShellSider'
+import { ShellSiderFooter } from '@renderer/layout/Shell/components/ShellSiderFooter'
+import { buildNavigationItems, resolveSelectedKey } from '@renderer/layout/Shell/helpers/navigation'
 
 const { Content } = Layout
 

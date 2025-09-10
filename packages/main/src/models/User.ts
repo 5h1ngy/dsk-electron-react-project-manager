@@ -8,8 +8,8 @@ import {
   DefaultScope,
   Scopes
 } from 'sequelize-typescript'
-import { UserRole } from './UserRole'
-import { AuditLog } from './AuditLog'
+import { UserRole } from '@main/models/UserRole'
+import { AuditLog } from '@main/models/AuditLog'
 
 @DefaultScope(() => ({
   attributes: { exclude: ['passwordHash'] }

@@ -1,7 +1,7 @@
 import { createSelector } from '@reduxjs/toolkit'
 
-import type { RootState } from '../../types'
-import type { TaskDetails, TaskStatus } from './types'
+import type { RootState } from '@renderer/store/types'
+import type { TaskDetails, TaskStatus } from '@renderer/store/slices/tasks/types'
 
 const selectTasksState = (state: RootState) => state.tasks
 

@@ -1,5 +1,5 @@
 import { ipcRenderer } from 'electron'
-import { taskApi } from './task'
+import { taskApi } from '@preload/api/task'
 
 jest.mock('electron', () => ({
   ipcRenderer: {

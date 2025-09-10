@@ -1,7 +1,7 @@
-import type { AuthService } from '../services/auth'
-import type { ProjectService } from '../services/project'
-import { ProjectIpcRegistrar } from './project'
-import { IpcChannelRegistrar } from './utils'
+import type { AuthService } from '@main/services/auth'
+import type { ProjectService } from '@main/services/project'
+import { ProjectIpcRegistrar } from '@main/ipc/project'
+import { IpcChannelRegistrar } from '@main/ipc/utils'
 
 const createRegistry = () => {
   const handlers = new Map<string, (...args: any[]) => Promise<unknown>>()

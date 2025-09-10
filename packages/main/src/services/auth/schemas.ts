@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { ROLE_NAMES, PASSWORD_POLICY } from './constants'
+import { ROLE_NAMES, PASSWORD_POLICY } from '@main/services/auth/constants'
 
 const usernameRegex = /^[a-zA-Z0-9_.-]+$/
 

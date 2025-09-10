@@ -1,9 +1,9 @@
 import { contextBridge } from 'electron'
-import { healthApi } from './api/health'
-import { authApi } from './api/auth'
-import { projectApi } from './api/project'
-import { taskApi } from './api/task'
-import type { PreloadApi } from './types'
+import { healthApi } from '@preload/api/health'
+import { authApi } from '@preload/api/auth'
+import { projectApi } from '@preload/api/project'
+import { taskApi } from '@preload/api/task'
+import type { PreloadApi } from '@preload/types'
 
 const api: PreloadApi = Object.freeze({
   health: healthApi,

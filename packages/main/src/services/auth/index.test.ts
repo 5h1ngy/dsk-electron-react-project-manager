@@ -1,12 +1,12 @@
 import { join } from 'node:path'
 import { tmpdir } from 'node:os'
 import { mkdtemp, rm } from 'node:fs/promises'
-import { initializeDatabase } from '../../config/database'
-import { SessionManager } from './sessionManager'
-import { AuditService } from '../audit'
-import { AuthService } from '.'
-import { AppError } from '../../config/appError'
-import { User } from '../../models/User'
+import { initializeDatabase } from '@main/config/database'
+import { SessionManager } from '@main/services/auth/sessionManager'
+import { AuditService } from '@main/services/audit'
+import { AuthService } from '@main/services/auth'
+import { AppError } from '@main/config/appError'
+import { User } from '@main/models/User'
 
 const ADMIN_CREDENTIALS = {
   username: 'admin',

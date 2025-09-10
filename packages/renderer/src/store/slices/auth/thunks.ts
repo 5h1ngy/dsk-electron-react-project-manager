@@ -8,15 +8,15 @@ import type {
   RegisterUserInput
 } from '@main/services/auth/schemas'
 
-import type { AppThunk, RootState } from '../../types'
+import type { AppThunk, RootState } from '@renderer/store/types'
 import {
   extractErrorMessage,
   getStoredToken,
   handleResponse,
   isSessionExpiredError,
   persistToken
-} from './helpers'
-import { forceLogout } from './slice'
+} from '@renderer/store/slices/auth/helpers'
+import { forceLogout } from '@renderer/store/slices/auth/slice'
 
 export const fetchUsers = createAsyncThunk<UserDTO[], string, { rejectValue: string }>(
   'auth/fetchUsers',

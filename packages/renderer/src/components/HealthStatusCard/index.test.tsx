@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
-import { HealthStatusCard } from './index'
+import { HealthStatusCard } from '@renderer/components/HealthStatusCard/index'
 
 jest.mock('./hooks/useHealthStatus', () => ({
   useHealthStatus: jest.fn()

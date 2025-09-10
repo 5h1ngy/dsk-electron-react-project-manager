@@ -8,9 +8,9 @@ import {
   Model,
   Table
 } from 'sequelize-typescript'
-import { Project } from './Project'
-import { User } from './User'
-import { Comment } from './Comment'
+import { Project } from '@main/models/Project'
+import { User } from '@main/models/User'
+import { Comment } from '@main/models/Comment'
 
 export type TaskStatus = 'todo' | 'in_progress' | 'blocked' | 'done'
 export type TaskPriority = 'low' | 'medium' | 'high' | 'critical'

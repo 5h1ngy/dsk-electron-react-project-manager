@@ -1,9 +1,9 @@
-import { AppError } from '../../config/appError'
-import type { Comment } from '../../models/Comment'
-import type { Task } from '../../models/Task'
-import type { User } from '../../models/User'
-import type { CommentDTO, TaskDetailsDTO, UserSummaryDTO } from './types'
-import type { TaskPriorityInput, TaskStatusInput } from './schemas'
+import { AppError } from '@main/config/appError'
+import type { Comment } from '@main/models/Comment'
+import type { Task } from '@main/models/Task'
+import type { User } from '@main/models/User'
+import type { CommentDTO, TaskDetailsDTO, UserSummaryDTO } from '@main/services/task/types'
+import type { TaskPriorityInput, TaskStatusInput } from '@main/services/task/schemas'
 
 export const mapUserSummary = (user: User | null): UserSummaryDTO | null => {
   if (!user) {

@@ -7,7 +7,7 @@ import {
   updateUserSchema,
   type CreateUserValues,
   type UpdateUserValues
-} from '../schemas/userSchemas'
+} from '@renderer/pages/Dashboard/schemas/userSchemas'
 
 export interface UserForms {
   createForm: ReturnType<typeof useForm<CreateUserValues>>

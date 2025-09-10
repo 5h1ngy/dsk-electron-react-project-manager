@@ -3,9 +3,9 @@ import { useTranslation } from 'react-i18next'
 
 import type { ProjectDetails } from '@renderer/store/slices/projects'
 import type { TaskDetails } from '@renderer/store/slices/tasks'
-import { KanbanColumn } from './KanbanColumn'
-import { TaskComposer } from './TaskComposer'
-import { useProjectBoard } from '../hooks/useProjectBoard'
+import { KanbanColumn } from '@renderer/pages/Projects/components/KanbanColumn'
+import { TaskComposer } from '@renderer/pages/Projects/components/TaskComposer'
+import { useProjectBoard } from '@renderer/pages/Projects/hooks/useProjectBoard'
 
 export interface ProjectBoardProps {
   project: ProjectDetails | null

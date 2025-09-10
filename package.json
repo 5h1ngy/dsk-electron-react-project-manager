@@ -11,7 +11,7 @@
     "typecheck:node": "tsc --noEmit -p tsconfig.node.json --composite false",
     "typecheck:web": "tsc --noEmit -p tsconfig.web.json --composite false",
     "typecheck": "npm run typecheck:node && npm run typecheck:web",
-    "db:seed": "ts-node --project tsconfig.tools.json seeding/run.ts",
+    "db:seed": "ts-node --project tsconfig.tools.json -r tsconfig-paths/register seeding/run.ts",
     "test": "jest",
     "test:watch": "jest --watch",
     "start": "electron-vite preview",
@@ -73,6 +73,7 @@
     "prettier": "^3.6.2",
     "ts-jest": "^29.4.5",
     "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "^5.7.3",
     "vite": "^7.1.10"
   },

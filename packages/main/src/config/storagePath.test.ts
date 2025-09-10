@@ -1,6 +1,6 @@
 import { join } from 'node:path'
 
-import { StoragePathResolver } from './storagePath'
+import { StoragePathResolver } from '@main/config/storagePath'
 
 describe('StoragePathResolver', () => {
   it('honours explicit override paths', () => {

@@ -1,4 +1,4 @@
-import { hashPassword, verifyPassword } from './password'
+import { hashPassword, verifyPassword } from '@main/services/auth/password'
 
 describe('password hashing', () => {
   it('verifies hashed password correctly', async () => {

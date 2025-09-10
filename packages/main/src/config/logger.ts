@@ -1,7 +1,7 @@
-import { env } from './env'
-import type { LogLevelSetting } from './env.types'
-import type { LogLevel, LoggerOptions } from './logger.types'
-import { formatLogContext, padNumber } from './logger.helpers'
+import { env } from '@main/config/env'
+import type { LogLevelSetting } from '@main/config/env.types'
+import type { LogLevel, LoggerOptions } from '@main/config/logger.types'
+import { formatLogContext, padNumber } from '@main/config/logger.helpers'
 
 const RESET = '\x1b[0m'
 const COLORS = {

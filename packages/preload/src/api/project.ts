@@ -1,7 +1,7 @@
 import type { ProjectDetailsDTO, ProjectSummaryDTO } from '@main/services/project/types'
 import type { CreateProjectInput, UpdateProjectInput } from '@main/services/project/schemas'
-import type { ProjectMemberPayload } from '../types'
-import { invokeIpc } from './shared'
+import type { ProjectMemberPayload } from '@preload/types'
+import { invokeIpc } from '@preload/api/shared'
 
 const CHANNELS = {
   list: 'project:list',

@@ -1,5 +1,5 @@
 import { ipcRenderer } from 'electron'
-import { healthApi } from './health'
+import { healthApi } from '@preload/api/health'
 
 jest.mock('electron', () => ({
   ipcRenderer: {

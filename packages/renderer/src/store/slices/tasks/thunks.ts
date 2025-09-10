@@ -13,9 +13,9 @@ import {
   handleResponse,
   isSessionExpiredError,
   persistToken
-} from '../auth/helpers'
-import { forceLogout } from '../auth/slice'
-import type { RootState } from '../../types'
+} from '@renderer/store/slices/auth/helpers'
+import { forceLogout } from '@renderer/store/slices/auth/slice'
+import type { RootState } from '@renderer/store/types'
 
 const ensureToken = (state: RootState): string | null => state.auth.token
 

@@ -1,6 +1,6 @@
-export * from './types'
-export * from './selectors'
-export { tasksReducer, clearTaskErrors, resetTaskSearch } from './slice'
+export * from '@renderer/store/slices/tasks/types'
+export * from '@renderer/store/slices/tasks/selectors'
+export { tasksReducer, clearTaskErrors, resetTaskSearch } from '@renderer/store/slices/tasks/slice'
 export {
   fetchTasks,
   createTask,
@@ -10,4 +10,4 @@ export {
   fetchComments,
   addComment,
   searchTasks
-} from './thunks'
+} from '@renderer/store/slices/tasks/thunks'

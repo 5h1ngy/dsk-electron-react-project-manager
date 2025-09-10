@@ -2,7 +2,7 @@ import { existsSync } from 'node:fs'
 import { join } from 'node:path'
 import dotenv from 'dotenv'
 
-import type { Env, LogLevelSetting } from './env.types'
+import type { Env, LogLevelSetting } from '@main/config/env.types'
 
 /**
  * Encapsulates access to environment configuration, ensuring we only expose

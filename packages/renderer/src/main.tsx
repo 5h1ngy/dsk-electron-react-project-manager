@@ -1,12 +1,12 @@
 import '@ant-design/v5-patch-for-react-19'
 import 'antd/dist/reset.css'
-import './i18n/config'
+import '@renderer/i18n/config'
 
 import { StrictMode } from 'react'
 import { Provider } from 'react-redux'
 import { createRoot } from 'react-dom/client'
-import App from './App'
-import { store } from './store'
+import App from '@renderer/App'
+import { store } from '@renderer/store'
 
 const container = document.getElementById('root')
 

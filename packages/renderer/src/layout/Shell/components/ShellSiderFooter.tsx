@@ -2,7 +2,7 @@ import { LogoutOutlined } from '@ant-design/icons'
 import { Button, Divider, Space, Tag, theme } from 'antd'
 import type { JSX } from 'react'
 
-import { UserIdentity } from './Header/UserIdentity'
+import { UserIdentity } from '@renderer/layout/Shell/components/Header/UserIdentity'
 
 interface ShellSiderFooterProps {
   displayName: string

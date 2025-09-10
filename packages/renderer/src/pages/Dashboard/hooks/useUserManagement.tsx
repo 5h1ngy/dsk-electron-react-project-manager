@@ -9,9 +9,9 @@ import type { RoleName } from '@main/services/auth/constants'
 import { useAppSelector } from '@renderer/store/hooks'
 import { selectCurrentUser } from '@renderer/store/slices/auth'
 
-import type { CreateUserValues, UpdateUserValues } from '../schemas/userSchemas'
-import { useUserForms } from './useUserForms'
-import { useUserData } from './useUserData'
+import type { CreateUserValues, UpdateUserValues } from '@renderer/pages/Dashboard/schemas/userSchemas'
+import { useUserForms } from '@renderer/pages/Dashboard/hooks/useUserForms'
+import { useUserData } from '@renderer/pages/Dashboard/hooks/useUserData'
 
 interface UserManagementState {
   users: UserDTO[]

@@ -14,7 +14,7 @@ import {
   type LoadStatus
 } from '@renderer/store/slices/tasks'
 import type { ProjectDetails } from '@renderer/store/slices/projects'
-import { createTaskSchema, type CreateTaskValues } from '../schemas/taskSchemas'
+import { createTaskSchema, type CreateTaskValues } from '@renderer/pages/Projects/schemas/taskSchemas'
 
 export interface KanbanColumn {
   status: TaskStatus

@@ -1,5 +1,5 @@
-import { DEFAULT_ACCENT_COLOR, THEME_ACCENT_STORAGE_KEY, THEME_STORAGE_KEY } from './constants'
-import type { ThemeMode } from './types'
+import { DEFAULT_ACCENT_COLOR, THEME_ACCENT_STORAGE_KEY, THEME_STORAGE_KEY } from '@renderer/store/slices/theme/constants'
+import type { ThemeMode } from '@renderer/store/slices/theme/types'
 
 export const readInitialMode = (): ThemeMode => {
   if (typeof window === 'undefined') {

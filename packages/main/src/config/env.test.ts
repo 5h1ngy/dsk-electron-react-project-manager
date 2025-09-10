@@ -2,7 +2,7 @@ import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { tmpdir } from 'node:os'
 
-import { EnvConfig } from './env'
+import { EnvConfig } from '@main/config/env'
 
 const resetLogLevel = (value: string | undefined): void => {
   if (value === undefined) {

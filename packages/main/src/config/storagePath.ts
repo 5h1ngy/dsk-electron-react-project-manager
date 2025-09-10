@@ -2,12 +2,12 @@ import { join } from 'node:path'
 import { homedir } from 'node:os'
 
 import packageJson from '../../../../package.json'
-import { logger } from './logger'
+import { logger } from '@main/config/logger'
 
 import type {
   StoragePathOptions,
   StoragePathResolverOptions
-} from './storagePath.types'
+} from '@main/config/storagePath.types'
 
 interface PackageMetadata {
   name?: string
