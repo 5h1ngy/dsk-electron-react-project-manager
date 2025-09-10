@@ -1,12 +1,12 @@
 import { randomUUID } from 'node:crypto'
 import { UniqueConstraintError } from 'sequelize'
-import { Role } from '../../models/Role'
-import { User } from '../../models/User'
-import { UserRole } from '../../models/UserRole'
-import { hashPassword, verifyPassword } from './password'
-import { SessionManager, SessionRecord } from './sessionManager'
-import { AuditService } from '../audit/auditService'
-import { AppError, wrapError } from '../../config/appError'
+import { Role } from '../models/Role'
+import { User } from '../models/User'
+import { UserRole } from '../models/UserRole'
+import { hashPassword, verifyPassword } from './auth.password'
+import { SessionManager, SessionRecord } from './auth.sessionManager'
+import { AuditService } from './audit.service'
+import { AppError, wrapError } from '../config/appError'
 import {
   LoginSchema,
   CreateUserSchema,
@@ -16,10 +16,10 @@ import {
   type CreateUserInput,
   type UpdateUserInput,
   type RegisterUserInput
-} from './validation'
-import { ROLE_NAMES, type RoleName } from './constants'
-import { logger } from '../../config/logger'
-import type { ServiceActor } from '../types'
+} from './auth.schemas'
+import { ROLE_NAMES, type RoleName } from './auth.constants'
+import { logger } from '../config/logger'
+import type { ServiceActor } from './types'
 
 export interface SessionPayload {
   token: string

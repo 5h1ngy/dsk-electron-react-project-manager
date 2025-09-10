@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { ROLE_NAMES } from '@main/services/auth/constants'
+import { ROLE_NAMES } from '@main/services/auth.constants'
 
 export const createUserSchema = z.object({
   username: z.string().min(3).max(32),

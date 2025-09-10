@@ -4,7 +4,7 @@ import { Navigate, Outlet } from 'react-router-dom'
 import Shell from '@renderer/layout/Shell'
 import { useAppDispatch, useAppSelector } from '@renderer/store/hooks'
 import { logout, selectCurrentUser, selectIsAuthenticated } from '@renderer/store/slices/auth'
-import { useSessionWatcher } from '@renderer/store/hooks/useSessionWatcher'
+import { useSessionWatcher } from '@renderer/hooks/useSessionWatcher'
 
 export const ProtectedRoute = () => {
   const dispatch = useAppDispatch()

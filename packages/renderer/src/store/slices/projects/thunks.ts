@@ -3,8 +3,8 @@ import type {
   CreateProjectInput,
   UpdateProjectInput,
   ProjectMemberRoleInput
-} from '@main/services/project/projectValidation'
-import type { ProjectDetailsDTO, ProjectSummaryDTO } from '@main/services/project'
+} from '@main/services/project.schemas'
+import type { ProjectDetailsDTO, ProjectSummaryDTO } from '@main/services/project.types'
 
 import {
   extractErrorMessage,

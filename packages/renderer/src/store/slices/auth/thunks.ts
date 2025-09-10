@@ -1,12 +1,12 @@
 import { createAsyncThunk } from '@reduxjs/toolkit'
 
-import type { SessionPayload, UserDTO } from '@main/auth/authService'
+import type { SessionPayload, UserDTO } from '@main/services/auth.service'
 import type {
   CreateUserInput,
   UpdateUserInput,
   LoginInput,
   RegisterUserInput
-} from '@main/auth/validation'
+} from '@main/services/auth.schemas'
 
 import type { AppThunk, RootState } from '../../types'
 import {
@@ -155,3 +155,4 @@ export const loadUsers = (): AppThunk => async (dispatch, getState) => {
   }
   await dispatch(fetchUsers(token))
 }
+

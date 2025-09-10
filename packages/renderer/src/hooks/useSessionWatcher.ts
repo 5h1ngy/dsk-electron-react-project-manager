@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 
 import { handleResponse, isSessionExpiredError, persistToken } from '@renderer/store/slices/auth/helpers'
 import { forceLogout, selectToken } from '@renderer/store/slices/auth'
-import { useAppDispatch, useAppSelector } from '../hooks'
+import { useAppDispatch, useAppSelector } from '../store/hooks'
 
 const POLL_INTERVAL_MS = 60_000
 

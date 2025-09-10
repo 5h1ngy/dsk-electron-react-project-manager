@@ -1,5 +1,5 @@
-import type { AuthService } from '../services/auth/authService'
-import type { TaskService } from '../services/task'
+import type { AuthService } from '../services/auth.service'
+import type { TaskService } from '../services/task.service'
 import { TaskIpcRegistrar } from './task'
 import { IpcChannelRegistrar } from './utils'
 

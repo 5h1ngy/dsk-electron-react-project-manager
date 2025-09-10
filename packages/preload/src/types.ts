@@ -1,28 +1,28 @@
 import type { HealthResponse } from '@main/ipc/health'
-import type { SessionPayload, UserDTO } from '@main/services/auth/authService'
+import type { SessionPayload, UserDTO } from '@main/services/auth.service'
 import type {
   CreateUserInput,
   UpdateUserInput,
   LoginInput,
   RegisterUserInput
-} from '@main/services/auth/validation'
+} from '@main/services/auth.schemas'
 import type {
   CreateProjectInput,
   UpdateProjectInput,
   ProjectMemberRoleInput
-} from '@main/services/project/projectValidation'
+} from '@main/services/project.schemas'
 import type {
   ProjectDetailsDTO,
   ProjectSummaryDTO
-} from '@main/services/project'
+} from '@main/services/project.types'
 import type {
   CreateTaskInput,
   UpdateTaskInput,
   MoveTaskInput,
   CreateCommentInput,
   SearchTasksInput
-} from '@main/services/task/taskValidation'
-import type { TaskDetailsDTO, CommentDTO } from '@main/services/task'
+} from '@main/services/task.schemas'
+import type { TaskDetailsDTO, CommentDTO } from '@main/services/task.types'
 
 export interface IpcSuccess<T> {
   ok: true
