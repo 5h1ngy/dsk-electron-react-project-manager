@@ -2,8 +2,8 @@ import { Empty, Space, Spin, Typography } from 'antd'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 
-import { ProjectBoard } from './components/ProjectBoard'
-import { useProjectRouteContext } from './ProjectLayout'
+import { ProjectBoard } from '../Projects/components/ProjectBoard'
+import { useProjectRouteContext } from '../ProjectLayout'
 
 const ProjectBoardPage = () => {
   const { project, projectLoading, canManageTasks } = useProjectRouteContext()
