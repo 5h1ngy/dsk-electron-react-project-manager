@@ -2,7 +2,7 @@ import 'reflect-metadata'
 import type { Sequelize } from 'sequelize-typescript'
 import { app, BrowserWindow } from 'electron'
 
-import { registerSecurityHooks } from './services/security/hardening'
+import { registerSecurityHooks } from './services/security'
 import { initializeDatabase } from './config/database'
 import { resolveAppStoragePath } from './config/storagePath'
 import { logger } from './config/logger'

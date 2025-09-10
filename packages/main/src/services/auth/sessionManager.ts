@@ -76,28 +76,35 @@ export class SessionManager {
   }
 
   endSessionsForUser(userId: string): void {
-    for (const [token, session] of this.sessions) {
+    this.sessions.forEach((session, token) => {
       if (session.userId === userId) {
         this.sessions.delete(token)
       }
-    }
+    })
   }
 
   cleanupExpired(reference: Date = new Date()): number {
     let removed = 0
-    for (const [token, session] of this.sessions) {
+    this.sessions.forEach((session, token) => {
       if (this.isExpired(session, reference)) {
         this.sessions.delete(token)
         removed += 1
       }
-    }
+    })
     return removed
   }
 
   setTimeoutMinutes(minutes: number): void {
-    if (!Number.isFinite(minutes) || minutes <= 0) {
+    if (!Number.isFinite(minutes) || minutes < 0) {
       throw new Error('Invalid session timeout value')
     }
     this.timeoutMs = minutes * 60 * 1000
+    this.sessions.forEach((session, token) => {
+      session.expiresAt = this.computeExpiry(session.lastActiveAt)
+      if (this.isExpired(session)) {
+        this.sessions.delete(token)
+      }
+    })
   }
 }
+

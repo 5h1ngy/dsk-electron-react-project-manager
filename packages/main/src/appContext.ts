@@ -4,8 +4,8 @@ import type { Sequelize } from 'sequelize-typescript'
 
 import { logger, shouldSuppressDevtoolsMessage } from './config/logger'
 import { SessionManager } from './services/auth/sessionManager'
-import { AuditService } from './services/audit/auditService'
-import { AuthService } from './services/auth/authService'
+import { AuditService } from './services/audit'
+import { AuthService } from './services/auth'
 import { ProjectService } from './services/project'
 import { TaskService } from './services/task'
 

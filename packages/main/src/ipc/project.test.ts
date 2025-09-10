@@ -1,4 +1,4 @@
-import type { AuthService } from '../services/auth/authService'
+import type { AuthService } from '../services/auth'
 import type { ProjectService } from '../services/project'
 import { ProjectIpcRegistrar } from './project'
 import { IpcChannelRegistrar } from './utils'

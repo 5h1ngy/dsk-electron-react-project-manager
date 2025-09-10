@@ -8,7 +8,7 @@ import { Outlet, useLocation, useNavigate, useOutletContext, useParams } from 'r
 import type { ProjectDetails } from '@renderer/store/slices/projects'
 import type { TaskDetails } from '@renderer/store/slices/tasks'
 
-import { useProjectDetails } from './hooks/useProjectDetails'
+import { useProjectDetails } from '../Projects/hooks/useProjectDetails'
 
 type ProjectTabKey = 'overview' | 'tasks' | 'board'
 
