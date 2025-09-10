@@ -1,4 +1,4 @@
-import type { AuthService } from '../services/auth.service'
+import type { AuthService } from '../services/auth'
 import { AppError } from '../config/appError'
 import { AuthIpcRegistrar } from './auth'
 import { IpcChannelRegistrar } from './utils'

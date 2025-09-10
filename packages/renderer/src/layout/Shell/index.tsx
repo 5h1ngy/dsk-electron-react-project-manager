@@ -4,7 +4,7 @@ import { useCallback, useMemo, useState, type JSX, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLocation, useNavigate } from 'react-router-dom'
 
-import type { UserDTO } from '@main/services/auth.service'
+import type { UserDTO } from '@main/services/auth'
 import { useAppSelector } from '@renderer/store/hooks'
 import { selectAccentColor, selectThemeMode } from '@renderer/store/slices/theme'
 

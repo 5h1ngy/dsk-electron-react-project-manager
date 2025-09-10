@@ -1,6 +1,6 @@
 import { useCallback, useEffect } from 'react'
 
-import type { UserDTO } from '@main/services/auth.service'
+import type { UserDTO } from '@main/services/auth'
 import { useAppDispatch, useAppSelector } from '@renderer/store/hooks'
 import {
   clearError as clearAuthError,

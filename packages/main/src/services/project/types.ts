@@ -1,5 +1,5 @@
-import type { ProjectMembershipRole } from '../models/ProjectMember'
-import type { ServiceActor } from './types'
+import type { ProjectMembershipRole } from '../../models/ProjectMember'
+import type { ServiceActor } from '../types'
 
 export type ProjectActor = ServiceActor
 

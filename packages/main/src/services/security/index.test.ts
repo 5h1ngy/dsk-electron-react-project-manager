@@ -2,7 +2,7 @@ import {
   buildContentSecurityPolicy,
   createNetworkBlockerHandler,
   shouldAllowRequest
-} from './security.hardening'
+} from '.'
 
 const invokeHandler = async (
   handler: ReturnType<typeof createNetworkBlockerHandler>,

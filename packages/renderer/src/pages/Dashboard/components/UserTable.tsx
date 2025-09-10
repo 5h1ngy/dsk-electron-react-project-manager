@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { Table } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
 
-import type { UserDTO } from '@main/services/auth.service'
+import type { UserDTO } from '@main/services/auth'
 
 interface UserTableProps {
   columns: ColumnsType<UserDTO>

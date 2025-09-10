@@ -4,7 +4,7 @@ import { Form, Input, Modal, Select, Switch } from 'antd'
 import type { UseFormReturn } from 'react-hook-form'
 import { Controller } from 'react-hook-form'
 
-import { ROLE_NAMES, type RoleName } from '@main/services/auth.constants'
+import { ROLE_NAMES, type RoleName } from '@main/services/auth/constants'
 
 import type { CreateUserValues } from '../schemas/userSchemas'
 

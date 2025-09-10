@@ -1,10 +1,10 @@
-import type { SessionPayload, UserDTO } from '@main/services/auth.service'
+import type { SessionPayload, UserDTO } from '@main/services/auth'
 import type {
   CreateUserInput,
   UpdateUserInput,
   LoginInput,
   RegisterUserInput
-} from '@main/services/auth.schemas'
+} from '@main/services/auth/schemas'
 import type { IpcResponse } from '../types'
 import { invokeIpc } from './shared'
 

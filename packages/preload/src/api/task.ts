@@ -1,11 +1,11 @@
-import type { TaskDetailsDTO, CommentDTO } from '@main/services/task.types'
+import type { TaskDetailsDTO, CommentDTO } from '@main/services/task/types'
 import type {
   CreateTaskInput,
   UpdateTaskInput,
   MoveTaskInput,
   CreateCommentInput,
   SearchTasksInput
-} from '@main/services/task.schemas'
+} from '@main/services/task/schemas'
 import { invokeIpc } from './shared'
 
 const CHANNELS = {

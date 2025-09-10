@@ -1,12 +1,12 @@
-import { AppError } from '../config/appError'
-import type { Project } from '../models/Project'
-import type { ProjectMember, ProjectMembershipRole } from '../models/ProjectMember'
-import type { ProjectTag } from '../models/ProjectTag'
+import { AppError } from '../../config/appError'
+import type { Project } from '../../models/Project'
+import type { ProjectMember, ProjectMembershipRole } from '../../models/ProjectMember'
+import type { ProjectTag } from '../../models/ProjectTag'
 import type {
   ProjectDetailsDTO,
   ProjectMemberDTO,
   ProjectSummaryDTO
-} from './project.types'
+} from './types'
 
 const collectTags = (project: Project & { tags?: ProjectTag[] }): string[] =>
   (project.tags ?? []).map((tag) => tag.tag)

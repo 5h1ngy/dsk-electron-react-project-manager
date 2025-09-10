@@ -3,11 +3,11 @@ import { join } from 'node:path'
 import type { Sequelize } from 'sequelize-typescript'
 
 import { logger, shouldSuppressDevtoolsMessage } from './config/logger'
-import { SessionManager } from './services/auth.sessionManager'
-import { AuditService } from './services/audit.service'
-import { AuthService } from './services/auth.service'
-import { ProjectService } from './services/project.service'
-import { TaskService } from './services/task.service'
+import { SessionManager } from './services/auth/sessionManager'
+import { AuditService } from './services/audit'
+import { AuthService } from './services/auth'
+import { ProjectService } from './services/project'
+import { TaskService } from './services/task'
 
 export const MAIN_WINDOW_OPTIONS: Electron.BrowserWindowConstructorOptions = {
   width: 1280,

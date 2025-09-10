@@ -1,4 +1,4 @@
-import { SessionManager } from './auth.sessionManager'
+import { SessionManager } from './sessionManager'
 
 describe('SessionManager', () => {
   it('creates and retrieves sessions', () => {

@@ -1,4 +1,4 @@
-import type { AuthService } from '../services/auth.service'
+import type { AuthService } from '../services/auth'
 import { appContext } from '../appContext'
 import { IpcChannelRegistrar, ipcChannelRegistrar } from './utils'
 

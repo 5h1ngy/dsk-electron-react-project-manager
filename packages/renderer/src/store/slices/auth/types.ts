@@ -1,4 +1,4 @@
-import type { UserDTO } from '@main/services/auth.service'
+import type { UserDTO } from '@main/services/auth'
 
 export type AuthStatus = 'idle' | 'loading'
 
