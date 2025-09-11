@@ -21,7 +21,7 @@ export interface ShellRoleBadge {
   label: string
 }
 
-export interface ShellFooterData {
+export interface SiderFooterData {
   displayName: string
   username: string
   roles: ShellRoleBadge[]
@@ -47,6 +47,6 @@ export interface UseShellLayoutResult {
   handleMenuSelect: NonNullable<MenuProps['onClick']>
   handleToggleCollapse: () => void
   handleCollapseChange: (collapsed: boolean) => void
-  footerData: ShellFooterData
+  footerProps: SiderFooterData
   labels: ShellLabels
 }

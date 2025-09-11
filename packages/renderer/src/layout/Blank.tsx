@@ -27,4 +27,5 @@ const Blank = ({ children }: BlankLayoutProps): JSX.Element => (
   </Layout>
 )
 
+export { Blank }
 export default Blank

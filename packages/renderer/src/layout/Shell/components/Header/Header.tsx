@@ -4,21 +4,21 @@ import type { JSX } from 'react'
 
 import { LanguageSwitcher } from '@renderer/components/LanguageSwitcher'
 import { ThemeControls } from '@renderer/components/ThemeControls'
-import { useShellHeaderStyles } from '@renderer/layout/Shell/components/Header/Header.hooks'
-import type { ShellHeaderProps } from '@renderer/layout/Shell/components/Header/Header.types'
+import { useHeaderStyles } from '@renderer/layout/Shell/components/Header/Header.hooks'
+import type { HeaderProps } from '@renderer/layout/Shell/components/Header/Header.types'
 
-const { Header } = Layout
+const { Header: AntHeader } = Layout
 
-export const ShellHeader = ({
+const Header = ({
   collapsed,
   onToggleCollapse,
   expandLabel,
   collapseLabel
-}: ShellHeaderProps): JSX.Element => {
-  const headerStyle = useShellHeaderStyles()
+}: HeaderProps): JSX.Element => {
+  const headerStyle = useHeaderStyles()
 
   return (
-    <Header style={headerStyle}>
+    <AntHeader style={headerStyle}>
       <Flex align="center" justify="space-between" wrap gap={16} style={{ height: '100%' }}>
         <Flex align="center" gap={16}>
           <Button
@@ -33,10 +33,11 @@ export const ShellHeader = ({
           <ThemeControls />
         </Space>
       </Flex>
-    </Header>
+    </AntHeader>
   )
 }
 
-ShellHeader.displayName = 'ShellHeader'
+Header.displayName = 'Header'
 
-export default ShellHeader
+export { Header }
+export default Header

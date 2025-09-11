@@ -1,7 +1,7 @@
 import type { MenuProps } from 'antd'
 import type { ReactNode } from 'react'
 
-export interface ShellSiderProps {
+export interface SiderProps {
   collapsed: boolean
   onCollapse: (collapsed: boolean) => void
   selectedKeys: string[]
@@ -11,4 +11,3 @@ export interface ShellSiderProps {
   onSelect: NonNullable<MenuProps['onClick']>
   footer?: ReactNode
 }
-

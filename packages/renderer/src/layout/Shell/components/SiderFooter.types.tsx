@@ -1,6 +1,6 @@
 import type { ShellRoleBadge } from '@renderer/layout/Shell/Shell.types'
 
-export interface ShellSiderFooterProps {
+export interface SiderFooterProps {
   displayName: string
   username: string
   roles: ShellRoleBadge[]
@@ -8,4 +8,3 @@ export interface ShellSiderFooterProps {
   onLogout: () => void
   logoutLabel: string
 }
-

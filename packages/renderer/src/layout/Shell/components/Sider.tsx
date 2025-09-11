@@ -1,12 +1,12 @@
 import { Flex, Layout, Menu, Typography } from 'antd'
 import type { JSX } from 'react'
 
-import { useShellSiderStyles } from '@renderer/layout/Shell/components/Sider.hooks'
-import type { ShellSiderProps } from '@renderer/layout/Shell/components/Sider.types'
+import { useSiderStyles } from '@renderer/layout/Shell/components/Sider.hooks'
+import type { SiderProps } from '@renderer/layout/Shell/components/Sider.types'
 
-const { Sider } = Layout
+const { Sider: AntSider } = Layout
 
-export const ShellSider = ({
+const Sider = ({
   collapsed,
   onCollapse,
   selectedKeys,
@@ -15,11 +15,11 @@ export const ShellSider = ({
   title,
   onSelect,
   footer
-}: ShellSiderProps): JSX.Element => {
-  const { background, borderColor } = useShellSiderStyles(themeMode)
+}: SiderProps): JSX.Element => {
+  const { background, borderColor } = useSiderStyles(themeMode)
 
   return (
-    <Sider
+    <AntSider
       width={240}
       collapsedWidth={72}
       collapsible
@@ -70,8 +70,11 @@ export const ShellSider = ({
           {footer}
         </div>
       )}
-    </Sider>
+    </AntSider>
   )
 }
 
-ShellSider.displayName = 'ShellSider'
+Sider.displayName = 'Sider'
+
+export { Sider }
+export default Sider

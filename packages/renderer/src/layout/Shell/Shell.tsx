@@ -2,8 +2,8 @@ import { Layout } from 'antd'
 import type { JSX } from 'react'
 
 import Header from '@renderer/layout/Shell/components/Header'
-import { ShellSider } from '@renderer/layout/Shell/components/Sider'
-import { ShellSiderFooter } from '@renderer/layout/Shell/components/SiderFooter'
+import Sider from '@renderer/layout/Shell/components/Sider'
+import SiderFooter from '@renderer/layout/Shell/components/SiderFooter'
 import { useShellLayout } from '@renderer/layout/Shell/Shell.hooks'
 import type { ShellProps } from '@renderer/layout/Shell/Shell.types'
 
@@ -26,13 +26,13 @@ const Shell = ({ currentUser, onLogout, children }: ShellProps): JSX.Element => 
     handleMenuSelect,
     handleToggleCollapse,
     handleCollapseChange,
-    footerData,
+    footerProps,
     labels
   } = useShellLayout({ currentUser, onLogout })
 
   return (
     <Layout style={layoutStyle}>
-      <ShellSider
+      <Sider
         collapsed={collapsed}
         onCollapse={handleCollapseChange}
         selectedKeys={selectedKeys}
@@ -40,7 +40,7 @@ const Shell = ({ currentUser, onLogout, children }: ShellProps): JSX.Element => 
         themeMode={menuTheme}
         title={labels.title}
         onSelect={handleMenuSelect}
-        footer={<ShellSiderFooter {...footerData} />}
+        footer={<SiderFooter {...footerProps} />}
       />
       <Layout style={INNER_LAYOUT_STYLE}>
         <Header
@@ -59,5 +59,6 @@ const Shell = ({ currentUser, onLogout, children }: ShellProps): JSX.Element => 
 
 Shell.displayName = 'Shell'
 
+export { Shell }
 export default Shell
 

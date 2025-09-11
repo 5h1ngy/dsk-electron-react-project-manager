@@ -9,6 +9,7 @@ import { buildNavigationItems, resolveSelectedKey } from '@renderer/layout/Shell
 import type {
   ShellLayoutParams,
   ShellRoleBadge,
+  SiderFooterData,
   UseShellLayoutResult
 } from '@renderer/layout/Shell/Shell.types'
 
@@ -91,7 +92,7 @@ export const useShellLayout = ({ currentUser, onLogout }: ShellLayoutParams): Us
     [t]
   )
 
-  const footerData = useMemo(
+  const footerProps = useMemo<SiderFooterData>(
     () => ({
       displayName: currentUser.displayName,
       username: currentUser.username,
@@ -113,8 +114,7 @@ export const useShellLayout = ({ currentUser, onLogout }: ShellLayoutParams): Us
     handleMenuSelect,
     handleToggleCollapse,
     handleCollapseChange,
-    footerData,
+    footerProps,
     labels
   }
 }
-

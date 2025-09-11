@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { theme } from 'antd'
 import type { CSSProperties } from 'react'
 
-export const useShellHeaderStyles = (): CSSProperties => {
+export const useHeaderStyles = (): CSSProperties => {
   const { token } = theme.useToken()
 
   return useMemo(

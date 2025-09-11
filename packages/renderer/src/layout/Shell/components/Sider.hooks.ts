@@ -1,12 +1,12 @@
 import { useMemo } from 'react'
 import { theme } from 'antd'
 
-export interface ShellSiderStyle {
+export interface SiderStyle {
   background: string
   borderColor: string
 }
 
-export const useShellSiderStyles = (themeMode: 'light' | 'dark'): ShellSiderStyle => {
+export const useSiderStyles = (themeMode: 'light' | 'dark'): SiderStyle => {
   const { token } = theme.useToken()
 
   return useMemo(
@@ -17,4 +17,3 @@ export const useShellSiderStyles = (themeMode: 'light' | 'dark'): ShellSiderStyl
     [themeMode, token]
   )
 }
-

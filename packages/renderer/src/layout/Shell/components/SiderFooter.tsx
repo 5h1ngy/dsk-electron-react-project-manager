@@ -3,16 +3,16 @@ import { Button, Divider, Space, Tag, theme } from 'antd'
 import type { JSX } from 'react'
 
 import { UserIdentity } from '@renderer/layout/Shell/components/Header/UserIdentity'
-import type { ShellSiderFooterProps } from '@renderer/layout/Shell/components/SiderFooter.types'
+import type { SiderFooterProps } from '@renderer/layout/Shell/components/SiderFooter.types'
 
-export const ShellSiderFooter = ({
+const SiderFooter = ({
   displayName,
   username,
   roles,
   accentColor,
   onLogout,
   logoutLabel
-}: ShellSiderFooterProps): JSX.Element => {
+}: SiderFooterProps): JSX.Element => {
   const { token } = theme.useToken()
 
   return (
@@ -42,4 +42,7 @@ export const ShellSiderFooter = ({
   )
 }
 
-ShellSiderFooter.displayName = 'ShellSiderFooter'
+SiderFooter.displayName = 'SiderFooter'
+
+export { SiderFooter }
+export default SiderFooter
