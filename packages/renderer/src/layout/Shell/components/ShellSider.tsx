@@ -1,19 +1,10 @@
-import { Flex, Layout, Menu, Typography, theme } from 'antd'
-import type { MenuProps } from 'antd'
-import type { JSX, ReactNode } from 'react'
+import { Flex, Layout, Menu, Typography } from 'antd'
+import type { JSX } from 'react'
+
+import { useShellSiderStyles } from '@renderer/layout/Shell/components/ShellSider.hooks'
+import type { ShellSiderProps } from '@renderer/layout/Shell/components/ShellSider.types'
 
 const { Sider } = Layout
-
-interface ShellSiderProps {
-  collapsed: boolean
-  onCollapse: (collapsed: boolean) => void
-  selectedKeys: string[]
-  items: MenuProps['items']
-  themeMode: 'light' | 'dark'
-  title: string
-  onSelect: NonNullable<MenuProps['onClick']>
-  footer?: ReactNode
-}
 
 export const ShellSider = ({
   collapsed,
@@ -25,9 +16,7 @@ export const ShellSider = ({
   onSelect,
   footer
 }: ShellSiderProps): JSX.Element => {
-  const { token } = theme.useToken()
-  const background = themeMode === 'dark' ? token.colorBgElevated : token.colorBgContainer
-  const borderColor = token.colorSplit
+  const { background, borderColor } = useShellSiderStyles(themeMode)
 
   return (
     <Sider

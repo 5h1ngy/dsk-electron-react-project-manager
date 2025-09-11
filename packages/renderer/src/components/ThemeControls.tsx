@@ -1,52 +1,25 @@
 import { BgColorsOutlined, BulbOutlined, MoonOutlined } from '@ant-design/icons'
 import { Button, Card, Dropdown, Space, Switch, Typography } from 'antd'
-import type { DropdownProps } from 'antd'
-import { useCallback, useMemo, useState, type CSSProperties, type JSX } from 'react'
-import { useTranslation } from 'react-i18next'
+import type { CSSProperties, JSX } from 'react'
+import { useCallback, useMemo } from 'react'
 
-import { useAppDispatch, useAppSelector } from '@renderer/store/hooks'
-import {
-  selectAccentColor,
-  selectThemeMode,
-  setAccentColor,
-  setMode
-} from '@renderer/store/slices/theme'
+import { buildThemeButtonStyle } from '@renderer/components/ThemeControls.helpers'
+import { useThemeControls } from '@renderer/components/ThemeControls.hooks'
+import type { ThemeControlsProps } from '@renderer/components/ThemeControls.types'
 
-const ACCENT_COLORS = ['#00F5D4', '#00D4FF', '#5BFF70', '#FF00C8', '#FFB400', '#C0FF00']
+export const ThemeControls = ({ className }: ThemeControlsProps = {}): JSX.Element => {
+  const {
+    accentColor,
+    accentOptions,
+    dropdownProps,
+    iconColor,
+    mode,
+    onAccentSelect,
+    onToggleMode,
+    t
+  } = useThemeControls()
 
-export const ThemeControls = (): JSX.Element => {
-  const { t } = useTranslation()
-  const dispatch = useAppDispatch()
-  const mode = useAppSelector(selectThemeMode)
-  const accentColor = useAppSelector(selectAccentColor)
-
-  const [open, setOpen] = useState(false)
-  const iconColor = useMemo(() => {
-    const hex = accentColor.replace('#', '')
-    const r = parseInt(hex.substring(0, 2), 16)
-    const g = parseInt(hex.substring(2, 4), 16)
-    const b = parseInt(hex.substring(4, 6), 16)
-
-    const brightness = (r * 299 + g * 587 + b * 114) / 1000
-    return brightness > 140 ? '#0f172a' : '#ffffff'
-  }, [accentColor])
-
-  const handleToggleMode = useCallback(
-    (checked: boolean) => {
-      dispatch(setMode(checked ? 'dark' : 'light'))
-    },
-    [dispatch]
-  )
-
-  const handleAccentSelect = useCallback(
-    (color: string) => {
-      dispatch(setAccentColor(color))
-      setOpen(false)
-    },
-    [dispatch]
-  )
-
-  const popupRender: DropdownProps['popupRender'] = useCallback(() => {
+  const popupRender = useCallback(() => {
     const cardStyle: CSSProperties = {
       width: 240,
       boxShadow: '0 8px 24px rgba(15, 23, 42, 0.12)'
@@ -61,7 +34,7 @@ export const ThemeControls = (): JSX.Element => {
               checkedChildren={<MoonOutlined />}
               unCheckedChildren={<BulbOutlined />}
               checked={mode === 'dark'}
-              onChange={handleToggleMode}
+              onChange={onToggleMode}
               aria-label={t('theme.ariaLabel')}
             />
           </Space>
@@ -69,61 +42,43 @@ export const ThemeControls = (): JSX.Element => {
           <Space direction="vertical" size={8} style={{ width: '100%' }}>
             <Typography.Text strong>{t('appShell.theme.accent')}</Typography.Text>
             <Space wrap size="small">
-              {ACCENT_COLORS.map((color, index) => {
-                const isActive = color === accentColor
-                return (
-                  <Button
-                    key={color}
-                    shape="circle"
-                    size="small"
-                    style={{
-                      width: 28,
-                      height: 28,
-                      backgroundColor: color,
-                      borderColor: isActive ? '#ffffff' : color,
-                      boxShadow: isActive ? `0 0 0 2px rgba(0, 0, 0, 0.2)` : undefined
-                    }}
-                    onClick={() => handleAccentSelect(color)}
-                    aria-label={t('appShell.accent.option', { index: index + 1 })}
-                  />
-                )
-              })}
+              {accentOptions.map(({ color, isActive, ariaLabel }) => (
+                <Button
+                  key={color}
+                  shape="circle"
+                  size="small"
+                  style={{
+                    width: 28,
+                    height: 28,
+                    backgroundColor: color,
+                    borderColor: isActive ? '#ffffff' : color,
+                    boxShadow: isActive ? `0 0 0 2px rgba(0, 0, 0, 0.2)` : undefined
+                  }}
+                  onClick={() => onAccentSelect(color)}
+                  aria-label={ariaLabel}
+                />
+              ))}
             </Space>
           </Space>
         </Space>
       </Card>
     )
-  }, [accentColor, handleAccentSelect, handleToggleMode, mode, t])
+  }, [accentOptions, mode, onAccentSelect, onToggleMode, t])
 
-  const dropdownProps: DropdownProps = useMemo(
-    () => ({
-      trigger: ['click'],
-      placement: 'bottomRight',
-      arrow: true,
-      open,
-      onOpenChange: setOpen,
-      popupRender
-    }),
-    [popupRender, open]
+  const buttonStyle = useMemo(
+    () => buildThemeButtonStyle({ accentColor, iconColor }),
+    [accentColor, iconColor]
   )
 
   return (
-    <Dropdown {...dropdownProps}>
+    <Dropdown {...dropdownProps} popupRender={popupRender}>
       <Button
+        className={className}
         shape="circle"
         aria-label={t('appShell.theme.title')}
         title={t('appShell.theme.title')}
         icon={<BgColorsOutlined />}
-        style={{
-          width: 36,
-          height: 36,
-          display: 'inline-flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          backgroundColor: accentColor,
-          borderColor: accentColor,
-          color: iconColor
-        }}
+        style={buttonStyle}
       />
     </Dropdown>
   )

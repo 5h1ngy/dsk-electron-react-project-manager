@@ -1,7 +1,6 @@
 import type { AuthService } from '@main/services/auth'
 import type { TaskService } from '@main/services/task'
-import { appContext } from '@main/appContext'
-import { IpcChannelRegistrar, ipcChannelRegistrar } from '@main/ipc/utils'
+import { IpcChannelRegistrar } from '@main/ipc/utils'
 
 export interface TaskIpcDependencies {
   authService: AuthService
@@ -88,14 +87,3 @@ export class TaskIpcRegistrar {
   }
 }
 
-export const registerTaskIpc = (): void => {
-  if (!appContext.taskService) {
-    throw new Error('TaskService not initialized')
-  }
-
-  new TaskIpcRegistrar({
-    authService: appContext.authService,
-    taskService: appContext.taskService,
-    registrar: ipcChannelRegistrar
-  }).register()
-}

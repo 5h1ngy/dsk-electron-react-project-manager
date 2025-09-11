@@ -1,9 +1,8 @@
 import type { App } from 'electron'
-import { app } from 'electron'
 import type { Sequelize } from 'sequelize-typescript'
 
 import { AppError } from '@main/config/appError'
-import { IpcChannelRegistrar, ipcChannelRegistrar } from '@main/ipc/utils'
+import { IpcChannelRegistrar } from '@main/ipc/utils'
 
 export interface HealthStatus {
   status: 'healthy'
@@ -50,12 +49,4 @@ export class HealthIpcRegistrar {
       }
     })
   }
-}
-
-export const registerHealthIpc = (sequelize: Sequelize): void => {
-  new HealthIpcRegistrar({
-    sequelize,
-    appRef: app,
-    registrar: ipcChannelRegistrar
-  }).register()
 }

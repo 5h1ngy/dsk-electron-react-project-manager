@@ -1,16 +1,10 @@
 import { useCallback, useEffect, useState } from 'react'
-import type { HealthStatus } from '@main/ipc/health'
+import type { HealthState, UseHealthStatusResult } from '@renderer/components/HealthStatusCard.types'
 
-interface HealthState {
-  loading: boolean
-  data?: HealthStatus
-  error?: string
-}
-
-export const useHealthStatus = () => {
+export const useHealthStatus = (): UseHealthStatusResult => {
   const [state, setState] = useState<HealthState>({ loading: true })
 
-  const refresh = useCallback(async () => {
+  const refresh = useCallback(async (): Promise<void> => {
     setState((prev) => ({ ...prev, loading: true, error: undefined }))
 
     try {

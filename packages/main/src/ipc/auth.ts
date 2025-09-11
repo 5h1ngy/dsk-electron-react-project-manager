@@ -1,6 +1,5 @@
 import type { AuthService } from '@main/services/auth'
-import { appContext } from '@main/appContext'
-import { IpcChannelRegistrar, ipcChannelRegistrar } from '@main/ipc/utils'
+import { IpcChannelRegistrar } from '@main/ipc/utils'
 
 export interface AuthIpcDependencies {
   authService: AuthService
@@ -51,9 +50,3 @@ export class AuthIpcRegistrar {
   }
 }
 
-export const registerAuthIpc = (): void => {
-  new AuthIpcRegistrar({
-    authService: appContext.authService,
-    registrar: ipcChannelRegistrar
-  }).register()
-}

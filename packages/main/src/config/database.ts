@@ -127,9 +127,6 @@ export class DatabaseManager {
   }
 }
 
-export const createSequelizeInstance = (options: DatabaseInitializationOptions): Sequelize =>
-  new DatabaseManager(options).createInstance()
-
 export const initializeDatabase = async (
   options: DatabaseInitializationOptions
 ): Promise<Sequelize> => new DatabaseManager(options).initialize()
