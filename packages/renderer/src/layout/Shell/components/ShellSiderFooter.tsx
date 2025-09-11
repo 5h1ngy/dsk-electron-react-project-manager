@@ -3,15 +3,7 @@ import { Button, Divider, Space, Tag, theme } from 'antd'
 import type { JSX } from 'react'
 
 import { UserIdentity } from '@renderer/layout/Shell/components/Header/UserIdentity'
-
-interface ShellSiderFooterProps {
-  displayName: string
-  username: string
-  roles: Array<{ id: string; label: string }>
-  accentColor: string
-  onLogout: () => void
-  logoutLabel: string
-}
+import type { ShellSiderFooterProps } from '@renderer/layout/Shell/components/ShellSiderFooter.types'
 
 export const ShellSiderFooter = ({
   displayName,

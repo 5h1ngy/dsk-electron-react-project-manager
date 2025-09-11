@@ -1,17 +1,15 @@
 import { Button, Card, Space, Spin, Tag, Typography } from 'antd'
 import { ReloadOutlined } from '@ant-design/icons'
-import { useMemo } from 'react'
-import { useHealthStatus } from '@renderer/components/HealthStatusCard/hooks/useHealthStatus'
+import { useMemo, type CSSProperties, type JSX } from 'react'
 
-const formatTimestamp = (timestamp: string): string => {
-  const date = new Date(timestamp)
-  if (Number.isNaN(date.getTime())) {
-    return 'Data non disponibile'
-  }
-  return date.toLocaleString()
-}
+import { useHealthStatus } from '@renderer/components/HealthStatusCard.hooks'
+import type { HealthStatusCardProps } from '@renderer/components/HealthStatusCard.types'
+import { formatTimestamp } from '@renderer/components/HealthStatusCard.helpers'
 
-export const HealthStatusCard = () => {
+export const HealthStatusCard = ({
+  className,
+  cardStyle
+}: HealthStatusCardProps): JSX.Element => {
   const { loading, data, error, refresh } = useHealthStatus()
 
   const uptimeLabel = useMemo(() => {
@@ -25,9 +23,14 @@ export const HealthStatusCard = () => {
     return `${minutes}m ${seconds}s`
   }, [data])
 
+  const mergedCardStyle = useMemo<CSSProperties>(
+    () => ({ width: 360, ...cardStyle }),
+    [cardStyle]
+  )
+
   if (loading && !data && !error) {
     return (
-      <Card style={{ width: 360 }}>
+      <Card className={className} style={mergedCardStyle}>
         <Spin />
       </Card>
     )
@@ -35,13 +38,21 @@ export const HealthStatusCard = () => {
 
   return (
     <Card
+      className={className}
       title="Stato applicazione"
       extra={
-        <Button type="text" icon={<ReloadOutlined />} onClick={refresh} aria-label="Aggiorna stato">
+        <Button
+          type="text"
+          icon={<ReloadOutlined />}
+          onClick={() => {
+            void refresh()
+          }}
+          aria-label="Aggiorna stato"
+        >
           Aggiorna
         </Button>
       }
-      style={{ width: 360 }}
+      style={mergedCardStyle}
     >
       <Space direction="vertical" size="middle">
         {data ? (

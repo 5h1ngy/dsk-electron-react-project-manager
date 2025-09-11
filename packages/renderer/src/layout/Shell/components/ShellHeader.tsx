@@ -1,18 +1,13 @@
 import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons'
-import { Button, Flex, Layout, Space, theme } from 'antd'
+import { Button, Flex, Layout, Space } from 'antd'
 import type { JSX } from 'react'
 
 import { LanguageSwitcher } from '@renderer/components/LanguageSwitcher'
 import { ThemeControls } from '@renderer/components/ThemeControls'
+import { useShellHeaderStyles } from '@renderer/layout/Shell/components/ShellHeader.hooks'
+import type { ShellHeaderProps } from '@renderer/layout/Shell/components/ShellHeader.types'
 
 const { Header } = Layout
-
-interface ShellHeaderProps {
-  collapsed: boolean
-  onToggleCollapse: () => void
-  expandLabel: string
-  collapseLabel: string
-}
 
 export const ShellHeader = ({
   collapsed,
@@ -20,16 +15,10 @@ export const ShellHeader = ({
   expandLabel,
   collapseLabel
 }: ShellHeaderProps): JSX.Element => {
-  const { token } = theme.useToken()
+  const headerStyle = useShellHeaderStyles()
 
   return (
-    <Header
-      style={{
-        background: token.colorBgElevated,
-        borderBottom: `1px solid ${token.colorSplit}`,
-        paddingInline: 24
-      }}
-    >
+    <Header style={headerStyle}>
       <Flex align="center" justify="space-between" wrap gap={16} style={{ height: '100%' }}>
         <Flex align="center" gap={16}>
           <Button

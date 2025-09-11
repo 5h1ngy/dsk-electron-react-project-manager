@@ -1,19 +1,15 @@
 import { Button, Result } from 'antd'
 import { Component, type ErrorInfo, type ReactNode } from 'react'
 
-interface Props {
-  children: ReactNode
-}
+import type {
+  ErrorBoundaryProps,
+  ErrorBoundaryState
+} from '@renderer/components/ErrorBoundary.types'
 
-interface State {
-  hasError: boolean
-  message?: string
-}
+export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+  state: ErrorBoundaryState = { hasError: false }
 
-export class ErrorBoundary extends Component<Props, State> {
-  state: State = { hasError: false }
-
-  static getDerivedStateFromError(error: Error): State {
+  static getDerivedStateFromError(error: Error): ErrorBoundaryState {
     return { hasError: true, message: error.message }
   }
 

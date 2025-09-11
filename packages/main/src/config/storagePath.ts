@@ -74,5 +74,3 @@ const defaultResolver = new StoragePathResolver()
 
 export const resolveAppStoragePath = (options: StoragePathOptions = {}): string =>
   defaultResolver.resolve(options)
-
-export const storagePathResolver = defaultResolver

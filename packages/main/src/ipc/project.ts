@@ -1,7 +1,6 @@
 import type { AuthService } from '@main/services/auth'
 import type { ProjectService } from '@main/services/project'
-import { appContext } from '@main/appContext'
-import { IpcChannelRegistrar, ipcChannelRegistrar } from '@main/ipc/utils'
+import { IpcChannelRegistrar } from '@main/ipc/utils'
 
 export interface ProjectIpcDependencies {
   authService: AuthService
@@ -72,14 +71,3 @@ export class ProjectIpcRegistrar {
   }
 }
 
-export const registerProjectIpc = (): void => {
-  if (!appContext.projectService) {
-    throw new Error('ProjectService not initialized')
-  }
-
-  new ProjectIpcRegistrar({
-    authService: appContext.authService,
-    projectService: appContext.projectService,
-    registrar: ipcChannelRegistrar
-  }).register()
-}

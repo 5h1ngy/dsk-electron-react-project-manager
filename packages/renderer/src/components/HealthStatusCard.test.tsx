@@ -1,13 +1,13 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
-import { HealthStatusCard } from '@renderer/components/HealthStatusCard/index'
+import { HealthStatusCard } from '@renderer/components/HealthStatusCard'
 
-jest.mock('./hooks/useHealthStatus', () => ({
+jest.mock('@renderer/components/HealthStatusCard.hooks', () => ({
   useHealthStatus: jest.fn()
 }))
 
-const mockUseHealthStatus = jest.requireMock('./hooks/useHealthStatus')
+const mockUseHealthStatus = jest.requireMock('@renderer/components/HealthStatusCard.hooks')
   .useHealthStatus as jest.Mock
 
 describe('HealthStatusCard', () => {

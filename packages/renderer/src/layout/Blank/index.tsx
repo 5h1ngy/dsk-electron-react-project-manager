@@ -1,33 +1,27 @@
-import type { JSX, ReactNode } from 'react'
+import type { JSX } from 'react'
 import { Space, Layout } from 'antd'
 
 import { LanguageSwitcher } from '@renderer/components/LanguageSwitcher'
 import { ThemeControls } from '@renderer/components/ThemeControls'
+import {
+  BLANK_CONTENT_STYLE,
+  BLANK_HEADER_CONTENT_STYLE,
+  BLANK_HEADER_STYLE,
+  BLANK_LAYOUT_STYLE
+} from '@renderer/layout/Blank/Blank.helpers'
+import type { BlankLayoutProps } from '@renderer/layout/Blank/Blank.types'
 
 const { Header, Content } = Layout
 
-interface BlankProps {
-  children: ReactNode
-}
-
-const Blank = ({ children }: BlankProps): JSX.Element => (
-  <Layout style={{ minHeight: '100vh' }}>
-    <Header
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        paddingInline: 24
-      }}
-    >
-      <Space align="center" size="middle" style={{ marginLeft: 'auto' }}>
+const Blank = ({ children }: BlankLayoutProps): JSX.Element => (
+  <Layout style={BLANK_LAYOUT_STYLE}>
+    <Header style={BLANK_HEADER_STYLE}>
+      <Space align="center" size="middle" style={BLANK_HEADER_CONTENT_STYLE}>
         <LanguageSwitcher />
         <ThemeControls />
       </Space>
     </Header>
-    <Content
-      style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: 24 }}
-    >
+    <Content style={BLANK_CONTENT_STYLE}>
       {children}
     </Content>
   </Layout>
