@@ -5,7 +5,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 
 import { useAppSelector } from '@renderer/store/hooks'
 import { selectAccentColor, selectThemeMode } from '@renderer/store/slices/theme'
-import { buildNavigationItems, resolveSelectedKey } from '@renderer/layout/Shell/helpers/navigation'
+import { buildNavigationItems, resolveSelectedKey } from '@renderer/layout/Shell/Shell.helpers'
 import type {
   ShellLayoutParams,
   ShellRoleBadge,

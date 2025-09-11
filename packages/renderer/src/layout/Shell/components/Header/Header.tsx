@@ -4,8 +4,8 @@ import type { JSX } from 'react'
 
 import { LanguageSwitcher } from '@renderer/components/LanguageSwitcher'
 import { ThemeControls } from '@renderer/components/ThemeControls'
-import { useShellHeaderStyles } from '@renderer/layout/Shell/components/ShellHeader.hooks'
-import type { ShellHeaderProps } from '@renderer/layout/Shell/components/ShellHeader.types'
+import { useShellHeaderStyles } from '@renderer/layout/Shell/components/Header/Header.hooks'
+import type { ShellHeaderProps } from '@renderer/layout/Shell/components/Header/Header.types'
 
 const { Header } = Layout
 
@@ -38,3 +38,5 @@ export const ShellHeader = ({
 }
 
 ShellHeader.displayName = 'ShellHeader'
+
+export default ShellHeader

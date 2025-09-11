@@ -1,8 +1,8 @@
 import { Flex, Layout, Menu, Typography } from 'antd'
 import type { JSX } from 'react'
 
-import { useShellSiderStyles } from '@renderer/layout/Shell/components/ShellSider.hooks'
-import type { ShellSiderProps } from '@renderer/layout/Shell/components/ShellSider.types'
+import { useShellSiderStyles } from '@renderer/layout/Shell/components/Sider.hooks'
+import type { ShellSiderProps } from '@renderer/layout/Shell/components/Sider.types'
 
 const { Sider } = Layout
 

@@ -14,4 +14,3 @@ export const useShellHeaderStyles = (): CSSProperties => {
     [token]
   )
 }
-

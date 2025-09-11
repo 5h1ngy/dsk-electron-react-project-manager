@@ -8,8 +8,8 @@ import {
   BLANK_HEADER_CONTENT_STYLE,
   BLANK_HEADER_STYLE,
   BLANK_LAYOUT_STYLE
-} from '@renderer/layout/Blank/Blank.helpers'
-import type { BlankLayoutProps } from '@renderer/layout/Blank/Blank.types'
+} from '@renderer/layout/Blank.helpers'
+import type { BlankLayoutProps } from '@renderer/layout/Blank.types'
 
 const { Header, Content } = Layout
 
