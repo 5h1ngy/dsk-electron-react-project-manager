@@ -4,12 +4,15 @@ import { useTranslation } from 'react-i18next'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 import { useAppSelector } from '@renderer/store/hooks'
-import { selectAccentColor, selectThemeMode } from '@renderer/store/slices/theme'
-import { buildNavigationItems, resolveSelectedKey } from '@renderer/layout/Shell/Shell.helpers'
+import { selectThemeMode } from '@renderer/store/slices/theme'
+import {
+  buildNavigationItems,
+  resolveNavigationMeta,
+  resolveSelectedKey
+} from '@renderer/layout/Shell/Shell.helpers'
 import type {
   ShellLayoutParams,
-  ShellRoleBadge,
-  SiderFooterData,
+  HeaderViewModel,
   UseShellLayoutResult
 } from '@renderer/layout/Shell/Shell.types'
 
@@ -20,7 +23,6 @@ export const useShellLayout = ({ currentUser, onLogout }: ShellLayoutParams): Us
   const { token } = theme.useToken()
 
   const [collapsed, setCollapsed] = useState(false)
-  const accentColor = useAppSelector(selectAccentColor)
   const mode = useAppSelector(selectThemeMode)
 
   const menuTheme: 'light' | 'dark' = useMemo(
@@ -52,34 +54,31 @@ export const useShellLayout = ({ currentUser, onLogout }: ShellLayoutParams): Us
     setCollapsed(value)
   }, [])
 
-  const layoutStyle = useMemo<CSSProperties>(
-    () => ({
+  const layoutStyle = useMemo<CSSProperties>(() => {
+    const background =
+      mode === 'dark'
+        ? 'radial-gradient(circle at top, rgba(59,130,246,0.15), transparent 60%), radial-gradient(circle at 120% 20%, rgba(59,130,246,0.12), transparent 55%), radial-gradient(circle at -20% 30%, rgba(45,212,191,0.18), transparent 60%), ' +
+          token.colorBgLayout
+        : 'radial-gradient(circle at top, rgba(64, 111, 255, 0.12), transparent 55%), radial-gradient(circle at 120% 30%, rgba(45, 212, 191, 0.16), transparent 60%), radial-gradient(circle at -20% 40%, rgba(147, 197, 253, 0.14), transparent 60%), ' +
+          token.colorBgLayout
+
+    return {
       minHeight: '100vh',
       height: '100vh',
       overflow: 'hidden',
-      background: token.colorBgLayout
-    }),
-    [token]
-  )
+      background
+    }
+  }, [mode, token])
 
   const contentStyle = useMemo<CSSProperties>(
     () => ({
-      background: token.colorBgLayout,
-      padding: 24,
+      background: 'transparent',
+      padding: '32px 24px',
       overflowY: 'auto',
       minHeight: 0,
       flex: '1 1 auto'
     }),
-    [token]
-  )
-
-  const roles = useMemo<ShellRoleBadge[]>(
-    () =>
-      currentUser.roles.map((role) => ({
-        id: role,
-        label: t(`roles.${role}`, { defaultValue: role })
-      })),
-    [currentUser.roles, t]
+    []
   )
 
   const labels = useMemo(
@@ -92,16 +91,33 @@ export const useShellLayout = ({ currentUser, onLogout }: ShellLayoutParams): Us
     [t]
   )
 
-  const footerProps = useMemo<SiderFooterData>(
+  const activeMeta = useMemo(
+    () => resolveNavigationMeta(location.pathname),
+    [location.pathname]
+  )
+
+  const headerProps = useMemo<HeaderViewModel>(
     () => ({
+      collapsed,
+      onToggleCollapse: handleToggleCollapse,
+      expandLabel: labels.expandSidebar,
+      collapseLabel: labels.collapseSidebar,
+      logoutLabel: labels.logout,
+      onLogout,
       displayName: currentUser.displayName,
       username: currentUser.username,
-      roles,
-      accentColor,
-      onLogout,
-      logoutLabel: labels.logout
+      pageTitle: activeMeta ? t(activeMeta.labelKey) : t('appShell.title')
     }),
-    [accentColor, currentUser.displayName, currentUser.username, labels.logout, onLogout, roles]
+    [
+      activeMeta,
+      collapsed,
+      currentUser.displayName,
+      currentUser.username,
+      handleToggleCollapse,
+      labels,
+      onLogout,
+      t
+    ]
   )
 
   return {
@@ -114,7 +130,7 @@ export const useShellLayout = ({ currentUser, onLogout }: ShellLayoutParams): Us
     handleMenuSelect,
     handleToggleCollapse,
     handleCollapseChange,
-    footerProps,
-    labels
+    labels,
+    headerProps
   }
 }

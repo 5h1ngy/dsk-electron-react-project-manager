@@ -21,20 +21,23 @@ export interface ShellRoleBadge {
   label: string
 }
 
-export interface SiderFooterData {
-  displayName: string
-  username: string
-  roles: ShellRoleBadge[]
-  accentColor: string
-  onLogout: () => void
-  logoutLabel: string
-}
-
 export interface ShellLabels {
   expandSidebar: string
   collapseSidebar: string
   title: string
   logout: string
+}
+
+export interface HeaderViewModel {
+  collapsed: boolean
+  onToggleCollapse: () => void
+  expandLabel: string
+  collapseLabel: string
+  logoutLabel: string
+  onLogout: () => void
+  displayName: string
+  username: string
+  pageTitle: string
 }
 
 export interface UseShellLayoutResult {
@@ -47,6 +50,6 @@ export interface UseShellLayoutResult {
   handleMenuSelect: NonNullable<MenuProps['onClick']>
   handleToggleCollapse: () => void
   handleCollapseChange: (collapsed: boolean) => void
-  footerProps: SiderFooterData
   labels: ShellLabels
+  headerProps: HeaderViewModel
 }

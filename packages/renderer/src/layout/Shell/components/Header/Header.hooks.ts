@@ -9,7 +9,13 @@ export const useHeaderStyles = (): CSSProperties => {
     () => ({
       background: token.colorBgElevated,
       borderBottom: `1px solid ${token.colorSplit}`,
-      paddingInline: 24
+      paddingInline: 24,
+      paddingBlock: 12,
+      position: 'sticky' as const,
+      top: 0,
+      zIndex: token.zIndexPopupBase,
+      backdropFilter: 'blur(14px)',
+      WebkitBackdropFilter: 'blur(14px)'
     }),
     [token]
   )

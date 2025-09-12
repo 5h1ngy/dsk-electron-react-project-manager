@@ -3,7 +3,6 @@ import type { JSX } from 'react'
 
 import Header from '@renderer/layout/Shell/components/Header'
 import Sider from '@renderer/layout/Shell/components/Sider'
-import SiderFooter from '@renderer/layout/Shell/components/SiderFooter'
 import { useShellLayout } from '@renderer/layout/Shell/Shell.hooks'
 import type { ShellProps } from '@renderer/layout/Shell/Shell.types'
 
@@ -15,6 +14,13 @@ const INNER_LAYOUT_STYLE = {
   flexDirection: 'column'
 } as const
 
+const CONTENT_WRAPPER_STYLE = {
+  maxWidth: 1280,
+  margin: '0 auto',
+  width: '100%',
+  minHeight: '100%'
+} as const
+
 const Shell = ({ currentUser, onLogout, children }: ShellProps): JSX.Element => {
   const {
     collapsed,
@@ -24,10 +30,9 @@ const Shell = ({ currentUser, onLogout, children }: ShellProps): JSX.Element => 
     menuItems,
     selectedKeys,
     handleMenuSelect,
-    handleToggleCollapse,
     handleCollapseChange,
-    footerProps,
-    labels
+    labels,
+    headerProps
   } = useShellLayout({ currentUser, onLogout })
 
   return (
@@ -40,17 +45,13 @@ const Shell = ({ currentUser, onLogout, children }: ShellProps): JSX.Element => 
         themeMode={menuTheme}
         title={labels.title}
         onSelect={handleMenuSelect}
-        footer={<SiderFooter {...footerProps} />}
       />
       <Layout style={INNER_LAYOUT_STYLE}>
         <Header
-          collapsed={collapsed}
-          onToggleCollapse={handleToggleCollapse}
-          expandLabel={labels.expandSidebar}
-          collapseLabel={labels.collapseSidebar}
+          {...headerProps}
         />
         <Content style={contentStyle}>
-          <div style={{ maxWidth: 1280, margin: '0 auto' }}>{children}</div>
+          <div style={CONTENT_WRAPPER_STYLE}>{children}</div>
         </Content>
       </Layout>
     </Layout>

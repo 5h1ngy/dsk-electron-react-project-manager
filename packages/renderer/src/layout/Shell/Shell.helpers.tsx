@@ -1,9 +1,9 @@
-import { AppstoreOutlined, DashboardOutlined } from '@ant-design/icons'
+import { AppstoreOutlined, DashboardOutlined, SettingOutlined } from '@ant-design/icons'
 import type { MenuProps } from 'antd'
 import type { TFunction } from 'i18next'
 import type { ReactNode } from 'react'
 
-interface NavigationDefinition {
+export interface NavigationDefinition {
   path: string
   labelKey: string
   icon: ReactNode
@@ -19,6 +19,11 @@ const NAVIGATION: NavigationDefinition[] = [
     path: '/projects',
     labelKey: 'appShell.navigation.projects',
     icon: <AppstoreOutlined />
+  },
+  {
+    path: '/settings',
+    labelKey: 'appShell.navigation.settings',
+    icon: <SettingOutlined />
   }
 ]
 
@@ -26,7 +31,12 @@ export const buildNavigationItems = (t: TFunction): MenuProps['items'] =>
   NAVIGATION.map((item) => ({
     key: item.path,
     icon: item.icon,
-    label: t(item.labelKey)
+    label: t(item.labelKey),
+    style: {
+      borderRadius: 12,
+      marginBlock: 4,
+      paddingInline: 12
+    }
   }))
 
 export const resolveSelectedKey = (pathname: string): string | undefined => {
@@ -34,4 +44,10 @@ export const resolveSelectedKey = (pathname: string): string | undefined => {
     item.path === '/' ? pathname === '/' : pathname.startsWith(item.path)
   )
   return match?.path
+}
+
+export const resolveNavigationMeta = (pathname: string): NavigationDefinition | undefined => {
+  return NAVIGATION.find((item) =>
+    item.path === '/' ? pathname === '/' : pathname.startsWith(item.path)
+  )
 }
