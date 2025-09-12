@@ -8,7 +8,7 @@ import type { RoleTagDescriptor } from '@renderer/pages/Dashboard/Dashboard.type
 export const mapRoleTags = (roles: string[] = [], t: TFunction): RoleTagDescriptor[] =>
   roles.map((role) => ({
     key: role,
-    label: t(oles., { defaultValue: role })
+    label: t(`dashboard:roles.${role}`, { defaultValue: role })
   }))
 
 export const selectRecentProjects = (projects: ProjectSummary[], limit = 8): ProjectSummary[] =>
@@ -30,7 +30,7 @@ export const renderProjectsList = (
           <Typography.Text strong>{project.name}</Typography.Text>
           <Space size={6} wrap>
             <Tag color="blue">{project.key}</Tag>
-            <Tag>{t(oles., { defaultValue: project.role })}</Tag>
+            <Tag>{t(`dashboard:roles.${project.role}`, { defaultValue: project.role })}</Tag>
           </Space>
           <Typography.Text type="secondary">
             {project.description ?? t('personal.noDescription')}
