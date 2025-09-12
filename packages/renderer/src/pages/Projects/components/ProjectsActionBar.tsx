@@ -1,6 +1,6 @@
 import { useMemo, type JSX } from 'react'
-import { Button, DatePicker, Input, Select, Space, Switch, Tooltip, Typography } from 'antd'
 import { AppstoreOutlined, PlusOutlined, ReloadOutlined, TableOutlined } from '@ant-design/icons'
+import { Button, DatePicker, Input, Segmented, Select, Space, Switch, Tooltip, Typography } from 'antd'
 import type { ChangeEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import dayjs, { type Dayjs } from 'dayjs'
@@ -89,24 +89,37 @@ export const ProjectsActionBar = ({
       <Space align="center" style={{ width: '100%', justifyContent: 'space-between' }} wrap>
         <Input
           placeholder={t('filters.searchPlaceholder')}
-          style={{ maxWidth: 360 }}
+          style={{ maxWidth: 360, flex: 1 }}
           allowClear
           value={searchValue}
           onChange={handleSearchChange}
         />
         <Space align="center" wrap>
-          <Space align="center">
-            <TableOutlined style={{ color: viewMode === 'table' ? '#1677ff' : undefined }} />
-            <Switch
-              checked={viewMode === 'cards'}
-              onChange={(checked) => onViewModeChange(checked ? 'cards' : 'table')}
-              checkedChildren={<AppstoreOutlined />}
-              unCheckedChildren={<TableOutlined />}
-            />
-            <Typography.Text type="secondary">
-              {viewMode === 'cards' ? t('viewSwitcher.cards') : t('viewSwitcher.table')}
-            </Typography.Text>
-          </Space>
+          <Segmented
+            size="large"
+            value={viewMode}
+            onChange={(next) => onViewModeChange(next as ViewMode)}
+            options={[
+              {
+                label: (
+                  <Space size={6}>
+                    <TableOutlined />
+                    <Typography.Text type="secondary">{t('viewSwitcher.table')}</Typography.Text>
+                  </Space>
+                ),
+                value: 'table'
+              },
+              {
+                label: (
+                  <Space size={6}>
+                    <AppstoreOutlined />
+                    <Typography.Text type="secondary">{t('viewSwitcher.cards')}</Typography.Text>
+                  </Space>
+                ),
+                value: 'cards'
+              }
+            ]}
+          />
           <Tooltip title={t('actions.refreshHint')}>
             <Button
               icon={<ReloadOutlined />}

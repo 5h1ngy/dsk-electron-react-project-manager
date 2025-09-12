@@ -1,3 +1,4 @@
+import { CalendarOutlined, TeamOutlined } from '@ant-design/icons'
 import { Card, Col, Pagination, Row, Space, Tag, Typography } from 'antd'
 import { useMemo, type JSX } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -96,18 +97,24 @@ export const ProjectCardsGrid = ({
                     <Typography.Text type="secondary">{t('list.noTags')}</Typography.Text>
                   )}
                 </Space>
-                <Typography.Text type="secondary">
-                  {t('list.memberCount', { count: project.memberCount })}
-                </Typography.Text>
-                <Typography.Text type="secondary">
-                  {t('list.createdOn', {
-                    date: new Intl.DateTimeFormat(i18n.language, {
-                      day: '2-digit',
-                      month: 'short',
-                      year: 'numeric'
-                    }).format(new Date(project.createdAt))
-                  })}
-                </Typography.Text>
+                <Space size={6} align="center">
+                  <TeamOutlined style={{ color: '#4f46e5' }} aria-hidden />
+                  <Typography.Text type="secondary">
+                    {t('list.memberCount', { count: project.memberCount })}
+                  </Typography.Text>
+                </Space>
+                <Space size={6} align="center">
+                  <CalendarOutlined style={{ color: '#0ea5e9' }} aria-hidden />
+                  <Typography.Text type="secondary">
+                    {t('list.createdOn', {
+                      date: new Intl.DateTimeFormat(i18n.language, {
+                        day: '2-digit',
+                        month: 'short',
+                        year: 'numeric'
+                      }).format(new Date(project.createdAt))
+                    })}
+                  </Typography.Text>
+                </Space>
               </Space>
             </Card>
           </Col>
@@ -130,4 +137,3 @@ export const ProjectCardsGrid = ({
 ProjectCardsGrid.displayName = 'ProjectCardsGrid'
 
 export default ProjectCardsGrid
-

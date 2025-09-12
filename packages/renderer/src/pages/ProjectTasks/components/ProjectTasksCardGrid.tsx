@@ -1,3 +1,4 @@
+import { CalendarOutlined, UserOutlined } from '@ant-design/icons'
 import { Card, Col, Pagination, Row, Space, Tag, Typography } from 'antd'
 import { useMemo, type JSX } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -101,18 +102,24 @@ export const ProjectTasksCardGrid = ({
                 >
                   {task.description ?? t('details.summary.noDescription')}
                 </Typography.Paragraph>
-                <Typography.Text type="secondary">
-                  {task.assignee?.displayName ?? t('details.noAssignee')}
-                </Typography.Text>
-                <Typography.Text type="secondary">
-                  {task.dueDate
-                    ? new Intl.DateTimeFormat(i18n.language, {
-                        day: '2-digit',
-                        month: 'short',
-                        year: 'numeric'
-                      }).format(new Date(task.dueDate))
-                    : t('details.noDueDate')}
-                </Typography.Text>
+                <Space size={6} align="center">
+                  <UserOutlined style={{ color: '#6366f1' }} aria-hidden />
+                  <Typography.Text type="secondary">
+                    {task.assignee?.displayName ?? t('details.noAssignee')}
+                  </Typography.Text>
+                </Space>
+                <Space size={6} align="center">
+                  <CalendarOutlined style={{ color: '#0ea5e9' }} aria-hidden />
+                  <Typography.Text type="secondary">
+                    {task.dueDate
+                      ? new Intl.DateTimeFormat(i18n.language, {
+                          day: '2-digit',
+                          month: 'short',
+                          year: 'numeric'
+                        }).format(new Date(task.dueDate))
+                      : t('details.noDueDate')}
+                  </Typography.Text>
+                </Space>
               </Space>
             </Card>
           </Col>
@@ -135,4 +142,3 @@ export const ProjectTasksCardGrid = ({
 ProjectTasksCardGrid.displayName = 'ProjectTasksCardGrid'
 
 export default ProjectTasksCardGrid
-

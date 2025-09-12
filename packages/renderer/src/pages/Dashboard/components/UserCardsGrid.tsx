@@ -1,6 +1,7 @@
 import { Card, Col, Pagination, Row, Space, Tag, Typography } from 'antd'
 import { useMemo, type JSX } from 'react'
 import { useTranslation } from 'react-i18next'
+import { CheckCircleFilled, CloseCircleFilled, ClockCircleOutlined } from '@ant-design/icons'
 
 import { EmptyState, LoadingSkeleton } from '@renderer/components/DataStates'
 import { useDelayedLoading } from '@renderer/hooks/useDelayedLoading'
@@ -33,14 +34,9 @@ export const UserCardsGrid = ({
   const { t } = useTranslation('dashboard')
   const showSkeleton = useDelayedLoading(loading)
 
-  const { items, totalPages } = useMemo(() => {
-    const total = users.length
+  const items = useMemo(() => {
     const start = (page - 1) * pageSize
-    const end = start + pageSize
-    return {
-      items: users.slice(start, end),
-      totalPages: Math.max(1, Math.ceil(total / pageSize))
-    }
+    return users.slice(start, start + pageSize)
   }, [page, pageSize, users])
 
   if (showSkeleton) {
@@ -67,26 +63,36 @@ export const UserCardsGrid = ({
                 <Space size={6} wrap>
                   {user.roles.map((role: RoleName) => (
                     <Tag key={role} color="blue">
-                      {t(`roles.${role}`, { defaultValue: role })}
+                      {t(oles., { defaultValue: role })}
                     </Tag>
                   ))}
                 </Space>
               </Space>
-              <Space direction="vertical" size={4}>
-                <Typography.Text type="secondary">
-                  {user.isActive ? t('status.active') : t('status.inactive')}
-                </Typography.Text>
-                {user.lastLoginAt ? (
+              <Space direction="vertical" size={6} style={{ width: '100%' }}>
+                <Space size={6} align="center">
+                  {user.isActive ? (
+                    <CheckCircleFilled style={{ color: '#22c55e' }} aria-hidden />
+                  ) : (
+                    <CloseCircleFilled style={{ color: '#f97316' }} aria-hidden />
+                  )}
                   <Typography.Text type="secondary">
-                    {t('filters.users.lastLogin', {
-                      defaultValue: 'Last login: {{date}}',
-                      date: new Intl.DateTimeFormat(undefined, {
-                        day: '2-digit',
-                        month: 'short',
-                        year: 'numeric'
-                      }).format(new Date(user.lastLoginAt))
-                    })}
+                    {user.isActive ? t('status.active') : t('status.inactive')}
                   </Typography.Text>
+                </Space>
+                {user.lastLoginAt ? (
+                  <Space size={6} align="center">
+                    <ClockCircleOutlined style={{ color: '#64748b' }} aria-hidden />
+                    <Typography.Text type="secondary">
+                      {t('filters.users.lastLogin', {
+                        defaultValue: 'Last login: {{date}}',
+                        date: new Intl.DateTimeFormat(undefined, {
+                          day: '2-digit',
+                          month: 'short',
+                          year: 'numeric'
+                        }).format(new Date(user.lastLoginAt))
+                      })}
+                    </Typography.Text>
+                  </Space>
                 ) : null}
               </Space>
             </Card>
@@ -110,4 +116,3 @@ export const UserCardsGrid = ({
 UserCardsGrid.displayName = 'UserCardsGrid'
 
 export default UserCardsGrid
-

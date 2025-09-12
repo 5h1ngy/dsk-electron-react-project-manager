@@ -8,6 +8,7 @@ import { createThemeConfig } from '@renderer/theme'
 import { useAppDispatch, useAppSelector } from '@renderer/store/hooks'
 import { restoreSession } from '@renderer/store/slices/auth'
 import { selectAccentColor, selectThemeMode } from '@renderer/store/slices/theme'
+import '@renderer/theme/global.css'
 
 const App = () => {
   const dispatch = useAppDispatch()
