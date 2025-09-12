@@ -1,6 +1,7 @@
-import { Table, Tag, Typography } from 'antd'
+import { Button, Popconfirm, Space, Table, Tag, Typography, Tooltip } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
 import { useTranslation } from 'react-i18next'
+import { DeleteOutlined, EditOutlined } from '@ant-design/icons'
 
 import { EmptyState, LoadingSkeleton } from '@renderer/components/DataStates'
 import { useDelayedLoading } from '@renderer/hooks/useDelayedLoading'
@@ -12,6 +13,9 @@ export interface ProjectListProps {
   projects: ProjectRow[]
   loading: boolean
   onSelect: (projectId: string) => void
+  onEdit?: (project: ProjectSummary) => void
+  onDelete?: (project: ProjectSummary) => void
+  deletingProjectId?: string | null
 }
 
 const formatDate = (value: Date | string, locale: string): string => {
@@ -23,7 +27,14 @@ const formatDate = (value: Date | string, locale: string): string => {
   }).format(date)
 }
 
-export const ProjectList = ({ projects, loading, onSelect }: ProjectListProps) => {
+export const ProjectList = ({
+  projects,
+  loading,
+  onSelect,
+  onEdit,
+  onDelete,
+  deletingProjectId
+}: ProjectListProps) => {
   const { t, i18n } = useTranslation('projects')
   const showSkeleton = useDelayedLoading(loading)
 
@@ -86,6 +97,46 @@ export const ProjectList = ({ projects, loading, onSelect }: ProjectListProps) =
       key: 'createdAt',
       width: 160,
       render: (value: Date | string) => formatDate(value, i18n.language)
+    },
+    {
+      title: t('list.columns.actions'),
+      key: 'actions',
+      width: 120,
+      render: (_value: unknown, record) => {
+        if (record.role !== 'admin') {
+          return null
+        }
+        return (
+          <Space size={4}>
+            <Tooltip title={t('actions.edit')}>
+              <Button
+                type="text"
+                icon={<EditOutlined />}
+                onClick={(event) => {
+                  event.stopPropagation()
+                  onEdit?.(record)
+                }}
+              />
+            </Tooltip>
+            <Popconfirm
+              title={t('actions.deleteTitle')}
+              description={t('actions.deleteDescription', { name: record.name })}
+              okText={t('actions.deleteConfirm')}
+              cancelText={t('actions.cancel')}
+              okButtonProps={{ loading: deletingProjectId === record.id }}
+              onConfirm={async () => onDelete?.(record)}
+              disabled={!onDelete}
+            >
+              <Button
+                type="text"
+                danger
+                icon={<DeleteOutlined />}
+                onClick={(event) => event.stopPropagation()}
+              />
+            </Popconfirm>
+          </Space>
+        )
+      }
     }
   ]
 

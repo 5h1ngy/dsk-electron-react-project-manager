@@ -36,7 +36,12 @@
         "inactive": "Disattivo"
     },
     "actions": {
-        "edit": "Modifica"
+        "edit": "Modifica",
+        "delete": "Elimina",
+        "deleteTitle": "Rimuovi utente",
+        "deleteDescription": "Vuoi davvero rimuovere {{username}}?",
+        "confirmDelete": "Rimuovi",
+        "cancel": "Annulla"
     },
     "modals": {
         "create": {
@@ -68,7 +73,10 @@
         "createSuccess": "Utente creato correttamente",
         "createErrorFallback": "Impossibile creare l'utente",
         "updateSuccess": "Utente aggiornato correttamente",
-        "updateErrorFallback": "Impossibile aggiornare l'utente"
+        "updateErrorFallback": "Impossibile aggiornare l'utente",
+        "deleteSuccess": "Utente rimosso correttamente",
+        "deleteErrorFallback": "Impossibile rimuovere l'utente",
+        "deleteSelfWarning": "Non puoi rimuovere il tuo account"
     },
     "error": {
         "title": "Errore"

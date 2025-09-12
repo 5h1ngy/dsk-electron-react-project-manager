@@ -30,16 +30,16 @@ export const buildLightComponents = (
       hoverBorderColor: hover,
       activeBorderColor: accent,
       addonBg: '#eef2ff',
-      paddingInline: 18,
-      paddingInlineSM: 14,
-      paddingInlineLG: 20
+      paddingInline: 12,
+      paddingInlineSM: 10,
+      paddingInlineLG: 14
     },
     Select: {
       optionSelectedBg: lighten(accent, 0.82),
       optionActiveBg: lighten(accent, 0.9),
       optionSelectedColor: accent,
       optionSelectedFontWeight: 600,
-      optionPadding: '12px 18px'
+      optionPadding: '9px 14px'
     },
     Tag: {
       defaultBg: lighten(accent, 0.6),
@@ -52,20 +52,20 @@ export const buildLightComponents = (
       rowHoverBg: lighten(accent, 0.92),
       rowSelectedBg: lighten(accent, 0.85),
       borderColor: '#e3e8ef',
-      cellPaddingBlock: 18,
-      cellPaddingInline: 20
+      cellPaddingBlock: 12,
+      cellPaddingInline: 14
     },
     Tabs: {
       itemColor: '#4b5563',
       itemHoverColor: '#111827',
       itemActiveColor: '#111827',
       inkBarColor: accent,
-      horizontalItemPadding: '16px 20px'
+      horizontalItemPadding: '10px 14px'
     },
     Pagination: {
       itemBg: '#ffffff',
       itemActiveBg: accent,
-      itemSize: 48
+      itemSize: 36
     },
     Segmented: {
       itemColor: '#4b5563',
@@ -74,7 +74,7 @@ export const buildLightComponents = (
       itemSelectedBg: lighten(accent, 0.8),
       itemSelectedColor: '#111827',
       trackBg: '#f1f5f9',
-      trackPadding: 6
+      trackPadding: 3
     },
     Typography: {
       titleMarginBottom: 12

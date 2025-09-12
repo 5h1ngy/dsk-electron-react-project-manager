@@ -8,6 +8,7 @@ import { ProjectsActionBar } from '@renderer/pages/Projects/components/ProjectsA
 import { ProjectList } from '@renderer/pages/Projects/components/ProjectList'
 import { ProjectCardsGrid } from '@renderer/pages/Projects/components/ProjectCardsGrid'
 import { CreateProjectModal } from '@renderer/pages/Projects/components/CreateProjectModal'
+import { EditProjectModal } from '@renderer/pages/Projects/components/EditProjectModal'
 import { useProjectsPage } from '@renderer/pages/Projects/hooks/useProjectsPage'
 import { PROJECTS_CONTAINER_STYLE, createProjectsBreadcrumb } from '@renderer/pages/Projects/Projects.helpers'
 import type { ProjectsPageProps } from '@renderer/pages/Projects/Projects.types'
@@ -19,7 +20,7 @@ const ProjectsPage = ({}: ProjectsPageProps): JSX.Element => {
     messageContext,
     filteredProjects,
     listStatus,
-    mutationStatus,
+    activeMutation,
     search,
     setSearch,
     selectedTags,
@@ -38,6 +39,14 @@ const ProjectsPage = ({}: ProjectsPageProps): JSX.Element => {
     isCreateModalOpen,
     handleCreateSubmit,
     createForm,
+    editingProject,
+    openEditModal,
+    closeEditModal,
+    isEditModalOpen,
+    handleUpdateSubmit,
+    updateForm,
+    handleDeleteProject,
+    deletingProjectId,
     canManageProjects,
     refreshProjects,
     isLoading
@@ -80,7 +89,7 @@ const ProjectsPage = ({}: ProjectsPageProps): JSX.Element => {
           searchValue={search}
           onSearchChange={setSearch}
           isRefreshing={listStatus === 'loading'}
-          isCreating={mutationStatus === 'loading' && isCreateModalOpen}
+          isCreating={activeMutation === 'create'}
           canCreate={canManageProjects}
           viewMode={viewMode}
           onViewModeChange={(mode) => {
@@ -105,6 +114,9 @@ const ProjectsPage = ({}: ProjectsPageProps): JSX.Element => {
           projects={filteredProjects}
           loading={isLoading}
           onSelect={handleOpenProject}
+          onEdit={openEditModal}
+          onDelete={handleDeleteProject}
+          deletingProjectId={activeMutation === 'delete' ? deletingProjectId : null}
         />
       ) : (
         <ProjectCardsGrid
@@ -114,6 +126,9 @@ const ProjectsPage = ({}: ProjectsPageProps): JSX.Element => {
           page={cardPage}
           pageSize={CARD_PAGE_SIZE}
           onPageChange={setCardPage}
+          onEdit={openEditModal}
+          onDelete={handleDeleteProject}
+          deletingProjectId={activeMutation === 'delete' ? deletingProjectId : null}
         />
       )}
       <CreateProjectModal
@@ -121,7 +136,16 @@ const ProjectsPage = ({}: ProjectsPageProps): JSX.Element => {
         onCancel={closeCreateModal}
         onSubmit={handleCreateSubmit}
         form={createForm}
-        submitting={mutationStatus === 'loading'}
+        submitting={activeMutation === 'create'}
+      />
+      <EditProjectModal
+        open={isEditModalOpen}
+        onCancel={closeEditModal}
+        onSubmit={handleUpdateSubmit}
+        form={updateForm}
+        submitting={activeMutation === 'update'}
+        projectName={editingProject?.name}
+        projectKey={editingProject?.key}
       />
     </div>
   )

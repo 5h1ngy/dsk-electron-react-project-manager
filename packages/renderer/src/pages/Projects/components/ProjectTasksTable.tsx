@@ -1,6 +1,7 @@
-import { Table, Tag, Typography } from 'antd'
+import { Button, Popconfirm, Space, Table, Tag, Tooltip, Typography } from 'antd'
 import type { ColumnsType, TablePaginationConfig } from 'antd/es/table'
 import { useTranslation } from 'react-i18next'
+import { DeleteOutlined, EditOutlined } from '@ant-design/icons'
 
 import { EmptyState, LoadingSkeleton } from '@renderer/components/DataStates'
 import { useDelayedLoading } from '@renderer/hooks/useDelayedLoading'
@@ -10,6 +11,10 @@ export interface ProjectTasksTableProps {
   tasks: TaskDetails[]
   loading: boolean
   onSelect: (task: TaskDetails) => void
+  onEdit: (task: TaskDetails) => void
+  onDelete: (task: TaskDetails) => Promise<void> | void
+  canManage: boolean
+  deletingTaskId?: string | null
   pagination?: TablePaginationConfig | false
 }
 
@@ -31,6 +36,10 @@ export const ProjectTasksTable = ({
   tasks,
   loading,
   onSelect,
+  onEdit,
+  onDelete,
+  canManage,
+  deletingTaskId,
   pagination
 }: ProjectTasksTableProps) => {
   const { t, i18n } = useTranslation('projects')
@@ -102,6 +111,42 @@ export const ProjectTasksTable = ({
               year: 'numeric'
             }).format(new Date(value))
           : t('details.noDueDate')
+    },
+    {
+      title: canManage ? t('tasks.columns.actions') : undefined,
+      key: 'actions',
+      width: canManage ? 120 : 0,
+      render: (_value: unknown, record: TaskDetails) =>
+        canManage ? (
+          <Space size={4}>
+            <Tooltip title={t('tasks.actions.edit')}>
+              <Button
+                type="text"
+                icon={<EditOutlined />}
+                onClick={(event) => {
+                  event.stopPropagation()
+                  onEdit(record)
+                }}
+              />
+            </Tooltip>
+            <Popconfirm
+              title={t('tasks.actions.deleteTitle')}
+              description={t('tasks.actions.deleteDescription', { title: record.title })}
+              okText={t('tasks.actions.deleteConfirm')}
+              cancelText={t('tasks.actions.cancel')}
+              onConfirm={async () => await onDelete(record)}
+              okButtonProps={{ loading: deletingTaskId === record.id }}
+            >
+              <Button
+                type="text"
+                danger
+                icon={<DeleteOutlined />}
+                loading={deletingTaskId === record.id}
+                onClick={(event) => event.stopPropagation()}
+              />
+            </Popconfirm>
+          </Space>
+        ) : null
     }
   ]
 

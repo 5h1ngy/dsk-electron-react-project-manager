@@ -1,7 +1,6 @@
 import type { JSX } from 'react'
 import { Space, Typography } from 'antd'
 import { useTranslation } from 'react-i18next'
-import { useNavigate } from 'react-router-dom'
 
 import { EmptyState, LoadingSkeleton } from '@renderer/components/DataStates'
 import { useDelayedLoading } from '@renderer/hooks/useDelayedLoading'
@@ -15,9 +14,16 @@ import {
 import type { ProjectBoardPageProps } from '@renderer/pages/ProjectBoard/ProjectBoard.types'
 
 const ProjectBoardPage = ({}: ProjectBoardPageProps): JSX.Element => {
-  const { project, projectLoading, canManageTasks } = useProjectRouteContext()
+  const {
+    project,
+    projectLoading,
+    canManageTasks,
+    openTaskDetails,
+    openTaskEdit,
+    deleteTask,
+    deletingTaskId
+  } = useProjectRouteContext()
   const { t } = useTranslation('projects')
-  const navigate = useNavigate()
   const showSkeleton = useDelayedLoading(projectLoading)
 
   if (showSkeleton) {
@@ -42,7 +48,10 @@ const ProjectBoardPage = ({}: ProjectBoardPageProps): JSX.Element => {
       <ProjectBoard
         project={project}
         canManageTasks={canManageTasks}
-        onTaskSelect={(task) => navigate(`/tasks/${task.id}`)}
+        onTaskSelect={(task) => openTaskDetails(task.id)}
+        onTaskEdit={(task) => openTaskEdit(task.id)}
+        onTaskDelete={(task) => deleteTask(task.id)}
+        deletingTaskId={deletingTaskId}
       />
     </Space>
   )

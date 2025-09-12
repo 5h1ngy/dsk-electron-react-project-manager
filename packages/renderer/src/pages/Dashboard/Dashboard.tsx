@@ -49,6 +49,7 @@ const Dashboard = ({}: DashboardProps): JSX.Element => {
     editingUser,
     openCreateModal,
     closeCreateModal,
+    openEditModal,
     closeEditModal,
     submitCreate,
     submitUpdate,
@@ -56,7 +57,8 @@ const Dashboard = ({}: DashboardProps): JSX.Element => {
     updateForm,
     refreshUsers,
     clearError,
-    isAdmin
+    isAdmin,
+    removeUser
   } = useUserManagement()
 
   const isFetchingProjects = projectsStatus === 'loading'
@@ -197,6 +199,8 @@ const Dashboard = ({}: DashboardProps): JSX.Element => {
           page={userCardPage}
           pageSize={USER_CARD_PAGE_SIZE}
           onPageChange={setUserCardPage}
+          onEdit={openEditModal}
+          onDelete={removeUser}
         />
       )}
       <CreateUserModal

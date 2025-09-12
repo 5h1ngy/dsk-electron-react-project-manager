@@ -8,6 +8,9 @@ import { Outlet, useLocation, useNavigate, useOutletContext, useParams } from 'r
 import { EmptyState } from '@renderer/components/DataStates'
 import { useDelayedLoading } from '@renderer/hooks/useDelayedLoading'
 import { useProjectDetails } from '@renderer/pages/Projects/hooks/useProjectDetails'
+import { useTaskModals } from '@renderer/pages/Projects/hooks/useTaskModals'
+import { TaskFormModal } from '@renderer/pages/Projects/components/TaskFormModal'
+import { TaskDetailsModal } from '@renderer/pages/Projects/components/TaskDetailsModal'
 import {
   buildBreadcrumbItems,
   buildTabItems,
@@ -37,6 +40,14 @@ const ProjectLayout = (): JSX.Element => {
     canManageTasks,
     messageContext
   } = useProjectDetails(projectId)
+
+  const taskModals = useTaskModals({
+    project: project ?? null,
+    tasks,
+    projectId: projectId ?? null,
+    canManageTasks
+  })
+
   const showSkeleton = useDelayedLoading(projectLoading)
 
   const basePath = `/projects/${projectId ?? ''}`
@@ -82,13 +93,18 @@ const ProjectLayout = (): JSX.Element => {
   }
 
   const contextValue: ProjectRouteContext = {
-    projectId,
+    projectId: projectId ?? '',
     project: project ?? null,
     tasks,
     tasksStatus,
     projectLoading,
     refresh,
-    canManageTasks
+    canManageTasks,
+    openTaskDetails: taskModals.openDetail,
+    openTaskCreate: (options) => taskModals.openCreate(options),
+    openTaskEdit: taskModals.openEdit,
+    deleteTask: taskModals.deleteTask,
+    deletingTaskId: taskModals.deletingTaskId
   }
 
   const handleTabChange = (key: string): void => {
@@ -107,9 +123,11 @@ const ProjectLayout = (): JSX.Element => {
   }
 
   return (
-    <Space direction="vertical" size={24} style={{ width: '100%' }}>
-      {messageContext}
-      <Breadcrumb items={breadcrumbItems} />
+    <>
+      <Space direction="vertical" size={24} style={{ width: '100%' }}>
+        {messageContext}
+        {taskModals.taskMessageContext}
+        <Breadcrumb items={breadcrumbItems} />
       <Space
         align="center"
         style={{
@@ -152,6 +170,26 @@ const ProjectLayout = (): JSX.Element => {
       />
       <Outlet context={contextValue} />
     </Space>
+    <TaskDetailsModal
+      open={taskModals.isDetailOpen}
+      task={taskModals.detailTask}
+      allowManage={canManageTasks}
+      onClose={taskModals.closeDetail}
+      onEdit={(task) => taskModals.openEdit(task.id)}
+      onDelete={(task) => taskModals.deleteTask(task.id)}
+      deleting={taskModals.deletingTaskId !== null && taskModals.deletingTaskId === taskModals.detailTask?.id}
+    />
+    <TaskFormModal
+      open={taskModals.isEditorOpen}
+      mode={taskModals.editorMode ?? 'create'}
+      onCancel={taskModals.closeEditor}
+      onSubmit={taskModals.submitEditor}
+      form={taskModals.editorForm}
+      submitting={taskModals.submitting}
+      assigneeOptions={taskModals.assigneeOptions}
+      taskTitle={taskModals.editorTask?.title}
+    />
+    </>
   )
 }
 

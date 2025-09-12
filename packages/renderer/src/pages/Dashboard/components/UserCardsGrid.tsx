@@ -1,7 +1,7 @@
-import { Card, Col, Pagination, Row, Space, Tag, Typography } from 'antd'
+import { Button, Card, Col, Pagination, Popconfirm, Row, Space, Tag, Tooltip, Typography } from 'antd'
+import { DeleteOutlined, EditOutlined, CheckCircleFilled, CloseCircleFilled, ClockCircleOutlined } from '@ant-design/icons'
 import { useMemo, type JSX } from 'react'
 import { useTranslation } from 'react-i18next'
-import { CheckCircleFilled, CloseCircleFilled, ClockCircleOutlined } from '@ant-design/icons'
 
 import { EmptyState, LoadingSkeleton } from '@renderer/components/DataStates'
 import { useDelayedLoading } from '@renderer/hooks/useDelayedLoading'
@@ -22,6 +22,8 @@ export interface UserCardsGridProps {
   page: number
   pageSize: number
   onPageChange: (page: number) => void
+  onEdit: (user: UserDTO) => void
+  onDelete: (user: UserDTO) => void
 }
 
 export const UserCardsGrid = ({
@@ -29,7 +31,9 @@ export const UserCardsGrid = ({
   loading,
   page,
   pageSize,
-  onPageChange
+  onPageChange,
+  onEdit,
+  onDelete
 }: UserCardsGridProps): JSX.Element => {
   const { t } = useTranslation('dashboard')
   const showSkeleton = useDelayedLoading(loading)
@@ -52,7 +56,39 @@ export const UserCardsGrid = ({
       <Row gutter={[16, 16]}>
         {items.map((user) => (
           <Col xs={24} sm={12} lg={8} xl={6} key={user.id}>
-            <Card hoverable style={{ height: '100%' }} bodyStyle={CARD_BODY_STYLE}>
+            <Card
+              hoverable
+              style={{ height: '100%' }}
+              bodyStyle={CARD_BODY_STYLE}
+              extra={
+                <Space size={4}>
+                  <Tooltip title={t('actions.edit')}>
+                    <Button
+                      type="text"
+                      icon={<EditOutlined />}
+                      onClick={(event) => {
+                        event.stopPropagation()
+                        onEdit(user)
+                      }}
+                    />
+                  </Tooltip>
+                  <Popconfirm
+                    title={t('actions.deleteTitle')}
+                    description={t('actions.deleteDescription', { username: user.username })}
+                    okText={t('actions.confirmDelete')}
+                    cancelText={t('actions.cancel')}
+                    onConfirm={() => onDelete(user)}
+                  >
+                    <Button
+                      type="text"
+                      danger
+                      icon={<DeleteOutlined />}
+                      onClick={(event) => event.stopPropagation()}
+                    />
+                  </Popconfirm>
+                </Space>
+              }
+            >
               <Space direction="vertical" size={8} style={{ width: '100%' }}>
                 <Typography.Title level={5} style={{ margin: 0 }}>
                   {user.displayName || user.username}
@@ -63,7 +99,7 @@ export const UserCardsGrid = ({
                 <Space size={6} wrap>
                   {user.roles.map((role: RoleName) => (
                     <Tag key={role} color="blue">
-                      {t(oles., { defaultValue: role })}
+                      {t(`roles.${role}`, { defaultValue: role })}
                     </Tag>
                   ))}
                 </Space>

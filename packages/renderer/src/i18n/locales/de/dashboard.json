@@ -36,7 +36,12 @@
         "inactive": "Inaktiv"
     },
     "actions": {
-        "edit": "Bearbeiten"
+        "edit": "Bearbeiten",
+        "delete": "Entfernen",
+        "deleteTitle": "Benutzer entfernen",
+        "deleteDescription": "Moechten Sie {{username}} wirklich entfernen?",
+        "confirmDelete": "Entfernen",
+        "cancel": "Abbrechen"
     },
     "modals": {
         "create": {
@@ -68,7 +73,10 @@
         "createSuccess": "Benutzer erfolgreich erstellt",
         "createErrorFallback": "Benutzer konnte nicht erstellt werden",
         "updateSuccess": "Benutzer erfolgreich aktualisiert",
-        "updateErrorFallback": "Benutzer konnte nicht aktualisiert werden"
+        "updateErrorFallback": "Benutzer konnte nicht aktualisiert werden",
+        "deleteSuccess": "Benutzer erfolgreich entfernt",
+        "deleteErrorFallback": "Benutzer konnte nicht entfernt werden",
+        "deleteSelfWarning": "Sie koennen Ihr eigenes Konto nicht entfernen"
     },
     "error": {
         "title": "Fehler"

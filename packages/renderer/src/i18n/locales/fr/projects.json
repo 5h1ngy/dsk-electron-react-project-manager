@@ -8,7 +8,12 @@
         "refresh": "Actualiser",
         "refreshHint": "Recharger la liste des projets",
         "create": "Nouveau projet",
-        "createHint": "Creer un nouveau projet"
+        "createHint": "Creer un nouveau projet",
+        "edit": "Modifier",
+        "deleteTitle": "Supprimer le projet",
+        "deleteDescription": "Voulez-vous vraiment supprimer {{name}} ?",
+        "deleteConfirm": "Supprimer",
+        "cancel": "Annuler"
     },
     "filters": {
         "searchPlaceholder": "Rechercher par nom, cle ou tag",
@@ -31,7 +36,8 @@
         "updateDenied": "Seuls les administrateurs ou mainteneurs peuvent modifier des projets.",
         "manageMembersDenied": "Seuls les administrateurs ou mainteneurs peuvent gerer les membres.",
         "tasksCreateDenied": "Vous n'avez pas les droits pour creer des taches dans ce projet.",
-        "tasksUpdateDenied": "Vous n'avez pas les droits pour modifier les taches de ce projet."
+        "tasksUpdateDenied": "Vous n'avez pas les droits pour modifier les taches de ce projet.",
+        "deleteDenied": "Seuls les administrateurs peuvent supprimer des projets."
     },
     "errors": {
         "generic": "Echec de l'operation"
@@ -59,7 +65,8 @@
             "tags": "Tags",
             "role": "Role",
             "members": "Membres",
-            "createdAt": "Cree"
+            "createdAt": "Cree",
+            "actions": "Actions"
         },
         "role": {
             "admin": "Administrateur",
@@ -209,6 +216,59 @@
                 "label": "Tags"
             }
         },
-        "createAction": "Creer"
+        "createAction": "Creer",
+        "editTitle": "Modifier {{name}}",
+        "editTitleFallback": "Modifier le projet",
+        "updateAction": "Enregistrer"
+    },
+    "delete": {
+        "success": "Projet supprime"
+    },
+    "tasks": {
+        "columns": {
+            "actions": "Actions"
+        },
+        "actions": {
+            "create": "Nouvelle tache",
+            "edit": "Modifier",
+            "delete": "Supprimer",
+            "deleteTitle": "Supprimer la tache",
+            "deleteDescription": "Voulez-vous vraiment supprimer \"{{title}}\" ?",
+            "deleteConfirm": "Supprimer",
+            "cancel": "Annuler"
+        },
+        "form": {
+            "createTitle": "Nouvelle tache",
+            "editTitle": "Modifier {{title}}",
+            "createAction": "Creer la tache",
+            "updateAction": "Enregistrer",
+            "fields": {
+                "title": "Titre",
+                "description": "Description",
+                "status": "Statut",
+                "priority": "Priorite",
+                "assignee": "Assignation",
+                "dueDate": "Date limite"
+            },
+            "placeholders": {
+                "title": "Titre de la tache",
+                "description": "Description (optionnelle)",
+                "assignee": "Selectionnez un responsable",
+                "dueDate": "Choisir la date limite"
+            }
+        },
+        "messages": {
+            "createSuccess": "Tache creee",
+            "updateSuccess": "Tache mise a jour",
+            "deleteSuccess": "Tache supprimee",
+            "notFound": "Tache introuvable"
+        },
+        "details": {
+            "description": "Description",
+            "noDescription": "Aucune description disponible",
+            "owner": "Proprietaire : {{owner}}",
+            "createdAt": "Cree le {{date}}",
+            "empty": "Aucune tache selectionnee"
+        }
     }
 }

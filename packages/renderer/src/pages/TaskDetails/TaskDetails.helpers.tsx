@@ -1,8 +1,5 @@
-import { Typography } from 'antd'
-import type { BreadcrumbProps } from 'antd'
-
 import type { TaskDetails } from '@renderer/store/slices/tasks/types'
-import type { BreadcrumbParams, TagDescriptor } from '@renderer/pages/TaskDetails/TaskDetails.types'
+import type { TagDescriptor } from '@renderer/pages/TaskDetails/TaskDetails.types'
 
 export const formatDate = (
   value: string | Date | null,
@@ -40,35 +37,4 @@ export const buildTags = (
       color: task.priority === 'critical' ? 'red' : task.priority === 'high' ? 'orange' : 'green'
     }
   ]
-}
-
-export const buildBreadcrumbItems = ({
-  t,
-  task,
-  navigate
-}: BreadcrumbParams): BreadcrumbProps['items'] => {
-  const items: BreadcrumbProps['items'] = [
-    {
-      title: (
-        <Typography.Link onClick={() => navigate('/projects')}>
-          {t('breadcrumbs.projects')}
-        </Typography.Link>
-      )
-    }
-  ]
-
-  if (task) {
-    items.push({
-      title: (
-        <Typography.Link onClick={() => navigate(`/projects/${task.projectId}/tasks`)}>
-          {task.projectKey ?? t('breadcrumbs.tasks')}
-        </Typography.Link>
-      )
-    })
-    items.push({ title: task.key })
-  } else {
-    items.push({ title: t('details.loading') })
-  }
-
-  return items
 }

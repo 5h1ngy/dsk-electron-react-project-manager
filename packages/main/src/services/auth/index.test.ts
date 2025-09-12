@@ -115,4 +115,45 @@ describe('AuthService', () => {
 
     expect(reLogin.user.id).toBe(created.id)
   })
+
+  it('allows admin to delete a user and terminates active sessions', async () => {
+    const { token: adminToken } = await authService.login(ADMIN_CREDENTIALS)
+
+    const target = await authService.createUser(adminToken, {
+      username: 'removable',
+      password: 'Remove123!',
+      displayName: 'To Be Removed',
+      isActive: true,
+      roles: ['Viewer']
+    })
+
+    const targetSession = await authService.login({
+      username: target.username,
+      password: 'Remove123!'
+    })
+
+    expect(sessionManager.getSession(targetSession.token)).not.toBeNull()
+
+    await authService.deleteUser(adminToken, target.id)
+
+    const lookup = await User.findByPk(target.id)
+    expect(lookup).toBeNull()
+    expect(sessionManager.getSession(targetSession.token)).toBeNull()
+  })
+
+  it('prevents an administrator from deleting their own account', async () => {
+    const { token, user } = await authService.login(ADMIN_CREDENTIALS)
+
+    await expect(authService.deleteUser(token, user.id)).rejects.toMatchObject({
+      code: 'ERR_PERMISSION'
+    })
+  })
+
+  it('throws when attempting to delete a non existent user', async () => {
+    const { token } = await authService.login(ADMIN_CREDENTIALS)
+
+    await expect(authService.deleteUser(token, 'missing-user')).rejects.toMatchObject({
+      code: 'ERR_NOT_FOUND'
+    })
+  })
 })

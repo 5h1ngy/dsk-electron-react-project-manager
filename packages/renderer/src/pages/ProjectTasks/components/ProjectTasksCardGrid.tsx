@@ -1,5 +1,5 @@
-import { CalendarOutlined, UserOutlined } from '@ant-design/icons'
-import { Card, Col, Pagination, Row, Space, Tag, Typography } from 'antd'
+import { CalendarOutlined, DeleteOutlined, EditOutlined, UserOutlined } from '@ant-design/icons'
+import { Button, Card, Col, Pagination, Popconfirm, Row, Space, Tag, Tooltip, Typography } from 'antd'
 import { useMemo, type JSX } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -36,6 +36,10 @@ export interface ProjectTasksCardGridProps {
   pageSize: number
   onPageChange: (page: number) => void
   onSelect: (task: TaskDetails) => void
+  onEdit: (task: TaskDetails) => void
+  onDelete: (task: TaskDetails) => Promise<void> | void
+  canManage: boolean
+  deletingTaskId?: string | null
 }
 
 export const ProjectTasksCardGrid = ({
@@ -44,7 +48,11 @@ export const ProjectTasksCardGrid = ({
   page,
   pageSize,
   onPageChange,
-  onSelect
+  onSelect,
+  onEdit,
+  onDelete,
+  canManage,
+  deletingTaskId
 }: ProjectTasksCardGridProps): JSX.Element => {
   const { t, i18n } = useTranslation('projects')
   const showSkeleton = useDelayedLoading(loading)
@@ -84,6 +92,38 @@ export const ProjectTasksCardGrid = ({
                     {task.title}
                   </Typography.Title>
                 </Space>
+              }
+              extra={
+                canManage ? (
+                  <Space size={4}>
+                    <Tooltip title={t('tasks.actions.edit')}>
+                      <Button
+                        type="text"
+                        icon={<EditOutlined />}
+                        onClick={(event) => {
+                          event.stopPropagation()
+                          onEdit(task)
+                        }}
+                      />
+                    </Tooltip>
+                    <Popconfirm
+                      title={t('tasks.actions.deleteTitle')}
+                      description={t('tasks.actions.deleteDescription', { title: task.title })}
+                      okText={t('tasks.actions.deleteConfirm')}
+                      cancelText={t('tasks.actions.cancel')}
+                      onConfirm={async () => await onDelete(task)}
+                      okButtonProps={{ loading: deletingTaskId === task.id }}
+                    >
+                      <Button
+                        type="text"
+                        danger
+                        icon={<DeleteOutlined />}
+                        loading={deletingTaskId === task.id}
+                        onClick={(event) => event.stopPropagation()}
+                      />
+                    </Popconfirm>
+                  </Space>
+                ) : undefined
               }
             >
               <Space direction="vertical" size="small" style={{ width: '100%' }}>

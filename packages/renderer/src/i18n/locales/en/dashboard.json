@@ -36,7 +36,12 @@
                    "inactive":  "Inactive"
                },
     "actions":  {
-                    "edit":  "Edit"
+                    "edit":  "Edit",
+                    "delete": "Delete",
+                    "deleteTitle": "Remove user",
+                    "deleteDescription": "Do you really want to remove {{username}}?",
+                    "confirmDelete": "Remove",
+                    "cancel": "Cancel"
                 },
     "modals":  {
                    "create":  {
@@ -68,7 +73,10 @@
                      "createSuccess":  "User created successfully",
                      "createErrorFallback":  "Unable to create user",
                      "updateSuccess":  "User updated successfully",
-                     "updateErrorFallback":  "Unable to update user"
+                     "updateErrorFallback":  "Unable to update user",
+                     "deleteSuccess": "User removed successfully",
+                     "deleteErrorFallback": "Unable to remove user",
+                     "deleteSelfWarning": "You cannot remove your own account"
                  },
     "error":  {
                   "title":  "Error"

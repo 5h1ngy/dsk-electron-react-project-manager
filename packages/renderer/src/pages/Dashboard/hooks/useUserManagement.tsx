@@ -1,7 +1,8 @@
 import { JSX, useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Button, Space, Tag, message } from 'antd'
+import { Button, Popconfirm, Space, Tag, Tooltip, message } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
+import { DeleteOutlined, EditOutlined } from '@ant-design/icons'
 
 import type { UserDTO } from '@main/services/auth'
 import type { RoleName } from '@main/services/auth/constants'
@@ -33,14 +34,16 @@ interface UserManagementState {
   clearError: () => void
   messageContext: JSX.Element
   isAdmin: boolean
+  removeUser: (user: UserDTO) => Promise<void>
 }
 
 export const useUserManagement = (): UserManagementState => {
   const currentUser = useAppSelector(selectCurrentUser)
   const isAdmin = (currentUser?.roles ?? []).includes('Admin')
-  const { users, error, loading, hasLoaded, refreshUsers, clearError, createUser, updateUser } = useUserData({
-    enabled: isAdmin
-  })
+  const { users, error, loading, hasLoaded, refreshUsers, clearError, createUser, updateUser, deleteUser } =
+    useUserData({
+      enabled: isAdmin
+    })
   const { createForm, updateForm, resetCreateForm, resetUpdateForm } = useUserForms()
   const [messageApi, messageContext] = message.useMessage()
   const [isCreateOpen, setCreateOpen] = useState(false)
@@ -120,6 +123,30 @@ export const useUserManagement = (): UserManagementState => {
     }
   })
 
+  const removeUser = useCallback(
+    async (user: UserDTO) => {
+      if (!isAdmin) {
+        return
+      }
+      if (currentUser?.id === user.id) {
+        messageApi.warning(t('dashboard:messages.deleteSelfWarning'))
+        return
+      }
+      try {
+        await deleteUser(user.id)
+        messageApi.success(t('dashboard:messages.deleteSuccess'))
+        refreshUsers()
+      } catch (error) {
+        const messageText =
+          typeof error === 'string'
+            ? error
+            : (error as Error).message ?? t('dashboard:messages.deleteErrorFallback')
+        messageApi.error(normalizeMessage(messageText))
+      }
+    },
+    [currentUser?.id, deleteUser, isAdmin, messageApi, normalizeMessage, refreshUsers, t]
+  )
+
   const columns = useMemo<ColumnsType<UserDTO>>(
     () => [
       { title: t('dashboard:table.username'), dataIndex: 'username', key: 'username' },
@@ -152,13 +179,36 @@ export const useUserManagement = (): UserManagementState => {
         title: t('dashboard:table.actions'),
         key: 'actions',
         render: (_value: unknown, record: UserDTO) => (
-          <Button size="small" onClick={() => openEditModal(record)}>
-            {t('dashboard:actions.edit')}
-          </Button>
+          <Space size={4}>
+            <Tooltip title={t('dashboard:actions.edit')}>
+              <Button
+                type="text"
+                icon={<EditOutlined />}
+                onClick={(event) => {
+                  event.stopPropagation()
+                  openEditModal(record)
+                }}
+              />
+            </Tooltip>
+            <Popconfirm
+              title={t('dashboard:actions.deleteTitle')}
+              description={t('dashboard:actions.deleteDescription', { username: record.username })}
+              okText={t('dashboard:actions.confirmDelete')}
+              cancelText={t('dashboard:actions.cancel')}
+              onConfirm={() => removeUser(record)}
+            >
+              <Button
+                type="text"
+                danger
+                icon={<DeleteOutlined />}
+                onClick={(event) => event.stopPropagation()}
+              />
+            </Popconfirm>
+          </Space>
         )
       }
     ],
-    [openEditModal, t]
+    [openEditModal, removeUser, t]
   )
 
   return {
@@ -180,6 +230,7 @@ export const useUserManagement = (): UserManagementState => {
     refreshUsers,
     clearError,
     messageContext,
-    isAdmin
+    isAdmin,
+    removeUser
   }
 }

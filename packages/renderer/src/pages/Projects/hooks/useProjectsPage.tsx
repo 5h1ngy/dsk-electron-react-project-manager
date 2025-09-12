@@ -6,6 +6,8 @@ import { useAppDispatch, useAppSelector } from '@renderer/store/hooks'
 import {
   clearProjectsError,
   createProject,
+  updateProject,
+  deleteProject,
   fetchProjects,
   selectProjects,
   selectProjectsError,
@@ -15,7 +17,7 @@ import {
 import type { ProjectSummary } from '@renderer/store/slices/projects'
 import { selectCurrentUser } from '@renderer/store/slices/auth/selectors'
 import { useProjectForms } from '@renderer/pages/Projects/hooks/useProjectForms'
-import type { CreateProjectValues } from '@renderer/pages/Projects/schemas/projectSchemas'
+import type { CreateProjectValues, UpdateProjectValues } from '@renderer/pages/Projects/schemas/projectSchemas'
 
 type ViewMode = 'table' | 'cards'
 type RoleFilter = 'all' | 'admin' | 'edit' | 'view'
@@ -31,6 +33,7 @@ export interface UseProjectsPageResult {
   filteredProjects: ProjectSummary[]
   listStatus: ReturnType<typeof selectProjectsStatus>
   mutationStatus: ReturnType<typeof selectProjectsMutationStatus>
+  activeMutation: 'create' | 'update' | 'delete' | null
   search: string
   setSearch: (value: string) => void
   selectedTags: string[]
@@ -49,6 +52,14 @@ export interface UseProjectsPageResult {
   isCreateModalOpen: boolean
   handleCreateSubmit: () => Promise<void>
   createForm: ReturnType<typeof useProjectForms>['createForm']
+  editingProject: ProjectSummary | null
+  openEditModal: (project: ProjectSummary) => void
+  closeEditModal: () => void
+  isEditModalOpen: boolean
+  handleUpdateSubmit: () => Promise<void>
+  updateForm: ReturnType<typeof useProjectForms>['updateForm']
+  handleDeleteProject: (project: ProjectSummary) => Promise<void>
+  deletingProjectId: string | null
   canManageProjects: boolean
   refreshProjects: () => void
   isLoading: boolean
@@ -77,7 +88,7 @@ export const useProjectsPage = (options?: UseProjectsPageOptions): UseProjectsPa
   const [isCreateModalOpen, setCreateModalOpen] = useState(false)
   const [messageApi, messageContext] = message.useMessage()
 
-  const { createForm } = useProjectForms()
+  const { createForm, updateForm } = useProjectForms()
 
   const canManageProjects = useMemo(
     () => (currentUser?.roles ?? []).some((role) => role === 'Admin' || role === 'Maintainer'),
@@ -85,6 +96,19 @@ export const useProjectsPage = (options?: UseProjectsPageOptions): UseProjectsPa
   )
 
   const isLoading = listStatus === 'loading'
+  const [editingProject, setEditingProject] = useState<ProjectSummary | null>(null)
+  const [isEditModalOpen, setEditModalOpen] = useState(false)
+  const [deletingProjectId, setDeletingProjectId] = useState<string | null>(null)
+  const [activeMutation, setActiveMutation] = useState<'create' | 'update' | 'delete' | null>(null)
+  const resolveErrorMessage = useCallback(
+    (err: unknown) =>
+      typeof err === 'string'
+        ? err
+        : err instanceof Error
+          ? err.message
+          : t('errors.generic', { defaultValue: 'Operazione non riuscita' }),
+    [t]
+  )
 
   useEffect(() => {
     if (listStatus === 'idle') {
@@ -179,21 +203,110 @@ export const useProjectsPage = (options?: UseProjectsPageOptions): UseProjectsPa
       return
     }
     try {
+      setActiveMutation('create')
       const project = await dispatch(createProject(values)).unwrap()
       messageApi.success(t('create.success', { defaultValue: 'Progetto creato' }))
       setCreateModalOpen(false)
       createForm.reset()
       options?.onProjectCreated?.(project.id)
     } catch (err) {
-      const messageText =
-        typeof err === 'string'
-          ? err
-          : err instanceof Error
-            ? err.message
-            : t('errors.generic', { defaultValue: 'Operazione non riuscita' })
-      messageApi.error(messageText)
+      messageApi.error(resolveErrorMessage(err))
+    } finally {
+      setActiveMutation(null)
     }
   })
+
+  const closeEditModal = useCallback(() => {
+    setEditModalOpen(false)
+    setEditingProject(null)
+    updateForm.reset()
+  }, [updateForm])
+
+  const openEditModal = useCallback(
+    (project: ProjectSummary) => {
+      if (project.role !== 'admin') {
+        messageApi.warning(
+          t('permissions.updateDenied', {
+            defaultValue: 'Solo gli amministratori del progetto possono aggiornarlo.'
+          })
+        )
+        return
+      }
+      setEditingProject(project)
+      updateForm.reset({
+        name: project.name,
+        description: project.description ?? '',
+        tags: project.tags ?? []
+      })
+      setEditModalOpen(true)
+    },
+    [messageApi, t, updateForm]
+  )
+
+  const handleUpdateSubmit = updateForm.handleSubmit(async (values: UpdateProjectValues) => {
+    if (!editingProject) {
+      return
+    }
+    if (editingProject.role !== 'admin') {
+      messageApi.warning(
+        t('permissions.updateDenied', {
+          defaultValue: 'Solo gli amministratori del progetto possono aggiornarlo.'
+        })
+      )
+      return
+    }
+    const normalizedDescription =
+      values.description && values.description.trim().length > 0
+        ? values.description.trim()
+        : null
+    try {
+      setActiveMutation('update')
+      await dispatch(
+        updateProject({
+          projectId: editingProject.id,
+          input: {
+            name: values.name,
+            description: normalizedDescription,
+            tags: values.tags ?? []
+          }
+        })
+      ).unwrap()
+      messageApi.success(t('update.success', { defaultValue: 'Progetto aggiornato' }))
+      closeEditModal()
+    } catch (err) {
+      messageApi.error(resolveErrorMessage(err))
+    } finally {
+      setActiveMutation(null)
+    }
+  })
+
+  const handleDeleteProject = useCallback(
+    async (project: ProjectSummary) => {
+      if (project.role !== 'admin') {
+        messageApi.warning(
+          t('permissions.deleteDenied', {
+            defaultValue: 'Solo gli amministratori del progetto possono eliminarlo.'
+          })
+        )
+        return
+      }
+      try {
+        setActiveMutation('delete')
+        setDeletingProjectId(project.id)
+        await dispatch(deleteProject(project.id)).unwrap()
+        messageApi.success(t('delete.success', { defaultValue: 'Progetto eliminato' }))
+        if (editingProject?.id === project.id) {
+          closeEditModal()
+        }
+      } catch (err) {
+        messageApi.error(resolveErrorMessage(err))
+      } finally {
+        setActiveMutation(null)
+        setDeletingProjectId(null)
+      }
+    },
+    [closeEditModal, dispatch, editingProject?.id, messageApi, resolveErrorMessage, t]
+  )
 
   return {
     messageContext,
@@ -201,6 +314,7 @@ export const useProjectsPage = (options?: UseProjectsPageOptions): UseProjectsPa
     filteredProjects,
     listStatus,
     mutationStatus,
+    activeMutation,
     search,
     setSearch,
     selectedTags,
@@ -219,6 +333,14 @@ export const useProjectsPage = (options?: UseProjectsPageOptions): UseProjectsPa
     isCreateModalOpen,
     handleCreateSubmit,
     createForm,
+    editingProject,
+    openEditModal,
+    closeEditModal,
+    isEditModalOpen,
+    handleUpdateSubmit,
+    updateForm,
+    handleDeleteProject,
+    deletingProjectId,
     canManageProjects,
     refreshProjects,
     isLoading

@@ -8,7 +8,12 @@
         "refresh": "Aktualisieren",
         "refreshHint": "Projektliste neu laden",
         "create": "Neues Projekt",
-        "createHint": "Ein neues Projekt anlegen"
+        "createHint": "Ein neues Projekt anlegen",
+        "edit": "Bearbeiten",
+        "deleteTitle": "Projekt entfernen",
+        "deleteDescription": "Moechten Sie {{name}} wirklich entfernen?",
+        "deleteConfirm": "Entfernen",
+        "cancel": "Abbrechen"
     },
     "filters": {
         "searchPlaceholder": "Nach Name, Key oder Tag suchen",
@@ -31,7 +36,8 @@
         "updateDenied": "Nur Administratoren oder Maintainer koennen Projekte bearbeiten.",
         "manageMembersDenied": "Nur Administratoren oder Maintainer koennen Mitglieder verwalten.",
         "tasksCreateDenied": "Keine Berechtigung, Aufgaben in diesem Projekt zu erstellen.",
-        "tasksUpdateDenied": "Keine Berechtigung, Aufgaben in diesem Projekt zu aktualisieren."
+        "tasksUpdateDenied": "Keine Berechtigung, Aufgaben in diesem Projekt zu aktualisieren.",
+        "deleteDenied": "Nur Administratoren duerfen Projekte loeschen."
     },
     "errors": {
         "generic": "Vorgang fehlgeschlagen"
@@ -59,7 +65,8 @@
             "tags": "Tags",
             "role": "Rolle",
             "members": "Mitglieder",
-            "createdAt": "Erstellt"
+            "createdAt": "Erstellt",
+            "actions": "Aktionen"
         },
         "role": {
             "admin": "Administrator",
@@ -209,6 +216,59 @@
                 "label": "Tags"
             }
         },
-        "createAction": "Erstellen"
+        "createAction": "Erstellen",
+        "editTitle": "Projekt {{name}} bearbeiten",
+        "editTitleFallback": "Projekt bearbeiten",
+        "updateAction": "Aenderungen speichern"
+    },
+    "delete": {
+        "success": "Projekt erfolgreich entfernt"
+    },
+    "tasks": {
+        "columns": {
+            "actions": "Aktionen"
+        },
+        "actions": {
+            "create": "Neuer Task",
+            "edit": "Bearbeiten",
+            "delete": "Entfernen",
+            "deleteTitle": "Task entfernen",
+            "deleteDescription": "Moechten Sie \"{{title}}\" wirklich entfernen?",
+            "deleteConfirm": "Entfernen",
+            "cancel": "Abbrechen"
+        },
+        "form": {
+            "createTitle": "Neuer Task",
+            "editTitle": "Task {{title}} bearbeiten",
+            "createAction": "Task erstellen",
+            "updateAction": "Aenderungen speichern",
+            "fields": {
+                "title": "Titel",
+                "description": "Beschreibung",
+                "status": "Status",
+                "priority": "Prioritaet",
+                "assignee": "Zustaendig",
+                "dueDate": "Faellig am"
+            },
+            "placeholders": {
+                "title": "Titel des Tasks",
+                "description": "Beschreibung (optional)",
+                "assignee": "Zustaendigen auswaehlen",
+                "dueDate": "Faelligkeitsdatum waehlen"
+            }
+        },
+        "messages": {
+            "createSuccess": "Task erstellt",
+            "updateSuccess": "Task aktualisiert",
+            "deleteSuccess": "Task entfernt",
+            "notFound": "Task nicht gefunden"
+        },
+        "details": {
+            "description": "Beschreibung",
+            "noDescription": "Keine Beschreibung vorhanden",
+            "owner": "Eigentuemer: {{owner}}",
+            "createdAt": "Erstellt am {{date}}",
+            "empty": "Kein Task ausgewaehlt"
+        }
     }
 }

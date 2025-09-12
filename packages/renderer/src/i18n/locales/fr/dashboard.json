@@ -36,7 +36,12 @@
         "inactive": "Inactif"
     },
     "actions": {
-        "edit": "Modifier"
+        "edit": "Modifier",
+        "delete": "Supprimer",
+        "deleteTitle": "Supprimer l'utilisateur",
+        "deleteDescription": "Voulez-vous vraiment supprimer {{username}} ?",
+        "confirmDelete": "Supprimer",
+        "cancel": "Annuler"
     },
     "modals": {
         "create": {
@@ -68,7 +73,10 @@
         "createSuccess": "Utilisateur cree avec succes",
         "createErrorFallback": "Impossible de creer l'utilisateur",
         "updateSuccess": "Utilisateur mis a jour avec succes",
-        "updateErrorFallback": "Impossible de mettre a jour l'utilisateur"
+        "updateErrorFallback": "Impossible de mettre a jour l'utilisateur",
+        "deleteSuccess": "Utilisateur supprime avec succes",
+        "deleteErrorFallback": "Impossible de supprimer l'utilisateur",
+        "deleteSelfWarning": "Vous ne pouvez pas supprimer votre propre compte"
     },
     "error": {
         "title": "Erreur"

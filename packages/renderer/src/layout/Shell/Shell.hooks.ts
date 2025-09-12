@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useMemo, useState, type CSSProperties } from 'react'
 import { theme, type MenuProps } from 'antd'
 import { useTranslation } from 'react-i18next'
 import { useLocation, useNavigate } from 'react-router-dom'
@@ -52,7 +52,7 @@ export const useShellLayout = ({ currentUser, onLogout }: ShellLayoutParams): Us
     setCollapsed(value)
   }, [])
 
-  const layoutStyle = useMemo(
+  const layoutStyle = useMemo<CSSProperties>(
     () => ({
       minHeight: '100vh',
       height: '100vh',
@@ -62,7 +62,7 @@ export const useShellLayout = ({ currentUser, onLogout }: ShellLayoutParams): Us
     [token]
   )
 
-  const contentStyle = useMemo(
+  const contentStyle = useMemo<CSSProperties>(
     () => ({
       background: token.colorBgLayout,
       padding: 24,

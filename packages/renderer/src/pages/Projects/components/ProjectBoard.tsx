@@ -1,5 +1,6 @@
 import { Alert, Col, Row } from 'antd'
 import { useTranslation } from 'react-i18next'
+import type { JSX } from 'react'
 
 import { EmptyState, LoadingSkeleton } from '@renderer/components/DataStates'
 import { useDelayedLoading } from '@renderer/hooks/useDelayedLoading'
@@ -13,9 +14,19 @@ export interface ProjectBoardProps {
   project: ProjectDetails | null
   canManageTasks: boolean
   onTaskSelect: (task: TaskDetails) => void
+  onTaskEdit: (task: TaskDetails) => void
+  onTaskDelete: (task: TaskDetails) => Promise<void> | void
+  deletingTaskId?: string | null
 }
 
-export const ProjectBoard = ({ project, canManageTasks, onTaskSelect }: ProjectBoardProps): JSX.Element => {
+export const ProjectBoard = ({
+  project,
+  canManageTasks,
+  onTaskSelect,
+  onTaskEdit,
+  onTaskDelete,
+  deletingTaskId
+}: ProjectBoardProps): JSX.Element => {
   const { t } = useTranslation('projects')
   const { messageContext, columns, boardStatus, createTaskForm, handleCreateTask, handleMoveTask } =
     useProjectBoard(project, canManageTasks)
@@ -55,6 +66,9 @@ export const ProjectBoard = ({ project, canManageTasks, onTaskSelect }: ProjectB
                 tasks={column.tasks}
                 onTaskDrop={handleMoveTask}
                 onTaskSelect={onTaskSelect}
+                onTaskEdit={onTaskEdit}
+                onTaskDelete={onTaskDelete}
+                deletingTaskId={deletingTaskId}
                 canManage={canManageTasks}
                 renderComposer={
                   canManageTasks && column.status === 'todo'

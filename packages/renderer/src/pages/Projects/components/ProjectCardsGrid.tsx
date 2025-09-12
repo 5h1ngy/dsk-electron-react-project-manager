@@ -1,5 +1,5 @@
-import { CalendarOutlined, TeamOutlined } from '@ant-design/icons'
-import { Card, Col, Pagination, Row, Space, Tag, Typography } from 'antd'
+import { CalendarOutlined, DeleteOutlined, EditOutlined, TeamOutlined } from '@ant-design/icons'
+import { Button, Card, Col, Pagination, Popconfirm, Row, Space, Tag, Tooltip, Typography } from 'antd'
 import { useMemo, type JSX } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -15,6 +15,12 @@ const CARD_BODY_STYLE = {
   height: '100%'
 } as const
 
+const ROLE_COLORS: Record<ProjectSummary['role'], string> = {
+  admin: 'geekblue',
+  edit: 'cyan',
+  view: 'default'
+}
+
 export interface ProjectCardsGridProps {
   projects: ProjectSummary[]
   loading: boolean
@@ -22,6 +28,9 @@ export interface ProjectCardsGridProps {
   page: number
   pageSize: number
   onPageChange: (page: number) => void
+  onEdit?: (project: ProjectSummary) => void
+  onDelete?: (project: ProjectSummary) => void
+  deletingProjectId?: string | null
 }
 
 export const ProjectCardsGrid = ({
@@ -30,7 +39,10 @@ export const ProjectCardsGrid = ({
   onSelect,
   page,
   pageSize,
-  onPageChange
+  onPageChange,
+  onEdit,
+  onDelete,
+  deletingProjectId
 }: ProjectCardsGridProps): JSX.Element => {
   const { t, i18n } = useTranslation('projects')
   const showSkeleton = useDelayedLoading(loading)
@@ -59,66 +71,105 @@ export const ProjectCardsGrid = ({
   }
 
   return (
-    <Space direction="vertical" size="large" style={{ width: '100%' }}>
+    <Space direction='vertical' size="large" style={{ width: '100%' }}>
       <Row gutter={[16, 16]}>
-        {items.map((project) => (
-          <Col key={project.id} xs={24} sm={12} lg={8} xl={6}>
-            <Card
-              hoverable
-              onClick={() => onSelect(project.id)}
-              style={{ height: '100%' }}
-              bodyStyle={CARD_BODY_STYLE}
-              title={
-                <Space direction="vertical" size={4}>
-                  <Typography.Text strong ellipsis>
-                    {project.name}
-                  </Typography.Text>
-                  <Tag color="blue">{project.key}</Tag>
-                </Space>
-              }
-              extra={<Typography.Text>{t(`list.role.${project.role}`)}</Typography.Text>}
-            >
-              <Space direction="vertical" size="small" style={{ width: '100%' }}>
-                <Typography.Paragraph
-                  type="secondary"
-                  ellipsis={{ rows: 3 }}
-                  style={{ marginBottom: 0 }}
-                >
-                  {project.description ?? t('cards.noDescription')}
-                </Typography.Paragraph>
-                <Space size={4} wrap>
-                  {(project.tags ?? []).length > 0 ? (
-                    project.tags!.map((tag) => (
-                      <Tag key={tag} bordered={false} color="default">
-                        {tag}
+        {items.map((project) => {
+          const tagList = project.tags ?? []
+          return (
+            <Col key={project.id} xs={24} sm={12} lg={8} xl={6}>
+              <Card
+                hoverable
+                onClick={() => onSelect(project.id)}
+                style={{ height: '100%' }}
+                bodyStyle={CARD_BODY_STYLE}
+                title={
+                  <Space direction='vertical' size={4}>
+                    <Typography.Text strong ellipsis>
+                      {project.name}
+                    </Typography.Text>
+                    <Space size={6} wrap>
+                      <Tag color='blue'>{project.key}</Tag>
+                      <Tag color={ROLE_COLORS[project.role]}>
+                        {t(`list.role.${project.role}`)}
                       </Tag>
-                    ))
-                  ) : (
-                    <Typography.Text type="secondary">{t('list.noTags')}</Typography.Text>
-                  )}
+                    </Space>
+                  </Space>
+                }
+                extra={
+                  project.role === 'admin' ? (
+                    <Space size={4}>
+                      <Tooltip title={t('actions.edit')}>
+                        <Button
+                          type='text'
+                          icon={<EditOutlined />}
+                          onClick={(event) => {
+                            event.stopPropagation()
+                            onEdit?.(project)
+                          }}
+                        />
+                      </Tooltip>
+                      <Popconfirm
+                        title={t('actions.deleteTitle')}
+                        description={t('actions.deleteDescription', { name: project.name })}
+                        okText={t('actions.deleteConfirm')}
+                        cancelText={t('actions.cancel')}
+                        okButtonProps={{ loading: deletingProjectId === project.id }}
+                        onConfirm={async () => await onDelete?.(project)}
+                        disabled={!onDelete}
+                      >
+                        <Button
+                          type='text'
+                          danger
+                          icon={<DeleteOutlined />}
+                          onClick={(event) => event.stopPropagation()}
+                        />
+                      </Popconfirm>
+                    </Space>
+                  ) : undefined
+                }
+              >
+                <Space direction='vertical' size='small' style={{ width: '100%' }}>
+                  <Typography.Paragraph
+                    type='secondary'
+                    ellipsis={{ rows: 3 }}
+                    style={{ marginBottom: 0 }}
+                  >
+                    {project.description ?? t('cards.noDescription')}
+                  </Typography.Paragraph>
+                  <Space size={4} wrap>
+                    {tagList.length > 0 ? (
+                      tagList.map((tag) => (
+                        <Tag key={tag} bordered={false} color='default'>
+                          {tag}
+                        </Tag>
+                      ))
+                    ) : (
+                      <Typography.Text type='secondary'>{t('list.noTags')}</Typography.Text>
+                    )}
+                  </Space>
+                  <Space size={6} align='center'>
+                    <TeamOutlined style={{ color: '#4f46e5' }} aria-hidden />
+                    <Typography.Text type='secondary'>
+                      {t('list.memberCount', { count: project.memberCount })}
+                    </Typography.Text>
+                  </Space>
+                  <Space size={6} align='center'>
+                    <CalendarOutlined style={{ color: '#0ea5e9' }} aria-hidden />
+                    <Typography.Text type='secondary'>
+                      {t('list.createdOn', {
+                        date: new Intl.DateTimeFormat(i18n.language, {
+                          day: '2-digit',
+                          month: 'short',
+                          year: 'numeric'
+                        }).format(new Date(project.createdAt))
+                      })}
+                    </Typography.Text>
+                  </Space>
                 </Space>
-                <Space size={6} align="center">
-                  <TeamOutlined style={{ color: '#4f46e5' }} aria-hidden />
-                  <Typography.Text type="secondary">
-                    {t('list.memberCount', { count: project.memberCount })}
-                  </Typography.Text>
-                </Space>
-                <Space size={6} align="center">
-                  <CalendarOutlined style={{ color: '#0ea5e9' }} aria-hidden />
-                  <Typography.Text type="secondary">
-                    {t('list.createdOn', {
-                      date: new Intl.DateTimeFormat(i18n.language, {
-                        day: '2-digit',
-                        month: 'short',
-                        year: 'numeric'
-                      }).format(new Date(project.createdAt))
-                    })}
-                  </Typography.Text>
-                </Space>
-              </Space>
-            </Card>
-          </Col>
-        ))}
+              </Card>
+            </Col>
+          )
+        })}
       </Row>
       {total > pageSize ? (
         <Pagination

@@ -1,4 +1,5 @@
 import { Button, Form, Input, Space, Typography } from 'antd'
+import type { JSX } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Controller, type UseFormReturn } from 'react-hook-form'
 

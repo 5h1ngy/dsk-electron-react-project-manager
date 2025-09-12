@@ -8,7 +8,12 @@
         "refresh": "Aggiorna",
         "refreshHint": "Ricarica l'elenco progetti",
         "create": "Nuovo progetto",
-        "createHint": "Crea un nuovo progetto"
+        "createHint": "Crea un nuovo progetto",
+        "edit": "Modifica",
+        "deleteTitle": "Rimuovi progetto",
+        "deleteDescription": "Vuoi davvero rimuovere {{name}}?",
+        "deleteConfirm": "Rimuovi",
+        "cancel": "Annulla"
     },
     "filters": {
         "searchPlaceholder": "Cerca per nome, key o tag",
@@ -31,7 +36,8 @@
         "updateDenied": "Solo amministratori o maintainer possono modificare progetti.",
         "manageMembersDenied": "Solo amministratori o maintainer possono gestire i membri.",
         "tasksCreateDenied": "Non hai i permessi per creare task in questo progetto.",
-        "tasksUpdateDenied": "Non hai i permessi per modificare i task di questo progetto."
+        "tasksUpdateDenied": "Non hai i permessi per modificare i task di questo progetto.",
+        "deleteDenied": "Solo gli amministratori possono eliminare i progetti."
     },
     "errors": {
         "generic": "Operazione non riuscita"
@@ -59,7 +65,8 @@
             "tags": "Tag",
             "role": "Ruolo",
             "members": "Membri",
-            "createdAt": "Creato"
+            "createdAt": "Creato",
+            "actions": "Azioni"
         },
         "role": {
             "admin": "Amministratore",
@@ -209,6 +216,59 @@
                 "label": "Tag"
             }
         },
-        "createAction": "Crea"
+        "createAction": "Crea",
+        "editTitle": "Modifica {{name}}",
+        "editTitleFallback": "Modifica progetto",
+        "updateAction": "Salva modifiche"
+    },
+    "delete": {
+        "success": "Progetto eliminato"
+    },
+    "tasks": {
+        "columns": {
+            "actions": "Azioni"
+        },
+        "actions": {
+            "create": "Nuovo task",
+            "edit": "Modifica",
+            "delete": "Elimina",
+            "deleteTitle": "Rimuovi task",
+            "deleteDescription": "Vuoi davvero rimuovere \"{{title}}\"?",
+            "deleteConfirm": "Rimuovi",
+            "cancel": "Annulla"
+        },
+        "form": {
+            "createTitle": "Nuovo task",
+            "editTitle": "Modifica {{title}}",
+            "createAction": "Crea task",
+            "updateAction": "Salva modifiche",
+            "fields": {
+                "title": "Titolo",
+                "description": "Descrizione",
+                "status": "Stato",
+                "priority": "Priorita",
+                "assignee": "Assegnatario",
+                "dueDate": "Scadenza"
+            },
+            "placeholders": {
+                "title": "Titolo del task",
+                "description": "Descrizione (opzionale)",
+                "assignee": "Seleziona assegnatario",
+                "dueDate": "Seleziona la scadenza"
+            }
+        },
+        "messages": {
+            "createSuccess": "Task creato",
+            "updateSuccess": "Task aggiornato",
+            "deleteSuccess": "Task eliminato",
+            "notFound": "Task non trovato"
+        },
+        "details": {
+            "description": "Descrizione",
+            "noDescription": "Nessuna descrizione disponibile",
+            "owner": "Creato da: {{owner}}",
+            "createdAt": "Creato il {{date}}",
+            "empty": "Nessun task selezionato"
+        }
     }
 }

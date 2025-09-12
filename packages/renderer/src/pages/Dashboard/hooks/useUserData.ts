@@ -5,6 +5,7 @@ import { useAppDispatch, useAppSelector } from '@renderer/store/hooks'
 import {
   clearError as clearAuthError,
   createUser as createUserThunk,
+  deleteUser as deleteUserThunk,
   loadUsers,
   selectAuthError,
   selectUsers,
@@ -26,6 +27,7 @@ export interface UserDataState {
   clearError: () => void
   createUser: (values: CreateUserValues) => Promise<void>
   updateUser: (userId: string, values: UpdateUserValues) => Promise<void>
+  deleteUser: (userId: string) => Promise<void>
 }
 
 export const useUserData = ({ enabled }: UseUserDataOptions): UserDataState => {
@@ -99,6 +101,16 @@ export const useUserData = ({ enabled }: UseUserDataOptions): UserDataState => {
     [dispatch, enabled]
   )
 
+  const deleteUser = useCallback(
+    async (userId: string) => {
+      if (!enabled) {
+        throw new Error('ERR_PERMISSION:utente non autorizzato')
+      }
+      await dispatch(deleteUserThunk(userId)).unwrap()
+    },
+    [dispatch, enabled]
+  )
+
   return {
     users: enabled ? users : [],
     error,
@@ -107,6 +119,7 @@ export const useUserData = ({ enabled }: UseUserDataOptions): UserDataState => {
     refreshUsers,
     clearError,
     createUser,
-    updateUser
+    updateUser,
+    deleteUser
   }
 }

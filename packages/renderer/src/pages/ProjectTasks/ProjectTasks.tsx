@@ -1,8 +1,8 @@
 import type { JSX } from 'react'
-import { Space, Typography } from 'antd'
+import { Button, Space, Typography } from 'antd'
 import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useNavigate } from 'react-router-dom'
+import { PlusOutlined } from '@ant-design/icons'
 
 import { EmptyState } from '@renderer/components/DataStates'
 import { ProjectTasksTable } from '@renderer/pages/Projects/components/ProjectTasksTable'
@@ -22,9 +22,19 @@ import { TaskFiltersBar } from '@renderer/pages/ProjectTasks/components/TaskFilt
 import { ProjectTasksCardGrid } from '@renderer/pages/ProjectTasks/components/ProjectTasksCardGrid'
 
 const ProjectTasksPage = ({}: ProjectTasksPageProps): JSX.Element => {
-  const { project, projectLoading, tasks, tasksStatus } = useProjectRouteContext()
+  const {
+    project,
+    projectLoading,
+    tasks,
+    tasksStatus,
+    canManageTasks,
+    openTaskDetails,
+    openTaskCreate,
+    openTaskEdit,
+    deleteTask,
+    deletingTaskId
+  } = useProjectRouteContext()
   const { t } = useTranslation('projects')
-  const navigate = useNavigate()
   const [filters, setFilters] = useState<TaskFilters>({
     searchQuery: '',
     status: 'all',
@@ -84,13 +94,26 @@ const ProjectTasksPage = ({}: ProjectTasksPageProps): JSX.Element => {
     setCardPage(1)
   }, [viewMode])
 
-  const handleTaskNavigate = (taskId: string) => {
-    navigate(`/tasks/${taskId}`)
+  const handleTaskSelect = (taskId: string) => {
+    openTaskDetails(taskId)
   }
+
+  const handleTaskEdit = (taskId: string) => {
+    openTaskEdit(taskId)
+  }
+
+  const handleTaskDelete = (taskId: string) => deleteTask(taskId)
 
   return (
     <Space direction="vertical" size={24} style={{ width: '100%' }}>
-      <Typography.Title level={4}>{effectiveTitle}</Typography.Title>
+      <Space align="center" style={{ width: '100%', justifyContent: 'space-between', flexWrap: 'wrap' }}>
+        <Typography.Title level={4} style={{ marginBottom: 0 }}>{effectiveTitle}</Typography.Title>
+        {canManageTasks ? (
+          <Button type="primary" icon={<PlusOutlined />} onClick={() => openTaskCreate()}>
+            {t('tasks.actions.create')}
+          </Button>
+        ) : null}
+      </Space>
       <TaskFiltersBar
         filters={filters}
         statusOptions={statusOptions}
@@ -104,7 +127,11 @@ const ProjectTasksPage = ({}: ProjectTasksPageProps): JSX.Element => {
         <ProjectTasksTable
           tasks={filteredTasks}
           loading={loading || projectLoading}
-          onSelect={(task) => handleTaskNavigate(task.id)}
+          onSelect={(task) => handleTaskSelect(task.id)}
+          onEdit={(task) => handleTaskEdit(task.id)}
+          onDelete={(task) => handleTaskDelete(task.id)}
+          canManage={canManageTasks}
+          deletingTaskId={deletingTaskId}
           pagination={{
             current: tablePage,
             pageSize: TABLE_PAGE_SIZE,
@@ -118,7 +145,11 @@ const ProjectTasksPage = ({}: ProjectTasksPageProps): JSX.Element => {
           page={cardPage}
           pageSize={CARD_PAGE_SIZE}
           onPageChange={setCardPage}
-          onSelect={(task) => handleTaskNavigate(task.id)}
+          onSelect={(task) => handleTaskSelect(task.id)}
+          onEdit={(task) => handleTaskEdit(task.id)}
+          onDelete={(task) => handleTaskDelete(task.id)}
+          canManage={canManageTasks}
+          deletingTaskId={deletingTaskId}
         />
       )}
     </Space>

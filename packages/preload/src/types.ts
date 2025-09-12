@@ -53,6 +53,7 @@ export interface AuthApi {
     userId: string,
     payload: UpdateUserInput
   ) => Promise<IpcResponse<UserDTO>>
+  deleteUser: (token: string, userId: string) => Promise<IpcResponse<{ success: boolean }>>
 }
 
 export interface ProjectMemberPayload {

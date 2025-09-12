@@ -1,5 +1,5 @@
 import { Card, Space, Typography } from 'antd'
-import type { DragEvent } from 'react'
+import type { DragEvent, JSX } from 'react'
 
 import type { TaskDetails, TaskStatus } from '@renderer/store/slices/tasks'
 import { TaskCard } from '@renderer/pages/Projects/components/TaskCard'
@@ -10,6 +10,9 @@ export interface KanbanColumnProps {
   tasks: TaskDetails[]
   onTaskDrop: (taskId: string, status: TaskStatus) => void
   onTaskSelect: (task: TaskDetails) => void
+  onTaskEdit: (task: TaskDetails) => void
+  onTaskDelete: (task: TaskDetails) => Promise<void> | void
+  deletingTaskId?: string | null
   canManage: boolean
   renderComposer?: () => JSX.Element | null
 }
@@ -20,6 +23,9 @@ export const KanbanColumn = ({
   tasks,
   onTaskDrop,
   onTaskSelect,
+  onTaskEdit,
+  onTaskDelete,
+  deletingTaskId,
   canManage,
   renderComposer
 }: KanbanColumnProps): JSX.Element => {
@@ -63,6 +69,9 @@ export const KanbanColumn = ({
             key={task.id}
             task={task}
             onSelect={() => onTaskSelect(task)}
+            onEdit={() => onTaskEdit(task)}
+            onDelete={() => onTaskDelete(task)}
+            deleting={deletingTaskId === task.id}
             onDragStart={handleDragStart}
             draggable={canManage}
           />

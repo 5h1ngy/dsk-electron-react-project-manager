@@ -8,7 +8,12 @@
         "refresh": "Refresh",
         "refreshHint": "Reload the project list",
         "create": "New project",
-        "createHint": "Create a new project"
+        "createHint": "Create a new project",
+        "edit": "Edit",
+        "deleteTitle": "Remove project",
+        "deleteDescription": "Are you sure you want to remove {{name}}?",
+        "deleteConfirm": "Remove",
+        "cancel": "Cancel"
     },
     "filters": {
         "searchPlaceholder": "Search by name, key or tag",
@@ -31,7 +36,8 @@
         "updateDenied": "Only administrators or maintainers can update projects.",
         "manageMembersDenied": "Only administrators or maintainers can manage project members.",
         "tasksCreateDenied": "You do not have permissions to create tasks in this project.",
-        "tasksUpdateDenied": "You do not have permissions to update tasks in this project."
+        "tasksUpdateDenied": "You do not have permissions to update tasks in this project.",
+        "deleteDenied": "You do not have permissions to delete this project."
     },
     "errors": {
         "generic": "Operation failed"
@@ -59,7 +65,8 @@
             "tags": "Tags",
             "role": "Role",
             "members": "Members",
-            "createdAt": "Created"
+            "createdAt": "Created",
+            "actions": "Actions"
         },
         "role": {
             "admin": "Administrator",
@@ -209,6 +216,59 @@
                 "label": "Tags"
             }
         },
-        "createAction": "Create"
+        "createAction": "Create",
+        "editTitle": "Edit {{name}}",
+        "editTitleFallback": "Edit project",
+        "updateAction": "Save changes"
+    },
+    "delete": {
+        "success": "Project removed"
+    },
+    "tasks": {
+        "columns": {
+            "actions": "Actions"
+        },
+        "actions": {
+            "create": "New task",
+            "edit": "Edit",
+            "delete": "Delete",
+            "deleteTitle": "Remove task",
+            "deleteDescription": "Do you want to remove \"{{title}}\"?",
+            "deleteConfirm": "Remove",
+            "cancel": "Cancel"
+        },
+        "form": {
+            "createTitle": "New task",
+            "editTitle": "Edit {{title}}",
+            "createAction": "Create task",
+            "updateAction": "Save changes",
+            "fields": {
+                "title": "Title",
+                "description": "Description",
+                "status": "Status",
+                "priority": "Priority",
+                "assignee": "Assignee",
+                "dueDate": "Due date"
+            },
+            "placeholders": {
+                "title": "Task title",
+                "description": "Description (optional)",
+                "assignee": "Select assignee",
+                "dueDate": "Select due date"
+            }
+        },
+        "messages": {
+            "createSuccess": "Task created",
+            "updateSuccess": "Task updated",
+            "deleteSuccess": "Task removed",
+            "notFound": "Task not found"
+        },
+        "details": {
+            "description": "Description",
+            "noDescription": "No description provided",
+            "owner": "Owner: {{owner}}",
+            "createdAt": "Created on {{date}}",
+            "empty": "No task selected"
+        }
     }
 }
