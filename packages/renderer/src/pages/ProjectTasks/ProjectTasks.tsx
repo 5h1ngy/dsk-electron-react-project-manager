@@ -1,6 +1,6 @@
 import type { JSX } from 'react'
 import { Space, Typography } from 'antd'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 
@@ -19,6 +19,7 @@ import type {
   TaskFilters
 } from '@renderer/pages/ProjectTasks/ProjectTasks.types'
 import { TaskFiltersBar } from '@renderer/pages/ProjectTasks/components/TaskFiltersBar'
+import { ProjectTasksCardGrid } from '@renderer/pages/ProjectTasks/components/ProjectTasksCardGrid'
 
 const ProjectTasksPage = ({}: ProjectTasksPageProps): JSX.Element => {
   const { project, projectLoading, tasks, tasksStatus } = useProjectRouteContext()
@@ -31,6 +32,11 @@ const ProjectTasksPage = ({}: ProjectTasksPageProps): JSX.Element => {
     assignee: 'all',
     dueDateRange: null
   })
+  const [viewMode, setViewMode] = useState<'table' | 'cards'>('table')
+  const [tablePage, setTablePage] = useState(1)
+  const [cardPage, setCardPage] = useState(1)
+  const TABLE_PAGE_SIZE = 10
+  const CARD_PAGE_SIZE = 8
 
   const effectiveTitle = useMemo(
     () => resolveEffectiveTitle(project?.name, t),
@@ -62,7 +68,21 @@ const ProjectTasksPage = ({}: ProjectTasksPageProps): JSX.Element => {
 
   const handleFiltersChange = (patch: Partial<TaskFilters>) => {
     setFilters((prev) => ({ ...prev, ...patch }))
+    setTablePage(1)
+    setCardPage(1)
   }
+
+  useEffect(() => {
+    const maxPage = Math.max(1, Math.ceil(filteredTasks.length / CARD_PAGE_SIZE))
+    if (cardPage > maxPage) {
+      setCardPage(maxPage)
+    }
+  }, [filteredTasks.length, cardPage])
+
+  useEffect(() => {
+    setTablePage(1)
+    setCardPage(1)
+  }, [viewMode])
 
   const handleTaskNavigate = (taskId: string) => {
     navigate(`/tasks/${taskId}`)
@@ -77,12 +97,30 @@ const ProjectTasksPage = ({}: ProjectTasksPageProps): JSX.Element => {
         priorityOptions={priorityOptions}
         assigneeOptions={assigneeOptions}
         onChange={handleFiltersChange}
+        viewMode={viewMode}
+        onViewModeChange={setViewMode}
       />
-      <ProjectTasksTable
-        tasks={filteredTasks}
-        loading={loading || projectLoading}
-        onSelect={(task) => handleTaskNavigate(task.id)}
-      />
+      {viewMode === 'table' ? (
+        <ProjectTasksTable
+          tasks={filteredTasks}
+          loading={loading || projectLoading}
+          onSelect={(task) => handleTaskNavigate(task.id)}
+          pagination={{
+            current: tablePage,
+            pageSize: TABLE_PAGE_SIZE,
+            onChange: (page) => setTablePage(page)
+          }}
+        />
+      ) : (
+        <ProjectTasksCardGrid
+          tasks={filteredTasks}
+          loading={loading || projectLoading}
+          page={cardPage}
+          pageSize={CARD_PAGE_SIZE}
+          onPageChange={setCardPage}
+          onSelect={(task) => handleTaskNavigate(task.id)}
+        />
+      )}
     </Space>
   )
 }

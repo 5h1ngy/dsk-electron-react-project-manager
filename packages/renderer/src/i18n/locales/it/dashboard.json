@@ -15,7 +15,12 @@
             },
             "roles": {
                 "all": "Tutti i ruoli"
-            }
+            },
+            "view": {
+                "table": "Vista tabella",
+                "cards": "Vista card"
+            },
+            "lastLogin": "Ultimo accesso: {{date}}"
         }
     },
     "table": {

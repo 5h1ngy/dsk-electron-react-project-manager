@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 
 import { EmptyState, LoadingSkeleton } from '@renderer/components/DataStates'
 import { useDelayedLoading } from '@renderer/hooks/useDelayedLoading'
-import type { ProjectSummary } from '@renderer/store/slices/projects'
+import type { TaskDetails } from '@renderer/store/slices/tasks'
 
 const CARD_BODY_STYLE = {
   display: 'flex',
@@ -14,99 +14,104 @@ const CARD_BODY_STYLE = {
   height: '100%'
 } as const
 
-export interface ProjectCardsGridProps {
-  projects: ProjectSummary[]
+const STATUS_COLORS: Record<TaskDetails['status'], string> = {
+  todo: 'default',
+  in_progress: 'blue',
+  blocked: 'volcano',
+  done: 'green'
+}
+
+const PRIORITY_COLORS: Record<TaskDetails['priority'], string> = {
+  low: 'green',
+  medium: 'blue',
+  high: 'orange',
+  critical: 'red'
+}
+
+export interface ProjectTasksCardGridProps {
+  tasks: TaskDetails[]
   loading: boolean
-  onSelect: (projectId: string) => void
   page: number
   pageSize: number
   onPageChange: (page: number) => void
+  onSelect: (task: TaskDetails) => void
 }
 
-export const ProjectCardsGrid = ({
-  projects,
+export const ProjectTasksCardGrid = ({
+  tasks,
   loading,
-  onSelect,
   page,
   pageSize,
-  onPageChange
-}: ProjectCardsGridProps): JSX.Element => {
+  onPageChange,
+  onSelect
+}: ProjectTasksCardGridProps): JSX.Element => {
   const { t, i18n } = useTranslation('projects')
   const showSkeleton = useDelayedLoading(loading)
 
   const { items, total } = useMemo(() => {
-    const totalCount = projects.length
+    const totalCount = tasks.length
     const start = (page - 1) * pageSize
     const end = start + pageSize
     return {
-      items: projects.slice(start, end),
+      items: tasks.slice(start, end),
       total: totalCount
     }
-  }, [page, pageSize, projects])
+  }, [page, pageSize, tasks])
 
   if (showSkeleton) {
     return <LoadingSkeleton variant="cards" />
   }
 
-  if (projects.length === 0) {
-    return (
-      <EmptyState
-        title={t('list.empty')}
-        description={t('filters.searchPlaceholder')}
-      />
-    )
+  if (tasks.length === 0) {
+    return <EmptyState title={t('details.tasksEmpty')} />
   }
 
   return (
     <Space direction="vertical" size="large" style={{ width: '100%' }}>
       <Row gutter={[16, 16]}>
-        {items.map((project) => (
-          <Col key={project.id} xs={24} sm={12} lg={8} xl={6}>
+        {items.map((task) => (
+          <Col key={task.id} xs={24} sm={12} lg={8} xl={6}>
             <Card
               hoverable
-              onClick={() => onSelect(project.id)}
+              onClick={() => onSelect(task)}
               style={{ height: '100%' }}
               bodyStyle={CARD_BODY_STYLE}
               title={
                 <Space direction="vertical" size={4}>
-                  <Typography.Text strong ellipsis>
-                    {project.name}
-                  </Typography.Text>
-                  <Tag color="blue">{project.key}</Tag>
+                  <Typography.Text type="secondary">{task.key}</Typography.Text>
+                  <Typography.Title level={5} style={{ margin: 0 }} ellipsis>
+                    {task.title}
+                  </Typography.Title>
                 </Space>
               }
-              extra={<Typography.Text>{t(`list.role.${project.role}`)}</Typography.Text>}
             >
               <Space direction="vertical" size="small" style={{ width: '100%' }}>
+                <Space size={6} wrap>
+                  <Tag color={STATUS_COLORS[task.status]}>
+                    {t(`details.status.${task.status}`)}
+                  </Tag>
+                  <Tag color={PRIORITY_COLORS[task.priority]}>
+                    {t(`details.priority.${task.priority}`)}
+                  </Tag>
+                </Space>
                 <Typography.Paragraph
                   type="secondary"
                   ellipsis={{ rows: 3 }}
                   style={{ marginBottom: 0 }}
                 >
-                  {project.description ?? t('cards.noDescription')}
+                  {task.description ?? t('details.summary.noDescription')}
                 </Typography.Paragraph>
-                <Space size={4} wrap>
-                  {(project.tags ?? []).length > 0 ? (
-                    project.tags!.map((tag) => (
-                      <Tag key={tag} bordered={false} color="default">
-                        {tag}
-                      </Tag>
-                    ))
-                  ) : (
-                    <Typography.Text type="secondary">{t('list.noTags')}</Typography.Text>
-                  )}
-                </Space>
                 <Typography.Text type="secondary">
-                  {t('list.memberCount', { count: project.memberCount })}
+                  {task.assignee?.displayName ?? t('details.noAssignee')}
                 </Typography.Text>
                 <Typography.Text type="secondary">
-                  {t('list.createdOn', {
-                    date: new Intl.DateTimeFormat(i18n.language, {
-                      day: '2-digit',
-                      month: 'short',
-                      year: 'numeric'
-                    }).format(new Date(project.createdAt))
-                  })}
+                  {task.dueDate
+                    ? new Intl.DateTimeFormat(i18n.language, {
+                        day: '2-digit',
+                        month: 'short',
+                        year: 'numeric'
+                      }).format(new Date(task.dueDate))
+                    : t('details.noDueDate')}
                 </Typography.Text>
               </Space>
             </Card>
@@ -127,7 +132,7 @@ export const ProjectCardsGrid = ({
   )
 }
 
-ProjectCardsGrid.displayName = 'ProjectCardsGrid'
+ProjectTasksCardGrid.displayName = 'ProjectTasksCardGrid'
 
-export default ProjectCardsGrid
+export default ProjectTasksCardGrid
 

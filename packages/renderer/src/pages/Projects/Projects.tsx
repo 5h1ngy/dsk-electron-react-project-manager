@@ -2,7 +2,7 @@ import type { JSX } from 'react'
 import { Breadcrumb, Typography } from 'antd'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 import { ProjectsActionBar } from '@renderer/pages/Projects/components/ProjectsActionBar'
 import { ProjectList } from '@renderer/pages/Projects/components/ProjectList'
@@ -44,12 +44,27 @@ const ProjectsPage = ({}: ProjectsPageProps): JSX.Element => {
   } = useProjectsPage({
     onProjectCreated: (projectId) => navigate(`/projects/${projectId}`)
   })
+  const [cardPage, setCardPage] = useState(1)
+  const CARD_PAGE_SIZE = 8
 
   const handleOpenProject = (projectId: string) => {
     navigate(`/projects/${projectId}`)
   }
 
   const breadcrumbItems = useMemo(() => createProjectsBreadcrumb(t), [t])
+
+  useEffect(() => {
+    if (viewMode === 'cards') {
+      setCardPage(1)
+    }
+  }, [viewMode])
+
+  useEffect(() => {
+    const maxPage = Math.max(1, Math.ceil(filteredProjects.length / CARD_PAGE_SIZE))
+    if (cardPage > maxPage) {
+      setCardPage(maxPage)
+    }
+  }, [filteredProjects.length, cardPage])
 
   return (
     <div style={PROJECTS_CONTAINER_STYLE}>
@@ -68,17 +83,22 @@ const ProjectsPage = ({}: ProjectsPageProps): JSX.Element => {
           isCreating={mutationStatus === 'loading' && isCreateModalOpen}
           canCreate={canManageProjects}
           viewMode={viewMode}
-          onViewModeChange={setViewMode}
-        availableTags={availableTags}
-        selectedTags={selectedTags}
-        onTagsChange={setSelectedTags}
-        roleFilter={roleFilter}
-        onRoleFilterChange={setRoleFilter}
-        ownedOnly={ownedOnly}
-        onOwnedOnlyChange={setOwnedOnly}
-        createdBetween={createdBetween}
-        onCreatedBetweenChange={setCreatedBetween}
-      />
+          onViewModeChange={(mode) => {
+            setViewMode(mode)
+            if (mode === 'cards') {
+              setCardPage(1)
+            }
+          }}
+          availableTags={availableTags}
+          selectedTags={selectedTags}
+          onTagsChange={setSelectedTags}
+          roleFilter={roleFilter}
+          onRoleFilterChange={setRoleFilter}
+          ownedOnly={ownedOnly}
+          onOwnedOnlyChange={setOwnedOnly}
+          createdBetween={createdBetween}
+          onCreatedBetweenChange={setCreatedBetween}
+        />
       </div>
       {viewMode === 'table' ? (
         <ProjectList
@@ -91,6 +111,9 @@ const ProjectsPage = ({}: ProjectsPageProps): JSX.Element => {
           projects={filteredProjects}
           loading={isLoading}
           onSelect={handleOpenProject}
+          page={cardPage}
+          pageSize={CARD_PAGE_SIZE}
+          onPageChange={setCardPage}
         />
       )}
       <CreateProjectModal

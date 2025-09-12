@@ -1,5 +1,6 @@
 import { useMemo, type JSX } from 'react'
-import { DatePicker, Input, Select, Space } from 'antd'
+import { AppstoreOutlined, TableOutlined } from '@ant-design/icons'
+import { DatePicker, Input, Segmented, Select, Space } from 'antd'
 import type { SelectProps } from 'antd'
 import { SearchOutlined } from '@ant-design/icons'
 import dayjs, { type Dayjs } from 'dayjs'
@@ -17,6 +18,8 @@ export interface TaskFiltersBarProps {
   priorityOptions: SelectOption[]
   assigneeOptions: SelectOption[]
   onChange: (patch: Partial<TaskFilters>) => void
+  viewMode: 'table' | 'cards'
+  onViewModeChange: (mode: 'table' | 'cards') => void
 }
 
 export const TaskFiltersBar = ({
@@ -24,7 +27,9 @@ export const TaskFiltersBar = ({
   statusOptions,
   priorityOptions,
   assigneeOptions,
-  onChange
+  onChange,
+  viewMode,
+  onViewModeChange
 }: TaskFiltersBarProps): JSX.Element => {
   const { t } = useTranslation('projects')
 
@@ -35,6 +40,30 @@ export const TaskFiltersBar = ({
     const [start, end] = filters.dueDateRange
     return [start ? dayjs(start) : null, end ? dayjs(end) : null]
   }, [filters.dueDateRange])
+
+  const viewSegmentedOptions = useMemo(
+    () => [
+      {
+        label: (
+          <Space size={6}>
+            <TableOutlined />
+            {t('viewSwitcher.table')}
+          </Space>
+        ),
+        value: 'table'
+      },
+      {
+        label: (
+          <Space size={6}>
+            <AppstoreOutlined />
+            {t('viewSwitcher.cards')}
+          </Space>
+        ),
+        value: 'cards'
+      }
+    ],
+    [t]
+  )
 
   const selectOption = (options: SelectOption[]): Option =>
     options.map((option) => ({ label: option.label, value: option.value }))
@@ -59,14 +88,27 @@ export const TaskFiltersBar = ({
 
   return (
     <Space direction="vertical" size="small" style={{ width: '100%' }}>
-      <Input
-        allowClear
-        prefix={<SearchOutlined />}
-        value={filters.searchQuery}
-        onChange={(event) => onChange({ searchQuery: event.target.value })}
-        placeholder={t('details.tasksSearchPlaceholder')}
-        size="large"
-      />
+      <Space
+        size="middle"
+        style={{ width: '100%', justifyContent: 'space-between', flexWrap: 'wrap' }}
+        align="center"
+      >
+        <Input
+          allowClear
+          prefix={<SearchOutlined />}
+          value={filters.searchQuery}
+          onChange={(event) => onChange({ searchQuery: event.target.value })}
+          placeholder={t('details.tasksSearchPlaceholder')}
+          size="large"
+          style={{ flex: 1, minWidth: 220 }}
+        />
+        <Segmented
+          size="large"
+          value={viewMode}
+          onChange={(next) => onViewModeChange(next as 'table' | 'cards')}
+          options={viewSegmentedOptions}
+        />
+      </Space>
       <Space size="middle" wrap style={{ width: '100%' }}>
         <Select
           size="large"
@@ -108,4 +150,3 @@ export const TaskFiltersBar = ({
 TaskFiltersBar.displayName = 'TaskFiltersBar'
 
 export default TaskFiltersBar
-

@@ -15,7 +15,12 @@
             },
             "roles": {
                 "all": "All roles"
-            }
+            },
+            "view": {
+                "table": "Table view",
+                "cards": "Card view"
+            },
+            "lastLogin": "Last login: {{date}}"
         }
     },
     "table":  {

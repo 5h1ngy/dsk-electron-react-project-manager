@@ -1,6 +1,6 @@
 import { useMemo, type JSX } from 'react'
-import { Input, Segmented, Select, Space, Tooltip } from 'antd'
-import { SearchOutlined, UserSwitchOutlined } from '@ant-design/icons'
+import { Input, Segmented, Select, Space, Tooltip, Typography } from 'antd'
+import { AppstoreOutlined, SearchOutlined, TableOutlined, UserSwitchOutlined } from '@ant-design/icons'
 import type { SegmentedValue } from 'antd/es/segmented'
 import { useTranslation } from 'react-i18next'
 
@@ -16,6 +16,8 @@ export interface UserFiltersProps {
   value: UserFiltersValue
   roleOptions: RoleName[]
   onChange: (value: Partial<UserFiltersValue>) => void
+  viewMode: 'table' | 'cards'
+  onViewModeChange: (mode: 'table' | 'cards') => void
   'aria-label'?: string
 }
 
@@ -23,28 +25,56 @@ export const UserFilters = ({
   value,
   roleOptions,
   onChange,
+  viewMode,
+  onViewModeChange,
   'aria-label': ariaLabel
 }: UserFiltersProps): JSX.Element => {
   const { t } = useTranslation('dashboard')
   const segmentedValue = useMemo<SegmentedValue>(() => value.status, [value.status])
+  const viewSegmentedValue = useMemo<SegmentedValue>(() => viewMode, [viewMode])
 
   return (
-    <Space
-      direction="horizontal"
-      size="middle"
-      style={{ width: '100%', justifyContent: 'space-between', flexWrap: 'wrap' }}
-      role="group"
-      aria-label={ariaLabel}
-    >
-      <Input
-        allowClear
-        prefix={<SearchOutlined />}
-        placeholder={t('filters.users.searchPlaceholder')}
-        value={value.search}
-        onChange={(event) => onChange({ search: event.target.value })}
-        style={{ minWidth: 220, flex: 1 }}
-        size="large"
-      />
+    <Space direction="vertical" size="small" style={{ width: '100%' }} role="group" aria-label={ariaLabel}>
+      <Space
+        size="middle"
+        style={{ width: '100%', justifyContent: 'space-between', flexWrap: 'wrap' }}
+        align="center"
+      >
+        <Input
+          allowClear
+          prefix={<SearchOutlined />}
+          placeholder={t('filters.users.searchPlaceholder')}
+          value={value.search}
+          onChange={(event) => onChange({ search: event.target.value })}
+          style={{ minWidth: 220, flex: 1 }}
+          size="large"
+        />
+        <Segmented
+          size="large"
+          value={viewSegmentedValue}
+          onChange={(next) => onViewModeChange(next as 'table' | 'cards')}
+          options={[
+            {
+              label: (
+                <Space size={6}>
+                  <TableOutlined />
+                  <Typography.Text>{t('filters.users.view.table')}</Typography.Text>
+                </Space>
+              ),
+              value: 'table'
+            },
+            {
+              label: (
+                <Space size={6}>
+                  <AppstoreOutlined />
+                  <Typography.Text>{t('filters.users.view.cards')}</Typography.Text>
+                </Space>
+              ),
+              value: 'cards'
+            }
+          ]}
+        />
+      </Space>
       <Space size="middle" wrap align="center">
         <Tooltip title={t('filters.users.statusTooltip')}>
           <Segmented

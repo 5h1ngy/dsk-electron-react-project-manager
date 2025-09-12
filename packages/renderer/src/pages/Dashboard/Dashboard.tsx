@@ -14,6 +14,7 @@ import { EditUserModal } from '@renderer/pages/Dashboard/components/EditUserModa
 import { UserTable } from '@renderer/pages/Dashboard/components/UserTable'
 import { ActionBar } from '@renderer/pages/Dashboard/components/ActionBar'
 import { UserFilters, type UserFiltersValue } from '@renderer/pages/Dashboard/components/UserFilters'
+import { UserCardsGrid } from '@renderer/pages/Dashboard/components/UserCardsGrid'
 import { useUserManagement } from '@renderer/pages/Dashboard/hooks/useUserManagement'
 import {
   mapRoleTags,
@@ -65,6 +66,9 @@ const Dashboard = ({}: DashboardProps): JSX.Element => {
     role: 'all',
     status: 'all'
   })
+  const [userViewMode, setUserViewMode] = useState<'table' | 'cards'>('table')
+  const [userCardPage, setUserCardPage] = useState(1)
+  const USER_CARD_PAGE_SIZE = 8
 
   const availableRoles = useMemo<RoleName[]>(() => {
     const set = new Set<RoleName>()
@@ -107,7 +111,19 @@ const Dashboard = ({}: DashboardProps): JSX.Element => {
       ...prev,
       ...patch
     }))
+    setUserCardPage(1)
   }
+
+  useEffect(() => {
+    setUserCardPage(1)
+  }, [userViewMode])
+
+  useEffect(() => {
+    const maxPage = Math.max(1, Math.ceil(filteredUsers.length / USER_CARD_PAGE_SIZE))
+    if (userCardPage > maxPage) {
+      setUserCardPage(maxPage)
+    }
+  }, [filteredUsers.length, userCardPage])
 
   useEffect(() => {
     if (!isAdmin && projectsStatus === 'idle') {
@@ -154,6 +170,8 @@ const Dashboard = ({}: DashboardProps): JSX.Element => {
         value={userFilters}
         onChange={handleUserFiltersChange}
         roleOptions={availableRoles}
+        viewMode={userViewMode}
+        onViewModeChange={(mode) => setUserViewMode(mode)}
         aria-label={t('filters.users.ariaLabel')}
       />
       {error && (
@@ -165,12 +183,22 @@ const Dashboard = ({}: DashboardProps): JSX.Element => {
           closable
         />
       )}
-      <UserTable
-        columns={columns}
-        users={filteredUsers}
-        loading={loading}
-        hasLoaded={hasLoaded}
-      />
+      {userViewMode === 'table' ? (
+        <UserTable
+          columns={columns}
+          users={filteredUsers}
+          loading={loading}
+          hasLoaded={hasLoaded}
+        />
+      ) : (
+        <UserCardsGrid
+          users={filteredUsers}
+          loading={loading}
+          page={userCardPage}
+          pageSize={USER_CARD_PAGE_SIZE}
+          onPageChange={setUserCardPage}
+        />
+      )}
       <CreateUserModal
         open={isCreateOpen}
         onCancel={closeCreateModal}
