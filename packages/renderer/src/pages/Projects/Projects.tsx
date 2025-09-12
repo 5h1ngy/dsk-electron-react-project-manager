@@ -1,8 +1,7 @@
 import type { JSX } from 'react'
-import { Typography } from 'antd'
+import { Breadcrumb, Typography } from 'antd'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
-import { Breadcrumb } from 'antd'
 import { useMemo } from 'react'
 
 import { ProjectsActionBar } from '@renderer/pages/Projects/components/ProjectsActionBar'
@@ -10,8 +9,10 @@ import { ProjectList } from '@renderer/pages/Projects/components/ProjectList'
 import { ProjectCardsGrid } from '@renderer/pages/Projects/components/ProjectCardsGrid'
 import { CreateProjectModal } from '@renderer/pages/Projects/components/CreateProjectModal'
 import { useProjectsPage } from '@renderer/pages/Projects/hooks/useProjectsPage'
+import { PROJECTS_CONTAINER_STYLE, createProjectsBreadcrumb } from '@renderer/pages/Projects/Projects.helpers'
+import type { ProjectsPageProps } from '@renderer/pages/Projects/Projects.types'
 
-const ProjectsPage = (): JSX.Element => {
+const ProjectsPage = ({}: ProjectsPageProps): JSX.Element => {
   const { t } = useTranslation('projects')
   const navigate = useNavigate()
   const {
@@ -46,17 +47,10 @@ const ProjectsPage = (): JSX.Element => {
     navigate(`/projects/${projectId}`)
   }
 
-  const breadcrumbItems = useMemo(
-    () => [
-      {
-        title: t('breadcrumbs.projects')
-      }
-    ],
-    [t]
-  )
+  const breadcrumbItems = useMemo(() => createProjectsBreadcrumb(t), [t])
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+    <div style={PROJECTS_CONTAINER_STYLE}>
       {messageContext}
       <Breadcrumb items={breadcrumbItems} />
       <div>
@@ -106,6 +100,9 @@ const ProjectsPage = (): JSX.Element => {
   )
 }
 
+ProjectsPage.displayName = 'ProjectsPage'
+
+export { ProjectsPage }
 export default ProjectsPage
 
 

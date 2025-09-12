@@ -1,20 +1,18 @@
+import type { JSX } from 'react'
 import { Card, Col, Empty, Row, Space, Statistic } from 'antd'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { ProjectDetailsCard } from '@renderer/pages/Projects/components/ProjectDetailsCard'
 import { useProjectRouteContext } from '@renderer/pages/ProjectLayout'
+import { calculateProjectMetrics } from '@renderer/pages/ProjectOverview/ProjectOverview.helpers'
+import type { ProjectOverviewPageProps } from '@renderer/pages/ProjectOverview/ProjectOverview.types'
 
-export const ProjectOverviewPage = () => {
+const ProjectOverviewPage = ({}: ProjectOverviewPageProps): JSX.Element => {
   const { project, projectLoading, tasks } = useProjectRouteContext()
   const { t } = useTranslation('projects')
 
-  const metrics = useMemo(() => {
-    const total = tasks.length
-    const done = tasks.filter((task) => task.status === 'done').length
-    const active = total - done
-    return { total, active, done }
-  }, [tasks])
+  const metrics = useMemo(() => calculateProjectMetrics(tasks), [tasks])
 
   if (!project && !projectLoading) {
     return (
@@ -58,4 +56,7 @@ export const ProjectOverviewPage = () => {
   )
 }
 
+ProjectOverviewPage.displayName = 'ProjectOverviewPage'
+
+export { ProjectOverviewPage }
 export default ProjectOverviewPage

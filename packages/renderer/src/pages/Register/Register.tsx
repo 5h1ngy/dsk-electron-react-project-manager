@@ -3,14 +3,16 @@ import { Alert, Button, Card, Form, Input, Typography } from 'antd'
 import { Controller } from 'react-hook-form'
 import { Link } from 'react-router-dom'
 
+import { REGISTER_CARD_STYLE, INFO_TEXT_STYLE } from '@renderer/pages/Register/Register.helpers'
+import type { RegisterProps } from '@renderer/pages/Register/Register.types'
 import { useRegisterForm } from '@renderer/pages/Register/hooks/useRegisterForm'
 
-const Register = (): JSX.Element => {
+const Register = ({}: RegisterProps): JSX.Element => {
   const { t, status, error, clearError, control, errors, handleSubmit, onSubmit } =
     useRegisterForm()
 
   return (
-    <Card title={t('register:title')} style={{ maxWidth: 400, width: '100%' }}>
+    <Card title={t('register:title')} style={REGISTER_CARD_STYLE}>
       <Form layout="vertical" data-testid="register-form" onFinish={handleSubmit(onSubmit)}>
         <Form.Item
           label={t('register:displayNameLabel')}
@@ -115,7 +117,7 @@ const Register = (): JSX.Element => {
         <Button type="primary" htmlType="submit" block loading={status === 'loading'}>
           {t('register:submitLabel')}
         </Button>
-        <Typography.Paragraph type="secondary" style={{ marginTop: 16, fontSize: 12 }}>
+        <Typography.Paragraph type="secondary" style={INFO_TEXT_STYLE}>
           {t('register:loginPrompt')} <Link to="/login">{t('register:loginLink')}</Link>
         </Typography.Paragraph>
       </Form>
@@ -123,4 +125,7 @@ const Register = (): JSX.Element => {
   )
 }
 
+Register.displayName = 'Register'
+
+export { Register }
 export default Register

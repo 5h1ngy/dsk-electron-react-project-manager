@@ -1,21 +1,25 @@
+import type { JSX } from 'react'
 import { Empty, Space, Spin, Typography } from 'antd'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 
 import { ProjectBoard } from '@renderer/pages/Projects/components/ProjectBoard'
 import { useProjectRouteContext } from '@renderer/pages/ProjectLayout'
+import {
+  BOARD_CONTAINER_STYLE,
+  EMPTY_STATE_STYLE,
+  LOADING_SECTION_STYLE
+} from '@renderer/pages/ProjectBoard/ProjectBoard.helpers'
+import type { ProjectBoardPageProps } from '@renderer/pages/ProjectBoard/ProjectBoard.types'
 
-const ProjectBoardPage = () => {
+const ProjectBoardPage = ({}: ProjectBoardPageProps): JSX.Element => {
   const { project, projectLoading, canManageTasks } = useProjectRouteContext()
   const { t } = useTranslation('projects')
   const navigate = useNavigate()
 
   if (projectLoading) {
     return (
-      <Space
-        align="center"
-        style={{ width: '100%', justifyContent: 'center', padding: '48px 0' }}
-      >
+      <Space align="center" style={LOADING_SECTION_STYLE}>
         <Spin />
       </Space>
     )
@@ -26,13 +30,13 @@ const ProjectBoardPage = () => {
       <Empty
         description={t('details.notFound')}
         image={Empty.PRESENTED_IMAGE_SIMPLE}
-        style={{ marginTop: 64 }}
+        style={EMPTY_STATE_STYLE}
       />
     )
   }
 
   return (
-    <Space direction="vertical" size={24} style={{ width: '100%' }}>
+    <Space direction="vertical" size={24} style={BOARD_CONTAINER_STYLE}>
       <Typography.Title level={4}>{t('details.kanbanTitle')}</Typography.Title>
       <ProjectBoard
         project={project}
@@ -43,4 +47,7 @@ const ProjectBoardPage = () => {
   )
 }
 
+ProjectBoardPage.displayName = 'ProjectBoardPage'
+
+export { ProjectBoardPage }
 export default ProjectBoardPage

@@ -3,13 +3,15 @@ import { Alert, Button, Card, Form, Input, Typography } from 'antd'
 import { Controller } from 'react-hook-form'
 import { Link } from 'react-router-dom'
 
+import { LOGIN_CARD_STYLE, INFO_TEXT_STYLE, SECONDARY_INFO_STYLE } from '@renderer/pages/Login/Login.helpers'
+import type { LoginProps } from '@renderer/pages/Login/Login.types'
 import { useLoginForm } from '@renderer/pages/Login/hooks/useLoginForm'
 
-const Login = (): JSX.Element => {
+const Login = ({}: LoginProps): JSX.Element => {
   const { t, status, error, clearError, control, errors, handleSubmit, onSubmit } = useLoginForm()
 
   return (
-    <Card title={t('login:title')} style={{ maxWidth: 400, width: '100%' }}>
+    <Card title={t('login:title')} style={LOGIN_CARD_STYLE}>
       <Form data-testid="login-form" layout="vertical" onFinish={handleSubmit(onSubmit)}>
         <Form.Item
           label={t('login:usernameLabel')}
@@ -70,10 +72,10 @@ const Login = (): JSX.Element => {
         <Button type="primary" htmlType="submit" block loading={status === 'loading'}>
           {t('login:submitLabel')}
         </Button>
-        <Typography.Paragraph type="secondary" style={{ marginTop: 16, fontSize: 12 }}>
+        <Typography.Paragraph type="secondary" style={INFO_TEXT_STYLE}>
           {t('login:defaultCredentials')}
         </Typography.Paragraph>
-        <Typography.Paragraph type="secondary" style={{ marginTop: 8, fontSize: 12 }}>
+        <Typography.Paragraph type="secondary" style={SECONDARY_INFO_STYLE}>
           {t('login:registerPrompt')} <Link to="/register">{t('login:registerLink')}</Link>
         </Typography.Paragraph>
       </Form>
@@ -81,4 +83,7 @@ const Login = (): JSX.Element => {
   )
 }
 
+Login.displayName = 'Login'
+
+export { Login }
 export default Login

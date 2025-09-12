@@ -1,45 +1,24 @@
 import { ReloadOutlined } from '@ant-design/icons'
 import { Breadcrumb, Button, Empty, Space, Tabs, Typography } from 'antd'
-import type { TabsProps } from 'antd'
 import { useMemo } from 'react'
+import type { JSX } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Outlet, useLocation, useNavigate, useOutletContext, useParams } from 'react-router-dom'
 
-import type { ProjectDetails } from '@renderer/store/slices/projects'
-import type { TaskDetails } from '@renderer/store/slices/tasks'
-
 import { useProjectDetails } from '@renderer/pages/Projects/hooks/useProjectDetails'
-
-type ProjectTabKey = 'overview' | 'tasks' | 'board'
-
-export interface ProjectRouteContext {
-  projectId: string
-  project: ProjectDetails | null
-  tasks: TaskDetails[]
-  tasksStatus: string
-  projectLoading: boolean
-  refresh: () => void
-  canManageTasks: boolean
-}
+import {
+  buildBreadcrumbItems,
+  buildTabItems,
+  buildTabLabelMap,
+  resolveActiveTab
+} from '@renderer/pages/ProjectLayout/ProjectLayout.helpers'
+import type {
+  ProjectRouteContext,
+  ProjectTabKey
+} from '@renderer/pages/ProjectLayout/ProjectLayout.types'
 
 export const useProjectRouteContext = (): ProjectRouteContext =>
   useOutletContext<ProjectRouteContext>()
-
-const resolveActiveTab = (pathname: string, basePath: string): ProjectTabKey => {
-  if (pathname.startsWith(`${basePath}/board`)) {
-    return 'board'
-  }
-  if (pathname.startsWith(`${basePath}/tasks`)) {
-    return 'tasks'
-  }
-  return 'overview'
-}
-
-const buildTabItems = (t: (key: string) => string): TabsProps['items'] => [
-  { key: 'overview', label: t('details.tabs.overview') },
-  { key: 'tasks', label: t('details.tabs.tasks') },
-  { key: 'board', label: t('details.tabs.board') }
-]
 
 const ProjectLayout = (): JSX.Element => {
   const { projectId } = useParams<{ projectId: string }>()
@@ -62,35 +41,19 @@ const ProjectLayout = (): JSX.Element => {
 
   const tabItems = useMemo(() => buildTabItems(t), [t])
 
-  const tabLabelMap: Record<ProjectTabKey, string> = {
-    overview: t('breadcrumbs.overview'),
-    tasks: t('breadcrumbs.tasks'),
-    board: t('breadcrumbs.board')
-  }
+  const tabLabelMap = useMemo(() => buildTabLabelMap(t), [t])
 
-  const renderBreadcrumbLink = (label: string, path?: string) =>
-    path ? (
-      <Typography.Link onClick={() => navigate(path)}>{label}</Typography.Link>
-    ) : (
-      <Typography.Text>{label}</Typography.Text>
-    )
-
-  const breadcrumbItems = useMemo(() => {
-    const items = [
-      {
-        title: renderBreadcrumbLink(t('breadcrumbs.projects'), '/projects')
-      }
-    ]
-    if (project) {
-      items.push({
-        title: renderBreadcrumbLink(project.name, `/projects/${project.id}`)
-      })
-    }
-    items.push({
-      title: renderBreadcrumbLink(tabLabelMap[activeKey])
-    })
-    return items
-  }, [t, project, tabLabelMap, activeKey, navigate])
+  const breadcrumbItems = useMemo(
+    () =>
+      buildBreadcrumbItems({
+        t,
+        project: project ?? null,
+        tabLabelMap,
+        activeKey,
+        navigate
+      }),
+    [t, project, tabLabelMap, activeKey, navigate]
+  )
 
   if (!projectId) {
     return (
@@ -176,4 +139,7 @@ const ProjectLayout = (): JSX.Element => {
   )
 }
 
+ProjectLayout.displayName = 'ProjectLayout'
+
+export { ProjectLayout }
 export default ProjectLayout
