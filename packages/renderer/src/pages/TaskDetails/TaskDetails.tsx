@@ -1,10 +1,12 @@
 import type { JSX } from 'react'
 import { ArrowLeftOutlined } from '@ant-design/icons'
-import { Breadcrumb, Button, Card, Empty, Space, Spin, Tag, Typography } from 'antd'
+import { Breadcrumb, Button, Card, Skeleton, Space, Tag, Typography } from 'antd'
 import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate, useParams } from 'react-router-dom'
 
+import { EmptyState } from '@renderer/components/DataStates'
+import { useDelayedLoading } from '@renderer/hooks/useDelayedLoading'
 import type { TaskDetails } from '@renderer/store/slices/tasks/types'
 import { useAppSelector } from '@renderer/store/hooks'
 import { selectToken } from '@renderer/store/slices/auth'
@@ -25,6 +27,7 @@ const TaskDetailsPage = ({}: TaskDetailsPageProps): JSX.Element => {
   const navigate = useNavigate()
   const [task, setTask] = useState<TaskDetails | null>(null)
   const [{ loading, error }, setLoadState] = useState<LoadState>({ loading: true })
+  const showSkeleton = useDelayedLoading(loading)
 
   useEffect(() => {
     let mounted = true
@@ -77,11 +80,13 @@ const TaskDetailsPage = ({}: TaskDetailsPageProps): JSX.Element => {
 
   const tags = useMemo(() => buildTags(task, t), [task, t])
 
-  if (loading) {
+  if (showSkeleton) {
     return (
       <Space direction="vertical" size={24} style={{ width: '100%' }}>
         <Breadcrumb items={breadcrumbItems} />
-        <Spin tip={t('details.loading')} />
+        <Card style={{ maxWidth: 720, width: '100%' }}>
+          <Skeleton active title paragraph={{ rows: 4 }} />
+        </Card>
       </Space>
     )
   }
@@ -91,14 +96,14 @@ const TaskDetailsPage = ({}: TaskDetailsPageProps): JSX.Element => {
       <Space direction="vertical" size={24} style={{ width: '100%' }}>
         <Breadcrumb items={breadcrumbItems} />
         <Card style={{ maxWidth: 720, width: '100%' }}>
-          <Empty
-            description={error ?? t('details.notFound')}
-            image={Empty.PRESENTED_IMAGE_SIMPLE}
-          >
-            <Button icon={<ArrowLeftOutlined />} onClick={handleBack}>
-              {t('details.backToList')}
-            </Button>
-          </Empty>
+          <EmptyState
+            title={error ?? t('details.notFound')}
+            action={
+              <Button icon={<ArrowLeftOutlined />} onClick={handleBack}>
+                {t('details.backToList')}
+              </Button>
+            }
+          />
         </Card>
       </Space>
     )

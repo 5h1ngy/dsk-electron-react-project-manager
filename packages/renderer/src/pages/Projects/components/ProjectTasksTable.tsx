@@ -2,6 +2,8 @@ import { Table, Tag, Typography } from 'antd'
 import type { ColumnsType, TablePaginationConfig } from 'antd/es/table'
 import { useTranslation } from 'react-i18next'
 
+import { EmptyState, LoadingSkeleton } from '@renderer/components/DataStates'
+import { useDelayedLoading } from '@renderer/hooks/useDelayedLoading'
 import type { TaskDetails } from '@renderer/store/slices/tasks'
 
 export interface ProjectTasksTableProps {
@@ -32,6 +34,7 @@ export const ProjectTasksTable = ({
   pagination
 }: ProjectTasksTableProps) => {
   const { t, i18n } = useTranslation('projects')
+  const showSkeleton = useDelayedLoading(loading)
 
   const columns: ColumnsType<TaskDetails> = [
     {
@@ -102,12 +105,15 @@ export const ProjectTasksTable = ({
     }
   ]
 
+  if (showSkeleton) {
+    return <LoadingSkeleton variant="table" />
+  }
+
   return (
     <Table<TaskDetails>
       rowKey="id"
       columns={columns}
       dataSource={tasks}
-      loading={loading}
       pagination={pagination}
       size="middle"
       scroll={{ x: 'max-content' }}
@@ -115,7 +121,12 @@ export const ProjectTasksTable = ({
         onClick: () => onSelect(record)
       })}
       locale={{
-        emptyText: loading ? t('details.tasksLoading') : t('details.tasksEmpty')
+        emptyText: (
+          <EmptyState
+            title={t('details.tasksEmpty')}
+            description={t('details.tasksSearchPlaceholder')}
+          />
+        )
       }}
     />
   )

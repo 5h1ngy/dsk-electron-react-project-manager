@@ -1,10 +1,12 @@
 import { ReloadOutlined } from '@ant-design/icons'
-import { Breadcrumb, Button, Empty, Space, Tabs, Typography } from 'antd'
+import { Breadcrumb, Button, Skeleton, Space, Tabs, Typography } from 'antd'
 import { useMemo } from 'react'
 import type { JSX } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Outlet, useLocation, useNavigate, useOutletContext, useParams } from 'react-router-dom'
 
+import { EmptyState } from '@renderer/components/DataStates'
+import { useDelayedLoading } from '@renderer/hooks/useDelayedLoading'
 import { useProjectDetails } from '@renderer/pages/Projects/hooks/useProjectDetails'
 import {
   buildBreadcrumbItems,
@@ -35,6 +37,7 @@ const ProjectLayout = (): JSX.Element => {
     canManageTasks,
     messageContext
   } = useProjectDetails(projectId)
+  const showSkeleton = useDelayedLoading(projectLoading)
 
   const basePath = `/projects/${projectId ?? ''}`
   const activeKey = projectId ? resolveActiveTab(location.pathname, basePath) : 'overview'
@@ -57,25 +60,24 @@ const ProjectLayout = (): JSX.Element => {
 
   if (!projectId) {
     return (
-      <Empty
-        description={t('details.missingId')}
-        image={Empty.PRESENTED_IMAGE_SIMPLE}
-        style={{ marginTop: 64 }}
-      />
+      <div style={{ marginTop: 64 }}>
+        <EmptyState title={t('details.missingId')} />
+      </div>
     )
   }
 
   if (!project && !projectLoading) {
     return (
-      <Empty
-        description={t('details.notFound')}
-        image={Empty.PRESENTED_IMAGE_SIMPLE}
-        style={{ marginTop: 64 }}
-      >
-        <Button type="primary" onClick={() => navigate('/projects')}>
-          {t('details.backToList')}
-        </Button>
-      </Empty>
+      <div style={{ marginTop: 64 }}>
+        <EmptyState
+          title={t('details.notFound')}
+          action={
+            <Button type="primary" onClick={() => navigate('/projects')}>
+              {t('details.backToList')}
+            </Button>
+          }
+        />
+      </div>
     )
   }
 
@@ -118,13 +120,27 @@ const ProjectLayout = (): JSX.Element => {
           flexWrap: 'wrap'
         }}
       >
-        <div>
-          <Typography.Title level={3} style={{ marginBottom: 0 }}>
-            {project?.name ?? t('details.loading')}
-          </Typography.Title>
-          <Typography.Text type="secondary">{project?.key}</Typography.Text>
-        </div>
-        <Button icon={<ReloadOutlined />} onClick={refresh}>
+        {showSkeleton ? (
+          <Space direction="vertical" size={4}>
+            <Skeleton.Input active size="large" style={{ width: 240 }} />
+            <Skeleton.Input active size="small" style={{ width: 120 }} />
+          </Space>
+        ) : (
+          <div>
+            <Typography.Title level={3} style={{ marginBottom: 0 }}>
+              {project?.name}
+            </Typography.Title>
+            {project?.key ? (
+              <Typography.Text type="secondary">{project.key}</Typography.Text>
+            ) : null}
+          </div>
+        )}
+        <Button
+          icon={<ReloadOutlined />}
+          onClick={refresh}
+          loading={projectLoading}
+          disabled={projectLoading}
+        >
           {t('details.refresh')}
         </Button>
       </Space>

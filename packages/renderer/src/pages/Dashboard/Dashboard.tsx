@@ -3,7 +3,9 @@ import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Alert, Card, Space, Tag, Typography } from 'antd'
 
+import { LoadingSkeleton } from '@renderer/components/DataStates'
 import { HealthStatusCard } from '@renderer/components/HealthStatusCard'
+import { useDelayedLoading } from '@renderer/hooks/useDelayedLoading'
 import { useAppDispatch, useAppSelector } from '@renderer/store/hooks'
 import { selectCurrentUser } from '@renderer/store/slices/auth/selectors'
 import { fetchProjects, selectProjects, selectProjectsStatus } from '@renderer/store/slices/projects'
@@ -36,6 +38,8 @@ const Dashboard = ({}: DashboardProps): JSX.Element => {
   const {
     users,
     error,
+    loading,
+    hasLoaded,
     messageContext,
     columns,
     isCreateOpen,
@@ -53,6 +57,7 @@ const Dashboard = ({}: DashboardProps): JSX.Element => {
   } = useUserManagement()
 
   const isFetchingProjects = projectsStatus === 'loading'
+  const projectListSkeleton = useDelayedLoading(isFetchingProjects)
 
   useEffect(() => {
     if (!isAdmin && projectsStatus === 'idle') {
@@ -79,7 +84,11 @@ const Dashboard = ({}: DashboardProps): JSX.Element => {
             </Space>
           </Card>
           <Card title={t('personal.projectsTitle')} style={{ flex: 2, minWidth: 320 }}>
-            {renderProjectsList(recentProjects, t, isFetchingProjects)}
+            {projectListSkeleton ? (
+              <LoadingSkeleton variant="list" />
+            ) : (
+              renderProjectsList(recentProjects, t)
+            )}
           </Card>
         </Space>
       </Space>
@@ -90,7 +99,7 @@ const Dashboard = ({}: DashboardProps): JSX.Element => {
     <Space direction="vertical" size="large" style={{ width: '100%' }}>
       {messageContext}
       <HealthStatusCard />
-      <ActionBar onCreate={openCreateModal} onRefresh={refreshUsers} />
+      <ActionBar onCreate={openCreateModal} onRefresh={refreshUsers} isRefreshing={loading} />
       {error && (
         <Alert
           type="error"
@@ -100,7 +109,7 @@ const Dashboard = ({}: DashboardProps): JSX.Element => {
           closable
         />
       )}
-      <UserTable columns={columns} users={users} />
+      <UserTable columns={columns} users={users} loading={loading} hasLoaded={hasLoaded} />
       <CreateUserModal
         open={isCreateOpen}
         onCancel={closeCreateModal}

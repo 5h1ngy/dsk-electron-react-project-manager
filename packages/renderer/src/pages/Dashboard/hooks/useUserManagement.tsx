@@ -17,6 +17,8 @@ interface UserManagementState {
   users: UserDTO[]
   columns: ColumnsType<UserDTO>
   error?: string
+  loading: boolean
+  hasLoaded: boolean
   isCreateOpen: boolean
   editingUser: UserDTO | null
   openCreateModal: () => void
@@ -36,7 +38,7 @@ interface UserManagementState {
 export const useUserManagement = (): UserManagementState => {
   const currentUser = useAppSelector(selectCurrentUser)
   const isAdmin = (currentUser?.roles ?? []).includes('Admin')
-  const { users, error, refreshUsers, clearError, createUser, updateUser } = useUserData({
+  const { users, error, loading, hasLoaded, refreshUsers, clearError, createUser, updateUser } = useUserData({
     enabled: isAdmin
   })
   const { createForm, updateForm, resetCreateForm, resetUpdateForm } = useUserForms()
@@ -163,6 +165,8 @@ export const useUserManagement = (): UserManagementState => {
     users,
     columns,
     error,
+    loading,
+    hasLoaded,
     isCreateOpen,
     editingUser,
     openCreateModal,

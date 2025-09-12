@@ -1,6 +1,8 @@
-import { Card, Col, Empty, Row, Space, Tag, Typography } from 'antd'
+import { Card, Col, Row, Space, Tag, Typography } from 'antd'
 import { useTranslation } from 'react-i18next'
 
+import { EmptyState, LoadingSkeleton } from '@renderer/components/DataStates'
+import { useDelayedLoading } from '@renderer/hooks/useDelayedLoading'
 import type { ProjectSummary } from '@renderer/store/slices/projects'
 
 export interface ProjectCardsGridProps {
@@ -15,9 +17,19 @@ export const ProjectCardsGrid = ({
   onSelect
 }: ProjectCardsGridProps): JSX.Element => {
   const { t, i18n } = useTranslation('projects')
+  const showSkeleton = useDelayedLoading(loading)
 
-  if (!loading && projects.length === 0) {
-    return <Empty description={t('list.empty')} />
+  if (showSkeleton) {
+    return <LoadingSkeleton variant="cards" />
+  }
+
+  if (projects.length === 0) {
+    return (
+      <EmptyState
+        title={t('list.empty')}
+        description={t('filters.searchPlaceholder')}
+      />
+    )
   }
 
   return (

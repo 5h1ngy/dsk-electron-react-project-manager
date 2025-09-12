@@ -5,9 +5,14 @@ import { Button } from 'antd'
 interface ActionBarProps {
   onCreate: () => void
   onRefresh: () => void
+  isRefreshing?: boolean
 }
 
-export const ActionBar = ({ onCreate, onRefresh }: ActionBarProps): JSX.Element => {
+export const ActionBar = ({
+  onCreate,
+  onRefresh,
+  isRefreshing
+}: ActionBarProps): JSX.Element => {
   const { t } = useTranslation('dashboard')
 
   return (
@@ -15,7 +20,9 @@ export const ActionBar = ({ onCreate, onRefresh }: ActionBarProps): JSX.Element 
       <Button type="primary" onClick={onCreate}>
         {t('dashboard:actionBar.create')}
       </Button>
-      <Button onClick={onRefresh}>{t('dashboard:actionBar.refresh')}</Button>
+      <Button onClick={onRefresh} loading={isRefreshing} disabled={isRefreshing}>
+        {t('dashboard:actionBar.refresh')}
+      </Button>
     </div>
   )
 }

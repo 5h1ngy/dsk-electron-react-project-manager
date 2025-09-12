@@ -1,6 +1,8 @@
-import { Alert, Col, Empty, Row, Spin } from 'antd'
+import { Alert, Col, Row } from 'antd'
 import { useTranslation } from 'react-i18next'
 
+import { EmptyState, LoadingSkeleton } from '@renderer/components/DataStates'
+import { useDelayedLoading } from '@renderer/hooks/useDelayedLoading'
 import type { ProjectDetails } from '@renderer/store/slices/projects'
 import type { TaskDetails } from '@renderer/store/slices/tasks'
 import { KanbanColumn } from '@renderer/pages/Projects/components/KanbanColumn'
@@ -19,10 +21,15 @@ export const ProjectBoard = ({ project, canManageTasks, onTaskSelect }: ProjectB
     useProjectBoard(project, canManageTasks)
 
   if (!project) {
-    return <Empty description={t('board.empty')} style={{ marginTop: 32 }} />
+    return (
+      <div style={{ marginTop: 32 }}>
+        <EmptyState title={t('board.empty')} />
+      </div>
+    )
   }
 
   const isLoading = boardStatus === 'loading'
+  const showSkeleton = useDelayedLoading(isLoading)
 
   return (
     <>
@@ -36,7 +43,9 @@ export const ProjectBoard = ({ project, canManageTasks, onTaskSelect }: ProjectB
           style={{ marginBottom: 16 }}
         />
       ) : null}
-      <Spin spinning={isLoading}>
+      {showSkeleton ? (
+        <LoadingSkeleton variant="cards" items={4} />
+      ) : (
         <Row gutter={16}>
           {columns.map((column) => (
             <Col span={6} key={column.status}>
@@ -62,7 +71,7 @@ export const ProjectBoard = ({ project, canManageTasks, onTaskSelect }: ProjectB
             </Col>
           ))}
         </Row>
-      </Spin>
+      )}
     </>
   )
 }

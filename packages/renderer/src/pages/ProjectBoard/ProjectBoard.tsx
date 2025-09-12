@@ -1,8 +1,10 @@
 import type { JSX } from 'react'
-import { Empty, Space, Spin, Typography } from 'antd'
+import { Space, Typography } from 'antd'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 
+import { EmptyState, LoadingSkeleton } from '@renderer/components/DataStates'
+import { useDelayedLoading } from '@renderer/hooks/useDelayedLoading'
 import { ProjectBoard } from '@renderer/pages/Projects/components/ProjectBoard'
 import { useProjectRouteContext } from '@renderer/pages/ProjectLayout'
 import {
@@ -16,22 +18,21 @@ const ProjectBoardPage = ({}: ProjectBoardPageProps): JSX.Element => {
   const { project, projectLoading, canManageTasks } = useProjectRouteContext()
   const { t } = useTranslation('projects')
   const navigate = useNavigate()
+  const showSkeleton = useDelayedLoading(projectLoading)
 
-  if (projectLoading) {
+  if (showSkeleton) {
     return (
       <Space align="center" style={LOADING_SECTION_STYLE}>
-        <Spin />
+        <LoadingSkeleton variant="cards" items={4} />
       </Space>
     )
   }
 
   if (!project) {
     return (
-      <Empty
-        description={t('details.notFound')}
-        image={Empty.PRESENTED_IMAGE_SIMPLE}
-        style={EMPTY_STATE_STYLE}
-      />
+      <div style={EMPTY_STATE_STYLE}>
+        <EmptyState title={t('details.notFound')} />
+      </div>
     )
   }
 

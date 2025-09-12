@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 import type { UserDTO } from '@main/services/auth'
 import { useAppDispatch, useAppSelector } from '@renderer/store/hooks'
@@ -20,6 +20,8 @@ export interface UseUserDataOptions {
 export interface UserDataState {
   users: UserDTO[]
   error?: string
+  loading: boolean
+  hasLoaded: boolean
   refreshUsers: () => void
   clearError: () => void
   createUser: (values: CreateUserValues) => Promise<void>
@@ -30,20 +32,48 @@ export const useUserData = ({ enabled }: UseUserDataOptions): UserDataState => {
   const dispatch = useAppDispatch()
   const users = useAppSelector(selectUsers)
   const error = useAppSelector(selectAuthError)
+  const [loading, setLoading] = useState(false)
+  const [hasLoaded, setHasLoaded] = useState(false)
+  const mountedRef = useRef(true)
+
+  useEffect(() => {
+    return () => {
+      mountedRef.current = false
+    }
+  }, [])
+
+  const setLoadingSafe = useCallback((value: boolean) => {
+    if (mountedRef.current) {
+      setLoading(value)
+    }
+  }, [])
+
+  const executeLoad = useCallback(async () => {
+    if (!enabled) {
+      return
+    }
+    setLoadingSafe(true)
+    try {
+      await dispatch(loadUsers())
+    } finally {
+      setHasLoaded(true)
+      setLoadingSafe(false)
+    }
+  }, [dispatch, enabled, setLoadingSafe])
 
   useEffect(() => {
     if (!enabled) {
       return
     }
-    void dispatch(loadUsers())
-  }, [dispatch, enabled])
+    void executeLoad()
+  }, [enabled, executeLoad])
 
   const refreshUsers = useCallback(() => {
     if (!enabled) {
       return
     }
-    void dispatch(loadUsers())
-  }, [dispatch, enabled])
+    void executeLoad()
+  }, [enabled, executeLoad])
 
   const clearError = useCallback(() => {
     dispatch(clearAuthError())
@@ -72,6 +102,8 @@ export const useUserData = ({ enabled }: UseUserDataOptions): UserDataState => {
   return {
     users: enabled ? users : [],
     error,
+    loading,
+    hasLoaded,
     refreshUsers,
     clearError,
     createUser,

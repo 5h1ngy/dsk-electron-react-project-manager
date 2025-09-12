@@ -2,6 +2,8 @@ import { Table, Tag, Typography } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
 import { useTranslation } from 'react-i18next'
 
+import { EmptyState, LoadingSkeleton } from '@renderer/components/DataStates'
+import { useDelayedLoading } from '@renderer/hooks/useDelayedLoading'
 import type { ProjectSummary } from '@renderer/store/slices/projects'
 
 type ProjectRow = ProjectSummary
@@ -23,6 +25,7 @@ const formatDate = (value: Date | string, locale: string): string => {
 
 export const ProjectList = ({ projects, loading, onSelect }: ProjectListProps) => {
   const { t, i18n } = useTranslation('projects')
+  const showSkeleton = useDelayedLoading(loading)
 
   const columns: ColumnsType<ProjectRow> = [
     {
@@ -86,12 +89,15 @@ export const ProjectList = ({ projects, loading, onSelect }: ProjectListProps) =
     }
   ]
 
+  if (showSkeleton) {
+    return <LoadingSkeleton variant="table" />
+  }
+
   return (
     <Table<ProjectRow>
       rowKey="id"
       columns={columns}
       dataSource={projects}
-      loading={loading}
       size="middle"
       scroll={{ x: 1024 }}
       onRow={(record) => ({
@@ -99,7 +105,12 @@ export const ProjectList = ({ projects, loading, onSelect }: ProjectListProps) =
         style: { cursor: 'pointer' }
       })}
       locale={{
-        emptyText: loading ? t('list.loading') : t('list.empty')
+        emptyText: (
+          <EmptyState
+            title={t('list.empty')}
+            description={t('filters.searchPlaceholder')}
+          />
+        )
       }}
     />
   )

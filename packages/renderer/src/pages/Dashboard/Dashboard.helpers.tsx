@@ -2,6 +2,7 @@ import type { TFunction } from 'i18next'
 import { List, Space, Tag, Typography } from 'antd'
 import type { JSX } from 'react'
 
+import { EmptyState } from '@renderer/components/DataStates'
 import type { ProjectSummary } from '@renderer/store/slices/projects/types'
 import type { RoleTagDescriptor } from '@renderer/pages/Dashboard/Dashboard.types'
 
@@ -16,14 +17,12 @@ export const selectRecentProjects = (projects: ProjectSummary[], limit = 8): Pro
 
 export const renderProjectsList = (
   projects: ProjectSummary[],
-  t: TFunction,
-  isLoading: boolean
+  t: TFunction
 ): JSX.Element => (
   <List
-    loading={isLoading}
     dataSource={projects}
     rowKey="id"
-    locale={{ emptyText: t('personal.noProjects') }}
+    locale={{ emptyText: <EmptyState title={t('personal.noProjects')} /> }}
     renderItem={(project) => (
       <List.Item>
         <Space direction="vertical" size={4} style={{ width: '100%' }}>

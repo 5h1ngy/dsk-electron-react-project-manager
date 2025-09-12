@@ -1,9 +1,10 @@
 import type { JSX } from 'react'
-import { Empty, Input, Select, Space, Typography } from 'antd'
+import { Input, Select, Space, Typography } from 'antd'
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 
+import { EmptyState } from '@renderer/components/DataStates'
 import { ProjectTasksTable } from '@renderer/pages/Projects/components/ProjectTasksTable'
 import { useProjectRouteContext } from '@renderer/pages/ProjectLayout'
 import {
@@ -34,11 +35,9 @@ const ProjectTasksPage = ({}: ProjectTasksPageProps): JSX.Element => {
 
   if (!project && !projectLoading) {
     return (
-      <Empty
-        description={t('details.notFound')}
-        image={Empty.PRESENTED_IMAGE_SIMPLE}
-        style={{ marginTop: 64 }}
-      />
+      <div style={{ marginTop: 64 }}>
+        <EmptyState title={t('details.notFound')} />
+      </div>
     )
   }
 
