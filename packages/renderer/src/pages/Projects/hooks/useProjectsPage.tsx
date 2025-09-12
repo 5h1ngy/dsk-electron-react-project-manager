@@ -19,6 +19,7 @@ import type { CreateProjectValues } from '@renderer/pages/Projects/schemas/proje
 
 type ViewMode = 'table' | 'cards'
 type RoleFilter = 'all' | 'admin' | 'edit' | 'view'
+type CreatedRange = [string | null, string | null] | null
 
 export interface UseProjectsPageOptions {
   onProjectCreated?: (projectId: string) => void
@@ -39,6 +40,8 @@ export interface UseProjectsPageResult {
   setRoleFilter: (role: RoleFilter) => void
   ownedOnly: boolean
   setOwnedOnly: (value: boolean) => void
+  createdBetween: CreatedRange
+  setCreatedBetween: (range: CreatedRange) => void
   viewMode: ViewMode
   setViewMode: (mode: ViewMode) => void
   openCreateModal: () => void
@@ -69,6 +72,7 @@ export const useProjectsPage = (options?: UseProjectsPageOptions): UseProjectsPa
   const [selectedTags, setSelectedTags] = useState<string[]>([])
   const [roleFilter, setRoleFilter] = useState<RoleFilter>('all')
   const [ownedOnly, setOwnedOnly] = useState(false)
+  const [createdBetween, setCreatedBetween] = useState<CreatedRange>(null)
   const [viewMode, setViewMode] = useState<ViewMode>('table')
   const [isCreateModalOpen, setCreateModalOpen] = useState(false)
   const [messageApi, messageContext] = message.useMessage()
@@ -125,9 +129,19 @@ export const useProjectsPage = (options?: UseProjectsPageOptions): UseProjectsPa
       if (ownedOnly && project.createdBy !== currentUser?.id) {
         return false
       }
+      if (createdBetween) {
+        const createdAt = new Date(project.createdAt).getTime()
+        const [start, end] = createdBetween
+        if (start && createdAt < new Date(start).getTime()) {
+          return false
+        }
+        if (end && createdAt > new Date(end).getTime()) {
+          return false
+        }
+      }
       return true
     })
-  }, [projects, search, selectedTags, roleFilter, ownedOnly, currentUser?.id])
+  }, [projects, search, selectedTags, roleFilter, ownedOnly, createdBetween, currentUser?.id])
 
   const openCreateModal = useCallback(() => {
     if (!canManageProjects) {
@@ -196,6 +210,8 @@ export const useProjectsPage = (options?: UseProjectsPageOptions): UseProjectsPa
     setRoleFilter,
     ownedOnly,
     setOwnedOnly,
+    createdBetween,
+    setCreatedBetween,
     viewMode,
     setViewMode,
     openCreateModal,

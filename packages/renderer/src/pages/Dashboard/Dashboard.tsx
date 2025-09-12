@@ -1,5 +1,5 @@
 import type { JSX } from 'react'
-import { useEffect } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Alert, Card, Space, Tag, Typography } from 'antd'
 
@@ -13,6 +13,7 @@ import { CreateUserModal } from '@renderer/pages/Dashboard/components/CreateUser
 import { EditUserModal } from '@renderer/pages/Dashboard/components/EditUserModal'
 import { UserTable } from '@renderer/pages/Dashboard/components/UserTable'
 import { ActionBar } from '@renderer/pages/Dashboard/components/ActionBar'
+import { UserFilters, type UserFiltersValue } from '@renderer/pages/Dashboard/components/UserFilters'
 import { useUserManagement } from '@renderer/pages/Dashboard/hooks/useUserManagement'
 import {
   mapRoleTags,
@@ -20,6 +21,7 @@ import {
   renderProjectsList
 } from '@renderer/pages/Dashboard/Dashboard.helpers'
 import type { DashboardProps, RoleTagDescriptor } from '@renderer/pages/Dashboard/Dashboard.types'
+import type { RoleName } from '@main/services/auth/constants'
 
 const renderRoleTags = (tags: RoleTagDescriptor[]): JSX.Element => (
   <Space size={4} wrap>
@@ -58,6 +60,54 @@ const Dashboard = ({}: DashboardProps): JSX.Element => {
 
   const isFetchingProjects = projectsStatus === 'loading'
   const projectListSkeleton = useDelayedLoading(isFetchingProjects)
+  const [userFilters, setUserFilters] = useState<UserFiltersValue>({
+    search: '',
+    role: 'all',
+    status: 'all'
+  })
+
+  const availableRoles = useMemo<RoleName[]>(() => {
+    const set = new Set<RoleName>()
+    users.forEach((user) => {
+      user.roles.forEach((role) => set.add(role))
+    })
+    return Array.from(set).sort((a, b) => a.localeCompare(b))
+  }, [users])
+
+  const filteredUsers = useMemo(() => {
+    const needle = userFilters.search.trim().toLowerCase()
+    return users.filter((user) => {
+      const matchesSearch =
+        needle.length === 0 ||
+        [user.username, user.displayName]
+          .filter(Boolean)
+          .some((value) => value.toLowerCase().includes(needle))
+
+      if (!matchesSearch) {
+        return false
+      }
+
+      if (userFilters.role !== 'all' && !user.roles.includes(userFilters.role)) {
+        return false
+      }
+
+      if (userFilters.status !== 'all') {
+        const shouldBeActive = userFilters.status === 'active'
+        if (user.isActive !== shouldBeActive) {
+          return false
+        }
+      }
+
+      return true
+    })
+  }, [userFilters.role, userFilters.search, userFilters.status, users])
+
+  const handleUserFiltersChange = (patch: Partial<UserFiltersValue>) => {
+    setUserFilters((prev) => ({
+      ...prev,
+      ...patch
+    }))
+  }
 
   useEffect(() => {
     if (!isAdmin && projectsStatus === 'idle') {
@@ -100,6 +150,12 @@ const Dashboard = ({}: DashboardProps): JSX.Element => {
       {messageContext}
       <HealthStatusCard />
       <ActionBar onCreate={openCreateModal} onRefresh={refreshUsers} isRefreshing={loading} />
+      <UserFilters
+        value={userFilters}
+        onChange={handleUserFiltersChange}
+        roleOptions={availableRoles}
+        aria-label={t('filters.users.ariaLabel')}
+      />
       {error && (
         <Alert
           type="error"
@@ -109,7 +165,12 @@ const Dashboard = ({}: DashboardProps): JSX.Element => {
           closable
         />
       )}
-      <UserTable columns={columns} users={users} loading={loading} hasLoaded={hasLoaded} />
+      <UserTable
+        columns={columns}
+        users={filteredUsers}
+        loading={loading}
+        hasLoaded={hasLoaded}
+      />
       <CreateUserModal
         open={isCreateOpen}
         onCancel={closeCreateModal}

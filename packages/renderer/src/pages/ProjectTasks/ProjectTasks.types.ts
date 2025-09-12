@@ -11,4 +11,6 @@ export interface TaskFilters {
   searchQuery: string
   status: 'all' | TaskDetails['status']
   priority: 'all' | TaskDetails['priority']
+  assignee: 'all' | 'unassigned' | string
+  dueDateRange: [string | null, string | null] | null
 }

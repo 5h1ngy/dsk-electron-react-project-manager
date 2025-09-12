@@ -6,26 +6,17 @@
     },
     "actions": {
         "refresh": "Aktualisieren",
-        "tabs": {
-            "overview": "Uebersicht",
-            "tasks": "Aufgaben",
-            "board": "Kanban"
-        },
-        "overview": {
-            "metrics": {
-                "title": "Arbeitsstatus",
-                "total": "Gesamtaufgaben",
-                "active": "In Arbeit",
-                "done": "Abgeschlossen"
-            }
-        },
         "refreshHint": "Projektliste neu laden",
         "create": "Neues Projekt",
         "createHint": "Ein neues Projekt anlegen"
     },
     "filters": {
-        "searchPlaceholder": "Nach Name, Schlï¿½ssel oder Tag suchen",
+        "searchPlaceholder": "Nach Name, Key oder Tag suchen",
         "tagsPlaceholder": "Nach Tags filtern",
+        "createdRange": {
+            "start": "Erstellt ab",
+            "end": "Erstellt bis"
+        },
         "roleOptions": {
             "all": "Alle Rollen",
             "admin": "Administrator",
@@ -35,12 +26,12 @@
         "ownedOnly": "Von mir erstellt"
     },
     "permissions": {
-        "createDenied": "Nur Administratoren oder Maintainer kï¿½nnen Projekte erstellen.",
+        "createDenied": "Nur Administratoren oder Maintainer koennen Projekte erstellen.",
         "createDeniedTooltip": "Keine Berechtigung zum Erstellen von Projekten.",
-        "updateDenied": "Nur Administratoren oder Maintainer kï¿½nnen Projekte bearbeiten.",
-        "manageMembersDenied": "Nur Administratoren oder Maintainer kï¿½nnen Projektmitglieder verwalten.",
+        "updateDenied": "Nur Administratoren oder Maintainer koennen Projekte bearbeiten.",
+        "manageMembersDenied": "Nur Administratoren oder Maintainer koennen Mitglieder verwalten.",
         "tasksCreateDenied": "Keine Berechtigung, Aufgaben in diesem Projekt zu erstellen.",
-        "tasksUpdateDenied": "Keine Berechtigung, Aufgaben in diesem Projekt zu bearbeiten."
+        "tasksUpdateDenied": "Keine Berechtigung, Aufgaben in diesem Projekt zu aktualisieren."
     },
     "errors": {
         "generic": "Vorgang fehlgeschlagen"
@@ -52,7 +43,7 @@
         "success": "Projekt aktualisiert"
     },
     "members": {
-        "addSuccess": "Mitglied hinzugefï¿½gt",
+        "addSuccess": "Mitglied hinzugefuegt",
         "removeSuccess": "Mitglied entfernt"
     },
     "list": {
@@ -89,23 +80,45 @@
         "title": "Projektdetails",
         "loading": "Wird geladen...",
         "refresh": "Aktualisieren",
+        "tabs": {
+            "overview": "Uebersicht",
+            "tasks": "Aufgaben",
+            "board": "Kanban"
+        },
+        "overview": {
+            "metrics": {
+                "title": "Arbeitsstatus",
+                "total": "Gesamtaufgaben",
+                "active": "In Arbeit",
+                "done": "Abgeschlossen"
+            }
+        },
         "tasksTitle": "Projektaufgaben",
         "kanbanTitle": "Kanban-Board",
         "tasksLoading": "Aufgaben werden geladen...",
-        "tasksEmpty": "Keine Aufgaben vorhanden",
+        "tasksEmpty": "Keine Aufgaben verfuegbar",
         "tasksSearchPlaceholder": "Aufgaben durchsuchen...",
         "filters": {
             "status": "Status",
             "statusOptions": {
                 "all": "Alle Status"
             },
-            "priority": "Prioritat",
+            "priority": "Prioritaet",
             "priorityOptions": {
-                "all": "Alle Prioritaten"
+                "all": "Alle Prioritaeten"
+            },
+            "assignee": "Zustaendig",
+            "assigneeOptions": {
+                "all": "Alle Zustaendigen",
+                "unassigned": "Nicht zugewiesen"
+            },
+            "dueDateRange": {
+                "start": "Faellig ab",
+                "end": "Faellig bis"
             }
         },
         "noAssignee": "Nicht zugewiesen",
-        "noDueDate": "Kein Fï¿½lligkeitsdatum",
+        "noDueDate": "Kein Faelligkeitsdatum",
         "status": {
             "todo": "Offen",
             "in_progress": "In Arbeit",
@@ -113,18 +126,18 @@
             "done": "Abgeschlossen"
         },
         "priority": {
-            "low": "Niedrige Prioritï¿½t",
-            "medium": "Mittlere Prioritï¿½t",
-            "high": "Hohe Prioritï¿½t",
-            "critical": "Kritische Prioritï¿½t"
+            "low": "Niedrige Prioritaet",
+            "medium": "Mittlere Prioritaet",
+            "high": "Hohe Prioritaet",
+            "critical": "Kritische Prioritaet"
         },
         "summary": {
-            "title": "Projektï¿½bersicht",
-            "empty": "Wï¿½hlen Sie ein Projekt aus, um Details zu sehen",
+            "title": "Projektuebersicht",
+            "empty": "Projekt auswaehlen, um Details zu sehen",
             "createdOn": "Erstellt",
             "createdBy": "{{date}} von {{user}}",
             "description": "Beschreibung",
-            "noDescription": "Keine Beschreibung verfï¿½gbar",
+            "noDescription": "Keine Beschreibung verfuegbar",
             "tags": "Tags",
             "noTags": "Keine Tags",
             "members": "Mitglieder",
@@ -134,30 +147,30 @@
             "key": "Key",
             "title": "Titel",
             "status": "Status",
-            "priority": "Prioritï¿½t",
-            "assignee": "Zustï¿½ndig",
-            "dueDate": "Fï¿½llig am"
+            "priority": "Prioritaet",
+            "assignee": "Zustaendig",
+            "dueDate": "Faellig am"
         },
         "drawer": {
             "title": "Aufgabendetails",
             "description": "Beschreibung",
             "assignment": "Zuweisung",
-            "owner": "Eigentï¿½mer: {{owner}}",
-            "assignee": "Zustï¿½ndig: {{assignee}}",
+            "owner": "Eigentuemer: {{owner}}",
+            "assignee": "Zustaendig: {{assignee}}",
             "timing": "Zeitplan",
             "createdAt": "Erstellt am {{date}}",
-            "dueDate": "Fï¿½llig am {{date}}",
-            "empty": "Wï¿½hlen Sie eine Aufgabe aus, um Details zu sehen"
+            "dueDate": "Faellig am {{date}}",
+            "empty": "Aufgabe auswaehlen, um Details zu sehen"
         },
         "missingId": "Projekt-ID fehlt",
         "notFound": "Projekt nicht gefunden",
-        "backToList": "Zurï¿½ck zu den Projekten"
+        "backToList": "Zurueck zu den Projekten"
     },
     "board": {
-        "empty": "Wï¿½hlen Sie ein Projekt, um das Kanban-Board zu ï¿½ffnen",
+        "empty": "Projekt waehlen, um das Kanban-Board zu oeffnen",
         "permissions": {
-            "title": "Eingeschrï¿½nkte Berechtigungen",
-            "description": "Sie verfï¿½gen nicht ï¿½ber die nï¿½tigen Berechtigungen, um Aufgaben dieses Projekts zu bearbeiten."
+            "title": "Eingeschraenkte Berechtigungen",
+            "description": "Keine Berechtigung, Aufgaben in diesem Projekt zu aendern."
         },
         "columns": {
             "todo": "Offen",
@@ -169,7 +182,7 @@
             "title": "Neue Aufgabe erstellen",
             "titlePlaceholder": "Titel der Aufgabe",
             "descriptionPlaceholder": "Beschreibung (optional)",
-            "submit": "Aufgabe hinzufï¿½gen"
+            "submit": "Aufgabe hinzufuegen"
         }
     },
     "notifications": {
@@ -192,7 +205,7 @@
                 "label": "Beschreibung"
             },
             "tags": {
-                "placeholder": "Tags hinzufï¿½gen (Enter zum Bestï¿½tigen)",
+                "placeholder": "Tags hinzufuegen (Enter zum Bestaetigen)",
                 "label": "Tags"
             }
         },

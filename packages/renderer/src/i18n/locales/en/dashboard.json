@@ -3,6 +3,21 @@
                       "create":  "New user",
                       "refresh":  "Refresh"
                   },
+    "filters": {
+        "users": {
+            "ariaLabel": "Filter users",
+            "searchPlaceholder": "Search users...",
+            "statusTooltip": "Filter by status",
+            "status": {
+                "all": "All",
+                "active": "Active",
+                "inactive": "Inactive"
+            },
+            "roles": {
+                "all": "All roles"
+            }
+        }
+    },
     "table":  {
                   "username":  "Username",
                   "displayName":  "Name",

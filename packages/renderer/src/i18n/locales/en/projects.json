@@ -13,6 +13,10 @@
     "filters": {
         "searchPlaceholder": "Search by name, key or tag",
         "tagsPlaceholder": "Filter by tags",
+        "createdRange": {
+            "start": "Created from",
+            "end": "Created to"
+        },
         "roleOptions": {
             "all": "All roles",
             "admin": "Administrator",
@@ -102,6 +106,15 @@
             "priority": "Priority",
             "priorityOptions": {
                 "all": "All priorities"
+            },
+            "assignee": "Assignee",
+            "assigneeOptions": {
+                "all": "All assignees",
+                "unassigned": "Unassigned"
+            },
+            "dueDateRange": {
+                "start": "Due from",
+                "end": "Due to"
             }
         },
         "noAssignee": "Unassigned",

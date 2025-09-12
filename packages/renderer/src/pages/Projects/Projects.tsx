@@ -29,6 +29,8 @@ const ProjectsPage = ({}: ProjectsPageProps): JSX.Element => {
     setRoleFilter,
     ownedOnly,
     setOwnedOnly,
+    createdBetween,
+    setCreatedBetween,
     viewMode,
     setViewMode,
     openCreateModal,
@@ -67,14 +69,16 @@ const ProjectsPage = ({}: ProjectsPageProps): JSX.Element => {
           canCreate={canManageProjects}
           viewMode={viewMode}
           onViewModeChange={setViewMode}
-          availableTags={availableTags}
-          selectedTags={selectedTags}
-          onTagsChange={setSelectedTags}
-          roleFilter={roleFilter}
-          onRoleFilterChange={setRoleFilter}
-          ownedOnly={ownedOnly}
-          onOwnedOnlyChange={setOwnedOnly}
-        />
+        availableTags={availableTags}
+        selectedTags={selectedTags}
+        onTagsChange={setSelectedTags}
+        roleFilter={roleFilter}
+        onRoleFilterChange={setRoleFilter}
+        ownedOnly={ownedOnly}
+        onOwnedOnlyChange={setOwnedOnly}
+        createdBetween={createdBetween}
+        onCreatedBetweenChange={setCreatedBetween}
+      />
       </div>
       {viewMode === 'table' ? (
         <ProjectList

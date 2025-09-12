@@ -1,5 +1,5 @@
 import type { JSX } from 'react'
-import { Input, Select, Space, Typography } from 'antd'
+import { Space, Typography } from 'antd'
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
@@ -10,6 +10,7 @@ import { useProjectRouteContext } from '@renderer/pages/ProjectLayout'
 import {
   buildPriorityOptions,
   buildStatusOptions,
+  buildAssigneeOptions,
   filterTasks,
   resolveEffectiveTitle
 } from '@renderer/pages/ProjectTasks/ProjectTasks.helpers'
@@ -17,6 +18,7 @@ import type {
   ProjectTasksPageProps,
   TaskFilters
 } from '@renderer/pages/ProjectTasks/ProjectTasks.types'
+import { TaskFiltersBar } from '@renderer/pages/ProjectTasks/components/TaskFiltersBar'
 
 const ProjectTasksPage = ({}: ProjectTasksPageProps): JSX.Element => {
   const { project, projectLoading, tasks, tasksStatus } = useProjectRouteContext()
@@ -25,7 +27,9 @@ const ProjectTasksPage = ({}: ProjectTasksPageProps): JSX.Element => {
   const [filters, setFilters] = useState<TaskFilters>({
     searchQuery: '',
     status: 'all',
-    priority: 'all'
+    priority: 'all',
+    assignee: 'all',
+    dueDateRange: null
   })
 
   const effectiveTitle = useMemo(
@@ -44,6 +48,10 @@ const ProjectTasksPage = ({}: ProjectTasksPageProps): JSX.Element => {
   const statusOptions = useMemo(() => buildStatusOptions(t), [t])
 
   const priorityOptions = useMemo(() => buildPriorityOptions(t), [t])
+  const assigneeOptions = useMemo(
+    () => buildAssigneeOptions(tasks, t),
+    [tasks, t]
+  )
 
   const filteredTasks = useMemo(
     () => filterTasks(tasks, filters),
@@ -52,16 +60,8 @@ const ProjectTasksPage = ({}: ProjectTasksPageProps): JSX.Element => {
 
   const loading = tasksStatus === 'loading'
 
-  const handleSearch = (value: string) => {
-    setFilters((prev) => ({ ...prev, searchQuery: value }))
-  }
-
-  const handleStatusChange = (value: string) => {
-    setFilters((prev) => ({ ...prev, status: value as TaskFilters['status'] }))
-  }
-
-  const handlePriorityChange = (value: string) => {
-    setFilters((prev) => ({ ...prev, priority: value as TaskFilters['priority'] }))
+  const handleFiltersChange = (patch: Partial<TaskFilters>) => {
+    setFilters((prev) => ({ ...prev, ...patch }))
   }
 
   const handleTaskNavigate = (taskId: string) => {
@@ -71,28 +71,13 @@ const ProjectTasksPage = ({}: ProjectTasksPageProps): JSX.Element => {
   return (
     <Space direction="vertical" size={24} style={{ width: '100%' }}>
       <Typography.Title level={4}>{effectiveTitle}</Typography.Title>
-      <Space size="middle" wrap>
-        <Input.Search
-          allowClear
-          placeholder={t('details.tasksSearchPlaceholder')}
-          value={filters.searchQuery}
-          onChange={(event) => handleSearch(event.target.value)}
-          onSearch={handleSearch}
-          style={{ maxWidth: 320 }}
-        />
-        <Select
-          value={filters.status}
-          options={statusOptions}
-          onChange={handleStatusChange}
-          style={{ width: 200 }}
-        />
-        <Select
-          value={filters.priority}
-          options={priorityOptions}
-          onChange={handlePriorityChange}
-          style={{ width: 200 }}
-        />
-      </Space>
+      <TaskFiltersBar
+        filters={filters}
+        statusOptions={statusOptions}
+        priorityOptions={priorityOptions}
+        assigneeOptions={assigneeOptions}
+        onChange={handleFiltersChange}
+      />
       <ProjectTasksTable
         tasks={filteredTasks}
         loading={loading || projectLoading}
