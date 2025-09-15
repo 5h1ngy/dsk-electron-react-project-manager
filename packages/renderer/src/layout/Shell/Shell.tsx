@@ -1,29 +1,22 @@
-import { Avatar, Button, Divider, Dropdown, Layout, Space, Typography, theme } from 'antd'
+import { Avatar, Button, Card, Divider, Dropdown, Flex, Layout, Typography, theme } from 'antd'
 import { MenuFoldOutlined, MenuUnfoldOutlined, PoweroffOutlined } from '@ant-design/icons'
-import { useCallback, useMemo, useState, type CSSProperties, type JSX, type ReactNode } from 'react'
+import { useCallback, useMemo, useState, type JSX, type ReactNode } from 'react'
 
 import Sider from '@renderer/layout/Shell/components/Sider'
 import { useShellLayout } from '@renderer/layout/Shell/Shell.hooks'
 import type { ShellProps } from '@renderer/layout/Shell/Shell.types'
 import { ShellHeaderProvider } from '@renderer/layout/Shell/ShellHeader.context'
-import { getInitials, pickColor } from '@renderer/layout/Shell/utils/userIdentity'
+import { getInitials } from '@renderer/layout/Shell/utils/userIdentity'
+import { resolveAccentForeground } from '@renderer/theme/foundations/brand'
+import { resolvePalette } from '@renderer/theme/foundations/palette'
+import { useThemeTokens } from '@renderer/theme/hooks/useThemeTokens'
 
 const { Content } = Layout
-
-const INNER_LAYOUT_STYLE = {
-  display: 'flex',
-  flexDirection: 'column',
-  flex: 1,
-  minWidth: 0,
-  background: 'transparent'
-} as const
 
 const Shell = ({ currentUser, onLogout, children }: ShellProps): JSX.Element => {
   const {
     collapsed,
     menuTheme,
-    layoutStyle,
-    contentStyle,
     menuItems,
     selectedKeys,
     handleMenuSelect,
@@ -33,109 +26,52 @@ const Shell = ({ currentUser, onLogout, children }: ShellProps): JSX.Element => 
     labels
   } = useShellLayout()
   const { token } = theme.useToken()
+  const { spacing } = useThemeTokens()
   const [headerContent, setHeaderContent] = useState<ReactNode>(null)
   const handleHeaderChange = useCallback((content: ReactNode) => {
     setHeaderContent(content)
   }, [])
 
-  const avatarColor = pickColor(currentUser.displayName)
-
-  const contentWrapperStyle = useMemo<CSSProperties>(
-    () => ({
-      width: '100%',
-      margin: '0'
-    }),
-    []
+  const palette = useMemo(() => resolvePalette(menuTheme), [menuTheme])
+  const avatarPalette = useMemo(
+    () => [token.colorPrimary, token.colorSuccess, token.colorWarning, token.colorError],
+    [token.colorError, token.colorPrimary, token.colorSuccess, token.colorWarning]
   )
-
-  const toolbarStyle = useMemo<CSSProperties>(
-    () => ({
-      display: 'flex',
-      alignItems: 'center',
-      gap: token.marginSM,
-      width: '100%',
-      margin: '0',
-      padding: 0,
-      flexWrap: 'wrap'
-    }),
-    [token.marginSM]
+  const avatarColor = useMemo(() => {
+    const source = currentUser.displayName ?? ''
+    if (!source.trim()) {
+      return avatarPalette[0]
+    }
+    const sum = [...source.trim()].reduce((accumulator, char) => accumulator + char.charCodeAt(0), 0)
+    return avatarPalette[sum % avatarPalette.length]
+  }, [avatarPalette, currentUser.displayName])
+  const avatarForeground = useMemo(
+    () => resolveAccentForeground(avatarColor, palette),
+    [avatarColor, palette]
   )
-
-  const accountDropdownStyle = useMemo<CSSProperties>(
-    () => ({
-      padding: token.paddingLG,
-      width: 240,
-      background: token.colorBgElevated,
-      borderRadius: token.borderRadiusLG,
-      boxShadow: token.boxShadowSecondary
-    }),
-    [token.borderRadiusLG, token.boxShadowSecondary, token.colorBgElevated, token.paddingLG]
-  )
-
-  const accountButtonStyle = useMemo<CSSProperties>(
-    () => ({
-      width: '100%',
-      height: token.controlHeightLG,
-      borderRadius: token.borderRadiusLG,
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: collapsed ? 'center' : 'flex-start',
-      gap: collapsed ? 0 : token.marginXS,
-      padding: collapsed ? 0 : `0 ${token.paddingSM}px`,
-      background: menuTheme === 'dark' ? token.colorFillSecondary : token.colorBgElevated,
-      border: `1px solid ${token.colorBorderSecondary}`,
-      transition: `background ${token.motionDurationMid}`
-    }),
-    [
-      collapsed,
-      menuTheme,
-      token.borderRadiusLG,
-      token.colorBgElevated,
-      token.colorBorderSecondary,
-      token.colorFillSecondary,
-      token.controlHeightLG,
-      token.marginXS,
-      token.motionDurationMid,
-      token.paddingSM
-    ]
-  )
-
-  const collapseButtonStyle = useMemo<CSSProperties>(
-    () => ({
-      borderRadius: token.borderRadiusLG,
-      background: menuTheme === 'dark' ? token.colorFillSecondary : token.colorBgElevated,
-      border: `1px solid ${token.colorBorderSecondary}`,
-      width: token.controlHeightLG,
-      height: token.controlHeightLG,
-      display: 'inline-flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: 0
-    }),
-    [
-      menuTheme,
-      token.borderRadiusLG,
-      token.colorBgElevated,
-      token.colorBorderSecondary,
-      token.colorFillSecondary,
-      token.controlHeightLG
-    ]
-  )
+  const dropdownWidth = useMemo(() => token.controlHeightLG * 5, [token.controlHeightLG])
+  const contentPaddingInline = token.paddingXL
+  const contentPaddingBlock = token.paddingLG
+  const toolbarGap = spacing.sm
+  const layoutGap = spacing.xl
 
   const accountDropdown = (
-    <div
-      style={accountDropdownStyle}
+    <Card
+      bordered={false}
+      style={{
+        width: dropdownWidth,
+        background: token.colorBgElevated,
+        borderRadius: token.borderRadiusLG,
+        boxShadow: token.boxShadowSecondary
+      }}
+      bodyStyle={{ padding: token.paddingLG }}
     >
-      <Space direction="vertical" size={token.marginSM} style={{ width: '100%' }}>
-        <div>
-          <Typography.Text strong style={{ display: 'block' }}>
-            {currentUser.displayName}
-          </Typography.Text>
-          <Typography.Text type="secondary" style={{ fontSize: token.fontSizeSM }}>
-            {currentUser.username}
-          </Typography.Text>
-        </div>
-        <Divider style={{ margin: `${token.marginSM}px 0` }} />
+      <Flex vertical gap={spacing.sm}>
+        <Flex vertical gap={spacing.xs}>
+          <Typography.Text strong>{currentUser.displayName}</Typography.Text>
+          <Typography.Text type="secondary">{currentUser.username}</Typography.Text>
+        </Flex>
+        <Divider style={{ marginBlock: `${token.marginSM}px` }} />
         <Button
           type="primary"
           danger
@@ -145,31 +81,43 @@ const Shell = ({ currentUser, onLogout, children }: ShellProps): JSX.Element => 
         >
           {labels.logout}
         </Button>
-      </Space>
-    </div>
+      </Flex>
+    </Card>
   )
 
   const accountButton = (
     <Dropdown trigger={['click']} dropdownRender={() => accountDropdown} placement="topLeft">
       <Button
-        style={accountButtonStyle}
+        block
+        size="large"
+        style={{
+          borderRadius: token.borderRadiusLG,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: collapsed ? 'center' : 'flex-start',
+          gap: collapsed ? 0 : spacing.xs,
+          paddingInline: collapsed ? 0 : token.paddingSM,
+          height: token.controlHeightLG,
+          background: menuTheme === 'dark' ? token.colorFillSecondary : token.colorBgContainer,
+          borderColor: token.colorBorderSecondary
+        }}
         aria-label={labels.logout}
       >
         <Avatar
-          style={{ backgroundColor: avatarColor, color: token.colorWhite }}
+          style={{ backgroundColor: avatarColor, color: avatarForeground }}
           size={collapsed ? token.controlHeightSM : token.controlHeightLG}
         >
           {getInitials(currentUser.displayName)}
         </Avatar>
         {!collapsed && (
-          <Space direction="vertical" size={0} align="start">
+          <Flex vertical gap={0}>
             <Typography.Text strong style={{ fontSize: token.fontSizeSM }}>
               {currentUser.displayName}
             </Typography.Text>
             <Typography.Text type="secondary" style={{ fontSize: token.fontSizeSM }}>
               {currentUser.username}
             </Typography.Text>
-          </Space>
+          </Flex>
         )}
       </Button>
     </Dropdown>
@@ -177,7 +125,16 @@ const Shell = ({ currentUser, onLogout, children }: ShellProps): JSX.Element => 
 
   return (
     <ShellHeaderProvider onHeaderChange={handleHeaderChange}>
-      <Layout style={layoutStyle}>
+      <Layout
+        style={{
+          minHeight: '100vh',
+          padding: token.paddingSM,
+          gap: layoutGap,
+          background: token.colorBgLayout,
+          display: 'flex',
+          alignItems: 'stretch'
+        }}
+      >
         <Sider
           collapsed={collapsed}
           onCollapse={handleCollapseChange}
@@ -189,30 +146,55 @@ const Shell = ({ currentUser, onLogout, children }: ShellProps): JSX.Element => 
           onSelect={handleMenuSelect}
           footer={accountButton}
         />
-        <Layout style={INNER_LAYOUT_STYLE}>
-          <Content style={contentStyle}>
-            <div style={toolbarStyle}>
+        <Layout
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            flex: 1,
+            minWidth: 0,
+            background: 'transparent'
+          }}
+        >
+          <Content
+            style={{
+              paddingInline: contentPaddingInline,
+              paddingBlock: contentPaddingBlock,
+              display: 'flex',
+              flexDirection: 'column',
+              gap: spacing.lg,
+              minHeight: 0,
+              background: 'transparent'
+            }}
+          >
+            <Flex align="center" gap={toolbarGap} wrap="wrap">
               <Button
                 type="default"
+                shape="circle"
                 size="large"
                 onClick={handleToggleCollapse}
                 icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
                 aria-label={collapsed ? labels.expandSidebar : labels.collapseSidebar}
-                style={collapseButtonStyle}
-              />
-              <div
                 style={{
-                  flex: 1,
+                  borderRadius: token.borderRadiusLG,
+                  background: menuTheme === 'dark' ? token.colorFillSecondary : token.colorBgContainer,
+                  borderColor: token.colorBorderSecondary,
                   display: 'flex',
                   alignItems: 'center',
-                  minHeight: token.controlHeightLG,
-                  gap: token.marginSM
+                  justifyContent: 'center'
                 }}
+              />
+              <Flex
+                align="center"
+                gap={toolbarGap}
+                style={{ flex: 1, minHeight: token.controlHeightLG }}
+                wrap="wrap"
               >
                 {headerContent}
-              </div>
-            </div>
-            <div style={contentWrapperStyle}>{children}</div>
+              </Flex>
+            </Flex>
+            <Flex vertical style={{ flex: 1, minHeight: 0 }}>
+              {children}
+            </Flex>
           </Content>
         </Layout>
       </Layout>
@@ -224,4 +206,3 @@ Shell.displayName = 'Shell'
 
 export { Shell }
 export default Shell
-

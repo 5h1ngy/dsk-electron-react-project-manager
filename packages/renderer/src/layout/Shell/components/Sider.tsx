@@ -1,4 +1,4 @@
-import { Flex, Layout, Menu, Typography, theme } from 'antd'
+import { Avatar, Flex, Layout, Menu, Typography, theme } from 'antd'
 import type { JSX } from 'react'
 
 import { useSiderStyles } from '@renderer/layout/Shell/components/Sider.hooks'
@@ -18,16 +18,17 @@ const Sider = ({
   footer
 }: SiderProps): JSX.Element => {
   const { token } = theme.useToken()
-  const { background, borderColor, accent, muted, text, shadow } = useSiderStyles(themeMode)
-  const verticalPadding = collapsed ? token.paddingSM : token.paddingMD
+  const { background, borderColor, accent, accentForeground, muted, text, shadow } =
+    useSiderStyles(themeMode)
+  const verticalPadding = collapsed ? token.paddingSM : token.paddingLG
   const horizontalPadding = collapsed ? token.paddingSM : token.paddingLG
   const containerPadding = `${verticalPadding}px ${horizontalPadding}px`
   const sectionGap = collapsed ? token.marginSM : token.marginMD
   const headerHeight = token.controlHeightLG
-  const emblemSize = collapsed ? token.controlHeightSM : token.controlHeightLG - token.marginXS
-  const emblemRadius = token.borderRadiusLG
-  const footerPadding = collapsed ? token.paddingSM : token.paddingMD
-  const menuGap = collapsed ? token.marginXS : token.marginSM
+  const emblemSize = collapsed ? token.controlHeightSM : token.controlHeightLG
+  const footerPadding = collapsed ? token.paddingSM : token.paddingLG
+  const menuIndent = collapsed ? token.marginLG : token.marginXL
+  const titleGap = collapsed ? 0 : token.marginXXS
 
   return (
     <AntSider
@@ -42,107 +43,73 @@ const Sider = ({
       theme={themeMode}
       style={{
         background,
-        border: `1px solid ${borderColor}`,
-        display: 'flex',
-        flexDirection: 'column',
+        border: `${token.lineWidth}px solid ${borderColor}`,
         padding: containerPadding,
-        gap: sectionGap,
         borderRadius: token.borderRadiusLG,
-        transition: 'background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease',
         boxShadow: shadow,
-        backdropFilter: themeMode === 'dark' ? 'blur(14px)' : undefined,
-        minHeight: 0,
-        height: '100%',
-        flex: '0 0 auto',
-        alignSelf: 'stretch',
         boxSizing: 'border-box'
       }}
     >
-      <Flex
-        align="center"
-        justify="flex-start"
-        gap={collapsed ? 0 : token.marginSM}
-        style={{ minHeight: headerHeight, width: '100%' }}
-      >
-        <Flex align="center" gap={collapsed ? 0 : token.marginSM} style={{ flex: 1 }}>
-          <div
-            aria-hidden
+      <Flex vertical gap={sectionGap} style={{ height: '100%' }}>
+        <Flex align="center" gap={collapsed ? 0 : token.marginSM} style={{ minHeight: headerHeight }}>
+          <Avatar
+            shape="square"
+            size={emblemSize}
             style={{
-              width: emblemSize,
-              height: emblemSize,
-              borderRadius: emblemRadius,
-              backgroundImage:
-                themeMode === 'dark'
-                  ? `linear-gradient(135deg, ${accent}, rgba(96, 165, 250, 0.75))`
-                  : `linear-gradient(135deg, ${accent}, rgba(59, 130, 246, 0.65))`,
+              backgroundColor: accent,
+              color: accentForeground,
+              fontWeight: token.fontWeightStrong,
+              fontSize: collapsed ? token.fontSize : token.fontSizeLG,
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center',
-              color: token.colorWhite,
-              fontWeight: 700,
-              fontSize: collapsed ? token.fontSize : token.fontSizeLG,
-              letterSpacing: 0.5
+              justifyContent: 'center'
             }}
           >
             {title.slice(0, 1)}
-          </div>
+          </Avatar>
           {!collapsed && (
-            <Flex vertical gap={token.marginXXS}>
+            <Flex vertical gap={titleGap}>
               <Typography.Text strong style={{ color: text }}>
                 {title}
               </Typography.Text>
-              <Typography.Text type="secondary" style={{ color: muted, fontSize: token.fontSizeSM }}>
+              <Typography.Text type="secondary" style={{ color: muted }}>
                 Workspace
               </Typography.Text>
             </Flex>
           )}
         </Flex>
+        <Flex vertical flex={1} style={{ overflow: 'hidden' }}>
+          <Menu
+            mode="inline"
+            theme={themeMode}
+            items={items}
+            selectedKeys={selectedKeys}
+            onClick={onSelect}
+            style={{
+              borderInlineEnd: 'none',
+              background: 'transparent',
+              padding: 0,
+              margin: 0,
+              flex: 1,
+              overflowY: 'auto'
+            }}
+            inlineCollapsed={collapsed}
+            inlineIndent={menuIndent}
+          />
+        </Flex>
+        {footer && (
+          <Flex
+            justify="center"
+            style={{
+              paddingBlock: `${footerPadding}px`,
+              paddingInline: `${horizontalPadding}px`,
+              borderBlockStart: `${token.lineWidth}px solid ${borderColor}`
+            }}
+          >
+            {footer}
+          </Flex>
+        )}
       </Flex>
-      <div
-        style={{
-          flex: 1,
-          marginTop: token.marginXS,
-          overflow: 'hidden'
-        }}
-      >
-        <Menu
-          mode="inline"
-          theme={themeMode}
-          items={items}
-          selectedKeys={selectedKeys}
-          onClick={onSelect}
-          rootClassName="app-shell-menu"
-          style={{
-            borderInlineEnd: 'none',
-            background: 'transparent',
-            padding: 0,
-            flex: 1,
-            display: 'flex',
-            flexDirection: 'column',
-            gap: menuGap,
-            overflowY: 'auto'
-          }}
-          inlineCollapsed={collapsed}
-          inlineIndent={collapsed ? token.marginMD : token.marginLG}
-        />
-      </div>
-      {footer && (
-        <div
-          style={{
-            padding: footerPadding,
-            paddingTop: collapsed ? token.paddingSM : token.paddingMD,
-            marginTop: 'auto',
-            flexShrink: 0,
-            display: 'flex',
-            justifyContent: 'center',
-            width: '100%',
-            borderTop: `1px solid ${borderColor}`,
-            background: themeMode === 'dark' ? token.colorBgElevated : token.colorBgContainer
-          }}
-        >
-          {footer}
-        </div>
-      )}
     </AntSider>
   )
 }

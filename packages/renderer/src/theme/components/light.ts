@@ -1,83 +1,98 @@
 import type { ThemeConfig } from 'antd'
 
+import type { BrandTokens } from '@renderer/theme/foundations/brand'
+import type { PaletteTokens } from '@renderer/theme/foundations/palette'
+import type { ShapeTokens } from '@renderer/theme/foundations/shape'
+import type { SpacingScale } from '@renderer/theme/foundations/spacing'
 import { darken, lighten } from '@renderer/theme/utils/color'
 
 export const buildLightComponents = (
-  accent: string,
-  hover: string,
-  _active: string
-): ThemeConfig['components'] => {
-  void _active
-  return {
-    Layout: {
-      headerBg: '#ffffff',
-      headerColor: '#111827',
-      siderBg: '#f5f7fb',
-      footerBg: '#ffffff',
-      bodyBg: '#f7f9fc'
-    },
-    Card: {
-      colorBgContainer: '#ffffff',
-      colorBorderSecondary: '#e3e8ef',
-      boxShadow: '0 18px 48px rgba(15, 23, 42, 0.12)',
-      headerBg: '#ffffff'
-    },
-    Modal: {
-      headerBg: '#ffffff',
-      contentBg: '#ffffff'
-    },
-    Input: {
-      hoverBorderColor: hover,
-      activeBorderColor: accent,
-      addonBg: '#eef2ff',
-      paddingInline: 10,
-      paddingInlineSM: 8,
-      paddingInlineLG: 12
-    },
-    Select: {
-      optionSelectedBg: lighten(accent, 0.82),
-      optionActiveBg: lighten(accent, 0.9),
-      optionSelectedColor: accent,
-      optionSelectedFontWeight: 600,
-      optionPadding: '8px 12px'
-    },
-    Tag: {
-      defaultBg: lighten(accent, 0.6),
-      defaultColor: darken(accent, 0.35)
-    },
-    Table: {
-      headerBg: '#f1f5f9',
-      headerColor: '#111827',
-      headerSortActiveBg: lighten(accent, 0.85),
-      rowHoverBg: lighten(accent, 0.92),
-      rowSelectedBg: lighten(accent, 0.85),
-      borderColor: '#e3e8ef',
-      cellPaddingBlock: 10,
-      cellPaddingInline: 12
-    },
-    Tabs: {
-      itemColor: '#4b5563',
-      itemHoverColor: '#111827',
-      itemActiveColor: '#111827',
-      inkBarColor: accent,
-      horizontalItemPadding: '8px 12px'
-    },
-    Pagination: {
-      itemBg: '#ffffff',
-      itemActiveBg: accent,
-      itemSize: 32
-    },
-    Segmented: {
-      itemColor: '#4b5563',
-      itemHoverColor: '#111827',
-      itemHoverBg: lighten(accent, 0.85),
-      itemSelectedBg: lighten(accent, 0.8),
-      itemSelectedColor: '#111827',
-      trackBg: '#f1f5f9',
-      trackPadding: 2
-    },
-    Typography: {
-      titleMarginBottom: 12
-    }
+  palette: PaletteTokens,
+  brand: BrandTokens,
+  spacing: SpacingScale,
+  shape: ShapeTokens
+): ThemeConfig['components'] => ({
+  Layout: {
+    headerBg: palette.surfaceContainer,
+    headerColor: palette.textPrimary,
+    siderBg: palette.surfaceBase,
+    footerBg: palette.surfaceContainer,
+    bodyBg: palette.surfaceBase
+  },
+  Card: {
+    colorBgContainer: palette.surfaceContainer,
+    colorBorderSecondary: palette.borderStrong,
+    boxShadow: '0 18px 48px rgba(15, 23, 42, 0.12)',
+    headerBg: palette.surfaceContainer
+  },
+  Modal: {
+    headerBg: palette.surfaceContainer,
+    contentBg: palette.surfaceContainer
+  },
+  Input: {
+    hoverBorderColor: brand.primaryHover,
+    activeBorderColor: brand.primary,
+    addonBg: palette.surfaceMuted,
+    paddingInline: spacing.md,
+    paddingInlineSM: spacing.sm,
+    paddingInlineLG: spacing.lg
+  },
+  Select: {
+    optionSelectedBg: lighten(brand.primary, 0.82),
+    optionActiveBg: lighten(brand.primary, 0.9),
+    optionSelectedColor: brand.primary,
+    optionSelectedFontWeight: 600,
+    optionPadding: `${spacing.sm}px ${spacing.md}px`
+  },
+  Tag: {
+    defaultBg: lighten(brand.primary, 0.6),
+    defaultColor: darken(brand.primary, 0.35),
+    defaultBorderColor: 'transparent'
+  },
+  Table: {
+    headerBg: lighten(palette.surfaceBase, 0.02),
+    headerColor: palette.textPrimary,
+    headerSortActiveBg: lighten(brand.primary, 0.85),
+    rowHoverBg: lighten(brand.primary, 0.92),
+    rowSelectedBg: lighten(brand.primary, 0.85),
+    borderColor: palette.borderStrong,
+    cellPaddingBlock: spacing.md,
+    cellPaddingInline: spacing.lg
+  },
+  Tabs: {
+    itemColor: palette.textSecondary,
+    itemHoverColor: palette.textPrimary,
+    itemActiveColor: palette.textPrimary,
+    inkBarColor: brand.primary,
+    horizontalItemPadding: `${spacing.sm}px ${spacing.md}px`
+  },
+  Pagination: {
+    itemBg: palette.surfaceContainer,
+    itemActiveBg: brand.primary,
+    itemInputBg: palette.surfaceContainer,
+    itemSize: shape.controlHeightSM
+  },
+  Segmented: {
+    itemColor: palette.textSecondary,
+    itemHoverColor: palette.textPrimary,
+    itemHoverBg: lighten(brand.primary, 0.85),
+    itemSelectedBg: brand.primarySubtle,
+    itemSelectedColor: palette.textPrimary,
+    trackBg: lighten(palette.surfaceBase, 0.03),
+    trackPadding: 2
+  },
+  Menu: {
+    itemBorderRadius: shape.radius,
+    itemPaddingInline: spacing.md,
+    itemMarginInline: 0,
+    itemMarginBlock: spacing.xs,
+    itemColor: palette.textSecondary,
+    itemHoverColor: palette.textPrimary,
+    itemSelectedBg: brand.primarySurface,
+    itemSelectedColor: palette.textPrimary,
+    itemActiveBg: brand.primarySubtle
+  },
+  Typography: {
+    titleMarginBottom: spacing.md
   }
-}
+})

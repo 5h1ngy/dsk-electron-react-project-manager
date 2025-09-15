@@ -1,5 +1,7 @@
-import { Card, Col, Row, Skeleton, Space } from 'antd'
+import { Card, Col, Row, Skeleton, Space, theme } from 'antd'
 import type { ReactNode } from 'react'
+
+import { useThemeTokens } from '@renderer/theme/hooks/useThemeTokens'
 
 export type LoadingSkeletonVariant = 'table' | 'cards' | 'list'
 
@@ -9,9 +11,9 @@ export interface LoadingSkeletonProps {
   className?: string
 }
 
-const renderTableSkeleton = (items: number): ReactNode => (
-  <Space direction="vertical" size="small" style={{ width: '100%' }}>
-    <Skeleton.Input active size="large" style={{ width: 240 }} />
+const buildTableSkeleton = (items: number, titleWidth: number): ReactNode => (
+  <Space direction="vertical" size="small">
+    <Skeleton.Input active size="large" style={{ width: titleWidth }} />
     {Array.from({ length: items }).map((_, index) => (
       <Card key={`table-skeleton-${index}`} size="small" bordered={false}>
         <Skeleton
@@ -25,13 +27,13 @@ const renderTableSkeleton = (items: number): ReactNode => (
   </Space>
 )
 
-const renderCardsSkeleton = (items: number): ReactNode => (
-  <Row gutter={[16, 16]}>
+const buildCardsSkeleton = (items: number, gutter: number, titleWidth: number): ReactNode => (
+  <Row gutter={[gutter, gutter]}>
     {Array.from({ length: items }).map((_, index) => (
       <Col xs={24} sm={12} lg={8} xl={6} key={`card-skeleton-${index}`}>
         <Card bordered>
-          <Space direction="vertical" size="small" style={{ width: '100%' }}>
-            <Skeleton.Button active size="small" shape="round" style={{ width: 120 }} />
+          <Space direction="vertical" size="small">
+            <Skeleton.Button active size="small" shape="round" style={{ width: titleWidth }} />
             <Skeleton.Input active size="large" style={{ width: '100%' }} />
             <Skeleton
               active
@@ -45,8 +47,8 @@ const renderCardsSkeleton = (items: number): ReactNode => (
   </Row>
 )
 
-const renderListSkeleton = (items: number): ReactNode => (
-  <Space direction="vertical" size="middle" style={{ width: '100%' }}>
+const buildListSkeleton = (items: number): ReactNode => (
+  <Space direction="vertical" size="middle">
     {Array.from({ length: items }).map((_, index) => (
       <Card size="small" key={`list-skeleton-${index}`}>
         <Skeleton active paragraph={{ rows: 2 }} title={false} />
@@ -54,12 +56,6 @@ const renderListSkeleton = (items: number): ReactNode => (
     ))}
   </Space>
 )
-
-const renderers: Record<LoadingSkeletonVariant, (items: number) => ReactNode> = {
-  table: renderTableSkeleton,
-  cards: renderCardsSkeleton,
-  list: renderListSkeleton
-}
 
 const DEFAULT_ITEMS: Record<LoadingSkeletonVariant, number> = {
   table: 5,
@@ -72,17 +68,27 @@ export const LoadingSkeleton = ({
   items,
   className
 }: LoadingSkeletonProps) => {
-  const render = renderers[variant] ?? renderers.list
+  const { token } = theme.useToken()
+  const { spacing } = useThemeTokens()
   const count = items ?? DEFAULT_ITEMS[variant]
 
+  const tableWidth = token.controlHeightLG * 5
+  const cardTitleWidth = token.controlHeightLG * 2.5
+  const gutter = spacing.lg
+
+  const content: Record<LoadingSkeletonVariant, ReactNode> = {
+    table: buildTableSkeleton(count, tableWidth),
+    cards: buildCardsSkeleton(count, gutter, cardTitleWidth),
+    list: buildListSkeleton(count)
+  }
+
   return (
-    <div className={className} style={{ width: '100%' }}>
-      {render(count)}
-    </div>
+    <Space direction="vertical" size={0} className={className} style={{ width: '100%' }}>
+      {content[variant]}
+    </Space>
   )
 }
 
 LoadingSkeleton.displayName = 'LoadingSkeleton'
 
 export default LoadingSkeleton
-

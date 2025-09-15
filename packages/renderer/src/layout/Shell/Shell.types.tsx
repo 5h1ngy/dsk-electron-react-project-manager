@@ -1,4 +1,4 @@
-import type { CSSProperties, ReactNode } from 'react'
+import type { ReactNode } from 'react'
 import type { MenuProps } from 'antd'
 import type { UserDTO } from '@main/services/auth'
 
@@ -20,8 +20,6 @@ export interface ShellLabels {
 export interface UseShellLayoutResult {
   collapsed: boolean
   menuTheme: MenuTheme
-  layoutStyle: CSSProperties
-  contentStyle: CSSProperties
   menuItems: MenuProps['items']
   selectedKeys: string[]
   handleMenuSelect: NonNullable<MenuProps['onClick']>

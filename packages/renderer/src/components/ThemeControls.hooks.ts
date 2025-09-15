@@ -9,7 +9,7 @@ import {
   setMode
 } from '@renderer/store/slices/theme'
 import type { UseThemeControlsResult, ThemeDropdownProps } from '@renderer/components/ThemeControls.types'
-import { ACCENT_COLORS, resolveAccentForeground } from '@renderer/components/ThemeControls.helpers'
+import { ACCENT_PRESETS } from '@renderer/theme/foundations/brand'
 
 export const useThemeControls = (): UseThemeControlsResult => {
   const { t } = useTranslation()
@@ -18,8 +18,6 @@ export const useThemeControls = (): UseThemeControlsResult => {
   const accentColor = useAppSelector(selectAccentColor)
 
   const [open, setOpen] = useState(false)
-
-  const iconColor = useMemo(() => resolveAccentForeground(accentColor), [accentColor])
 
   const onToggleMode = useCallback(
     (checked: boolean) => {
@@ -49,7 +47,7 @@ export const useThemeControls = (): UseThemeControlsResult => {
 
   const accentOptions = useMemo(
     () =>
-      ACCENT_COLORS.map((color, index) => ({
+      ACCENT_PRESETS.map((color, index) => ({
         color,
         isActive: color === accentColor,
         ariaLabel: t('appShell.accent.option', { index: index + 1 })
@@ -61,11 +59,9 @@ export const useThemeControls = (): UseThemeControlsResult => {
     accentColor,
     accentOptions,
     dropdownProps,
-    iconColor,
     mode,
     onAccentSelect,
     onToggleMode,
     t
   }
 }
-

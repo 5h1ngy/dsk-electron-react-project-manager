@@ -8,19 +8,19 @@ import { createThemeConfig } from '@renderer/theme'
 import { useAppDispatch, useAppSelector } from '@renderer/store/hooks'
 import { restoreSession } from '@renderer/store/slices/auth'
 import { selectAccentColor, selectThemeMode } from '@renderer/store/slices/theme'
-import '@renderer/theme/global.css'
 
-const ThemeVariableUpdater = () => {
+const BodyStyleSynchronizer = () => {
   const { token } = theme.useToken()
 
   useEffect(() => {
-    const root = document.documentElement
-    root.style.setProperty('--accent-color', token.colorPrimary)
-    root.style.setProperty('--app-background-light', token.colorBgLayout)
-    root.style.setProperty('--app-background-dark', token.colorBgBase)
-    root.style.setProperty('--app-background', token.colorBgLayout)
-    root.style.setProperty('--text-color-base', token.colorTextBase)
-  }, [token.colorBgBase, token.colorBgLayout, token.colorPrimary, token.colorTextBase])
+    const { body, documentElement } = document
+    body.style.margin = '0'
+    body.style.minHeight = '100vh'
+    body.style.backgroundColor = token.colorBgLayout
+    body.style.color = token.colorTextBase
+    body.style.fontFamily = token.fontFamily
+    documentElement.style.backgroundColor = token.colorBgLayout
+  }, [token.colorBgLayout, token.colorTextBase, token.fontFamily])
 
   return null
 }
@@ -45,7 +45,7 @@ const App = () => {
       <ConfigProvider theme={themeConfig}>
         <HashRouter>
           <AntdApp>
-            <ThemeVariableUpdater />
+            <BodyStyleSynchronizer />
             <AppRoutes />
           </AntdApp>
         </HashRouter>
