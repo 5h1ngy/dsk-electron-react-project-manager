@@ -92,21 +92,22 @@ export const useShellLayout = (): UseShellLayoutResult => {
 
     return {
       minHeight: '100vh',
+      height: '100vh',
       background,
-      paddingInline: responsiveInlinePadding,
+      paddingInline: 0,
       boxSizing: 'border-box',
       display: 'flex',
       flexDirection: 'row',
       alignItems: 'stretch',
       columnGap: marginXL
     }
-  }, [mode, colorBgLayout, responsiveInlinePadding, marginXL])
+  }, [mode, colorBgLayout, marginXL])
 
   const contentStyle = useMemo<CSSProperties>(
     () => ({
       background: 'transparent',
       paddingBlock: `${paddingLG}px`,
-      paddingInline: 0,
+      paddingInline: responsiveInlinePadding,
       overflow: 'auto',
       minHeight: 0,
       flex: '1 1 0%',
