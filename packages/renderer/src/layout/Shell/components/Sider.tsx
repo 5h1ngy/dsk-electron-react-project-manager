@@ -9,6 +9,7 @@ const { Sider: AntSider } = Layout
 const Sider = ({
   collapsed,
   onCollapse,
+  onBreakpoint,
   selectedKeys,
   items,
   themeMode,
@@ -20,35 +21,40 @@ const Sider = ({
   const { background, borderColor, accent, muted, text, shadow } = useSiderStyles(themeMode)
   const verticalPadding = collapsed ? token.paddingMD : token.paddingLG
   const horizontalPadding = collapsed ? token.paddingSM : token.paddingMD
-  const bottomPadding = collapsed ? token.paddingXS : token.paddingSM
-  const containerPadding = `${verticalPadding}px ${horizontalPadding}px ${bottomPadding}px`
-  const containerMargin = `${token.marginLG}px ${token.marginMD}px ${token.marginSM}px ${token.marginLG}px`
+  const containerPadding = `${verticalPadding}px ${horizontalPadding}px`
+  const sectionGap = collapsed ? token.marginSM : token.marginMD
   const headerHeight = token.controlHeightLG
   const emblemSize = collapsed ? token.controlHeightSM : token.controlHeightLG - token.marginXS
   const emblemRadius = token.borderRadiusLG
-  const footerPadding = collapsed ? token.paddingXS : token.paddingSM
+  const footerPadding = collapsed ? token.paddingSM : token.paddingMD
+  const menuPadding = collapsed ? 0 : token.paddingXS
 
   return (
     <AntSider
-      width={204}
-      collapsedWidth={68}
+      width={228}
+      collapsedWidth={72}
+      breakpoint="lg"
       collapsible
       collapsed={collapsed}
-      onCollapse={(value) => onCollapse(value)}
+      onCollapse={onCollapse}
+      onBreakpoint={onBreakpoint}
       trigger={null}
       theme={themeMode}
       style={{
         background,
-        borderRight: `1px solid ${borderColor}`,
+        border: `1px solid ${borderColor}`,
         display: 'flex',
         flexDirection: 'column',
         padding: containerPadding,
-        gap: token.marginSM,
+        gap: sectionGap,
         borderRadius: token.borderRadiusLG,
-        margin: containerMargin,
-        transition: 'background 0.3s ease, border-color 0.3s ease, margin 0.3s ease',
+        transition: 'background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease',
         boxShadow: shadow,
-        backdropFilter: themeMode === 'dark' ? 'blur(14px)' : undefined
+        backdropFilter: themeMode === 'dark' ? 'blur(14px)' : undefined,
+        minHeight: 0,
+        height: '100%',
+        flex: '0 0 auto',
+        boxSizing: 'border-box'
       }}
     >
       <Flex
@@ -95,8 +101,8 @@ const Sider = ({
         style={{
           flex: 1,
           overflowY: 'auto',
-          marginTop: token.marginXS,
-          paddingInlineEnd: collapsed ? 0 : token.paddingXXS
+          marginTop: token.marginSM,
+          paddingInline: menuPadding
         }}
       >
         <Menu
@@ -108,10 +114,15 @@ const Sider = ({
           style={{
             borderInlineEnd: 'none',
             background: 'transparent',
-            paddingInline: collapsed ? 0 : token.paddingXXS,
-            gap: token.marginXS,
-            display: 'flex',
-            flexDirection: 'column'
+            paddingInline: 0,
+            paddingBlock: collapsed ? 0 : token.paddingXS,
+            ...(collapsed
+              ? {}
+              : {
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: token.marginXS
+                })
           }}
           inlineCollapsed={collapsed}
           inlineIndent={collapsed ? token.marginMD : token.marginLG}
@@ -121,11 +132,14 @@ const Sider = ({
         <div
           style={{
             padding: footerPadding,
+            paddingTop: collapsed ? token.paddingSM : token.paddingMD,
             marginTop: 'auto',
             flexShrink: 0,
             display: 'flex',
             justifyContent: 'center',
-            width: '100%'
+            width: '100%',
+            borderTop: `1px solid ${borderColor}`,
+            background: themeMode === 'dark' ? token.colorBgElevated : token.colorBgContainer
           }}
         >
           {footer}

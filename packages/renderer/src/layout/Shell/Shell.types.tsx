@@ -27,5 +27,6 @@ export interface UseShellLayoutResult {
   handleMenuSelect: NonNullable<MenuProps['onClick']>
   handleToggleCollapse: () => void
   handleCollapseChange: (collapsed: boolean) => void
+  handleBreakpoint: (broken: boolean) => void
   labels: ShellLabels
 }

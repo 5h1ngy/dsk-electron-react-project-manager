@@ -18,7 +18,7 @@ export const useSiderStyles = (themeMode: 'light' | 'dark'): SiderStyle => {
       background: themeMode === 'dark' ? token.colorBgElevated : token.colorBgContainer,
       borderColor: token.colorBorderSecondary,
       accent: token.colorPrimary,
-      muted: token.colorTextTertiary,
+      muted: token.colorTextSecondary,
       text: themeMode === 'dark' ? token.colorTextLightSolid : token.colorTextHeading,
       shadow: token.boxShadowSecondary
     }),

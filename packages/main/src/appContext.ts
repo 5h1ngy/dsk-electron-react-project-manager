@@ -81,8 +81,8 @@ export class MainWindowManager {
 
     window.webContents.once('dom-ready', () => {
       if (!window.webContents.isDevToolsOpened()) {
-        this.logger.debug('Opening detached DevTools in development mode', 'Window')
-        window.webContents.openDevTools({ mode: 'detach' })
+        this.logger.debug('Opening docked DevTools in development mode', 'Window')
+        window.webContents.openDevTools({ mode: 'right' })
       }
     })
   }

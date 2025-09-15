@@ -13,8 +13,17 @@ export const useShellLayout = (): UseShellLayoutResult => {
   const navigate = useNavigate()
   const location = useLocation()
   const { token } = theme.useToken()
+  const {
+    paddingLG,
+    paddingMD,
+    paddingXL,
+    marginLG,
+    marginXL,
+    colorBgLayout
+  } = token
 
   const [collapsed, setCollapsed] = useState(false)
+  const [breakpointCollapsed, setBreakpointCollapsed] = useState(false)
   const mode = useAppSelector(selectThemeMode)
 
   const menuTheme: 'light' | 'dark' = useMemo(
@@ -39,38 +48,75 @@ export const useShellLayout = (): UseShellLayoutResult => {
   )
 
   const handleToggleCollapse = useCallback(() => {
-    setCollapsed((value) => !value)
-  }, [])
+    setCollapsed((value) => {
+      const next = !value
+      if (!next) {
+        setBreakpointCollapsed(false)
+      }
+      return next
+    })
+  }, [setBreakpointCollapsed])
 
   const handleCollapseChange = useCallback((value: boolean) => {
     setCollapsed(value)
-  }, [])
+    if (!value) {
+      setBreakpointCollapsed(false)
+    }
+  }, [setBreakpointCollapsed])
+
+  const handleBreakpoint = useCallback(
+    (broken: boolean) => {
+      if (broken) {
+        setBreakpointCollapsed(true)
+        setCollapsed(true)
+      } else if (breakpointCollapsed) {
+        setBreakpointCollapsed(false)
+        setCollapsed(false)
+      }
+    },
+    [breakpointCollapsed, setBreakpointCollapsed]
+  )
+
+  const responsiveInlinePadding = useMemo(
+    () => `clamp(${paddingMD}px, 5vw, ${paddingXL}px)`,
+    [paddingMD, paddingXL]
+  )
 
   const layoutStyle = useMemo<CSSProperties>(() => {
     const background =
       mode === 'dark'
         ? 'radial-gradient(circle at top, rgba(59,130,246,0.15), transparent 60%), radial-gradient(circle at 120% 20%, rgba(59,130,246,0.12), transparent 55%), radial-gradient(circle at -20% 30%, rgba(45,212,191,0.18), transparent 60%), ' +
-          token.colorBgLayout
+          colorBgLayout
         : 'radial-gradient(circle at top, rgba(64, 111, 255, 0.12), transparent 55%), radial-gradient(circle at 120% 30%, rgba(45, 212, 191, 0.16), transparent 60%), radial-gradient(circle at -20% 40%, rgba(147, 197, 253, 0.14), transparent 60%), ' +
-          token.colorBgLayout
+          colorBgLayout
 
     return {
       minHeight: '100vh',
-      height: '100vh',
-      overflow: 'hidden',
-      background
+      background,
+      paddingInline: responsiveInlinePadding,
+      boxSizing: 'border-box',
+      display: 'flex',
+      flexDirection: 'row',
+      alignItems: 'stretch',
+      columnGap: marginXL
     }
-  }, [mode, token])
+  }, [mode, colorBgLayout, responsiveInlinePadding, marginXL])
 
   const contentStyle = useMemo<CSSProperties>(
     () => ({
       background: 'transparent',
-      padding: `${token.paddingMD}px ${token.paddingXL}px ${token.paddingXL}px`,
-      overflowY: 'auto',
+      paddingBlock: `${paddingLG}px`,
+      paddingInline: 0,
+      overflow: 'auto',
       minHeight: 0,
-      flex: '1 1 auto'
+      flex: '1 1 0%',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'stretch',
+      rowGap: marginLG,
+      boxSizing: 'border-box'
     }),
-    [token.paddingMD, token.paddingXL]
+    [paddingLG, responsiveInlinePadding, marginLG]
   )
 
   const labels = useMemo(
@@ -93,6 +139,7 @@ export const useShellLayout = (): UseShellLayoutResult => {
     handleMenuSelect,
     handleToggleCollapse,
     handleCollapseChange,
+    handleBreakpoint,
     labels
   }
 }

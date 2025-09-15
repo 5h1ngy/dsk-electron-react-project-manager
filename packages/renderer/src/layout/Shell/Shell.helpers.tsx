@@ -33,9 +33,10 @@ export const buildNavigationItems = (t: TFunction): MenuProps['items'] =>
     icon: item.icon,
     label: t(item.labelKey),
     style: {
-      borderRadius: 12,
-      marginBlock: 4,
-      paddingInline: 12
+      borderRadius: 10,
+      marginBlock: 2,
+      paddingInline: 12,
+      paddingBlock: 6
     }
   }))
 

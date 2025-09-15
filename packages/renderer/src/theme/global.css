@@ -1,24 +1,38 @@
 :root {
   font-family: 'Inter', 'SF Pro Display', 'Segoe UI', system-ui, -apple-system, sans-serif;
   letter-spacing: 0.01em;
-  background-color: var(--app-background, #f7f9fc);
-  color: #0f172a;
+  --app-background-light: #f5f7fb;
+  --app-background-dark: #0b1220;
+  --app-background: var(--app-background-light);
+  --accent-color: #00f5d4;
+  color: var(--text-color-base, #0f172a);
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
+  background-color: var(--app-background);
 }
 
 body {
   margin: 0;
   min-height: 100vh;
-  background-color: inherit;
+  background-color: var(--app-background);
+  color: inherit;
+}
+
+body[data-theme='light'] {
+  --app-background: var(--app-background-light);
+}
+
+body[data-theme='dark'] {
+  --app-background: var(--app-background-dark);
+}
+
+#root,
+.ant-app {
+  min-height: 100vh;
 }
 
 * {
   box-sizing: border-box;
-}
-
-.ant-app {
-  min-height: 100vh;
 }
 
 .ant-typography {

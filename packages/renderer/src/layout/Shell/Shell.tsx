@@ -9,11 +9,14 @@ import { ShellHeaderProvider } from '@renderer/layout/Shell/ShellHeader.context'
 import { getInitials, pickColor } from '@renderer/layout/Shell/utils/userIdentity'
 
 const { Content } = Layout
+const CONTENT_MAX_WIDTH = 1200
 
 const INNER_LAYOUT_STYLE = {
-  overflow: 'hidden',
   display: 'flex',
-  flexDirection: 'column'
+  flexDirection: 'column',
+  flex: 1,
+  minWidth: 0,
+  background: 'transparent'
 } as const
 
 const Shell = ({ currentUser, onLogout, children }: ShellProps): JSX.Element => {
@@ -27,6 +30,7 @@ const Shell = ({ currentUser, onLogout, children }: ShellProps): JSX.Element => 
     handleMenuSelect,
     handleToggleCollapse,
     handleCollapseChange,
+    handleBreakpoint,
     labels
   } = useShellLayout()
   const { token } = theme.useToken()
@@ -39,11 +43,11 @@ const Shell = ({ currentUser, onLogout, children }: ShellProps): JSX.Element => 
 
   const contentWrapperStyle = useMemo<CSSProperties>(
     () => ({
-      maxWidth: 1280,
-      margin: `0 ${token.marginXL}px`,
-      width: '100%'
+      width: '100%',
+      maxWidth: CONTENT_MAX_WIDTH,
+      margin: '0 auto'
     }),
-    [token.marginXL]
+    []
   )
 
   const toolbarStyle = useMemo<CSSProperties>(
@@ -51,12 +55,13 @@ const Shell = ({ currentUser, onLogout, children }: ShellProps): JSX.Element => 
       display: 'flex',
       alignItems: 'center',
       gap: token.marginSM,
-      margin: `0 ${token.marginXL}px ${token.marginLG}px`,
-      maxWidth: '100%',
+      width: '100%',
+      maxWidth: CONTENT_MAX_WIDTH,
+      margin: '0 auto',
       padding: 0,
       flexWrap: 'wrap'
     }),
-    [token.marginLG, token.marginSM, token.marginXL]
+    [token.marginSM]
   )
 
   const accountDropdownStyle = useMemo<CSSProperties>(
@@ -73,14 +78,14 @@ const Shell = ({ currentUser, onLogout, children }: ShellProps): JSX.Element => 
   const accountButtonStyle = useMemo<CSSProperties>(
     () => ({
       width: '100%',
-      height: collapsed ? token.controlHeightLG : token.controlHeightLG + token.paddingXS,
+      height: token.controlHeightLG,
       borderRadius: token.borderRadiusLG,
       display: 'flex',
       alignItems: 'center',
       justifyContent: collapsed ? 'center' : 'flex-start',
       gap: collapsed ? 0 : token.marginXS,
       padding: collapsed ? 0 : `0 ${token.paddingSM}px`,
-      background: menuTheme === 'dark' ? token.colorFillSecondary : token.colorBgContainer,
+      background: menuTheme === 'dark' ? token.colorFillSecondary : token.colorBgElevated,
       border: `1px solid ${token.colorBorderSecondary}`,
       transition: `background ${token.motionDurationMid}`
     }),
@@ -88,21 +93,20 @@ const Shell = ({ currentUser, onLogout, children }: ShellProps): JSX.Element => 
       collapsed,
       menuTheme,
       token.borderRadiusLG,
-      token.colorBgContainer,
+      token.colorBgElevated,
       token.colorBorderSecondary,
       token.colorFillSecondary,
       token.controlHeightLG,
       token.marginXS,
       token.motionDurationMid,
-      token.paddingSM,
-      token.paddingXS
+      token.paddingSM
     ]
   )
 
   const collapseButtonStyle = useMemo<CSSProperties>(
     () => ({
       borderRadius: token.borderRadiusLG,
-      background: menuTheme === 'dark' ? token.colorFillSecondary : token.colorBgContainer,
+      background: menuTheme === 'dark' ? token.colorFillSecondary : token.colorBgElevated,
       border: `1px solid ${token.colorBorderSecondary}`,
       width: token.controlHeightLG,
       height: token.controlHeightLG,
@@ -114,7 +118,7 @@ const Shell = ({ currentUser, onLogout, children }: ShellProps): JSX.Element => 
     [
       menuTheme,
       token.borderRadiusLG,
-      token.colorBgContainer,
+      token.colorBgElevated,
       token.colorBorderSecondary,
       token.colorFillSecondary,
       token.controlHeightLG
@@ -149,7 +153,7 @@ const Shell = ({ currentUser, onLogout, children }: ShellProps): JSX.Element => 
   )
 
   const accountButton = (
-    <Dropdown trigger={["click"]} dropdownRender={() => accountDropdown} placement="topLeft">
+    <Dropdown trigger={['click']} dropdownRender={() => accountDropdown} placement="topLeft">
       <Button
         style={accountButtonStyle}
         aria-label={labels.logout}
@@ -180,6 +184,7 @@ const Shell = ({ currentUser, onLogout, children }: ShellProps): JSX.Element => 
         <Sider
           collapsed={collapsed}
           onCollapse={handleCollapseChange}
+          onBreakpoint={handleBreakpoint}
           selectedKeys={selectedKeys}
           items={menuItems}
           themeMode={menuTheme}
