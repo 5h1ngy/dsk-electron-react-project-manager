@@ -57,7 +57,7 @@ const Header = ({
 
   return (
     <AntHeader style={headerStyle}>
-      <Flex align="center" justify="space-between" gap={16} wrap style={{ height: '100%' }}>
+      <Flex align="center" justify="space-between" gap={16} wrap style={{ width: '100%' }}>
         <Space align="center" size={14} style={{ minWidth: 160 }}>
           <Button
             type="text"
