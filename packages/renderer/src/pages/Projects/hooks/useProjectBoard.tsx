@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, type ReactNode } from 'react'
 import { message } from 'antd'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm, type UseFormReturn } from 'react-hook-form'
+import { useForm, type UseFormReturn, type Resolver } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import { useAppDispatch, useAppSelector } from '@renderer/store/hooks'
@@ -41,7 +41,7 @@ export const useProjectBoard = (
   const projectId = project?.id ?? null
 
   const createTaskForm = useForm<CreateTaskValues>({
-    resolver: zodResolver(createTaskSchema),
+    resolver: zodResolver(createTaskSchema) as unknown as Resolver<CreateTaskValues>,
     mode: 'onChange',
     defaultValues: {
       title: '',

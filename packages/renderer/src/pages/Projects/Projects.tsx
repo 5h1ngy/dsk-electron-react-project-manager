@@ -12,6 +12,7 @@ import { EditProjectModal } from '@renderer/pages/Projects/components/EditProjec
 import { useProjectsPage } from '@renderer/pages/Projects/hooks/useProjectsPage'
 import { PROJECTS_CONTAINER_STYLE, createProjectsBreadcrumb } from '@renderer/pages/Projects/Projects.helpers'
 import type { ProjectsPageProps } from '@renderer/pages/Projects/Projects.types'
+import { ShellHeaderPortal } from '@renderer/layout/Shell/ShellHeader.context'
 
 const ProjectsPage = ({}: ProjectsPageProps): JSX.Element => {
   const { t } = useTranslation('projects')
@@ -77,8 +78,10 @@ const ProjectsPage = ({}: ProjectsPageProps): JSX.Element => {
 
   return (
     <div style={PROJECTS_CONTAINER_STYLE}>
+      <ShellHeaderPortal>
+        <Breadcrumb items={breadcrumbItems} />
+      </ShellHeaderPortal>
       {messageContext}
-      <Breadcrumb items={breadcrumbItems} />
       <div>
         <Typography.Title level={3} style={{ marginBottom: 16 }}>
           {t('title')}

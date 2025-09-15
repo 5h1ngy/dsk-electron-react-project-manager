@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from 'react'
 import { message } from 'antd'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm, type UseFormReturn } from 'react-hook-form'
+import { useForm, type UseFormReturn, type Resolver } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import { useAppDispatch } from '@renderer/store/hooks'
@@ -60,7 +60,7 @@ export const useTaskModals = ({
   const [submitting, setSubmitting] = useState(false)
 
   const editorForm = useForm<TaskFormValues>({
-    resolver: zodResolver(taskFormSchema),
+    resolver: (zodResolver(taskFormSchema) as unknown as Resolver<TaskFormValues>),
     mode: 'onChange',
     defaultValues: {
       title: '',

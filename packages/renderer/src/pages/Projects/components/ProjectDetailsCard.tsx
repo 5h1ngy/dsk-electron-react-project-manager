@@ -1,5 +1,6 @@
 import { Card, List, Skeleton, Space, Tag, Typography } from 'antd'
 import { useTranslation } from 'react-i18next'
+import type { JSX } from 'react'
 
 import { useDelayedLoading } from '@renderer/hooks/useDelayedLoading'
 import type { ProjectDetails } from '@renderer/store/slices/projects'

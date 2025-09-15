@@ -11,7 +11,7 @@ import {
   updateProject
 } from '@renderer/store/slices/projects/thunks'
 
-export const projectsAdapter = createEntityAdapter<ProjectSummary>({
+export const projectsAdapter = createEntityAdapter<ProjectSummary, string>({
   selectId: (project) => project.id,
   sortComparer: (a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' })
 })

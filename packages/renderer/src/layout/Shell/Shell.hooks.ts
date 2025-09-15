@@ -5,18 +5,10 @@ import { useLocation, useNavigate } from 'react-router-dom'
 
 import { useAppSelector } from '@renderer/store/hooks'
 import { selectThemeMode } from '@renderer/store/slices/theme'
-import {
-  buildNavigationItems,
-  resolveNavigationMeta,
-  resolveSelectedKey
-} from '@renderer/layout/Shell/Shell.helpers'
-import type {
-  ShellLayoutParams,
-  HeaderViewModel,
-  UseShellLayoutResult
-} from '@renderer/layout/Shell/Shell.types'
+import { buildNavigationItems, resolveSelectedKey } from '@renderer/layout/Shell/Shell.helpers'
+import type { UseShellLayoutResult } from '@renderer/layout/Shell/Shell.types'
 
-export const useShellLayout = ({ currentUser, onLogout }: ShellLayoutParams): UseShellLayoutResult => {
+export const useShellLayout = (): UseShellLayoutResult => {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const location = useLocation()
@@ -73,12 +65,12 @@ export const useShellLayout = ({ currentUser, onLogout }: ShellLayoutParams): Us
   const contentStyle = useMemo<CSSProperties>(
     () => ({
       background: 'transparent',
-      padding: '32px 24px',
+      padding: `${token.paddingMD}px ${token.paddingXL}px ${token.paddingXL}px`,
       overflowY: 'auto',
       minHeight: 0,
       flex: '1 1 auto'
     }),
-    []
+    [token.paddingMD, token.paddingXL]
   )
 
   const labels = useMemo(
@@ -91,35 +83,6 @@ export const useShellLayout = ({ currentUser, onLogout }: ShellLayoutParams): Us
     [t]
   )
 
-  const activeMeta = useMemo(
-    () => resolveNavigationMeta(location.pathname),
-    [location.pathname]
-  )
-
-  const headerProps = useMemo<HeaderViewModel>(
-    () => ({
-      collapsed,
-      onToggleCollapse: handleToggleCollapse,
-      expandLabel: labels.expandSidebar,
-      collapseLabel: labels.collapseSidebar,
-      logoutLabel: labels.logout,
-      onLogout,
-      displayName: currentUser.displayName,
-      username: currentUser.username,
-      pageTitle: activeMeta ? t(activeMeta.labelKey) : t('appShell.title')
-    }),
-    [
-      activeMeta,
-      collapsed,
-      currentUser.displayName,
-      currentUser.username,
-      handleToggleCollapse,
-      labels,
-      onLogout,
-      t
-    ]
-  )
-
   return {
     collapsed,
     menuTheme,
@@ -130,7 +93,6 @@ export const useShellLayout = ({ currentUser, onLogout }: ShellLayoutParams): Us
     handleMenuSelect,
     handleToggleCollapse,
     handleCollapseChange,
-    labels,
-    headerProps
+    labels
   }
 }

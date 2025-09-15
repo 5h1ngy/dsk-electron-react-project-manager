@@ -22,7 +22,6 @@ describe('tasks slice', () => {
       username: 'admin',
       displayName: 'Administrator'
     },
-    ownerUserId: 'admin',
     createdAt: now,
     updatedAt: now
   }

@@ -21,6 +21,7 @@ import type {
   ProjectRouteContext,
   ProjectTabKey
 } from '@renderer/pages/ProjectLayout/ProjectLayout.types'
+import { ShellHeaderPortal } from '@renderer/layout/Shell/ShellHeader.context'
 
 export const useProjectRouteContext = (): ProjectRouteContext =>
   useOutletContext<ProjectRouteContext>()
@@ -124,20 +125,22 @@ const ProjectLayout = (): JSX.Element => {
 
   return (
     <>
+      <ShellHeaderPortal>
+        <Breadcrumb items={breadcrumbItems} />
+      </ShellHeaderPortal>
       <Space direction="vertical" size={24} style={{ width: '100%' }}>
         {messageContext}
         {taskModals.taskMessageContext}
-        <Breadcrumb items={breadcrumbItems} />
-      <Space
-        align="center"
-        style={{
-          width: '100%',
-          display: 'flex',
-          justifyContent: 'space-between',
-          gap: 16,
-          flexWrap: 'wrap'
-        }}
-      >
+        <Space
+          align="center"
+          style={{
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'space-between',
+            gap: 16,
+            flexWrap: 'wrap'
+          }}
+        >
         {showSkeleton ? (
           <Space direction="vertical" size={4}>
             <Skeleton.Input active size="large" style={{ width: 240 }} />

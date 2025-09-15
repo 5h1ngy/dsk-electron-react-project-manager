@@ -1,7 +1,7 @@
 import { act, renderHook } from '@testing-library/react'
 
 import { useSessionWatcher } from '@renderer/hooks/useSessionWatcher'
-import { forceLogout, selectToken } from '@renderer/store/slices/auth'
+import { forceLogout } from '@renderer/store/slices/auth'
 import { useAppDispatch, useAppSelector } from '@renderer/store/hooks'
 import {
   handleResponse,
@@ -27,8 +27,14 @@ jest.mock('@renderer/store/slices/auth/helpers', () => ({
 
 describe('useSessionWatcher', () => {
   const dispatch = jest.fn()
-  const forceLogoutAction = { type: 'auth/forceLogout' }
+  const forceLogoutAction: ReturnType<typeof forceLogout> = {
+    type: 'auth/forceLogout',
+    payload: undefined
+  }
   const sessionSpy = jest.fn()
+  const mockedUseAppDispatch = useAppDispatch as jest.MockedFunction<typeof useAppDispatch>
+  const mockedUseAppSelector = useAppSelector as jest.MockedFunction<typeof useAppSelector>
+  const mockedForceLogout = forceLogout as jest.MockedFunction<typeof forceLogout>
 
   const flushEffects = async () => {
     await act(async () => {
@@ -39,9 +45,9 @@ describe('useSessionWatcher', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     jest.useFakeTimers()
-    ;(useAppDispatch as jest.Mock).mockReturnValue(dispatch)
-    ;(useAppSelector as jest.Mock).mockReturnValue('token-123')
-    ;(forceLogout as jest.Mock).mockReturnValue(forceLogoutAction)
+    mockedUseAppDispatch.mockReturnValue(dispatch)
+    mockedUseAppSelector.mockReturnValue('token-123')
+    mockedForceLogout.mockReturnValue(forceLogoutAction)
     sessionSpy.mockResolvedValue({ ok: true })
     ;(handleResponse as jest.Mock).mockImplementation(async () => ({ token: 'token-123' }))
     ;(isSessionExpiredError as jest.Mock).mockReturnValue(false)
@@ -50,7 +56,7 @@ describe('useSessionWatcher', () => {
       auth: {
         session: sessionSpy
       }
-    } as typeof window.api
+    } as unknown as typeof window.api
   })
 
   afterEach(() => {
@@ -59,7 +65,7 @@ describe('useSessionWatcher', () => {
   })
 
   it('does nothing when there is no session token', async () => {
-    ;(useAppSelector as jest.Mock).mockReturnValue(null)
+    mockedUseAppSelector.mockReturnValue(null)
 
     renderHook(() => useSessionWatcher())
     await flushEffects()

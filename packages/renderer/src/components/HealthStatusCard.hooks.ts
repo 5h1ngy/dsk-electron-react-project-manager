@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
+import type { HealthResponse } from '@main/ipc/health'
+
 import type { HealthState, UseHealthStatusResult } from '@renderer/components/HealthStatusCard.types'
 
 export const useHealthStatus = (): UseHealthStatusResult => {
@@ -8,7 +10,7 @@ export const useHealthStatus = (): UseHealthStatusResult => {
     setState((prev) => ({ ...prev, loading: true, error: undefined }))
 
     try {
-      const response = await window.api.health.check()
+      const response: HealthResponse = await window.api.health.check()
 
       if (response.ok) {
         setState({ loading: false, data: response.data })

@@ -13,11 +13,11 @@ import {
   selectProjectTasks,
   selectProjectTasksStatus
 } from '@renderer/store/slices/tasks'
-import type { TaskDetails } from '@renderer/store/slices/tasks'
+import type { TaskDetails, LoadStatus } from '@renderer/store/slices/tasks'
 import { selectCurrentUser } from '@renderer/store/slices/auth/selectors'
 
 export interface UseProjectDetailsResult {
-  project: ReturnType<ReturnType<typeof selectProjectById>>
+  project: ReturnType<ReturnType<typeof selectProjectById>> | null
   tasks: TaskDetails[]
   tasksStatus: ReturnType<ReturnType<typeof selectProjectTasksStatus>>
   projectLoading: boolean
@@ -36,7 +36,10 @@ export const useProjectDetails = (projectId?: string): UseProjectDetailsResult =
     [projectId]
   )
   const tasksStatusSelector = useMemo(
-    () => (projectId ? selectProjectTasksStatus(projectId) : () => 'idle'),
+    () =>
+      projectId
+        ? selectProjectTasksStatus(projectId)
+        : (() => 'idle' as LoadStatus),
     [projectId]
   )
 

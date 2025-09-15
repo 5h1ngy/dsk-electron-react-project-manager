@@ -7,6 +7,7 @@ export interface SiderStyle {
   accent: string
   muted: string
   text: string
+  shadow: string
 }
 
 export const useSiderStyles = (themeMode: 'light' | 'dark'): SiderStyle => {
@@ -15,10 +16,11 @@ export const useSiderStyles = (themeMode: 'light' | 'dark'): SiderStyle => {
   return useMemo(
     () => ({
       background: themeMode === 'dark' ? token.colorBgElevated : token.colorBgContainer,
-      borderColor: token.colorSplit,
+      borderColor: token.colorBorderSecondary,
       accent: token.colorPrimary,
       muted: token.colorTextTertiary,
-      text: themeMode === 'dark' ? token.colorTextLightSolid : token.colorTextHeading
+      text: themeMode === 'dark' ? token.colorTextLightSolid : token.colorTextHeading,
+      shadow: token.boxShadowSecondary
     }),
     [themeMode, token]
   )
