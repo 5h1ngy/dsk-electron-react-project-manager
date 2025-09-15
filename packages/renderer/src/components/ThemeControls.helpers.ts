@@ -32,13 +32,15 @@ export const buildThemeButtonStyle = ({
   accentColor,
   iconColor
 }: ThemeButtonStyleDependencies): CSSProperties => ({
-  width: 36,
-  height: 36,
   display: 'inline-flex',
   alignItems: 'center',
-  justifyContent: 'center',
-  backgroundColor: accentColor,
+  gap: 8,
+  paddingInline: 16,
+  height: 40,
+  borderRadius: 16,
+  background: accentColor,
   borderColor: accentColor,
-  color: iconColor
+  boxShadow: '0 10px 24px rgba(15, 23, 42, 0.18)',
+  color: iconColor,
+  fontWeight: 600
 })
-

@@ -20,8 +20,8 @@ const Sider = ({
 
   return (
     <AntSider
-      width={232}
-      collapsedWidth={80}
+      width={204}
+      collapsedWidth={68}
       collapsible
       collapsed={collapsed}
       onCollapse={(value) => onCollapse(value)}
@@ -32,11 +32,10 @@ const Sider = ({
         borderRight: `1px solid ${borderColor}`,
         display: 'flex',
         flexDirection: 'column',
-        padding: collapsed ? '20px 10px' : '28px 18px',
+        padding: collapsed ? '18px 8px' : '24px 14px',
         gap: 16,
-        borderRadius: 24,
-        margin: 24,
-        marginRight: 16,
+        borderRadius: 22,
+        margin: '24px 12px 24px 18px',
         transition: 'background 0.3s ease, border-color 0.3s ease, margin 0.3s ease'
       }}
     >
@@ -49,8 +48,8 @@ const Sider = ({
         <div
           aria-hidden
           style={{
-            width: 40,
-            height: 40,
+            width: collapsed ? 36 : 40,
+            height: collapsed ? 36 : 40,
             borderRadius: 14,
             backgroundImage:
               themeMode === 'dark'
@@ -88,13 +87,13 @@ const Sider = ({
           style={{
             borderInlineEnd: 'none',
             background: 'transparent',
-            paddingInline: collapsed ? 0 : 4,
+            paddingInline: collapsed ? 0 : 2,
             gap: 8,
             display: 'flex',
             flexDirection: 'column'
           }}
           inlineCollapsed={collapsed}
-          inlineIndent={collapsed ? 14 : 20}
+          inlineIndent={collapsed ? 12 : 18}
         />
       </div>
       {footer && (

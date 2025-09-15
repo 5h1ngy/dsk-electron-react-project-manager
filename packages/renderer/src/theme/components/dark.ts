@@ -30,16 +30,16 @@ export const buildDarkComponents = (
       hoverBorderColor: hover,
       activeBorderColor: accent,
       addonBg: '#1e293b',
-      paddingInline: 12,
-      paddingInlineSM: 10,
-      paddingInlineLG: 14
+      paddingInline: 10,
+      paddingInlineSM: 8,
+      paddingInlineLG: 12
     },
     Select: {
       optionSelectedBg: darken(accent, 0.55),
       optionActiveBg: darken(accent, 0.6),
       optionSelectedColor: lighten(accent, 0.4),
       optionSelectedFontWeight: 600,
-      optionPadding: '9px 14px'
+      optionPadding: '8px 12px'
     },
     Tag: {
       defaultBg: darken(accent, 0.6),
@@ -52,20 +52,20 @@ export const buildDarkComponents = (
       rowHoverBg: darken(accent, 0.68),
       rowSelectedBg: darken(accent, 0.58),
       borderColor: '#1f2a3a',
-      cellPaddingBlock: 12,
-      cellPaddingInline: 14
+      cellPaddingBlock: 10,
+      cellPaddingInline: 12
     },
     Tabs: {
       itemColor: '#94a3b8',
       itemHoverColor: '#f8fafc',
       itemActiveColor: '#ffffff',
       inkBarColor: accent,
-      horizontalItemPadding: '10px 14px'
+      horizontalItemPadding: '8px 12px'
     },
     Pagination: {
       itemBg: '#111b2d',
       itemActiveBg: accent,
-      itemSize: 36
+      itemSize: 32
     },
     Segmented: {
       itemColor: '#cbd5f5',
@@ -74,7 +74,7 @@ export const buildDarkComponents = (
       itemSelectedBg: darken(accent, 0.5),
       itemSelectedColor: '#ffffff',
       trackBg: '#0f172a',
-      trackPadding: 3
+      trackPadding: 2
     },
     Typography: {
       titleMarginBottom: 12

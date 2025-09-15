@@ -41,18 +41,25 @@ export const ThemeControls = ({ className }: ThemeControlsProps = {}): JSX.Eleme
 
           <Space direction="vertical" size={8} style={{ width: '100%' }}>
             <Typography.Text strong>{t('appShell.theme.accent')}</Typography.Text>
-            <Space wrap size="small">
+            <Space wrap size={12}>
               {accentOptions.map(({ color, isActive, ariaLabel }) => (
                 <Button
                   key={color}
-                  shape="circle"
-                  size="small"
+                  type="default"
                   style={{
-                    width: 28,
-                    height: 28,
+                    width: 40,
+                    height: 40,
+                    minWidth: 40,
+                    padding: 0,
+                    borderRadius: '50%',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
                     backgroundColor: color,
-                    borderColor: isActive ? '#ffffff' : color,
-                    boxShadow: isActive ? `0 0 0 2px rgba(0, 0, 0, 0.2)` : undefined
+                    borderColor: isActive ? '#ffffff' : 'transparent',
+                    boxShadow: isActive
+                      ? `0 0 0 3px rgba(255, 255, 255, 0.45)`
+                      : '0 4px 12px rgba(15, 23, 42, 0.18)'
                   }}
                   onClick={() => onAccentSelect(color)}
                   aria-label={ariaLabel}
@@ -74,12 +81,13 @@ export const ThemeControls = ({ className }: ThemeControlsProps = {}): JSX.Eleme
     <Dropdown {...dropdownProps} popupRender={popupRender}>
       <Button
         className={className}
-        shape="circle"
         aria-label={t('appShell.theme.title')}
         title={t('appShell.theme.title')}
         icon={<BgColorsOutlined />}
         style={buttonStyle}
-      />
+      >
+        {t('appShell.theme.title')}
+      </Button>
     </Dropdown>
   )
 }
