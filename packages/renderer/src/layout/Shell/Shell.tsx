@@ -9,7 +9,6 @@ import { ShellHeaderProvider } from '@renderer/layout/Shell/ShellHeader.context'
 import { getInitials, pickColor } from '@renderer/layout/Shell/utils/userIdentity'
 
 const { Content } = Layout
-const CONTENT_MAX_WIDTH = 1200
 
 const INNER_LAYOUT_STYLE = {
   display: 'flex',
@@ -44,8 +43,7 @@ const Shell = ({ currentUser, onLogout, children }: ShellProps): JSX.Element => 
   const contentWrapperStyle = useMemo<CSSProperties>(
     () => ({
       width: '100%',
-      maxWidth: CONTENT_MAX_WIDTH,
-      margin: '0 auto'
+      margin: '0'
     }),
     []
   )
@@ -56,8 +54,7 @@ const Shell = ({ currentUser, onLogout, children }: ShellProps): JSX.Element => 
       alignItems: 'center',
       gap: token.marginSM,
       width: '100%',
-      maxWidth: CONTENT_MAX_WIDTH,
-      margin: '0 auto',
+      margin: '0',
       padding: 0,
       flexWrap: 'wrap'
     }),
