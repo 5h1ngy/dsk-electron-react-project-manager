@@ -22,7 +22,11 @@ export const mapUserSummary = (user: User | null): UserSummaryDTO | null => {
   }
 }
 
-export const mapTaskDetails = (task: Task, projectKey: string): TaskDetailsDTO => ({
+export const mapTaskDetails = (
+  task: Task,
+  projectKey: string,
+  commentCount = 0
+): TaskDetailsDTO => ({
   id: task.id,
   projectId: task.projectId,
   key: task.key,
@@ -43,7 +47,8 @@ export const mapTaskDetails = (task: Task, projectKey: string): TaskDetailsDTO =
   createdAt: task.createdAt!,
   updatedAt: task.updatedAt!,
   projectKey,
-  linkedNotes: mapTaskNotes(task.notes ?? [])
+  linkedNotes: mapTaskNotes(task.notes ?? []),
+  commentCount
 })
 
 export const mapComment = (comment: Comment): CommentDTO => {

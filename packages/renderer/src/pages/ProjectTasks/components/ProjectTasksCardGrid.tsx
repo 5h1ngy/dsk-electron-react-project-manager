@@ -1,11 +1,29 @@
-import { CalendarOutlined, DeleteOutlined, EditOutlined, UserOutlined } from '@ant-design/icons'
-import { Button, Card, Col, Pagination, Popconfirm, Row, Space, Tag, Tooltip, Typography } from 'antd'
+import {
+  CalendarOutlined,
+  DeleteOutlined,
+  EditOutlined,
+  MessageOutlined,
+  UserOutlined
+} from '@ant-design/icons'
+import {
+  Button,
+  Card,
+  Col,
+  Pagination,
+  Popconfirm,
+  Row,
+  Space,
+  Tag,
+  Tooltip,
+  Typography
+} from 'antd'
 import { useMemo, type JSX } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { EmptyState, LoadingSkeleton } from '@renderer/components/DataStates'
 import { useDelayedLoading } from '@renderer/hooks/useDelayedLoading'
 import type { TaskDetails } from '@renderer/store/slices/tasks'
+import { useSemanticBadges, buildBadgeStyle } from '@renderer/theme/hooks/useSemanticBadges'
 
 const CARD_BODY_STYLE = {
   display: 'flex',
@@ -14,20 +32,6 @@ const CARD_BODY_STYLE = {
   gap: 12,
   height: '100%'
 } as const
-
-const STATUS_COLORS: Record<TaskDetails['status'], string> = {
-  todo: 'default',
-  in_progress: 'blue',
-  blocked: 'volcano',
-  done: 'green'
-}
-
-const PRIORITY_COLORS: Record<TaskDetails['priority'], string> = {
-  low: 'green',
-  medium: 'blue',
-  high: 'orange',
-  critical: 'red'
-}
 
 export interface ProjectTasksCardGridProps {
   tasks: TaskDetails[]
@@ -56,6 +60,7 @@ export const ProjectTasksCardGrid = ({
 }: ProjectTasksCardGridProps): JSX.Element => {
   const { t, i18n } = useTranslation('projects')
   const showSkeleton = useDelayedLoading(loading)
+  const badgeTokens = useSemanticBadges()
 
   const { items, total } = useMemo(() => {
     const totalCount = tasks.length
@@ -128,11 +133,21 @@ export const ProjectTasksCardGrid = ({
             >
               <Space direction="vertical" size="small" style={{ width: '100%' }}>
                 <Space size={6} wrap>
-                  <Tag color={STATUS_COLORS[task.status]}>
+                  <Tag bordered={false} style={buildBadgeStyle(badgeTokens.status[task.status])}>
                     {t(`details.status.${task.status}`)}
                   </Tag>
-                  <Tag color={PRIORITY_COLORS[task.priority]}>
+                  <Tag
+                    bordered={false}
+                    style={buildBadgeStyle(badgeTokens.priority[task.priority])}
+                  >
                     {t(`details.priority.${task.priority}`)}
+                  </Tag>
+                  <Tag
+                    bordered={false}
+                    icon={<MessageOutlined />}
+                    style={buildBadgeStyle(badgeTokens.comment)}
+                  >
+                    {task.commentCount ?? 0}
                   </Tag>
                 </Space>
                 <Typography.Paragraph

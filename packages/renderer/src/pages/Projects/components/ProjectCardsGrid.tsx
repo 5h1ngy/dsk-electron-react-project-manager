@@ -1,11 +1,23 @@
 import { CalendarOutlined, DeleteOutlined, EditOutlined, TeamOutlined } from '@ant-design/icons'
-import { Button, Card, Col, Pagination, Popconfirm, Row, Space, Tag, Tooltip, Typography } from 'antd'
+import {
+  Button,
+  Card,
+  Col,
+  Pagination,
+  Popconfirm,
+  Row,
+  Space,
+  Tag,
+  Tooltip,
+  Typography
+} from 'antd'
 import { useMemo, type JSX } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { EmptyState, LoadingSkeleton } from '@renderer/components/DataStates'
 import { useDelayedLoading } from '@renderer/hooks/useDelayedLoading'
 import type { ProjectSummary } from '@renderer/store/slices/projects'
+import { useSemanticBadges, buildBadgeStyle } from '@renderer/theme/hooks/useSemanticBadges'
 
 const CARD_BODY_STYLE = {
   display: 'flex',
@@ -14,12 +26,6 @@ const CARD_BODY_STYLE = {
   gap: 12,
   height: '100%'
 } as const
-
-const ROLE_COLORS: Record<ProjectSummary['role'], string> = {
-  admin: 'geekblue',
-  edit: 'cyan',
-  view: 'default'
-}
 
 export interface ProjectCardsGridProps {
   projects: ProjectSummary[]
@@ -46,6 +52,7 @@ export const ProjectCardsGrid = ({
 }: ProjectCardsGridProps): JSX.Element => {
   const { t, i18n } = useTranslation('projects')
   const showSkeleton = useDelayedLoading(loading)
+  const badgeTokens = useSemanticBadges()
 
   const { items, total } = useMemo(() => {
     const totalCount = projects.length
@@ -62,16 +69,11 @@ export const ProjectCardsGrid = ({
   }
 
   if (projects.length === 0) {
-    return (
-      <EmptyState
-        title={t('list.empty')}
-        description={t('filters.searchPlaceholder')}
-      />
-    )
+    return <EmptyState title={t('list.empty')} description={t('filters.searchPlaceholder')} />
   }
 
   return (
-    <Space direction='vertical' size="large" style={{ width: '100%' }}>
+    <Space direction="vertical" size="large" style={{ width: '100%' }}>
       <Row gutter={[16, 16]}>
         {items.map((project) => {
           const tagList = project.tags ?? []
@@ -83,13 +85,18 @@ export const ProjectCardsGrid = ({
                 style={{ height: '100%' }}
                 bodyStyle={CARD_BODY_STYLE}
                 title={
-                  <Space direction='vertical' size={4}>
+                  <Space direction="vertical" size={4}>
                     <Typography.Text strong ellipsis>
                       {project.name}
                     </Typography.Text>
                     <Space size={6} wrap>
-                      <Tag color='blue'>{project.key}</Tag>
-                      <Tag color={ROLE_COLORS[project.role]}>
+                      <Tag bordered={false} style={buildBadgeStyle(badgeTokens.projectKey)}>
+                        {project.key}
+                      </Tag>
+                      <Tag
+                        bordered={false}
+                        style={buildBadgeStyle(badgeTokens.projectRole[project.role])}
+                      >
                         {t(`list.role.${project.role}`)}
                       </Tag>
                     </Space>
@@ -100,7 +107,7 @@ export const ProjectCardsGrid = ({
                     <Space size={4}>
                       <Tooltip title={t('actions.edit')}>
                         <Button
-                          type='text'
+                          type="text"
                           icon={<EditOutlined />}
                           onClick={(event) => {
                             event.stopPropagation()
@@ -118,7 +125,7 @@ export const ProjectCardsGrid = ({
                         disabled={!onDelete}
                       >
                         <Button
-                          type='text'
+                          type="text"
                           danger
                           icon={<DeleteOutlined />}
                           onClick={(event) => event.stopPropagation()}
@@ -128,9 +135,9 @@ export const ProjectCardsGrid = ({
                   ) : undefined
                 }
               >
-                <Space direction='vertical' size='small' style={{ width: '100%' }}>
+                <Space direction="vertical" size="small" style={{ width: '100%' }}>
                   <Typography.Paragraph
-                    type='secondary'
+                    type="secondary"
                     ellipsis={{ rows: 3 }}
                     style={{ marginBottom: 0 }}
                   >
@@ -139,23 +146,23 @@ export const ProjectCardsGrid = ({
                   <Space size={4} wrap>
                     {tagList.length > 0 ? (
                       tagList.map((tag) => (
-                        <Tag key={tag} bordered={false} color='default'>
+                        <Tag key={tag} bordered={false} style={buildBadgeStyle(badgeTokens.tag)}>
                           {tag}
                         </Tag>
                       ))
                     ) : (
-                      <Typography.Text type='secondary'>{t('list.noTags')}</Typography.Text>
+                      <Typography.Text type="secondary">{t('list.noTags')}</Typography.Text>
                     )}
                   </Space>
-                  <Space size={6} align='center'>
+                  <Space size={6} align="center">
                     <TeamOutlined style={{ color: '#4f46e5' }} aria-hidden />
-                    <Typography.Text type='secondary'>
+                    <Typography.Text type="secondary">
                       {t('list.memberCount', { count: project.memberCount })}
                     </Typography.Text>
                   </Space>
-                  <Space size={6} align='center'>
+                  <Space size={6} align="center">
                     <CalendarOutlined style={{ color: '#0ea5e9' }} aria-hidden />
-                    <Typography.Text type='secondary'>
+                    <Typography.Text type="secondary">
                       {t('list.createdOn', {
                         date: new Intl.DateTimeFormat(i18n.language, {
                           day: '2-digit',

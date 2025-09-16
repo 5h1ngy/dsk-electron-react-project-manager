@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto'
-import { Op, QueryTypes, type Sequelize, type Transaction } from 'sequelize'
+import { Op, QueryTypes, fn, type Sequelize, type Transaction } from 'sequelize'
 import { AuditService } from '@main/services/audit'
 import { Project } from '@main/models/Project'
 import { ProjectMember, type ProjectMembershipRole } from '@main/models/ProjectMember'
@@ -195,9 +195,25 @@ export class TaskService {
       }
 
       const tasks = await Task.findAll(queryOptions)
+      const taskIds = tasks.map((task) => task.id)
+      const commentCountMap = new Map<string, number>()
+
+      if (taskIds.length > 0) {
+        const rawCounts = (await Comment.findAll({
+          attributes: ['taskId', [fn('COUNT', '*'), 'count']],
+          where: { taskId: { [Op.in]: taskIds } },
+          group: ['taskId'],
+          raw: true
+        })) as unknown as Array<{ taskId: string; count: number }>
+
+        rawCounts.forEach((row) => {
+          commentCountMap.set(row.taskId, Number(row.count ?? 0))
+        })
+      }
 
       return tasks.map((task) => {
-        const details = mapTaskDetails(task, project.key)
+        const commentCount = commentCountMap.get(task.id) ?? 0
+        const details = mapTaskDetails(task, project.key, commentCount)
         return {
           ...details,
           linkedNotes: this.filterLinkedNotes(actor, role, details.linkedNotes)
@@ -212,7 +228,8 @@ export class TaskService {
     try {
       const task = await this.loadTask(taskId)
       const { role } = await this.resolveProjectAccess(actor, task.projectId, 'view')
-      const details = mapTaskDetails(task, task.project.key)
+      const commentCount = await Comment.count({ where: { taskId: task.id } })
+      const details = mapTaskDetails(task, task.project.key, commentCount)
       return {
         ...details,
         linkedNotes: this.filterLinkedNotes(actor, role, details.linkedNotes)
@@ -278,7 +295,7 @@ export class TaskService {
         throw new AppError('ERR_INTERNAL', 'Task creato non reperibile')
       }
 
-      const details = mapTaskDetails(created, project.key)
+        const details = mapTaskDetails(created, project.key, 0)
       return {
         ...details,
         linkedNotes: this.filterLinkedNotes(actor, role, details.linkedNotes)
@@ -315,7 +332,8 @@ export class TaskService {
       await this.auditService.record(actor.userId, 'task', taskId, 'update', input)
 
       const reloaded = await this.loadTask(taskId)
-      const details = mapTaskDetails(reloaded, reloaded.project.key)
+      const commentCount = await Comment.count({ where: { taskId } })
+      const details = mapTaskDetails(reloaded, reloaded.project.key, commentCount)
       return {
         ...details,
         linkedNotes: this.filterLinkedNotes(actor, role, details.linkedNotes)
@@ -446,9 +464,25 @@ export class TaskService {
         tasks.map((task) => task.projectId)
       )
 
+      const commentCountMap = new Map<string, number>()
+      if (tasks.length > 0) {
+        const taskIdsForCounts = tasks.map((task) => task.id)
+        const rawCounts = (await Comment.findAll({
+          attributes: ['taskId', [fn('COUNT', '*'), 'count']],
+          where: { taskId: { [Op.in]: taskIdsForCounts } },
+          group: ['taskId'],
+          raw: true
+        })) as unknown as Array<{ taskId: string; count: number }>
+
+        rawCounts.forEach((row) => {
+          commentCountMap.set(row.taskId, Number(row.count ?? 0))
+        })
+      }
+
       return tasks.map((task) => {
         const projectKey = task.project?.key ?? 'UNKNOWN'
-        const details = mapTaskDetails(task, projectKey)
+        const commentCount = commentCountMap.get(task.id) ?? 0
+        const details = mapTaskDetails(task, projectKey, commentCount)
         const role = roles.get(task.projectId) ?? 'view'
         return {
           ...details,
@@ -581,3 +615,4 @@ export class TaskService {
     return tasks.map((task) => task.id)
   }
 }
+

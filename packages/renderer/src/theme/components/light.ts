@@ -80,6 +80,16 @@ export const buildLightComponents = (
     trackBg: lighten(palette.surfaceBase, 0.03),
     trackPadding: 2
   },
+  Switch: {
+    handleBg: palette.surfaceContainer,
+    handleShadow: '0 4px 8px rgba(15, 23, 42, 0.12)',
+    handleSize: 20,
+    trackHeight: 24,
+    trackMinWidth: 44,
+    trackPadding: 3,
+    innerMinMargin: 6,
+    innerMaxMargin: 12
+  },
   Menu: {
     itemBorderRadius: shape.radius,
     itemPaddingInline: spacing.md,

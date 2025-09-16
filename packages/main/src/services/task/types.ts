@@ -32,6 +32,7 @@ export interface TaskNoteLinkDTO {
 export interface TaskDetailsDTO extends TaskDTO {
   projectKey: string
   linkedNotes: TaskNoteLinkDTO[]
+  commentCount: number
 }
 
 export interface CommentDTO {

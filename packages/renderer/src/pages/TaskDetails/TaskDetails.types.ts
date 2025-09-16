@@ -1,4 +1,5 @@
 export interface TagDescriptor {
   label: string
-  color: string
+  variant: 'status' | 'priority'
+  key: string
 }

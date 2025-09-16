@@ -46,6 +46,7 @@ import type { CommentDTO } from '@main/services/task/types'
 import { taskFormSchema, type TaskFormValues } from '@renderer/pages/Projects/schemas/taskSchemas'
 import MarkdownEditor from '@renderer/components/Markdown/MarkdownEditor'
 import MarkdownViewer from '@renderer/components/Markdown/MarkdownViewer'
+import { useSemanticBadges, buildBadgeStyle } from '@renderer/theme/hooks/useSemanticBadges'
 
 export interface TaskDetailsModalProps {
   open: boolean
@@ -82,6 +83,7 @@ export const TaskDetailsModal = ({
 }: TaskDetailsModalProps): JSX.Element => {
   const { t, i18n } = useTranslation('projects')
   const dispatch = useAppDispatch()
+  const badgeTokens = useSemanticBadges()
   const navigate = useNavigate()
   const [commentForm] = Form.useForm<{ body: string }>()
   const [submitting, setSubmitting] = useState(false)
@@ -225,8 +227,12 @@ export const TaskDetailsModal = ({
         {commentsLoading ? (
           <Skeleton.Input style={{ width: 120 }} active size="small" />
         ) : (
-          <Tag icon={<MessageOutlined />} color="processing">
-            {t('tasks.details.comments.count', { count: comments.length })}
+          <Tag
+            icon={<MessageOutlined />}
+            bordered={false}
+            style={buildBadgeStyle(badgeTokens.comment)}
+          >
+            {task?.commentCount ?? comments.length ?? 0}
           </Tag>
         )}
       </Space>
@@ -285,7 +291,20 @@ export const TaskDetailsModal = ({
     </Space>
   )
 
-  const tags = buildTags(task, (key) => t(key))
+  const decoratedTags = useMemo(() => {
+    return buildTags(task, (key) => t(key)).map((tag) => {
+      if (tag.variant === 'status') {
+        return {
+          label: tag.label,
+          badge: badgeTokens.status[tag.key as TaskDetails['status']]
+        }
+      }
+      return {
+        label: tag.label,
+        badge: badgeTokens.priority[tag.key as TaskDetails['priority']]
+      }
+    })
+  }, [badgeTokens, t, task])
 
   const openLinkedNote = (noteId: string) => {
     if (!task) {
@@ -357,8 +376,8 @@ export const TaskDetailsModal = ({
           </Space>
 
           <Space size={8} wrap>
-            {tags.map((tag) => (
-              <Tag key={tag.label} color={tag.color}>
+            {decoratedTags.map((tag) => (
+              <Tag key={tag.label} bordered={false} style={buildBadgeStyle(tag.badge)}>
                 {tag.label}
               </Tag>
             ))}
@@ -534,7 +553,7 @@ export const TaskDetailsModal = ({
                     </Button>
                     {note.isPrivate ? (
                       <Tooltip title={t('notes.labels.private')}>
-                        <LockOutlined style={{ color: '#f97316' }} />
+                        <LockOutlined style={{ color: badgeTokens.noteVisibility.private.color }} />
                       </Tooltip>
                     ) : null}
                   </Space>

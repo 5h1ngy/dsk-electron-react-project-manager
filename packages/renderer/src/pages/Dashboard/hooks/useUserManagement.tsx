@@ -4,13 +4,18 @@ import { Button, Popconfirm, Space, Tag, Tooltip, message } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons'
 
+import { useSemanticBadges, buildBadgeStyle } from '@renderer/theme/hooks/useSemanticBadges'
+
 import type { UserDTO } from '@main/services/auth'
 import type { RoleName } from '@main/services/auth/constants'
 
 import { useAppSelector } from '@renderer/store/hooks'
 import { selectCurrentUser } from '@renderer/store/slices/auth'
 
-import type { CreateUserValues, UpdateUserValues } from '@renderer/pages/Dashboard/schemas/userSchemas'
+import type {
+  CreateUserValues,
+  UpdateUserValues
+} from '@renderer/pages/Dashboard/schemas/userSchemas'
 import { useUserForms } from '@renderer/pages/Dashboard/hooks/useUserForms'
 import { useUserData } from '@renderer/pages/Dashboard/hooks/useUserData'
 
@@ -40,15 +45,25 @@ interface UserManagementState {
 export const useUserManagement = (): UserManagementState => {
   const currentUser = useAppSelector(selectCurrentUser)
   const isAdmin = (currentUser?.roles ?? []).includes('Admin')
-  const { users, error, loading, hasLoaded, refreshUsers, clearError, createUser, updateUser, deleteUser } =
-    useUserData({
-      enabled: isAdmin
-    })
+  const {
+    users,
+    error,
+    loading,
+    hasLoaded,
+    refreshUsers,
+    clearError,
+    createUser,
+    updateUser,
+    deleteUser
+  } = useUserData({
+    enabled: isAdmin
+  })
   const { createForm, updateForm, resetCreateForm, resetUpdateForm } = useUserForms()
   const [messageApi, messageContext] = message.useMessage()
   const [isCreateOpen, setCreateOpen] = useState(false)
   const [editingUser, setEditingUser] = useState<UserDTO | null>(null)
   const { t } = useTranslation('dashboard')
+  const badgeTokens = useSemanticBadges()
 
   const normalizeMessage = useCallback(
     (value: string) =>
@@ -96,7 +111,7 @@ export const useUserManagement = (): UserManagementState => {
       const messageText =
         typeof error === 'string'
           ? error
-          : (error as Error).message ?? t('dashboard:messages.createErrorFallback')
+          : ((error as Error).message ?? t('dashboard:messages.createErrorFallback'))
       messageApi.error(normalizeMessage(messageText))
     }
   })
@@ -118,7 +133,7 @@ export const useUserManagement = (): UserManagementState => {
       const messageText =
         typeof error === 'string'
           ? error
-          : (error as Error).message ?? t('dashboard:messages.updateErrorFallback')
+          : ((error as Error).message ?? t('dashboard:messages.updateErrorFallback'))
       messageApi.error(normalizeMessage(messageText))
     }
   })
@@ -140,7 +155,7 @@ export const useUserManagement = (): UserManagementState => {
         const messageText =
           typeof error === 'string'
             ? error
-            : (error as Error).message ?? t('dashboard:messages.deleteErrorFallback')
+            : ((error as Error).message ?? t('dashboard:messages.deleteErrorFallback'))
         messageApi.error(normalizeMessage(messageText))
       }
     },
@@ -157,11 +172,14 @@ export const useUserManagement = (): UserManagementState => {
         key: 'roles',
         render: (roles: RoleName[]) => (
           <Space size={4} wrap>
-            {roles.map((role) => (
-              <Tag key={role} color="blue">
-                {t(`dashboard:roles.${role}`, { defaultValue: role })}
-              </Tag>
-            ))}
+            {roles.map((role) => {
+              const badge = badgeTokens.userRole[role] ?? badgeTokens.userRole.Viewer
+              return (
+                <Tag key={role} bordered={false} style={buildBadgeStyle(badge)}>
+                  {t(`dashboard:roles.${role}`, { defaultValue: role })}
+                </Tag>
+              )
+            })}
           </Space>
         )
       },
@@ -169,11 +187,14 @@ export const useUserManagement = (): UserManagementState => {
         title: t('dashboard:table.status'),
         dataIndex: 'isActive',
         key: 'isActive',
-        render: (isActive: boolean) => (
-          <Tag color={isActive ? 'green' : 'red'}>
-            {isActive ? t('dashboard:status.active') : t('dashboard:status.inactive')}
-          </Tag>
-        )
+        render: (isActive: boolean) => {
+          const badge = isActive ? badgeTokens.userStatus.active : badgeTokens.userStatus.inactive
+          return (
+            <Tag bordered={false} style={buildBadgeStyle(badge)}>
+              {isActive ? t('dashboard:status.active') : t('dashboard:status.inactive')}
+            </Tag>
+          )
+        }
       },
       {
         title: t('dashboard:table.actions'),
@@ -208,7 +229,7 @@ export const useUserManagement = (): UserManagementState => {
         )
       }
     ],
-    [openEditModal, removeUser, t]
+    [badgeTokens, openEditModal, removeUser, t]
   )
 
   return {

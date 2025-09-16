@@ -80,6 +80,16 @@ export const buildDarkComponents = (
     trackBg: palette.surfaceElevated,
     trackPadding: 2
   },
+  Switch: {
+    handleBg: palette.surfaceElevated,
+    handleShadow: '0 4px 10px rgba(2, 6, 23, 0.45)',
+    handleSize: 20,
+    trackHeight: 24,
+    trackMinWidth: 44,
+    trackPadding: 3,
+    innerMinMargin: 6,
+    innerMaxMargin: 12
+  },
   Menu: {
     itemBorderRadius: shape.radius,
     itemPaddingInline: spacing.md,

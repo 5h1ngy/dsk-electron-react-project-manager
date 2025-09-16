@@ -24,7 +24,8 @@ describe('tasks slice', () => {
     },
     createdAt: now,
     updatedAt: now,
-    linkedNotes: []
+    linkedNotes: [],
+    commentCount: 0
   }
 
   it('handles fetchTasks.fulfilled', () => {
@@ -94,6 +95,7 @@ describe('tasks slice', () => {
     )
 
     expect(stateAfterComment.commentsByTaskId[baseTask.id]?.items).toHaveLength(1)
+    expect(stateAfterComment.byProjectId['proj-1'].entities[baseTask.id]?.commentCount).toBe(1)
   })
 
   it('handles searchTasks.fulfilled', () => {

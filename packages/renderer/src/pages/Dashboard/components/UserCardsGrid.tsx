@@ -1,5 +1,23 @@
-import { Button, Card, Col, Pagination, Popconfirm, Row, Space, Tag, Tooltip, Typography } from 'antd'
-import { DeleteOutlined, EditOutlined, CheckCircleFilled, CloseCircleFilled, ClockCircleOutlined } from '@ant-design/icons'
+import {
+  Button,
+  Card,
+  Col,
+  Pagination,
+  Popconfirm,
+  Row,
+  Space,
+  Tag,
+  Tooltip,
+  Typography
+} from 'antd'
+import { useSemanticBadges, buildBadgeStyle } from '@renderer/theme/hooks/useSemanticBadges'
+import {
+  DeleteOutlined,
+  EditOutlined,
+  CheckCircleFilled,
+  CloseCircleFilled,
+  ClockCircleOutlined
+} from '@ant-design/icons'
 import { useMemo, type JSX } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -37,6 +55,7 @@ export const UserCardsGrid = ({
 }: UserCardsGridProps): JSX.Element => {
   const { t } = useTranslation('dashboard')
   const showSkeleton = useDelayedLoading(loading)
+  const badgeTokens = useSemanticBadges()
 
   const items = useMemo(() => {
     const start = (page - 1) * pageSize
@@ -97,19 +116,28 @@ export const UserCardsGrid = ({
                   @{user.username}
                 </Typography.Text>
                 <Space size={6} wrap>
-                  {user.roles.map((role: RoleName) => (
-                    <Tag key={role} color="blue">
-                      {t(`roles.${role}`, { defaultValue: role })}
-                    </Tag>
-                  ))}
+                  {user.roles.map((role: RoleName) => {
+                    const badge = badgeTokens.userRole[role] ?? badgeTokens.userRole.Viewer
+                    return (
+                      <Tag key={role} bordered={false} style={buildBadgeStyle(badge)}>
+                        {t(`roles.${role}`, { defaultValue: role })}
+                      </Tag>
+                    )
+                  })}
                 </Space>
               </Space>
               <Space direction="vertical" size={6} style={{ width: '100%' }}>
                 <Space size={6} align="center">
                   {user.isActive ? (
-                    <CheckCircleFilled style={{ color: '#22c55e' }} aria-hidden />
+                    <CheckCircleFilled
+                      style={{ color: badgeTokens.userStatus.active.color }}
+                      aria-hidden
+                    />
                   ) : (
-                    <CloseCircleFilled style={{ color: '#f97316' }} aria-hidden />
+                    <CloseCircleFilled
+                      style={{ color: badgeTokens.userStatus.inactive.color }}
+                      aria-hidden
+                    />
                   )}
                   <Typography.Text type="secondary">
                     {user.isActive ? t('status.active') : t('status.inactive')}

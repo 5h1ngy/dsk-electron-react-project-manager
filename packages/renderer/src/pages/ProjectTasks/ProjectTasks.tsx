@@ -14,14 +14,11 @@ import {
   filterTasks,
   resolveEffectiveTitle
 } from '@renderer/pages/ProjectTasks/ProjectTasks.helpers'
-import type {
-  ProjectTasksPageProps,
-  TaskFilters
-} from '@renderer/pages/ProjectTasks/ProjectTasks.types'
+import type { TaskFilters } from '@renderer/pages/ProjectTasks/ProjectTasks.types'
 import { TaskFiltersBar } from '@renderer/pages/ProjectTasks/components/TaskFiltersBar'
 import { ProjectTasksCardGrid } from '@renderer/pages/ProjectTasks/components/ProjectTasksCardGrid'
 
-const ProjectTasksPage = ({}: ProjectTasksPageProps): JSX.Element => {
+const ProjectTasksPage = (): JSX.Element => {
   const {
     project,
     projectLoading,
@@ -40,7 +37,8 @@ const ProjectTasksPage = ({}: ProjectTasksPageProps): JSX.Element => {
     status: 'all',
     priority: 'all',
     assignee: 'all',
-    dueDateRange: null
+    dueDateRange: null,
+    showCommentColumn: false
   })
   const [viewMode, setViewMode] = useState<'table' | 'cards'>('table')
   const [tablePage, setTablePage] = useState(1)
@@ -48,31 +46,14 @@ const ProjectTasksPage = ({}: ProjectTasksPageProps): JSX.Element => {
   const TABLE_PAGE_SIZE = 10
   const CARD_PAGE_SIZE = 8
 
-  const effectiveTitle = useMemo(
-    () => resolveEffectiveTitle(project?.name, t),
-    [project?.name, t]
-  )
-
-  if (!project && !projectLoading) {
-    return (
-      <div style={{ marginTop: 64 }}>
-        <EmptyState title={t('details.notFound')} />
-      </div>
-    )
-  }
+  const effectiveTitle = useMemo(() => resolveEffectiveTitle(project?.name, t), [project?.name, t])
 
   const statusOptions = useMemo(() => buildStatusOptions(t), [t])
 
   const priorityOptions = useMemo(() => buildPriorityOptions(t), [t])
-  const assigneeOptions = useMemo(
-    () => buildAssigneeOptions(tasks, t),
-    [tasks, t]
-  )
+  const assigneeOptions = useMemo(() => buildAssigneeOptions(tasks, t), [tasks, t])
 
-  const filteredTasks = useMemo(
-    () => filterTasks(tasks, filters),
-    [tasks, filters]
-  )
+  const filteredTasks = useMemo(() => filterTasks(tasks, filters), [tasks, filters])
 
   const loading = tasksStatus === 'loading'
 
@@ -104,10 +85,23 @@ const ProjectTasksPage = ({}: ProjectTasksPageProps): JSX.Element => {
 
   const handleTaskDelete = (taskId: string) => deleteTask(taskId)
 
+  if (!project && !projectLoading) {
+    return (
+      <div style={{ marginTop: 64 }}>
+        <EmptyState title={t('details.notFound')} />
+      </div>
+    )
+  }
+
   return (
     <Space direction="vertical" size={24} style={{ width: '100%' }}>
-      <Space align="center" style={{ width: '100%', justifyContent: 'space-between', flexWrap: 'wrap' }}>
-        <Typography.Title level={4} style={{ marginBottom: 0 }}>{effectiveTitle}</Typography.Title>
+      <Space
+        align="center"
+        style={{ width: '100%', justifyContent: 'space-between', flexWrap: 'wrap' }}
+      >
+        <Typography.Title level={4} style={{ marginBottom: 0 }}>
+          {effectiveTitle}
+        </Typography.Title>
         {canManageTasks ? (
           <Button type="primary" icon={<PlusOutlined />} onClick={() => openTaskCreate()}>
             {t('tasks.actions.create')}
@@ -132,6 +126,7 @@ const ProjectTasksPage = ({}: ProjectTasksPageProps): JSX.Element => {
           onDelete={(task) => handleTaskDelete(task.id)}
           canManage={canManageTasks}
           deletingTaskId={deletingTaskId}
+          showCommentColumn={filters.showCommentColumn}
           pagination={{
             current: tablePage,
             pageSize: TABLE_PAGE_SIZE,

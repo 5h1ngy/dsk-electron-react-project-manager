@@ -1,9 +1,10 @@
 import { Button, Card, Popconfirm, Space, Tag, Tooltip, Typography } from 'antd'
 import type { DragEvent, JSX } from 'react'
 import { useTranslation } from 'react-i18next'
-import { DeleteOutlined, EditOutlined } from '@ant-design/icons'
+import { DeleteOutlined, EditOutlined, MessageOutlined } from '@ant-design/icons'
 
 import type { TaskDetails } from '@renderer/store/slices/tasks'
+import { useSemanticBadges, buildBadgeStyle } from '@renderer/theme/hooks/useSemanticBadges'
 
 export interface TaskCardProps {
   task: TaskDetails
@@ -13,13 +14,6 @@ export interface TaskCardProps {
   onDelete: () => Promise<void> | void
   deleting?: boolean
   draggable?: boolean
-}
-
-const priorityColors: Record<string, string> = {
-  low: 'green',
-  medium: 'blue',
-  high: 'orange',
-  critical: 'red'
 }
 
 export const TaskCard = ({
@@ -32,6 +26,7 @@ export const TaskCard = ({
   draggable = true
 }: TaskCardProps): JSX.Element => {
   const { t, i18n } = useTranslation('projects')
+  const badgeTokens = useSemanticBadges()
 
   const handleDragStart = (event: DragEvent<HTMLDivElement>) => {
     if (!draggable) {
@@ -85,9 +80,18 @@ export const TaskCard = ({
       <Space direction="vertical" size={4} style={{ width: '100%' }}>
         <Space align="baseline" style={{ justifyContent: 'space-between', width: '100%' }}>
           <Typography.Text strong>{task.title}</Typography.Text>
-          <Tag color={priorityColors[task.priority] ?? 'blue'}>
-            {t(`details.priority.${task.priority}`)}
-          </Tag>
+          <Space size={4}>
+            <Tag bordered={false} style={buildBadgeStyle(badgeTokens.priority[task.priority])}>
+              {t(`details.priority.${task.priority}`)}
+            </Tag>
+            <Tag
+              bordered={false}
+              icon={<MessageOutlined />}
+              style={buildBadgeStyle(badgeTokens.comment)}
+            >
+              {task.commentCount ?? 0}
+            </Tag>
+          </Space>
         </Space>
         {task.assignee?.displayName ? (
           <Typography.Text type="secondary" style={{ fontSize: 12 }}>

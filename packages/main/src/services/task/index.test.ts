@@ -112,6 +112,9 @@ describe('TaskService', () => {
       const board = await taskService.listByProject(adminActor, project.id)
       expect(board).toHaveLength(2)
       expect(board.map((task) => task.key)).toEqual(expect.arrayContaining(['TSK-1', 'TSK-2']))
+      board.forEach((task) => {
+        expect(task.commentCount).toBe(0)
+      })
     } finally {
       await sequelize.close()
       await rm(directory, { recursive: true, force: true })
@@ -167,8 +170,15 @@ describe('TaskService', () => {
       const comments = await taskService.listComments(contributorActor, task.id)
       expect(comments).toHaveLength(1)
 
+      const refreshedTask = await taskService.getTask(contributorActor, task.id)
+      expect(refreshedTask.commentCount).toBe(1)
+
+      const projectTasks = await taskService.listByProject(adminActor, project.id)
+      expect(projectTasks.find((item) => item.id === task.id)?.commentCount).toBe(1)
+
       const results = await taskService.search(adminActor, { query: 'Accessible' })
       expect(results.map((item) => item.id)).toContain(task.id)
+      expect(results.find((item) => item.id === task.id)?.commentCount).toBe(1)
     } finally {
       await sequelize.close()
       await rm(directory, { recursive: true, force: true })

@@ -124,7 +124,8 @@
       "dueDateRange": {
         "start": "Due from",
         "end": "Due to"
-      }
+      },
+      "showComments": "Show comment counter"
     },
     "noAssignee": "Unassigned",
     "noDueDate": "No due date",
@@ -158,7 +159,8 @@
       "status": "Status",
       "priority": "Priority",
       "assignee": "Assignee",
-      "dueDate": "Due date"
+      "dueDate": "Due date",
+      "comments": "Comments"
     },
     "drawer": {
       "title": "Task details",

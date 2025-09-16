@@ -8,14 +8,21 @@ import { HealthStatusCard } from '@renderer/components/HealthStatusCard'
 import { useDelayedLoading } from '@renderer/hooks/useDelayedLoading'
 import { useAppDispatch, useAppSelector } from '@renderer/store/hooks'
 import { selectCurrentUser } from '@renderer/store/slices/auth/selectors'
-import { fetchProjects, selectProjects, selectProjectsStatus } from '@renderer/store/slices/projects'
+import {
+  fetchProjects,
+  selectProjects,
+  selectProjectsStatus
+} from '@renderer/store/slices/projects'
 import { CreateUserModal } from '@renderer/pages/Dashboard/components/CreateUserModal'
 import { EditUserModal } from '@renderer/pages/Dashboard/components/EditUserModal'
 import { UserTable } from '@renderer/pages/Dashboard/components/UserTable'
 import { ActionBar } from '@renderer/pages/Dashboard/components/ActionBar'
 import { ShellHeaderPortal } from '@renderer/layout/Shell/ShellHeader.context'
 import { usePrimaryBreadcrumb } from '@renderer/layout/Shell/hooks/usePrimaryBreadcrumb'
-import { UserFilters, type UserFiltersValue } from '@renderer/pages/Dashboard/components/UserFilters'
+import {
+  UserFilters,
+  type UserFiltersValue
+} from '@renderer/pages/Dashboard/components/UserFilters'
 import { UserCardsGrid } from '@renderer/pages/Dashboard/components/UserCardsGrid'
 import { useUserManagement } from '@renderer/pages/Dashboard/hooks/useUserManagement'
 import {
@@ -23,23 +30,38 @@ import {
   selectRecentProjects,
   renderProjectsList
 } from '@renderer/pages/Dashboard/Dashboard.helpers'
-import type { DashboardProps, RoleTagDescriptor } from '@renderer/pages/Dashboard/Dashboard.types'
+import type { RoleTagDescriptor } from '@renderer/pages/Dashboard/Dashboard.types'
 import type { RoleName } from '@main/services/auth/constants'
+import {
+  useSemanticBadges,
+  buildBadgeStyle,
+  type BadgeSpec
+} from '@renderer/theme/hooks/useSemanticBadges'
 
-const renderRoleTags = (tags: RoleTagDescriptor[]): JSX.Element => (
+const renderRoleTags = (
+  tags: RoleTagDescriptor[],
+  roleBadges: Record<RoleName, BadgeSpec>
+): JSX.Element => (
   <Space size={4} wrap>
-    {tags.map((tag) => (
-      <Tag key={tag.key}>{tag.label}</Tag>
-    ))}
+    {tags.map((tag) => {
+      const roleKey = tag.key as RoleName
+      const badge = roleBadges[roleKey] ?? roleBadges.Viewer
+      return (
+        <Tag key={tag.key} bordered={false} style={buildBadgeStyle(badge)}>
+          {tag.label}
+        </Tag>
+      )
+    })}
   </Space>
 )
 
-const Dashboard = ({}: DashboardProps): JSX.Element => {
+const Dashboard = (): JSX.Element => {
   const { t } = useTranslation('dashboard')
   const dispatch = useAppDispatch()
   const currentUser = useAppSelector(selectCurrentUser)
   const projects = useAppSelector(selectProjects)
   const projectsStatus = useAppSelector(selectProjectsStatus)
+  const badgeTokens = useSemanticBadges()
   const {
     users,
     error,
@@ -144,7 +166,7 @@ const Dashboard = ({}: DashboardProps): JSX.Element => {
   if (!isAdmin) {
     const roleTags = mapRoleTags(currentUser?.roles, t)
     const recentProjects = selectRecentProjects(projects)
-    const roleTagElements = renderRoleTags(roleTags)
+    const roleTagElements = renderRoleTags(roleTags, badgeTokens.userRole)
 
     return (
       <>
@@ -167,7 +189,7 @@ const Dashboard = ({}: DashboardProps): JSX.Element => {
               {projectListSkeleton ? (
                 <LoadingSkeleton variant="list" />
               ) : (
-                renderProjectsList(recentProjects, t)
+                renderProjectsList(recentProjects, t, badgeTokens)
               )}
             </Card>
           </Space>
@@ -184,11 +206,7 @@ const Dashboard = ({}: DashboardProps): JSX.Element => {
       <Space direction="vertical" size="large" style={{ width: '100%' }}>
         {messageContext}
         <HealthStatusCard />
-        <ActionBar
-          onCreate={openCreateModal}
-          onRefresh={refreshUsers}
-          isRefreshing={loading}
-        />
+        <ActionBar onCreate={openCreateModal} onRefresh={refreshUsers} isRefreshing={loading} />
         <UserFilters
           value={userFilters}
           onChange={handleUserFiltersChange}
@@ -246,6 +264,3 @@ Dashboard.displayName = 'Dashboard'
 
 export { Dashboard }
 export default Dashboard
-
-
-

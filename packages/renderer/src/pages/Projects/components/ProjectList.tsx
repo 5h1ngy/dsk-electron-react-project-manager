@@ -6,6 +6,7 @@ import { DeleteOutlined, EditOutlined } from '@ant-design/icons'
 import { EmptyState, LoadingSkeleton } from '@renderer/components/DataStates'
 import { useDelayedLoading } from '@renderer/hooks/useDelayedLoading'
 import type { ProjectSummary } from '@renderer/store/slices/projects'
+import { useSemanticBadges, buildBadgeStyle } from '@renderer/theme/hooks/useSemanticBadges'
 
 type ProjectRow = ProjectSummary
 
@@ -37,6 +38,7 @@ export const ProjectList = ({
 }: ProjectListProps) => {
   const { t, i18n } = useTranslation('projects')
   const showSkeleton = useDelayedLoading(loading)
+  const badgeTokens = useSemanticBadges()
 
   const columns: ColumnsType<ProjectRow> = [
     {
@@ -44,7 +46,11 @@ export const ProjectList = ({
       dataIndex: 'key',
       key: 'key',
       width: 120,
-      render: (value: string) => <Tag color="blue">{value}</Tag>
+      render: (value: string) => (
+        <Tag bordered={false} style={buildBadgeStyle(badgeTokens.projectKey)}>
+          {value}
+        </Tag>
+      )
     },
     {
       title: t('list.columns.name'),
@@ -70,7 +76,9 @@ export const ProjectList = ({
         tags && tags.length > 0 ? (
           <span>
             {tags.map((tag) => (
-              <Tag key={tag}>{tag}</Tag>
+              <Tag key={tag} bordered={false} style={buildBadgeStyle(badgeTokens.tag)}>
+                {tag}
+              </Tag>
             ))}
           </span>
         ) : (
@@ -82,7 +90,11 @@ export const ProjectList = ({
       dataIndex: 'role',
       key: 'role',
       width: 140,
-      render: (value: ProjectRow['role']) => <Tag>{t(`list.role.${value}`)}</Tag>
+      render: (value: ProjectRow['role']) => (
+        <Tag bordered={false} style={buildBadgeStyle(badgeTokens.projectRole[value])}>
+          {t(`list.role.${value}`)}
+        </Tag>
+      )
     },
     {
       title: t('list.columns.members'),
@@ -157,10 +169,7 @@ export const ProjectList = ({
       })}
       locale={{
         emptyText: (
-          <EmptyState
-            title={t('list.empty')}
-            description={t('filters.searchPlaceholder')}
-          />
+          <EmptyState title={t('list.empty')} description={t('filters.searchPlaceholder')} />
         )
       }}
     />

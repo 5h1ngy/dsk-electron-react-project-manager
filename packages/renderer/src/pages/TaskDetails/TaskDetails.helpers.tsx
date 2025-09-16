@@ -30,11 +30,13 @@ export const buildTags = (
   return [
     {
       label: translate(`details.status.${task.status}`),
-      color: 'blue'
+      variant: 'status',
+      key: task.status
     },
     {
       label: translate(`details.priority.${task.priority}`),
-      color: task.priority === 'critical' ? 'red' : task.priority === 'high' ? 'orange' : 'green'
+      variant: 'priority',
+      key: task.priority
     }
   ]
 }
