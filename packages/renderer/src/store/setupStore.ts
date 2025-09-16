@@ -5,6 +5,7 @@ import { localeReducer } from '@renderer/store/slices/locale'
 import { themeReducer } from '@renderer/store/slices/theme'
 import { projectsReducer } from '@renderer/store/slices/projects'
 import { tasksReducer } from '@renderer/store/slices/tasks'
+import { notesReducer } from '@renderer/store/slices/notes'
 
 export const setupStore = () =>
   configureStore({
@@ -13,7 +14,8 @@ export const setupStore = () =>
       locale: localeReducer,
       theme: themeReducer,
       projects: projectsReducer,
-      tasks: tasksReducer
+      tasks: tasksReducer,
+      notes: notesReducer
     },
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({

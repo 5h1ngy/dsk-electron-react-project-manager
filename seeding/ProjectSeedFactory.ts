@@ -4,11 +4,16 @@ import type { RoleName } from '../packages/main/src/services/auth/constants'
 import type { User } from '../packages/main/src/models/User'
 import type {
   CommentSeedDefinition,
+  NoteSeedDefinition,
   ProjectMemberSeed,
   ProjectSeedDefinition,
   TaskSeedDefinition
 } from './DevelopmentSeeder.types'
-import type { CommentsSeedConfig, ProjectsSeedConfig } from './seedConfig'
+import type {
+  CommentsSeedConfig,
+  ProjectsSeedConfig,
+  NotesSeedConfig
+} from './seedConfig'
 import { capitalize, formatIsoDate, pickWeighted, type WeightedValue } from './seed.helpers'
 
 const TAG_CATALOG = [
@@ -50,12 +55,24 @@ const PRIORITY_WEIGHTS: ReadonlyArray<WeightedValue<TaskSeedDefinition['priority
 ] as const
 
 const COMMENT_PROMPTS = ['Progress:', 'Update:', 'Risk:', 'Note:', 'Follow-up:'] as const
+const NOTE_SECTION_HEADERS = ['Context', 'Highlights', 'Risks', 'Next Steps', 'Decisions'] as const
+const NOTE_PREFIXES = [
+  'Meeting Notes',
+  'Weekly Summary',
+  'Retro',
+  'Discovery Brief',
+  'Incident Review',
+  'Handoff',
+  'Planning Digest'
+] as const
+const NOTE_QUOTE_PREFIXES = ['Quote', 'Reminder', 'Insight', 'Customer feedback'] as const
 
 export class ProjectSeedFactory {
   constructor(
     private readonly random: Faker,
     private readonly projectConfig: ProjectsSeedConfig,
-    private readonly commentConfig: CommentsSeedConfig
+    private readonly commentConfig: CommentsSeedConfig,
+    private readonly notesConfig: NotesSeedConfig
   ) {}
 
   createSeeds(
@@ -119,12 +136,20 @@ export class ProjectSeedFactory {
       const ownerCandidates =
         assigneeCandidates.length > 0 ? assigneeCandidates : [primaryOwner.id, adminUser.id]
       const commentAuthors = Array.from(members.keys())
+      const memberIds = Array.from(new Set([...commentAuthors, primaryOwner.id, adminUser.id]))
 
       const tasks = this.buildTaskSeeds({
         assigneeCandidates,
         ownerCandidates,
         commentAuthors,
         createdBy: primaryOwner.id
+      })
+
+      const notes = this.buildNoteSeeds({
+        memberIds,
+        fallbackOwnerId: primaryOwner.id,
+        tasks,
+        projectTags: tags
       })
 
       seeds.push({
@@ -134,7 +159,8 @@ export class ProjectSeedFactory {
         createdBy: primaryOwner.id,
         members: Array.from(members.entries()).map(([userId, role]) => ({ userId, role })),
         tags,
-        tasks
+        tasks,
+        notes
       })
     }
 
@@ -289,6 +315,67 @@ export class ProjectSeedFactory {
     }
   }
 
+  private buildNoteSeeds(params: {
+    memberIds: string[]
+    fallbackOwnerId: string
+    tasks: TaskSeedDefinition[]
+    projectTags: string[]
+  }): NoteSeedDefinition[] {
+    const config = this.notesConfig
+    const maxCount = Math.max(config.perProject.min, config.perProject.max)
+    if (maxCount <= 0) {
+      return []
+    }
+
+    const count = this.random.number.int({
+      min: Math.max(0, config.perProject.min),
+      max: maxCount
+    })
+
+    if (count === 0) {
+      return []
+    }
+
+    const ownerPool = params.memberIds.length > 0 ? params.memberIds : [params.fallbackOwnerId]
+    const tagsPool = Array.from(
+      new Set([
+        ...config.tagsCatalog.map((tag) => tag.toLowerCase()),
+        ...params.projectTags.map((tag) => tag.toLowerCase())
+      ])
+    )
+
+    const notes: NoteSeedDefinition[] = []
+
+    for (let index = 0; index < count; index += 1) {
+      const ownerId = this.random.helpers.arrayElement(ownerPool)
+      const isPrivate =
+        this.random.number.float({ min: 0, max: 1 }) < config.privateRatio
+
+      const notebook =
+        config.notebooks.length > 0
+          ? this.random.helpers.maybe(
+              () => this.random.helpers.arrayElement(config.notebooks).trim(),
+              { probability: 0.65 }
+            ) ?? null
+          : null
+
+      const tags = this.pickNoteTags(tagsPool)
+      const linkedTaskIndexes = this.buildLinkedTaskIndexes(params.tasks.length)
+
+      notes.push({
+        title: this.buildNoteTitle(),
+        body: this.buildNoteBody(),
+        tags,
+        isPrivate,
+        notebook,
+        ownerId,
+        linkedTaskIndexes
+      })
+    }
+
+    return notes
+  }
+
   private buildCommentSeeds(params: {
     status: TaskSeedDefinition['status']
     ownerId: string
@@ -413,5 +500,111 @@ export class ProjectSeedFactory {
     ]
       .filter(Boolean)
       .join('\n')
+  }
+
+  private pickNoteTags(pool: string[]): string[] {
+    if (!pool.length) {
+      return []
+    }
+
+    const max = Math.min(
+      Math.max(this.notesConfig.tagsPerNote.max, 0),
+      pool.length
+    )
+    const min = Math.min(Math.max(this.notesConfig.tagsPerNote.min, 0), max)
+
+    if (max === 0) {
+      return []
+    }
+
+    const count = min === max ? max : this.random.number.int({ min, max })
+    if (count === 0) {
+      return []
+    }
+
+    return this.random.helpers
+      .arrayElements(pool, count)
+      .map((tag) => tag.toLowerCase())
+  }
+
+  private buildLinkedTaskIndexes(taskCount: number): number[] {
+    if (taskCount === 0) {
+      return []
+    }
+    if (
+      this.random.number.float({ min: 0, max: 1 }) >
+      this.notesConfig.linkProbability
+    ) {
+      return []
+    }
+
+    const max = Math.min(
+      Math.max(this.notesConfig.linkTargets.max, 0),
+      taskCount
+    )
+    const min = Math.min(Math.max(this.notesConfig.linkTargets.min, 0), max)
+
+    if (max === 0) {
+      return []
+    }
+
+    const count = min === max ? max : this.random.number.int({ min, max })
+    if (count === 0) {
+      return []
+    }
+
+    const indexes = this.random.helpers.arrayElements(
+      Array.from({ length: taskCount }, (_, index) => index),
+      count
+    )
+
+    return Array.from(new Set(indexes)).sort((a, b) => a - b)
+  }
+
+  private buildNoteTitle(): string {
+    const prefix = this.random.helpers.arrayElement(NOTE_PREFIXES)
+    const subject = capitalize(this.random.company.bsNoun())
+    const qualifier = this.random.helpers.maybe(
+      () => capitalize(this.random.company.bsBuzz()),
+      { probability: 0.4 }
+    )
+    const composed = qualifier ? `${prefix}: ${subject} ${qualifier}` : `${prefix}: ${subject}`
+    return composed.slice(0, 160)
+  }
+
+  private buildNoteBody(): string {
+    const sectionCount = this.random.number.int({
+      min: Math.max(1, this.notesConfig.summaryParagraphs.min),
+      max: Math.max(this.notesConfig.summaryParagraphs.min, this.notesConfig.summaryParagraphs.max)
+    })
+
+    const sections: string[] = []
+    for (let index = 0; index < sectionCount; index += 1) {
+      const header = NOTE_SECTION_HEADERS[index % NOTE_SECTION_HEADERS.length]
+      const paragraph = this.random.lorem.sentences({ min: 2, max: 4 })
+      sections.push(`## ${header}\n\n${paragraph}`)
+    }
+
+    if (
+      this.random.number.float({ min: 0, max: 1 }) <
+      this.notesConfig.checklistProbability
+    ) {
+      const checklistItems = this.random.helpers.multiple(
+        () => `- [ ] ${capitalize(this.random.company.bsBuzz())}`,
+        { count: this.random.number.int({ min: 2, max: 5 }) }
+      )
+      sections.push(`### Checklist\n\n${checklistItems.join('\n')}`)
+    }
+
+    const quote = this.random.helpers.maybe(
+      () =>
+        `> ${this.random.helpers.arrayElement(NOTE_QUOTE_PREFIXES)}: ${capitalize(this.random.hacker.phrase())}.`,
+      { probability: 0.35 }
+    )
+    if (quote) {
+      sections.push(quote)
+    }
+
+    return sections.join('\n\n')
   }
 }

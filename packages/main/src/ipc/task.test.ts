@@ -41,7 +41,8 @@ const createTaskDetails = (overrides: Partial<TaskDetailsDTO> = {}): TaskDetails
       displayName: 'Jane Doe'
     },
     createdAt: overrides.createdAt ?? new Date('2024-02-01T10:00:00.000Z'),
-    updatedAt: overrides.updatedAt ?? new Date('2024-02-05T11:00:00.000Z')
+    updatedAt: overrides.updatedAt ?? new Date('2024-02-05T11:00:00.000Z'),
+    linkedNotes: overrides.linkedNotes ?? []
   }
   return base
 }

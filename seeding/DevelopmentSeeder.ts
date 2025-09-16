@@ -38,7 +38,8 @@ export class DevelopmentSeeder {
     this.projectFactory = new ProjectSeedFactory(
       this.random,
       this.config.projects,
-      this.config.comments
+      this.config.comments,
+      this.config.notes
     )
     this.userSeeder = new UserSeeder(this.options.passwordSeed, this.random)
     this.projectSeeder = new ProjectSeeder()
@@ -106,18 +107,20 @@ export class DevelopmentSeeder {
     let createdProjects = 0
     let taskTotal = 0
     let commentTotal = 0
+    let noteTotal = 0
 
     for (const seed of seeds) {
       const result = await this.projectSeeder.upsert(transaction, seed)
       taskTotal += result.taskCount
       commentTotal += result.commentCount
+      noteTotal += result.noteCount
       if (result.project) {
         createdProjects += 1
       }
     }
 
     logger.success(
-      `Seed complete: ${createdProjects} projects, ${taskTotal} tasks, ${commentTotal} comments`,
+      `Seed complete: ${createdProjects} projects, ${taskTotal} tasks, ${commentTotal} comments, ${noteTotal} notes`,
       'Seed'
     )
   }

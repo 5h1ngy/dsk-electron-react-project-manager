@@ -1,8 +1,14 @@
 import { AppError } from '@main/config/appError'
 import type { Comment } from '@main/models/Comment'
 import type { Task } from '@main/models/Task'
+import type { Note } from '@main/models/Note'
 import type { User } from '@main/models/User'
-import type { CommentDTO, TaskDetailsDTO, UserSummaryDTO } from '@main/services/task/types'
+import type {
+  CommentDTO,
+  TaskDetailsDTO,
+  TaskNoteLinkDTO,
+  UserSummaryDTO
+} from '@main/services/task/types'
 import type { TaskPriorityInput, TaskStatusInput } from '@main/services/task/schemas'
 
 export const mapUserSummary = (user: User | null): UserSummaryDTO | null => {
@@ -36,7 +42,8 @@ export const mapTaskDetails = (task: Task, projectKey: string): TaskDetailsDTO =
     } as UserSummaryDTO),
   createdAt: task.createdAt!,
   updatedAt: task.updatedAt!,
-  projectKey
+  projectKey,
+  linkedNotes: mapTaskNotes(task.notes ?? [])
 })
 
 export const mapComment = (comment: Comment): CommentDTO => {
@@ -53,3 +60,11 @@ export const mapComment = (comment: Comment): CommentDTO => {
     updatedAt: comment.updatedAt!
   }
 }
+
+const mapTaskNotes = (notes: Note[]): TaskNoteLinkDTO[] =>
+  notes.map((note) => ({
+    id: note.id,
+    title: note.title,
+    isPrivate: note.isPrivate,
+    ownerId: note.ownerUserId
+  }))

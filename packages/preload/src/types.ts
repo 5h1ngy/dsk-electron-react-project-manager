@@ -23,6 +23,17 @@ import type {
   SearchTasksInput
 } from '@main/services/task/schemas'
 import type { TaskDetailsDTO, CommentDTO } from '@main/services/task/types'
+import type {
+  CreateNoteInput,
+  UpdateNoteInput,
+  ListNotesInput,
+  SearchNotesInput
+} from '@main/services/note/schemas'
+import type {
+  NoteDetailsDTO,
+  NoteSummaryDTO,
+  NoteSearchResultDTO
+} from '@main/services/note/types'
 
 export interface IpcSuccess<T> {
   ok: true
@@ -103,9 +114,26 @@ export interface TaskApi {
   search: (token: string, payload: SearchTasksInput) => Promise<IpcResponse<TaskDetailsDTO[]>>
 }
 
+export interface NoteApi {
+  list: (token: string, payload: ListNotesInput) => Promise<IpcResponse<NoteSummaryDTO[]>>
+  get: (token: string, noteId: string) => Promise<IpcResponse<NoteDetailsDTO>>
+  create: (token: string, payload: CreateNoteInput) => Promise<IpcResponse<NoteDetailsDTO>>
+  update: (
+    token: string,
+    noteId: string,
+    payload: UpdateNoteInput
+  ) => Promise<IpcResponse<NoteDetailsDTO>>
+  remove: (token: string, noteId: string) => Promise<IpcResponse<{ success: boolean }>>
+  search: (
+    token: string,
+    payload: SearchNotesInput
+  ) => Promise<IpcResponse<NoteSearchResultDTO[]>>
+}
+
 export interface PreloadApi {
   health: HealthApi
   auth: AuthApi
   project: ProjectApi
   task: TaskApi
+  note: NoteApi
 }

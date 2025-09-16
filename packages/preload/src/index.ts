@@ -3,13 +3,15 @@ import { healthApi } from '@preload/api/health'
 import { authApi } from '@preload/api/auth'
 import { projectApi } from '@preload/api/project'
 import { taskApi } from '@preload/api/task'
+import { noteApi } from '@preload/api/note'
 import type { PreloadApi } from '@preload/types'
 
 const api: PreloadApi = Object.freeze({
   health: healthApi,
   auth: authApi,
   project: projectApi,
-  task: taskApi
+  task: taskApi,
+  note: noteApi
 })
 
 if (process.contextIsolated) {

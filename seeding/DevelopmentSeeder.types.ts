@@ -35,6 +35,16 @@ export interface TaskSeedDefinition {
   comments: CommentSeedDefinition[]
 }
 
+export interface NoteSeedDefinition {
+  title: string
+  body: string
+  tags: string[]
+  isPrivate: boolean
+  notebook: string | null
+  ownerId: string
+  linkedTaskIndexes: number[]
+}
+
 export interface ProjectSeedDefinition {
   key: string
   name: string
@@ -43,6 +53,7 @@ export interface ProjectSeedDefinition {
   members: ProjectMemberSeed[]
   tags: string[]
   tasks: TaskSeedDefinition[]
+  notes: NoteSeedDefinition[]
 }
 
 export interface SeederState {

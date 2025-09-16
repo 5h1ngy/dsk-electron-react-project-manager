@@ -12,6 +12,9 @@ import { ProjectMember } from '@main/models/ProjectMember'
 import { ProjectTag } from '@main/models/ProjectTag'
 import { Task } from '@main/models/Task'
 import { Comment } from '@main/models/Comment'
+import { Note } from '@main/models/Note'
+import { NoteTag } from '@main/models/NoteTag'
+import { NoteTaskLink } from '@main/models/NoteTaskLink'
 import type { DatabaseInitializationOptions } from '@main/config/database.types'
 import { logger } from '@main/config/logger'
 import { ROLE_NAMES } from '@main/services/auth/constants'
@@ -71,13 +74,17 @@ export class DatabaseManager {
     ProjectMember,
     ProjectTag,
     Task,
-    Comment
+    Comment,
+    Note,
+    NoteTag,
+    NoteTaskLink
   ]
 
   private async ensureCoreData(sequelize: Sequelize): Promise<void> {
     await this.ensureRoles()
     await this.ensureAdminUser()
     await this.ensureTaskFtsInfrastructure(sequelize)
+    await this.ensureNoteFtsInfrastructure(sequelize)
   }
 
   private async ensureRoles(): Promise<void> {
@@ -155,6 +162,34 @@ export class DatabaseManager {
     }
 
     logger.debug('FTS5 infrastructure ensured for tasks table', 'Database')
+  }
+
+  private async ensureNoteFtsInfrastructure(sequelize: Sequelize): Promise<void> {
+    const statements: string[] = [
+      `CREATE VIRTUAL TABLE IF NOT EXISTS notes_fts USING fts5(
+        noteId UNINDEXED,
+        title,
+        body
+      )`,
+      `CREATE TRIGGER IF NOT EXISTS notes_fts_ai AFTER INSERT ON notes BEGIN
+         INSERT INTO notes_fts(noteId, title, body)
+         SELECT new.id, new.title, COALESCE(new.body_md, '');
+       END`,
+      `CREATE TRIGGER IF NOT EXISTS notes_fts_au AFTER UPDATE ON notes BEGIN
+         DELETE FROM notes_fts WHERE noteId = old.id;
+         INSERT INTO notes_fts(noteId, title, body)
+         SELECT new.id, new.title, COALESCE(new.body_md, '');
+       END`,
+      `CREATE TRIGGER IF NOT EXISTS notes_fts_ad AFTER DELETE ON notes BEGIN
+         DELETE FROM notes_fts WHERE noteId = old.id;
+       END`
+    ]
+
+    for (const statement of statements) {
+      await sequelize.query(statement)
+    }
+
+    logger.debug('FTS5 infrastructure ensured for notes table', 'Database')
   }
 }
 

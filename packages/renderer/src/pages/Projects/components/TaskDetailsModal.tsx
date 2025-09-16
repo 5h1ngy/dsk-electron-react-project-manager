@@ -10,6 +10,7 @@ import {
   Skeleton,
   Space,
   Tag,
+  Tooltip,
   Typography
 } from 'antd'
 import {
@@ -17,9 +18,12 @@ import {
   EditOutlined,
   UserOutlined,
   DeleteOutlined,
-  MessageOutlined
+  MessageOutlined,
+  FileMarkdownOutlined,
+  LockOutlined
 } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
+import { useNavigate } from 'react-router-dom'
 
 import type { TaskDetails } from '@renderer/store/slices/tasks'
 import { buildTags, formatDate } from '@renderer/pages/TaskDetails/TaskDetails.helpers'
@@ -52,6 +56,7 @@ export const TaskDetailsModal = ({
   const dispatch = useAppDispatch()
   const [form] = Form.useForm<{ body: string }>()
   const [submitting, setSubmitting] = useState(false)
+  const navigate = useNavigate()
 
   const commentsState = useAppSelector((state) =>
     task ? selectTaskComments(task.id)(state) : null
@@ -178,6 +183,14 @@ export const TaskDetailsModal = ({
 
   const tags = buildTags(task, (key) => t(key))
 
+  const openLinkedNote = (noteId: string) => {
+    if (!task) {
+      return
+    }
+    onClose()
+    navigate(`/projects/${task.projectId}/notes?note=${noteId}`)
+  }
+
   return (
     <Modal open={open} onCancel={onClose} footer={null} width={640} destroyOnClose>
       {loading ? (
@@ -228,6 +241,34 @@ export const TaskDetailsModal = ({
             <Typography.Paragraph style={{ whiteSpace: 'pre-wrap' }}>
               {task.description ?? t('tasks.details.noDescription')}
             </Typography.Paragraph>
+          </Space>
+
+          <Space direction="vertical" size="small" style={{ width: '100%' }}>
+            <Typography.Text type="secondary">{t('tasks.details.linkedNotes')}</Typography.Text>
+            {task.linkedNotes.length ? (
+              <Space direction="vertical" size={4}>
+                {task.linkedNotes.map((note) => (
+                  <Space key={note.id} size={8}>
+                    <Button
+                      type="link"
+                      icon={<FileMarkdownOutlined />}
+                      onClick={() => openLinkedNote(note.id)}
+                    >
+                      {note.title}
+                    </Button>
+                    {note.isPrivate ? (
+                      <Tooltip title={t('notes.labels.private')}>
+                        <LockOutlined style={{ color: '#f97316' }} />
+                      </Tooltip>
+                    ) : null}
+                  </Space>
+                ))}
+              </Space>
+            ) : (
+              <Typography.Text type="secondary">
+                {t('tasks.details.noLinkedNotes')}
+              </Typography.Text>
+            )}
           </Space>
 
           <Space size={24} wrap>

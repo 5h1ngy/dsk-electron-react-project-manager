@@ -78,6 +78,7 @@
     "projects": "Progetti",
     "overview": "Panoramica",
     "tasks": "Task",
+    "notes": "Note",
     "board": "Kanban"
   },
   "cards": {
@@ -90,6 +91,7 @@
     "tabs": {
       "overview": "Panoramica",
       "tasks": "Task",
+      "notes": "Note",
       "board": "Kanban"
     },
     "overview": {
@@ -270,6 +272,8 @@
       "assignee": "Assegnato a: {{assignee}}",
       "createdAt": "Creato il {{date}}",
       "dueDate": "Scadenza il {{date}}",
+      "linkedNotes": "Note collegate",
+      "noLinkedNotes": "Nessuna nota collegata",
       "empty": "Nessun task selezionato",
       "comments": {
         "title": "Commenti",
@@ -280,6 +284,82 @@
         "validation": "Inserisci un commento",
         "submit": "Invia commento"
       }
+    }
+  },
+  "notes": {
+    "title": "Note del progetto",
+    "filters": {
+      "includePrivate": "Includi note private",
+      "notebook": "Taccuino",
+      "tag": "Tag"
+    },
+    "actions": {
+      "create": "Nuova nota",
+      "save": "Salva nota",
+      "cancel": "Annulla",
+      "searchPlaceholder": "Cerca note...",
+      "view": "Apri",
+      "edit": "Modifica",
+      "deleteTitle": "Elimina nota",
+      "deleteConfirmText": "Vuoi davvero eliminare questa nota?",
+      "delete": "Elimina"
+    },
+    "labels": {
+      "private": "Privata",
+      "public": "Pubblica"
+    },
+    "list": {
+      "updatedBy": "Ultimo aggiornamento {{date}} da {{user}}"
+    },
+    "editor": {
+      "createTitle": "Crea nota",
+      "editTitle": "Modifica nota",
+      "fields": {
+        "title": "Titolo",
+        "notebook": "Taccuino",
+        "tags": "Tag",
+        "visibility": "Visibilit\u00e0",
+        "body": "Contenuto Markdown",
+        "linkedTasks": "Task collegati"
+      },
+      "placeholders": {
+        "notebook": "Taccuino o raccolta (facoltativo)",
+        "tags": "Aggiungi tag e premi Invio",
+        "body": "Scrivi qui il contenuto in markdown...",
+        "linkedTasks": "Seleziona i task da collegare"
+      },
+      "suggestions": {
+        "title": "Suggerimenti task ([[key]])",
+        "empty": "Digita dopo [[ per vedere i task suggeriti"
+      }
+    },
+    "viewer": {
+      "title": "Nota",
+      "linkedTasks": "Task collegati",
+      "noLinks": "Nessun task collegato.",
+      "empty": "Seleziona una nota per vedere i dettagli",
+      "updatedBy": "Ultimo aggiornamento {{date}} da {{user}}"
+    },
+    "feedback": {
+      "created": "Nota creata",
+      "updated": "Nota aggiornata",
+      "deleted": "Nota eliminata"
+    },
+    "validation": {
+      "title": "Il titolo \u00e8 obbligatorio",
+      "titleMax": "Il titolo pu\u00f2 contenere al massimo 160 caratteri",
+      "body": "Il contenuto \u00e8 obbligatorio",
+      "notebookMax": "Il nome del taccuino pu\u00f2 avere al massimo 80 caratteri",
+      "tag": "Il tag non pu\u00f2 essere vuoto",
+      "tagMax": "Il tag pu\u00f2 avere al massimo 40 caratteri",
+      "tooManyTags": "Massimo 20 tag per nota",
+      "tooManyLinks": "Massimo 20 task collegati"
+    },
+    "search": {
+      "title": "Cerca note",
+      "empty": "Nessuna nota trovata",
+      "open": "Apri nota",
+      "noHighlight": "Nessuna anteprima disponibile"
     }
   },
   "search": {

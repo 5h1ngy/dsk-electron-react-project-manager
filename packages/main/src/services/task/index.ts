@@ -6,6 +6,7 @@ import { ProjectMember, type ProjectMembershipRole } from '@main/models/ProjectM
 import { Task } from '@main/models/Task'
 import { Comment } from '@main/models/Comment'
 import { User } from '@main/models/User'
+import { Note } from '@main/models/Note'
 import { AppError, wrapError } from '@main/config/appError'
 import {
   createTaskSchema,
@@ -20,7 +21,7 @@ import {
   type SearchTasksInput
 } from '@main/services/task/schemas'
 import type { ServiceActor } from '@main/services/types'
-import type { CommentDTO, TaskDetailsDTO } from '@main/services/task/types'
+import type { CommentDTO, TaskDetailsDTO, TaskNoteLinkDTO } from '@main/services/task/types'
 import { mapComment, mapTaskDetails } from '@main/services/task/helpers'
 import { isSystemAdmin, resolveRoleWeight } from '@main/services/project/roles'
 
@@ -121,7 +122,11 @@ export class TaskService {
       include: [
         { model: Project },
         { model: User, as: 'assignee' },
-        { model: User, as: 'owner' }
+        { model: User, as: 'owner' },
+        {
+          model: Note,
+          through: { attributes: [] }
+        }
       ]
     })
 
@@ -168,21 +173,36 @@ export class TaskService {
 
   async listByProject(actor: ServiceActor, projectId: string): Promise<TaskDetailsDTO[]> {
     try {
-      const { project } = await this.resolveProjectAccess(actor, projectId, 'view')
+      const { project, role } = await this.resolveProjectAccess(actor, projectId, 'view')
 
-      const tasks = await Task.findAll({
+      const queryOptions: any = {
         where: { projectId: project.id },
         include: [
           { model: User, as: 'assignee' },
-          { model: User, as: 'owner' }
+          { model: User, as: 'owner' },
+          {
+            model: Note,
+            through: { attributes: [] }
+          }
         ],
+        // Distinct is required to avoid duplicates produced by the note join,
+        // but it is missing from the TypeScript FindOptions type definition.
+        distinct: true,
         order: [
           ['status', 'ASC'],
           ['createdAt', 'ASC']
         ]
-      })
+      }
 
-      return tasks.map((task) => mapTaskDetails(task, project.key))
+      const tasks = await Task.findAll(queryOptions)
+
+      return tasks.map((task) => {
+        const details = mapTaskDetails(task, project.key)
+        return {
+          ...details,
+          linkedNotes: this.filterLinkedNotes(actor, role, details.linkedNotes)
+        }
+      })
     } catch (error) {
       throw wrapError(error)
     }
@@ -191,8 +211,12 @@ export class TaskService {
   async getTask(actor: ServiceActor, taskId: string): Promise<TaskDetailsDTO> {
     try {
       const task = await this.loadTask(taskId)
-      await this.resolveProjectAccess(actor, task.projectId, 'view')
-      return mapTaskDetails(task, task.project.key)
+      const { role } = await this.resolveProjectAccess(actor, task.projectId, 'view')
+      const details = mapTaskDetails(task, task.project.key)
+      return {
+        ...details,
+        linkedNotes: this.filterLinkedNotes(actor, role, details.linkedNotes)
+      }
     } catch (error) {
       throw wrapError(error)
     }
@@ -207,7 +231,7 @@ export class TaskService {
     }
 
     try {
-      const { project } = await this.resolveProjectAccess(actor, input.projectId, 'edit')
+      const { project, role } = await this.resolveProjectAccess(actor, input.projectId, 'edit')
 
       const task = await this.withTransaction(async (transaction) => {
         await this.ensureAssignee(project.id, input.assigneeId ?? null, transaction)
@@ -242,7 +266,11 @@ export class TaskService {
       const created = await Task.findByPk(task.id, {
         include: [
           { model: User, as: 'assignee' },
-          { model: User, as: 'owner' }
+          { model: User, as: 'owner' },
+          {
+            model: Note,
+            through: { attributes: [] }
+          }
         ]
       })
 
@@ -250,7 +278,11 @@ export class TaskService {
         throw new AppError('ERR_INTERNAL', 'Task creato non reperibile')
       }
 
-      return mapTaskDetails(created, project.key)
+      const details = mapTaskDetails(created, project.key)
+      return {
+        ...details,
+        linkedNotes: this.filterLinkedNotes(actor, role, details.linkedNotes)
+      }
     } catch (error) {
       throw wrapError(error)
     }
@@ -270,7 +302,7 @@ export class TaskService {
 
     try {
       const task = await this.loadTask(taskId)
-      await this.resolveProjectAccess(actor, task.projectId, 'edit')
+      const { role } = await this.resolveProjectAccess(actor, task.projectId, 'edit')
 
       await this.withTransaction(async (transaction) => {
         await this.ensureAssignee(task.projectId, input.assigneeId ?? null, transaction)
@@ -283,7 +315,11 @@ export class TaskService {
       await this.auditService.record(actor.userId, 'task', taskId, 'update', input)
 
       const reloaded = await this.loadTask(taskId)
-      return mapTaskDetails(reloaded, reloaded.project.key)
+      const details = mapTaskDetails(reloaded, reloaded.project.key)
+      return {
+        ...details,
+        linkedNotes: this.filterLinkedNotes(actor, role, details.linkedNotes)
+      }
     } catch (error) {
       throw wrapError(error)
     }
@@ -389,22 +425,85 @@ export class TaskService {
         return []
       }
 
-      const tasks = await Task.findAll({
+      const searchQueryOptions: any = {
         where: { id: { [Op.in]: taskIds } },
         include: [
           { model: User, as: 'assignee' },
           { model: User, as: 'owner' },
-          { model: Project }
-        ]
-      })
+          { model: Project },
+          {
+            model: Note,
+            through: { attributes: [] }
+          }
+        ],
+        distinct: true
+      }
+
+      const tasks = await Task.findAll(searchQueryOptions)
+
+      const roles = await this.resolveActorRolesForProjects(
+        actor,
+        tasks.map((task) => task.projectId)
+      )
 
       return tasks.map((task) => {
         const projectKey = task.project?.key ?? 'UNKNOWN'
-        return mapTaskDetails(task, projectKey)
+        const details = mapTaskDetails(task, projectKey)
+        const role = roles.get(task.projectId) ?? 'view'
+        return {
+          ...details,
+          linkedNotes: this.filterLinkedNotes(actor, role, details.linkedNotes)
+        }
       })
     } catch (error) {
       throw wrapError(error)
     }
+  }
+
+  private filterLinkedNotes(
+    actor: ServiceActor,
+    role: ProjectMembershipRole,
+    notes: TaskNoteLinkDTO[]
+  ): TaskNoteLinkDTO[] {
+    return notes.filter((note) => {
+      if (!note.isPrivate) {
+        return true
+      }
+      if (note.ownerId === actor.userId) {
+        return true
+      }
+      return resolveRoleWeight(role) >= resolveRoleWeight('admin')
+    })
+  }
+
+  private async resolveActorRolesForProjects(
+    actor: ServiceActor,
+    projectIds: string[]
+  ): Promise<Map<string, ProjectMembershipRole>> {
+    const roles = new Map<string, ProjectMembershipRole>()
+    if (!projectIds.length) {
+      return roles
+    }
+
+    const uniqueIds = Array.from(new Set(projectIds))
+
+    if (isSystemAdmin(actor)) {
+      uniqueIds.forEach((id) => roles.set(id, 'admin'))
+      return roles
+    }
+
+    const memberships = await ProjectMember.findAll({
+      where: { userId: actor.userId, projectId: { [Op.in]: uniqueIds } },
+      attributes: ['projectId', 'role']
+    })
+
+    memberships.forEach((membership) => roles.set(membership.projectId, membership.role))
+    uniqueIds.forEach((id) => {
+      if (!roles.has(id)) {
+        roles.set(id, 'view')
+      }
+    })
+    return roles
   }
 
   private async getAccessibleProjectIds(actor: ServiceActor): Promise<string[] | null> {

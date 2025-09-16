@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto'
 import { AuditLog } from '@main/models/AuditLog'
 import { logger } from '@main/config/logger'
+import type { Transaction } from 'sequelize'
 
 export class AuditService {
   async record(
@@ -8,7 +9,8 @@ export class AuditService {
     entity: string,
     entityId: string,
     action: string,
-    diff: unknown = null
+    diff: unknown = null,
+    options: { transaction?: Transaction } = {}
   ): Promise<void> {
     await AuditLog.create({
       id: randomUUID(),
@@ -18,7 +20,8 @@ export class AuditService {
       action,
       diffJSON: diff ? JSON.stringify(diff) : null,
       createdAt: new Date()
-    })
+    }, { transaction: options.transaction })
     logger.debug(`Audit recorded for ${entity} ${action}`, 'Audit')
   }
 }
+

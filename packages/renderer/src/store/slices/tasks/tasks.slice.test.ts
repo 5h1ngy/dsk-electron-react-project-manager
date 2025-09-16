@@ -23,7 +23,8 @@ describe('tasks slice', () => {
       displayName: 'Administrator'
     },
     createdAt: now,
-    updatedAt: now
+    updatedAt: now,
+    linkedNotes: []
   }
 
   it('handles fetchTasks.fulfilled', () => {

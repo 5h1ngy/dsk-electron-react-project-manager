@@ -8,13 +8,15 @@ import {
   selectProjectsError,
   selectProjectsStatus
 } from '@renderer/store/slices/projects'
-import {
-  fetchTasks,
-  selectProjectTasks,
-  selectProjectTasksStatus
-} from '@renderer/store/slices/tasks'
+import { fetchTasks, selectProjectTasks, selectProjectTasksStatus } from '@renderer/store/slices/tasks'
 import type { TaskDetails, LoadStatus } from '@renderer/store/slices/tasks'
 import { selectCurrentUser } from '@renderer/store/slices/auth/selectors'
+import {
+  fetchNotes,
+  selectProjectNotes,
+  selectProjectNotesStatus
+} from '@renderer/store/slices/notes'
+import type { NoteSummary } from '@renderer/store/slices/notes/types'
 
 export interface UseProjectDetailsResult {
   project: ReturnType<ReturnType<typeof selectProjectById>> | null
@@ -23,6 +25,10 @@ export interface UseProjectDetailsResult {
   projectLoading: boolean
   refresh: () => void
   canManageTasks: boolean
+  notes: NoteSummary[]
+  notesStatus: ReturnType<ReturnType<typeof selectProjectNotesStatus>>
+  canManageNotes: boolean
+  refreshNotes: () => void
   messageContext: React.ReactNode
 }
 
@@ -33,6 +39,10 @@ export const useProjectDetails = (projectId?: string): UseProjectDetailsResult =
   const projectSelector = useMemo(() => (projectId ? selectProjectById(projectId) : () => null), [projectId])
   const tasksSelector = useMemo(
     () => (projectId ? selectProjectTasks(projectId) : () => []),
+    [projectId]
+  )
+  const notesSelector = useMemo(
+    () => (projectId ? selectProjectNotes(projectId) : () => []),
     [projectId]
   )
   const tasksStatusSelector = useMemo(
@@ -46,6 +56,15 @@ export const useProjectDetails = (projectId?: string): UseProjectDetailsResult =
   const project = useAppSelector(projectSelector)
   const tasks = useAppSelector(tasksSelector)
   const tasksStatus = useAppSelector(tasksStatusSelector)
+  const notesStatusSelector = useMemo(
+    () =>
+      projectId
+        ? selectProjectNotesStatus(projectId)
+        : (() => 'idle' as LoadStatus),
+    [projectId]
+  )
+  const notes = useAppSelector(notesSelector)
+  const notesStatus = useAppSelector(notesStatusSelector)
   const projectsStatus = useAppSelector(selectProjectsStatus)
   const error = useAppSelector(selectProjectsError)
   const currentUser = useAppSelector(selectCurrentUser)
@@ -71,6 +90,7 @@ export const useProjectDetails = (projectId?: string): UseProjectDetailsResult =
     }
     void dispatch(fetchProjectById(projectId))
     void dispatch(fetchTasks(projectId))
+    void dispatch(fetchNotes({ projectId }))
   }, [dispatch, projectId])
 
   useEffect(() => {
@@ -85,6 +105,14 @@ export const useProjectDetails = (projectId?: string): UseProjectDetailsResult =
     }
     void dispatch(fetchProjectById(projectId))
     void dispatch(fetchTasks(projectId))
+    void dispatch(fetchNotes({ projectId }))
+  }, [dispatch, projectId])
+
+  const refreshNotes = useCallback(() => {
+    if (!projectId) {
+      return
+    }
+    void dispatch(fetchNotes({ projectId }))
   }, [dispatch, projectId])
 
   const projectLoading = !project && projectsStatus === 'loading'
@@ -96,6 +124,10 @@ export const useProjectDetails = (projectId?: string): UseProjectDetailsResult =
     projectLoading,
     refresh,
     canManageTasks,
+    notes,
+    notesStatus,
+    canManageNotes: canManageTasks,
+    refreshNotes,
     messageContext
   }
 }

@@ -38,6 +38,17 @@ export interface SeedConfig {
     minByStatus: Record<TaskStatus, number>
     maxByStatus: Record<TaskStatus, number>
   }
+  notes: {
+    perProject: { min: number; max: number }
+    privateRatio: number
+    notebooks: string[]
+    tagsCatalog: string[]
+    tagsPerNote: { min: number; max: number }
+    linkProbability: number
+    linkTargets: { min: number; max: number }
+    checklistProbability: number
+    summaryParagraphs: { min: number; max: number }
+  }
 }
 
 const DEFAULT_CONFIG: SeedConfig = {
@@ -76,6 +87,27 @@ const DEFAULT_CONFIG: SeedConfig = {
       blocked: 3,
       done: 1
     }
+  },
+  notes: {
+    perProject: { min: 4, max: 9 },
+    privateRatio: 0.25,
+    notebooks: ['Discovery', 'Retro', 'Runbook', 'Weekly Sync'],
+    tagsCatalog: [
+      'meeting',
+      'retro',
+      'roadmap',
+      'risk',
+      'decision',
+      'handoff',
+      'support',
+      'research',
+      'customer'
+    ],
+    tagsPerNote: { min: 1, max: 3 },
+    linkProbability: 0.7,
+    linkTargets: { min: 1, max: 3 },
+    checklistProbability: 0.55,
+    summaryParagraphs: { min: 2, max: 4 }
   }
 }
 
@@ -104,6 +136,19 @@ export const loadSeedConfig = (): SeedConfig => {
 
   cachedConfig = mergeConfig(DEFAULT_CONFIG, overrides)
   return cachedConfig
+}
+
+const clampRatio = (value: number | undefined, fallback: number) => {
+  if (typeof value !== 'number' || Number.isNaN(value)) {
+    return fallback
+  }
+  if (value < 0) {
+    return 0
+  }
+  if (value > 1) {
+    return 1
+  }
+  return value
 }
 
 const mergeConfig = (defaults: SeedConfig, overrides: DeepPartial<SeedConfig>): SeedConfig => ({
@@ -161,6 +206,45 @@ const mergeConfig = (defaults: SeedConfig, overrides: DeepPartial<SeedConfig>): 
       defaults.comments.maxByStatus,
       overrides.comments?.maxByStatus
     )
+  },
+  notes: {
+    perProject: {
+      min: overrides.notes?.perProject?.min ?? defaults.notes.perProject.min,
+      max: overrides.notes?.perProject?.max ?? defaults.notes.perProject.max
+    },
+    privateRatio: clampRatio(overrides.notes?.privateRatio, defaults.notes.privateRatio),
+    notebooks:
+      overrides.notes?.notebooks && overrides.notes.notebooks.length > 0
+        ? overrides.notes.notebooks.map((value) => value.trim()).filter(Boolean)
+        : defaults.notes.notebooks,
+    tagsCatalog:
+      overrides.notes?.tagsCatalog && overrides.notes.tagsCatalog.length > 0
+        ? overrides.notes.tagsCatalog.map((value) => value.trim().toLowerCase()).filter(Boolean)
+        : defaults.notes.tagsCatalog,
+    tagsPerNote: {
+      min: overrides.notes?.tagsPerNote?.min ?? defaults.notes.tagsPerNote.min,
+      max: overrides.notes?.tagsPerNote?.max ?? defaults.notes.tagsPerNote.max
+    },
+    linkProbability: clampRatio(
+      overrides.notes?.linkProbability,
+      defaults.notes.linkProbability
+    ),
+    linkTargets: {
+      min: overrides.notes?.linkTargets?.min ?? defaults.notes.linkTargets.min,
+      max: overrides.notes?.linkTargets?.max ?? defaults.notes.linkTargets.max
+    },
+    checklistProbability: clampRatio(
+      overrides.notes?.checklistProbability,
+      defaults.notes.checklistProbability
+    ),
+    summaryParagraphs: {
+      min:
+        overrides.notes?.summaryParagraphs?.min ??
+        defaults.notes.summaryParagraphs.min,
+      max:
+        overrides.notes?.summaryParagraphs?.max ??
+        defaults.notes.summaryParagraphs.max
+    }
   }
 })
 
@@ -185,3 +269,4 @@ const buildStatusMap = (
 export type UsersSeedConfig = SeedConfig['users']
 export type ProjectsSeedConfig = SeedConfig['projects']
 export type CommentsSeedConfig = SeedConfig['comments']
+export type NotesSeedConfig = SeedConfig['notes']

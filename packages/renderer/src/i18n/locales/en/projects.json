@@ -78,6 +78,7 @@
     "projects": "Projects",
     "overview": "Overview",
     "tasks": "Tasks",
+    "notes": "Notes",
     "board": "Kanban"
   },
   "cards": {
@@ -90,6 +91,7 @@
     "tabs": {
       "overview": "Overview",
       "tasks": "Tasks",
+      "notes": "Notes",
       "board": "Kanban"
     },
     "overview": {
@@ -270,6 +272,8 @@
       "assignee": "Assigned to: {{assignee}}",
       "createdAt": "Created on {{date}}",
       "dueDate": "Due by {{date}}",
+      "linkedNotes": "Linked notes",
+      "noLinkedNotes": "No linked notes yet",
       "empty": "No task selected",
       "comments": {
         "title": "Comments",
@@ -280,6 +284,82 @@
         "validation": "Please enter a comment",
         "submit": "Post comment"
       }
+    }
+  },
+  "notes": {
+    "title": "Project notes",
+    "filters": {
+      "includePrivate": "Include private notes",
+      "notebook": "Notebook",
+      "tag": "Tag"
+    },
+    "actions": {
+      "create": "New note",
+      "save": "Save note",
+      "cancel": "Cancel",
+      "searchPlaceholder": "Search notes...",
+      "view": "View",
+      "edit": "Edit",
+      "deleteTitle": "Delete note",
+      "deleteConfirmText": "Are you sure you want to delete this note?",
+      "delete": "Delete"
+    },
+    "labels": {
+      "private": "Private",
+      "public": "Public"
+    },
+    "list": {
+      "updatedBy": "Last updated {{date}} by {{user}}"
+    },
+    "editor": {
+      "createTitle": "Create note",
+      "editTitle": "Edit note",
+      "fields": {
+        "title": "Title",
+        "notebook": "Notebook",
+        "tags": "Tags",
+        "visibility": "Visibility",
+        "body": "Markdown body",
+        "linkedTasks": "Linked tasks"
+      },
+      "placeholders": {
+        "notebook": "Notebook or collection (optional)",
+        "tags": "Add tags and press Enter",
+        "body": "Write markdown content here...",
+        "linkedTasks": "Select tasks to link"
+      },
+      "suggestions": {
+        "title": "Task suggestions ([[key]])",
+        "empty": "Start typing after [[ to see matching tasks"
+      }
+    },
+    "viewer": {
+      "title": "Note",
+      "linkedTasks": "Linked tasks",
+      "noLinks": "No linked tasks yet.",
+      "empty": "Select a note to view details",
+      "updatedBy": "Last updated {{date}} by {{user}}"
+    },
+    "feedback": {
+      "created": "Note created",
+      "updated": "Note updated",
+      "deleted": "Note deleted"
+    },
+    "validation": {
+      "title": "Title is required",
+      "titleMax": "Title must be at most 160 characters",
+      "body": "Body is required",
+      "notebookMax": "Notebook name must be at most 80 characters",
+      "tag": "Tag cannot be empty",
+      "tagMax": "Tag must be at most 40 characters",
+      "tooManyTags": "Maximum 20 tags per note",
+      "tooManyLinks": "Maximum 20 linked tasks"
+    },
+    "search": {
+      "title": "Search notes",
+      "empty": "No notes found",
+      "open": "Open note",
+      "noHighlight": "No preview available"
     }
   },
   "search": {

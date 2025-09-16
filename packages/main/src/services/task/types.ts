@@ -22,8 +22,16 @@ export interface TaskDTO {
   updatedAt: Date
 }
 
+export interface TaskNoteLinkDTO {
+  id: string
+  title: string
+  isPrivate: boolean
+  ownerId: string
+}
+
 export interface TaskDetailsDTO extends TaskDTO {
   projectKey: string
+  linkedNotes: TaskNoteLinkDTO[]
 }
 
 export interface CommentDTO {

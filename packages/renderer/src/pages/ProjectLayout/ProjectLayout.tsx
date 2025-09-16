@@ -32,8 +32,19 @@ const ProjectLayout = (): JSX.Element => {
   const [searchParams, setSearchParams] = useSearchParams()
   const { t } = useTranslation('projects')
 
-  const { project, tasks, tasksStatus, projectLoading, refresh, canManageTasks, messageContext } =
-    useProjectDetails(projectId)
+  const {
+    project,
+    tasks,
+    tasksStatus,
+    projectLoading,
+    refresh,
+    canManageTasks,
+    notes,
+    notesStatus,
+    canManageNotes,
+    refreshNotes,
+    messageContext
+  } = useProjectDetails(projectId)
 
   const [isSearchOpen, setIsSearchOpen] = useState(false)
 
@@ -127,7 +138,11 @@ const ProjectLayout = (): JSX.Element => {
     openTaskCreate: (options) => taskModals.openCreate(options),
     openTaskEdit: taskModals.openEdit,
     deleteTask: taskModals.deleteTask,
-    deletingTaskId: taskModals.deletingTaskId
+    deletingTaskId: taskModals.deletingTaskId,
+    notes,
+    notesStatus,
+    canManageNotes,
+    refreshNotes
   }
 
   const handleTabChange = (key: string): void => {
@@ -138,6 +153,9 @@ const ProjectLayout = (): JSX.Element => {
         break
       case 'board':
         navigate(`${basePath}/board`)
+        break
+      case 'notes':
+        navigate(`${basePath}/notes`)
         break
       default:
         navigate(`${basePath}`)

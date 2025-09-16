@@ -78,6 +78,7 @@
     "projects": "Projekte",
     "overview": "Uebersicht",
     "tasks": "Aufgaben",
+    "notes": "Notizen",
     "board": "Kanban"
   },
   "cards": {
@@ -90,6 +91,7 @@
     "tabs": {
       "overview": "Uebersicht",
       "tasks": "Aufgaben",
+      "notes": "Notizen",
       "board": "Kanban"
     },
     "overview": {
@@ -167,6 +169,8 @@
       "timing": "Zeitplan",
       "createdAt": "Erstellt am {{date}}",
       "dueDate": "Faellig am {{date}}",
+      "linkedNotes": "Verkn\u00fcpfte Notizen",
+      "noLinkedNotes": "Keine verkn\u00fcpften Notizen",
       "empty": "Aufgabe auswaehlen, um Details zu sehen"
     },
     "missingId": "Projekt-ID fehlt",
@@ -270,6 +274,8 @@
       "assignee": "Zustaendig: {{assignee}}",
       "createdAt": "Erstellt am {{date}}",
       "dueDate": "Faellig am {{date}}",
+      "linkedNotes": "Verkn\u00fcpfte Notizen",
+      "noLinkedNotes": "Keine verkn\u00fcpften Notizen",
       "empty": "Kein Task ausgewaehlt",
       "comments": {
         "title": "Kommentare",
@@ -280,6 +286,82 @@
         "validation": "Bitte einen Kommentar eingeben",
         "submit": "Kommentar senden"
       }
+    }
+  },
+  "notes": {
+    "title": "Projektnotizen",
+    "filters": {
+      "includePrivate": "Private Notizen anzeigen",
+      "notebook": "Notizbuch",
+      "tag": "Tag"
+    },
+    "actions": {
+      "create": "Neue Note",
+      "save": "Notiz speichern",
+      "cancel": "Abbrechen",
+      "searchPlaceholder": "Notizen durchsuchen...",
+      "view": "Oeffnen",
+      "edit": "Bearbeiten",
+      "deleteTitle": "Notiz loeschen",
+      "deleteConfirmText": "Moechten Sie diese Notiz wirklich loeschen?",
+      "delete": "Loeschen"
+    },
+    "labels": {
+      "private": "Privat",
+      "public": "Oeffentlich"
+    },
+    "list": {
+      "updatedBy": "Zuletzt aktualisiert {{date}} von {{user}}"
+    },
+    "editor": {
+      "createTitle": "Notiz erstellen",
+      "editTitle": "Notiz bearbeiten",
+      "fields": {
+        "title": "Titel",
+        "notebook": "Notizbuch",
+        "tags": "Tags",
+        "visibility": "Sichtbarkeit",
+        "body": "Markdown-Inhalt",
+        "linkedTasks": "Verknuepfte Aufgaben"
+      },
+      "placeholders": {
+        "notebook": "Notizbuch oder Sammlung (optional)",
+        "tags": "Tags hinzufuegen und Enter druecken",
+        "body": "Schreibe hier den Markdown-Inhalt...",
+        "linkedTasks": "Verknuepfte Aufgaben auswaehlen"
+      },
+      "suggestions": {
+        "title": "Aufgabenvorschlaege ([[key]])",
+        "empty": "Nach [[ schreiben, um Vorschlaege zu sehen"
+      }
+    },
+    "viewer": {
+      "title": "Notiz",
+      "linkedTasks": "Verknuepfte Aufgaben",
+      "noLinks": "Keine verknuepften Aufgaben.",
+      "empty": "Waehl eine Notiz aus, um Details zu sehen",
+      "updatedBy": "Zuletzt aktualisiert {{date}} von {{user}}"
+    },
+    "feedback": {
+      "created": "Notiz erstellt",
+      "updated": "Notiz aktualisiert",
+      "deleted": "Notiz geloescht"
+    },
+    "validation": {
+      "title": "Titel ist erforderlich",
+      "titleMax": "Titel darf maximal 160 Zeichen enthalten",
+      "body": "Inhalt ist erforderlich",
+      "notebookMax": "Der Name des Notizbuchs darf maximal 80 Zeichen haben",
+      "tag": "Tag darf nicht leer sein",
+      "tagMax": "Tag darf maximal 40 Zeichen haben",
+      "tooManyTags": "Maximal 20 Tags pro Note",
+      "tooManyLinks": "Maximal 20 verknuepfte Aufgaben"
+    },
+    "search": {
+      "title": "Notizen suchen",
+      "empty": "Keine Notizen gefunden",
+      "open": "Notiz oeffnen",
+      "noHighlight": "Keine Vorschau verfuegbar"
     }
   },
   "search": {

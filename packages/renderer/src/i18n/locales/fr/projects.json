@@ -78,6 +78,7 @@
     "projects": "Projets",
     "overview": "Apercu",
     "tasks": "Taches",
+    "notes": "Notes",
     "board": "Kanban"
   },
   "cards": {
@@ -90,6 +91,7 @@
     "tabs": {
       "overview": "Apercu",
       "tasks": "Taches",
+      "notes": "Notes",
       "board": "Kanban"
     },
     "overview": {
@@ -166,8 +168,6 @@
       "assignee": "Assigne : {{assignee}}",
       "timing": "Chronologie",
       "createdAt": "Cree le {{date}}",
-      "dueDate": "Echeance le {{date}}",
-      "dueDate": "Echeance le {{date}}",
       "dueDate": "Echeance le {{date}}",
       "empty": "Selectionnez une tache pour voir les details"
     },
@@ -272,6 +272,8 @@
       "assignee": "Assigne : {{assignee}}",
       "createdAt": "Cree le {{date}}",
       "dueDate": "Echeance le {{date}}",
+      "linkedNotes": "Notes li\u00e9es",
+      "noLinkedNotes": "Aucune note li\u00e9e",
       "empty": "Aucune tache selectionnee",
       "comments": {
         "title": "Commentaires",
@@ -282,6 +284,82 @@
         "validation": "Saisissez un commentaire",
         "submit": "Publier"
       }
+    }
+  },
+  "notes": {
+    "title": "Notes du projet",
+    "filters": {
+      "includePrivate": "Inclure les notes privees",
+      "notebook": "Carnet",
+      "tag": "Tag"
+    },
+    "actions": {
+      "create": "Nouvelle note",
+      "save": "Enregistrer la note",
+      "cancel": "Annuler",
+      "searchPlaceholder": "Rechercher des notes...",
+      "view": "Ouvrir",
+      "edit": "Modifier",
+      "deleteTitle": "Supprimer la note",
+      "deleteConfirmText": "Voulez-vous vraiment supprimer cette note ?",
+      "delete": "Supprimer"
+    },
+    "labels": {
+      "private": "Privee",
+      "public": "Publique"
+    },
+    "list": {
+      "updatedBy": "Derniere mise a jour {{date}} par {{user}}"
+    },
+    "editor": {
+      "createTitle": "Creer une note",
+      "editTitle": "Modifier la note",
+      "fields": {
+        "title": "Titre",
+        "notebook": "Carnet",
+        "tags": "Tags",
+        "visibility": "Visibilite",
+        "body": "Contenu Markdown",
+        "linkedTasks": "Taches liees"
+      },
+      "placeholders": {
+        "notebook": "Carnet ou collection (facultatif)",
+        "tags": "Ajoutez des tags et appuyez sur Entree",
+        "body": "Ecrivez ici le contenu markdown...",
+        "linkedTasks": "Selectionnez les taches a lier"
+      },
+      "suggestions": {
+        "title": "Suggestions de taches ([[key]])",
+        "empty": "Tapez apres [[ pour voir les taches suggerees"
+      }
+    },
+    "viewer": {
+      "title": "Note",
+      "linkedTasks": "Taches liees",
+      "noLinks": "Aucune tache liee.",
+      "empty": "Selectionnez une note pour afficher les details",
+      "updatedBy": "Derniere mise a jour {{date}} par {{user}}"
+    },
+    "feedback": {
+      "created": "Note creee",
+      "updated": "Note mise a jour",
+      "deleted": "Note supprimee"
+    },
+    "validation": {
+      "title": "Le titre est obligatoire",
+      "titleMax": "Le titre peut contenir au plus 160 caracteres",
+      "body": "Le contenu est obligatoire",
+      "notebookMax": "Le nom du carnet peut contenir au plus 80 caracteres",
+      "tag": "Le tag ne peut pas etre vide",
+      "tagMax": "Le tag peut contenir au plus 40 caracteres",
+      "tooManyTags": "20 tags maximum par note",
+      "tooManyLinks": "20 taches liees maximum"
+    },
+    "search": {
+      "title": "Rechercher des notes",
+      "empty": "Aucune note trouvee",
+      "open": "Ouvrir la note",
+      "noHighlight": "Aucune previsualisation disponible"
     }
   },
   "search": {
