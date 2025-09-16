@@ -4,10 +4,11 @@ import type { RoleName } from '../packages/main/src/services/auth/constants'
 import type { User } from '../packages/main/src/models/User'
 import type {
   CommentSeedDefinition,
-  ProjectSeedDefinition,
   ProjectMemberSeed,
+  ProjectSeedDefinition,
   TaskSeedDefinition
 } from './DevelopmentSeeder.types'
+import type { CommentsSeedConfig, ProjectsSeedConfig } from './seedConfig'
 import { capitalize, formatIsoDate, pickWeighted, type WeightedValue } from './seed.helpers'
 
 const TAG_CATALOG = [
@@ -34,12 +35,6 @@ const TAG_CATALOG = [
   'ux'
 ] as const
 
-const MIN_PROJECTS = 12
-const MAX_PROJECTS = 18
-const MIN_TASKS_PER_PROJECT = 24
-const MAX_TASKS_PER_PROJECT = 52
-const MAX_BACKLOG_BUFFER = 8
-
 const STATUS_WEIGHTS: ReadonlyArray<WeightedValue<TaskSeedDefinition['status']>> = [
   { value: 'todo', weight: 5 },
   { value: 'in_progress', weight: 4 },
@@ -54,34 +49,14 @@ const PRIORITY_WEIGHTS: ReadonlyArray<WeightedValue<TaskSeedDefinition['priority
   { value: 'critical', weight: 1 }
 ] as const
 
-const BLOCKER_PREFIXES = [
-  'Blocked by',
-  'Awaiting input from',
-  'Pending approval from',
-  'External dependency:',
-  'Waiting on vendor response:',
-  'Need clarification from'
-] as const
-
-const PROGRESS_PREFIXES = [
-  'Progress update:',
-  'Latest findings:',
-  'Status note:',
-  'QA notes:',
-  'Implementation detail:',
-  'Risk assessment:'
-] as const
-
-const NEXT_STEP_PREFIXES = [
-  'Next step:',
-  'Proposed action:',
-  'Follow-up:',
-  'Pending task:',
-  'Suggested approach:'
-] as const
+const COMMENT_PROMPTS = ['Progress:', 'Update:', 'Risk:', 'Note:', 'Follow-up:'] as const
 
 export class ProjectSeedFactory {
-  constructor(private readonly random: Faker) {}
+  constructor(
+    private readonly random: Faker,
+    private readonly projectConfig: ProjectsSeedConfig,
+    private readonly commentConfig: CommentsSeedConfig
+  ) {}
 
   createSeeds(
     seededUsers: Record<string, User>,
@@ -91,7 +66,11 @@ export class ProjectSeedFactory {
     const seeds: ProjectSeedDefinition[] = []
     const pools = this.buildRolePools(seededUsers, userRoles)
     const usedKeys = new Set<string>()
-    const projectCount = this.random.number.int({ min: MIN_PROJECTS, max: MAX_PROJECTS })
+
+    const projectCount = this.random.number.int({
+      min: this.projectConfig.min,
+      max: Math.max(this.projectConfig.min, this.projectConfig.max)
+    })
 
     for (let index = 0; index < projectCount; index += 1) {
       const key = this.createUniqueProjectKey(usedKeys)
@@ -105,15 +84,31 @@ export class ProjectSeedFactory {
       members.set(adminUser.id, 'admin')
       members.set(primaryOwner.id, 'admin')
 
-      this.addMembersFromPool(members, pools, 'Maintainer', 'admin', { min: 0, max: 1 }, adminUser.id)
-      this.addMembersFromPool(members, pools, 'Contributor', 'edit', { min: 2, max: 5 })
-      this.addMembersFromPool(members, pools, 'Viewer', 'view', { min: 1, max: 3 })
+      this.addMembersFromPool(
+        members,
+        pools,
+        'Maintainer',
+        'admin',
+        this.projectConfig.members.maintainerAdmin,
+        adminUser.id
+      )
+      this.addMembersFromPool(
+        members,
+        pools,
+        'Contributor',
+        'edit',
+        this.projectConfig.members.contributor
+      )
+      this.addMembersFromPool(members, pools, 'Viewer', 'view', this.projectConfig.members.viewer)
 
       const tags = Array.from(
         new Set(
           this.random.helpers.arrayElements(
             TAG_CATALOG,
-            this.random.number.int({ min: 2, max: 5 })
+            this.random.number.int({
+              min: this.projectConfig.tagsPerProject.min,
+              max: this.projectConfig.tagsPerProject.max
+            })
           )
         )
       )
@@ -193,8 +188,8 @@ export class ProjectSeedFactory {
       return
     }
 
-    const max = Math.min(range.max, available.length)
-    const min = Math.min(range.min, max)
+    const max = Math.min(Math.max(range.max, 0), available.length)
+    const min = Math.min(Math.max(range.min, 0), max)
     if (max === 0) {
       return
     }
@@ -212,14 +207,22 @@ export class ProjectSeedFactory {
     commentAuthors: string[]
     createdBy: string
   }): TaskSeedDefinition[] {
+    const taskConfig = this.projectConfig.tasksPerProject
     const baseCount = this.random.number.int({
-      min: MIN_TASKS_PER_PROJECT,
-      max: MAX_TASKS_PER_PROJECT
+      min: taskConfig.min,
+      max: Math.max(taskConfig.min, taskConfig.max)
     })
     const backlogExtra =
-      this.random.helpers.maybe(() => this.random.number.int({ min: 1, max: MAX_BACKLOG_BUFFER }), {
-        probability: 0.55
-      }) ?? 0
+      this.projectConfig.backlogBufferMax > 0
+        ? this.random.helpers.maybe(
+            () =>
+              this.random.number.int({
+                min: 1,
+                max: this.projectConfig.backlogBufferMax
+              }),
+            { probability: 0.5 }
+          ) ?? 0
+        : 0
 
     const total = baseCount + backlogExtra
     const tasks: TaskSeedDefinition[] = []
@@ -248,8 +251,8 @@ export class ProjectSeedFactory {
     const priority = pickWeighted(this.random, PRIORITY_WEIGHTS)
     const dueDate =
       this.random.helpers.maybe(
-        () => formatIsoDate(this.random.date.soon({ days: 150 })),
-        { probability: status === 'done' ? 0.45 : 0.8 }
+        () => formatIsoDate(this.random.date.soon({ days: 120 })),
+        { probability: status === 'done' ? 0.4 : 0.75 }
       ) ?? null
 
     const ownerId =
@@ -262,7 +265,7 @@ export class ProjectSeedFactory {
         ? (
             this.random.helpers.maybe(
               () => this.random.helpers.arrayElement(params.assigneeCandidates),
-              { probability: 0.9 }
+              { probability: 0.85 }
             ) ?? null
           )
         : null
@@ -296,24 +299,17 @@ export class ProjectSeedFactory {
       return []
     }
 
-    const maxCommentsByStatus: Record<TaskSeedDefinition['status'], number> = {
-      todo: 2,
-      in_progress: 4,
-      blocked: 5,
-      done: 3
-    }
-    const minCommentsByStatus: Record<TaskSeedDefinition['status'], number> = {
-      todo: 0,
-      in_progress: 1,
-      blocked: 1,
-      done: 0
+    const maxMap = this.commentConfig.maxByStatus
+    const minMap = this.commentConfig.minByStatus
+
+    const max = maxMap[params.status] ?? 0
+    const min = Math.min(minMap[params.status] ?? 0, max)
+
+    if (max === 0) {
+      return []
     }
 
-    const commentCount = this.random.number.int({
-      min: minCommentsByStatus[params.status],
-      max: maxCommentsByStatus[params.status]
-    })
-
+    const commentCount = this.random.number.int({ min, max })
     if (commentCount === 0) {
       return []
     }
@@ -347,33 +343,25 @@ export class ProjectSeedFactory {
     status: TaskSeedDefinition['status']
     authorRole: 'owner' | 'assignee' | 'member'
   }): string {
-    const progressPrefix = this.random.helpers.arrayElement(PROGRESS_PREFIXES)
-    const blockerPrefix = this.random.helpers.arrayElement(BLOCKER_PREFIXES)
-    const nextPrefix = this.random.helpers.arrayElement(NEXT_STEP_PREFIXES)
+    const prompt = this.random.helpers.arrayElement(COMMENT_PROMPTS)
+    const summary = `${prompt} ${this.random.lorem.sentence()}`
+    const context = this.random.helpers.maybe(
+      () => this.random.lorem.sentence(),
+      { probability: 0.4 }
+    )
+    const closing =
+      params.authorRole === 'owner'
+        ? 'Owner note: keep scope tight.'
+        : params.authorRole === 'assignee'
+          ? 'Assignee note: update in next stand-up.'
+          : 'Ping me if support is needed.'
 
-    const baseSentence =
+    const blocker =
       params.status === 'blocked'
-        ? `${blockerPrefix} ${this.random.company.name()} — ${this.random.lorem.sentence()}`
-        : `${progressPrefix} ${this.random.lorem.sentence()}`
+        ? `Blocking issue: awaiting ${this.random.company.bsNoun()}.`
+        : undefined
 
-    const insight = this.random.helpers.maybe(
-      () =>
-        `${this.random.lorem.sentences({ min: 1, max: 2 })} ${
-          params.authorRole === 'owner'
-            ? 'Please keep the scope tight to stay within our milestone.'
-            : params.authorRole === 'assignee'
-              ? 'Flagging any surprises before the next stand-up.'
-              : 'Let me know if you need support to unblock this.'
-        }`,
-      { probability: 0.65 }
-    )
-
-    const nextStep = this.random.helpers.maybe(
-      () => `${nextPrefix} ${this.random.lorem.sentence()}`,
-      { probability: 0.75 }
-    )
-
-    return [baseSentence, insight, nextStep].filter(Boolean).join('\n')
+    return [summary, blocker, context, closing].filter(Boolean).join(' ')
   }
 
   private buildTaskTitle(): string {
@@ -390,11 +378,10 @@ export class ProjectSeedFactory {
     status: TaskSeedDefinition['status'],
     priority: TaskSeedDefinition['priority']
   ): string {
-    const context = this.random.lorem.paragraphs({ min: 1, max: 2 }, '\n\n')
-    const goals = this.random.lorem.sentences({ min: 1, max: 2 })
+    const summary = this.random.lorem.sentences({ min: 1, max: 2 })
     const checklistItems = this.random.helpers.multiple(
       () => `- [ ] ${capitalize(this.random.hacker.phrase())}`,
-      { count: this.random.number.int({ min: 3, max: 5 }) }
+      { count: this.random.number.int({ min: 2, max: 4 }) }
     )
     const definitionOfDone = this.random.helpers.multiple(
       () => `- ${capitalize(this.random.company.bsBuzz())}`,
@@ -402,25 +389,26 @@ export class ProjectSeedFactory {
     )
     const riskNote = this.random.helpers.maybe(
       () => `> Risk: ${capitalize(this.random.hacker.phrase())}.`,
-      { probability: priority === 'critical' ? 0.9 : 0.35 }
+      { probability: priority === 'critical' ? 0.85 : 0.3 }
     )
     const statusNote =
       status === 'blocked'
-        ? '> Current state:  Blocked, see thread below.'
+        ? '> Current state: Blocked, see comments.'
         : status === 'done'
-          ? '> Current state:  Delivered and awaiting retrospective notes.'
+          ? '> Current state: Delivered and awaiting review.'
           : '> Current state: In progress.'
 
     return [
-      '## Context',
-      context,
-      '\n## Goals',
-      goals,
-      '\n## Checklist',
+      '### Summary',
+      summary,
+      '',
+      '### Checklist',
       checklistItems.join('\n'),
-      '\n## Definition of Done',
+      '',
+      '### Acceptance',
       definitionOfDone.join('\n'),
-      '\n## Notes',
+      '',
+      '### Notes',
       [statusNote, riskNote].filter(Boolean).join('\n')
     ]
       .filter(Boolean)
