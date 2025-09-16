@@ -8,7 +8,6 @@ import {
 } from '@renderer/store/slices/auth/helpers'
 import { forceLogout } from '@renderer/store/slices/auth/slice'
 import type { RootState } from '@renderer/store/types'
-import { noteApi } from '@preload/api/note'
 import type {
   NoteDetails,
   NoteSummary,
@@ -64,7 +63,7 @@ export const fetchNotes = createAsyncThunk<
       notebook: payload.notebook ?? undefined,
       tag: payload.tag ?? undefined
     }
-    const response = await handleResponse(noteApi.list(token, input))
+    const response = await handleResponse(window.api.note.list(token, input))
     return { projectId: payload.projectId, notes: response }
   } catch (error) {
     return handleNoteError(error, dispatch, rejectWithValue)
@@ -81,7 +80,7 @@ export const fetchNoteDetails = createAsyncThunk<
     return rejectWithValue('Sessione non valida')
   }
   try {
-    return await handleResponse(noteApi.get(token, noteId))
+    return await handleResponse(window.api.note.get(token, noteId))
   } catch (error) {
     return handleNoteError(error, dispatch, rejectWithValue)
   }
@@ -98,7 +97,7 @@ export const createNote = createAsyncThunk<
   }
   try {
     return await handleResponse(
-      noteApi.create(token, {
+      window.api.note.create(token, {
         projectId: payload.projectId,
         title: payload.title,
         body: payload.body,
@@ -124,7 +123,7 @@ export const updateNote = createAsyncThunk<
   }
   try {
     return await handleResponse(
-      noteApi.update(token, noteId, {
+      window.api.note.update(token, noteId, {
         ...input,
         notebook: input.notebook ?? undefined
       })
@@ -144,7 +143,7 @@ export const deleteNote = createAsyncThunk<
     return rejectWithValue('Sessione non valida')
   }
   try {
-    await handleResponse(noteApi.remove(token, noteId))
+    await handleResponse(window.api.note.remove(token, noteId))
     return { success: true }
   } catch (error) {
     return handleNoteError(error, dispatch, rejectWithValue)
@@ -161,7 +160,7 @@ export const searchNotes = createAsyncThunk<
     return rejectWithValue('Sessione non valida')
   }
   try {
-    const results = await handleResponse(noteApi.search(token, payload))
+    const results = await handleResponse(window.api.note.search(token, payload))
     return { query: payload.query, results }
   } catch (error) {
     return handleNoteError(error, dispatch, rejectWithValue)

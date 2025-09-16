@@ -3,7 +3,6 @@ import { join } from 'node:path'
 import { tmpdir } from 'node:os'
 import { mkdtemp, rm } from 'node:fs/promises'
 
-import type { Sequelize } from 'sequelize-typescript'
 import { initializeDatabase } from '@main/config/database'
 import { AuditService } from '@main/services/audit'
 import { ProjectService } from '@main/services/project'
@@ -14,31 +13,8 @@ import { User } from '@main/models/User'
 import { Role } from '@main/models/Role'
 import { UserRole } from '@main/models/UserRole'
 import type { RoleName } from '@main/services/auth/constants'
-import { Project } from '@main/models/Project'
+
 jest.setTimeout(20000)
-
-
-class TestNoteService extends NoteService {
-  constructor(
-    sequelize: Sequelize,
-    auditService: AuditService,
-    private readonly project: Project
-  ) {
-    super(sequelize, auditService)
-  }
-
-  protected async resolveProjectAccess() {
-    return { project: this.project, role: 'admin' }
-  }
-
-  protected async loadMembership() {
-    return { projectId: this.project.id, role: 'admin' }
-  }
-
-  protected resolveActorRole(): ProjectMembershipRole {
-    return 'admin'
-  }
-}
 
 const createActor = (userId: string, roles: RoleName[]): ProjectActor => ({
   userId,
@@ -97,7 +73,7 @@ const setup = async () => {
 
 describe('NoteService', () => {
   it('gestisce creazione, privacy e collegamenti dei task', async () => {
-    const { sequelize, directory, projectService, taskService, auditService, admin } =
+    const { sequelize, directory, projectService, taskService, noteService, admin } =
       await setup()
 
     try {
@@ -123,20 +99,13 @@ describe('NoteService', () => {
       const contributorActor = createActor(contributor.id, ['Contributor'])
       const viewerActor = createActor(viewer.id, ['Viewer'])
 
-      const projectModel = await Project.findByPk(project.id)
-      if (!projectModel) {
-        throw new Error('Project not persisted')
-      }
-
-      const scopedNoteService = new TestNoteService(sequelize, auditService, projectModel)
-
       const task = await taskService.createTask(contributorActor, {
         projectId: project.id,
         title: 'Implementare editor',
         description: 'Creare editor markdown'
       })
 
-      const note = await scopedNoteService.createNote(contributorActor, {
+      const note = await noteService.createNote(contributorActor, {
         projectId: project.id,
         title: 'Nota privata',
         body: 'Documentazione iniziale',
@@ -152,22 +121,22 @@ describe('NoteService', () => {
       expect(note.linkedTasks[0].id).toBe(task.id)
 
       // Viewer should not see private note unless elevated
-      await expect(scopedNoteService.getNote(viewerActor, note.id)).rejects.toMatchObject({
+      await expect(noteService.getNote(viewerActor, note.id)).rejects.toMatchObject({
         code: 'ERR_PERMISSION'
       })
 
-      const viewerList = await scopedNoteService.listNotes(viewerActor, {
+      const viewerList = await noteService.listNotes(viewerActor, {
         projectId: project.id
       })
       expect(viewerList).toHaveLength(0)
 
-      const adminList = await scopedNoteService.listNotes(adminActor, {
+      const adminList = await noteService.listNotes(adminActor, {
         projectId: project.id,
         includePrivate: true
       })
       expect(adminList).toHaveLength(1)
 
-      const updated = await scopedNoteService.updateNote(contributorActor, note.id, {
+      const updated = await noteService.updateNote(contributorActor, note.id, {
         isPrivate: false,
         tags: ['editor'],
         linkedTaskIds: []
@@ -176,14 +145,14 @@ describe('NoteService', () => {
       expect(updated.isPrivate).toBe(false)
       expect(updated.linkedTasks).toHaveLength(0)
 
-      const publicList = await scopedNoteService.listNotes(viewerActor, {
+      const publicList = await noteService.listNotes(viewerActor, {
         projectId: project.id
       })
       expect(publicList).toHaveLength(1)
 
-      await scopedNoteService.deleteNote(contributorActor, note.id)
+      await noteService.deleteNote(contributorActor, note.id)
 
-      const afterDelete = await scopedNoteService.listNotes(adminActor, {
+      const afterDelete = await noteService.listNotes(adminActor, {
         projectId: project.id,
         includePrivate: true
       })
@@ -195,7 +164,7 @@ describe('NoteService', () => {
   })
 
   it('esegue la ricerca FTS con highlight', async () => {
-    const { sequelize, directory, projectService, auditService, admin } = await setup()
+    const { sequelize, directory, projectService, noteService, admin } = await setup()
 
     try {
       const adminActor = createActor(admin.id, ['Admin'])
@@ -205,21 +174,14 @@ describe('NoteService', () => {
         description: null
       })
 
-      const projectModel = await Project.findByPk(project.id)
-      if (!projectModel) {
-        throw new Error('Project not persisted')
-      }
-
-      const scopedNoteService = new TestNoteService(sequelize, auditService, projectModel)
-
-      await scopedNoteService.createNote(adminActor, {
+      await noteService.createNote(adminActor, {
         projectId: project.id,
         title: 'Roadmap Q1',
         body: 'Definire milestone critiche e analizzare rischi emergenti',
         tags: ['roadmap']
       })
 
-      const results = await scopedNoteService.search(adminActor, { query: 'rischi' })
+      const results = await noteService.search(adminActor, { query: 'rischi' })
       expect(results).toHaveLength(1)
       expect(results[0].highlight).toContain('<mark>')
     } finally {
