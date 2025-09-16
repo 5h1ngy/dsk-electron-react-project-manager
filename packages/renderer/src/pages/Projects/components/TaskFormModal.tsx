@@ -6,6 +6,7 @@ import dayjs from 'dayjs'
 
 import type { TaskFormValues } from '@renderer/pages/Projects/schemas/taskSchemas'
 import type { TaskDetails } from '@renderer/store/slices/tasks'
+import MarkdownEditor from '@renderer/components/Markdown/MarkdownEditor'
 
 const STATUS_ORDER: TaskDetails['status'][] = ['todo', 'in_progress', 'blocked', 'done']
 const PRIORITY_ORDER: TaskDetails['priority'][] = ['low', 'medium', 'high', 'critical']
@@ -57,7 +58,12 @@ export const TaskFormModal = ({
       destroyOnClose
       width={520}
     >
-      <Form layout="vertical" onFinish={onSubmit} disabled={submitting} initialValues={form.getValues()}>
+      <Form
+        layout="vertical"
+        onFinish={onSubmit}
+        disabled={submitting}
+        initialValues={form.getValues()}
+      >
         <Form.Item
           label={t('tasks.form.fields.title')}
           validateStatus={form.formState.errors.title ? 'error' : ''}
@@ -68,7 +74,11 @@ export const TaskFormModal = ({
             control={form.control}
             name="title"
             render={({ field }) => (
-              <Input {...field} value={field.value ?? ''} placeholder={t('tasks.form.placeholders.title')} />
+              <Input
+                {...field}
+                value={field.value ?? ''}
+                placeholder={t('tasks.form.placeholders.title')}
+              />
             )}
           />
         </Form.Item>
@@ -82,11 +92,12 @@ export const TaskFormModal = ({
             control={form.control}
             name="description"
             render={({ field }) => (
-              <Input.TextArea
-                {...field}
+              <MarkdownEditor
                 value={field.value ?? ''}
+                onChange={(next) => field.onChange(next)}
                 placeholder={t('tasks.form.placeholders.description')}
-                autoSize={{ minRows: 3, maxRows: 6 }}
+                maxLength={20000}
+                disabled={submitting}
               />
             )}
           />

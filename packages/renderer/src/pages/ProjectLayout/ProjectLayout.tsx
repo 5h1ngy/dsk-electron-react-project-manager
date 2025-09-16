@@ -234,12 +234,12 @@ const ProjectLayout = (): JSX.Element => {
         task={taskModals.detailTask}
         allowManage={canManageTasks}
         onClose={taskModals.closeDetail}
-        onEdit={(task) => taskModals.openEdit(task.id)}
         onDelete={(task) => taskModals.deleteTask(task.id)}
         deleting={
           taskModals.deletingTaskId !== null &&
           taskModals.deletingTaskId === taskModals.detailTask?.id
         }
+        assigneeOptions={taskModals.assigneeOptions}
       />
       <TaskFormModal
         open={taskModals.isEditorOpen}

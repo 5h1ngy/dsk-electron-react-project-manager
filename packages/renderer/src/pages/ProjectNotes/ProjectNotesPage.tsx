@@ -1,8 +1,7 @@
-import { useCallback, useEffect, useMemo, useRef, useState, type ReactElement } from 'react'
+import { useCallback, useEffect, useMemo, useState, type ReactElement } from 'react'
 import {
   Badge,
   Button,
-  Card,
   Col,
   Divider,
   Drawer,
@@ -32,10 +31,6 @@ import {
   SearchOutlined,
   UnlockOutlined
 } from '@ant-design/icons'
-import ReactMarkdown from 'react-markdown'
-import remarkGfm from 'remark-gfm'
-import rehypeSanitize from 'rehype-sanitize'
-import type { TextAreaRef } from 'antd/es/input/TextArea'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -61,6 +56,8 @@ import type { NoteDetails, NoteSummary } from '@renderer/store/slices/notes/type
 import type { TaskDetails } from '@renderer/store/slices/tasks/types'
 import type { SearchNotesInput } from '@main/services/note/schemas'
 import { extractErrorMessage } from '@renderer/store/slices/auth/helpers'
+import MarkdownEditor from '@renderer/components/Markdown/MarkdownEditor'
+import MarkdownViewer from '@renderer/components/Markdown/MarkdownViewer'
 
 type NoteEditorMode = 'create' | 'edit'
 
@@ -72,16 +69,6 @@ interface NoteEditorProps {
   tasks: TaskDetails[]
   onSubmit: (values: NoteFormValues) => Promise<void>
   onCancel: () => void
-}
-
-interface NoteViewerProps {
-  open: boolean
-  noteId: string | null
-  canManage: boolean
-  onEdit: (note: NoteDetails) => void
-  onDelete: (noteId: string) => Promise<void>
-  onClose: () => void
-  onOpenTask: (taskId: string) => void
 }
 
 interface NoteSearchDrawerProps {
@@ -163,23 +150,6 @@ const buildNotebookOptions = (notes: NoteSummary[]) =>
     label: notebook,
     value: notebook
   }))
-
-const extractSuggestionQuery = (value: string, cursor: number): { query: string; start: number } | null => {
-  const textBeforeCursor = value.slice(0, cursor)
-  const triggerIndex = textBeforeCursor.lastIndexOf('[[')
-  if (triggerIndex === -1) {
-    return null
-  }
-  const between = textBeforeCursor.slice(triggerIndex + 2)
-  if (between.includes(']]')) {
-    return null
-  }
-  const sanitized = between.trim()
-  if (sanitized.length > 50) {
-    return null
-  }
-  return { query: sanitized, start: triggerIndex }
-}
 
 const ProjectNotesPage = (): ReactElement => {
   const {
@@ -473,11 +443,11 @@ const ProjectNotesPage = (): ReactElement => {
         submitting={mutationStatus === 'loading'}
         tasks={tasks}
       />
-      <NoteViewerDrawer
+      <NoteDetailsModal
         open={Boolean(viewerNoteId)}
         noteId={viewerNoteId}
         canManage={canManageNotes}
-        onEdit={handleEditNote}
+        tasks={tasks}
         onDelete={handleDeleteNote}
         onClose={handleViewerClose}
         onOpenTask={(taskId) => {
@@ -520,8 +490,6 @@ const NoteEditorModal = ({
   onCancel
 }: NoteEditorProps): ReactElement => {
   const { t } = useTranslation('projects')
-  const textareaRef = useRef<TextAreaRef | null>(null)
-  const [suggestion, setSuggestion] = useState<{ query: string; start: number } | null>(null)
   const taskOptions = useMemo(() => buildTaskOptions(tasks), [tasks])
   const defaultValues = useMemo(() => noteDefaultValues(initialValues, mode), [initialValues, mode])
 
@@ -529,9 +497,6 @@ const NoteEditorModal = ({
     control,
     handleSubmit,
     reset,
-    watch,
-    setValue,
-    getValues,
     formState: { errors }
   } = useForm<NoteFormValues>({
     mode: 'onSubmit',
@@ -539,75 +504,11 @@ const NoteEditorModal = ({
     defaultValues
   })
 
-  const bodyValue = watch('body') ?? ''
-
   useEffect(() => {
-    reset(defaultValues)
-  }, [reset, defaultValues, open])
-
-  useEffect(() => {
-    const textarea = textareaRef.current?.resizableTextArea?.textArea
-    if (!textarea) {
-      setSuggestion(null)
-      return
+    if (open) {
+      reset(defaultValues)
     }
-    const handleSelectionChange = () => {
-      const position = textarea.selectionStart ?? textarea.value.length
-      const queryInfo = extractSuggestionQuery(textarea.value, position)
-      setSuggestion(queryInfo)
-    }
-    textarea.addEventListener('keyup', handleSelectionChange)
-    textarea.addEventListener('click', handleSelectionChange)
-    return () => {
-      textarea.removeEventListener('keyup', handleSelectionChange)
-      textarea.removeEventListener('click', handleSelectionChange)
-    }
-  }, [])
-
-  useEffect(() => {
-    const textarea = textareaRef.current?.resizableTextArea?.textArea
-    if (!textarea) {
-      return
-    }
-    const position = textarea.selectionStart ?? textarea.value.length
-    const queryInfo = extractSuggestionQuery(bodyValue, position)
-    setSuggestion(queryInfo)
-  }, [bodyValue])
-
-  const filteredTasks = useMemo(() => {
-    if (!suggestion) {
-      return []
-    }
-    const query = suggestion.query.toLowerCase()
-    return tasks.filter(
-      (task) =>
-        task.key.toLowerCase().includes(query) ||
-        task.title.toLowerCase().includes(query)
-    )
-  }, [tasks, suggestion])
-
-  const insertTaskReference = (task: TaskDetails) => {
-    const textarea = textareaRef.current?.resizableTextArea?.textArea
-    if (!textarea || !suggestion) {
-      return
-    }
-    const selectionEnd = textarea.selectionEnd ?? textarea.value.length
-    const before = textarea.value.slice(0, suggestion.start)
-    const after = textarea.value.slice(selectionEnd)
-    const insertion = `[[${task.key}]]`
-    const nextValue = `${before}${insertion}${after}`
-    setValue('body', nextValue, { shouldDirty: true })
-    const currentLinks = getValues('linkedTaskIds') ?? []
-    if (!currentLinks.includes(task.id)) {
-      setValue('linkedTaskIds', [...currentLinks, task.id], { shouldDirty: true })
-    }
-    setSuggestion(null)
-    requestAnimationFrame(() => {
-      const caret = before.length + insertion.length
-      textarea.focus()
-      textarea.setSelectionRange(caret, caret)
-    })
-  }
+  }, [defaultValues, open, reset])
 
   return (
     <Modal
@@ -615,13 +516,13 @@ const NoteEditorModal = ({
       onCancel={onCancel}
       onOk={handleSubmit(async (values) => onSubmit(values))}
       confirmLoading={submitting}
-      width={740}
+      width={760}
       okText={mode === 'create' ? t('notes.actions.create') : t('notes.actions.save')}
       cancelText={t('notes.actions.cancel')}
       title={mode === 'create' ? t('notes.editor.createTitle') : t('notes.editor.editTitle')}
       destroyOnClose
     >
-      <Form layout="vertical">
+      <Form layout="vertical" onFinish={handleSubmit(onSubmit)}>
         <Controller
           control={control}
           name="title"
@@ -632,7 +533,7 @@ const NoteEditorModal = ({
               validateStatus={errors.title ? 'error' : ''}
               help={errors.title ? t(errors.title.message as string) : undefined}
             >
-              <Input {...field} maxLength={160} />
+              <Input {...field} value={field.value ?? ''} maxLength={160} />
             </Form.Item>
           )}
         />
@@ -696,51 +597,15 @@ const NoteEditorModal = ({
               validateStatus={errors.body ? 'error' : ''}
               help={errors.body ? t(errors.body.message as string) : undefined}
             >
-              <Input.TextArea
-                {...field}
-                autoSize={{ minRows: 8 }}
-                maxLength={50000}
-                ref={textareaRef}
+              <MarkdownEditor
+                value={field.value ?? ''}
+                onChange={(next) => field.onChange(next)}
                 placeholder={t('notes.editor.placeholders.body')}
-                onChange={(event) => {
-                  field.onChange(event)
-                  const position = event.target.selectionStart ?? event.target.value.length
-                  const queryInfo = extractSuggestionQuery(event.target.value, position)
-                  setSuggestion(queryInfo)
-                }}
-                onSelect={(event) => {
-                  const target = event.target as HTMLTextAreaElement
-                  const position = target.selectionStart ?? target.value.length
-                  const queryInfo = extractSuggestionQuery(target.value, position)
-                  setSuggestion(queryInfo)
-                }}
+                maxLength={50000}
               />
             </Form.Item>
           )}
         />
-        {suggestion ? (
-          <Card size="small" style={{ marginBottom: 16 }} title={t('notes.editor.suggestions.title')}>
-            {filteredTasks.length ? (
-              <Space direction="vertical" size={8}>
-                {filteredTasks.slice(0, 8).map((task) => (
-                  <Button
-                    key={task.id}
-                    type="link"
-                    icon={<LinkOutlined />}
-                    onClick={() => insertTaskReference(task)}
-                    style={{ padding: 0, textAlign: 'left' }}
-                  >
-                    {task.key} · {task.title}
-                  </Button>
-                ))}
-              </Space>
-            ) : (
-              <Typography.Text type="secondary">
-                {t('notes.editor.suggestions.empty')}
-              </Typography.Text>
-            )}
-          </Card>
-        ) : null}
         <Controller
           control={control}
           name="linkedTaskIds"
@@ -765,100 +630,281 @@ const NoteEditorModal = ({
   )
 }
 
-const NoteViewerDrawer = ({
+interface NoteDetailsModalProps {
+  open: boolean
+  noteId: string | null
+  canManage: boolean
+  tasks: TaskDetails[]
+  onDelete: (noteId: string) => Promise<void>
+  onClose: () => void
+  onOpenTask: (taskId: string) => void
+}
+
+const NoteDetailsModal = ({
   open,
   noteId,
   canManage,
-  onEdit,
+  tasks,
   onDelete,
   onClose,
   onOpenTask
-}: NoteViewerProps): ReactElement => {
+}: NoteDetailsModalProps): ReactElement => {
   const { t } = useTranslation('projects')
+  const dispatch = useAppDispatch()
+  const [isEditing, setIsEditing] = useState(false)
   const detailState = useAppSelector(noteId ? selectNoteDetailsState(noteId) : () => null)
   const note = detailState?.data ?? null
   const loading = detailState?.status === 'loading'
+  const mutationStatus = useAppSelector(selectNotesMutationStatus)
+  const submitting = mutationStatus === 'loading'
+  const form = useForm<NoteFormValues>({
+    mode: 'onSubmit',
+    resolver: zodResolver(noteFormSchema),
+    defaultValues: noteDefaultValues(null, 'edit')
+  })
+  const taskOptions = useMemo(() => buildTaskOptions(tasks), [tasks])
+
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { errors }
+  } = form
+
+  useEffect(() => {
+    if (open && note) {
+      reset(noteDefaultValues(note, 'edit'))
+    }
+  }, [note, open, reset])
+
+  useEffect(() => {
+    if (!open) {
+      setIsEditing(false)
+    }
+  }, [open])
+
+  const handleUpdate = handleSubmit(async (values) => {
+    if (!note) {
+      return
+    }
+    const sanitized = sanitizeFormValues(values)
+    try {
+      await dispatch(
+        updateNote({
+          noteId: note.id,
+          input: {
+            title: sanitized.title,
+            body: sanitized.body,
+            tags: sanitized.tags,
+            notebook: sanitized.notebook,
+            linkedTaskIds: sanitized.linkedTaskIds,
+            isPrivate: sanitized.isPrivate
+          }
+        })
+      ).unwrap()
+      await dispatch(fetchNoteDetails(note.id))
+      message.success(t('notes.feedback.updated'))
+      setIsEditing(false)
+    } catch (error) {
+      message.error(extractErrorMessage(error))
+    }
+  })
 
   return (
-    <Drawer
-      title={note ? note.title : t('notes.viewer.title')}
-      placement="right"
-      width={520}
+    <Modal
       open={open}
-      onClose={onClose}
-      destroyOnClose
-      extra={
+      onCancel={onClose}
+      title={note ? note.title : t('notes.viewer.title')}
+      width={760}
+      footer={
         note && canManage ? (
           <Space>
-            <Button icon={<EditOutlined />} onClick={() => onEdit(note)}>
-              {t('notes.actions.edit')}
-            </Button>
-            <Popconfirm
-              title={t('notes.actions.deleteTitle')}
-              description={t('notes.actions.deleteConfirmText')}
-              okText={t('notes.actions.delete')}
-              cancelText={t('notes.actions.cancel')}
-              onConfirm={() => note && onDelete(note.id)}
-            >
-              <Button danger icon={<DeleteOutlined />}>
-                {t('notes.actions.delete')}
-              </Button>
-            </Popconfirm>
+            {isEditing ? (
+              <>
+                <Button onClick={() => setIsEditing(false)}>{t('notes.actions.cancel')}</Button>
+                <Button type="primary" onClick={handleUpdate} loading={submitting}>
+                  {t('notes.actions.save')}
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button icon={<EditOutlined />} onClick={() => setIsEditing(true)}>
+                  {t('notes.actions.edit')}
+                </Button>
+                <Popconfirm
+                  title={t('notes.actions.deleteTitle')}
+                  description={t('notes.actions.deleteConfirmText')}
+                  okText={t('notes.actions.delete')}
+                  cancelText={t('notes.actions.cancel')}
+                  onConfirm={() => note && onDelete(note.id)}
+                >
+                  <Button danger icon={<DeleteOutlined />}>
+                    {t('notes.actions.delete')}
+                  </Button>
+                </Popconfirm>
+              </>
+            )}
           </Space>
         ) : null
       }
+      destroyOnClose
     >
       {loading ? (
         <Skeleton active />
       ) : note ? (
-        <Space direction="vertical" size={16} style={{ width: '100%' }}>
-          <Space size={8} wrap>
-            {note.isPrivate ? (
-              <Badge color="orange" text={t('notes.labels.private')} />
-            ) : (
-              <Badge color="green" text={t('notes.labels.public')} />
-            )}
-            {note.notebook ? <Tag color="geekblue">{note.notebook}</Tag> : null}
-            {note.tags.map((tag) => (
-              <Tag key={tag}>{tag}</Tag>
-            ))}
-          </Space>
-          <Typography.Text type="secondary">
-            {t('notes.viewer.updatedBy', {
-              user: note.owner.displayName,
-              date: dayjs(note.updatedAt).format('LLL')
-            })}
-          </Typography.Text>
-          <Divider style={{ margin: '8px 0' }} />
-          <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeSanitize]}>
-            {note.body}
-          </ReactMarkdown>
-          <Divider />
-          <Space direction="vertical" size={12} style={{ width: '100%' }}>
-            <Typography.Text strong>{t('notes.viewer.linkedTasks')}</Typography.Text>
-            {note.linkedTasks.length ? (
-              note.linkedTasks.map((linked) => (
-                <Button
-                  key={linked.id}
-                  type="link"
-                  icon={<LinkOutlined />}
-                  onClick={() => {
-                    onClose()
-                    setTimeout(() => onOpenTask(linked.id), 150)
-                  }}
+        isEditing ? (
+          <Form layout="vertical" onFinish={handleUpdate}>
+            <Controller
+              control={control}
+              name="title"
+              render={({ field }) => (
+                <Form.Item
+                  label={t('notes.editor.fields.title')}
+                  required
+                  validateStatus={errors.title ? 'error' : ''}
+                  help={errors.title ? t(errors.title.message as string) : undefined}
                 >
-                  {linked.title} ({linked.key})
-                </Button>
-              ))
-            ) : (
-              <Typography.Text type="secondary">{t('notes.viewer.noLinks')}</Typography.Text>
-            )}
+                  <Input {...field} value={field.value ?? ''} maxLength={160} />
+                </Form.Item>
+              )}
+            />
+            <Controller
+              control={control}
+              name="notebook"
+              render={({ field }) => (
+                <Form.Item
+                  label={t('notes.editor.fields.notebook')}
+                  validateStatus={errors.notebook ? 'error' : ''}
+                  help={errors.notebook ? t(errors.notebook.message as string) : undefined}
+                >
+                  <Input
+                    {...field}
+                    value={field.value ?? ''}
+                    maxLength={80}
+                    placeholder={t('notes.editor.placeholders.notebook')}
+                  />
+                </Form.Item>
+              )}
+            />
+            <Controller
+              control={control}
+              name="tags"
+              render={({ field }) => (
+                <Form.Item
+                  label={t('notes.editor.fields.tags')}
+                  validateStatus={errors.tags ? 'error' : ''}
+                  help={errors.tags ? t(errors.tags.message as string) : undefined}
+                >
+                  <Select
+                    {...field}
+                    mode="tags"
+                    tokenSeparators={[',']}
+                    placeholder={t('notes.editor.placeholders.tags')}
+                  />
+                </Form.Item>
+              )}
+            />
+            <Controller
+              control={control}
+              name="isPrivate"
+              render={({ field }) => (
+                <Form.Item label={t('notes.editor.fields.visibility')}>
+                  <Switch
+                    checked={field.value}
+                    onChange={(checked) => field.onChange(checked)}
+                    checkedChildren={t('notes.labels.private')}
+                    unCheckedChildren={t('notes.labels.public')}
+                  />
+                </Form.Item>
+              )}
+            />
+            <Controller
+              control={control}
+              name="body"
+              render={({ field }) => (
+                <Form.Item
+                  label={t('notes.editor.fields.body')}
+                  required
+                  validateStatus={errors.body ? 'error' : ''}
+                  help={errors.body ? t(errors.body.message as string) : undefined}
+                >
+                  <MarkdownEditor
+                    value={field.value ?? ''}
+                    onChange={(next) => field.onChange(next)}
+                    placeholder={t('notes.editor.placeholders.body')}
+                    maxLength={50000}
+                  />
+                </Form.Item>
+              )}
+            />
+            <Controller
+              control={control}
+              name="linkedTaskIds"
+              render={({ field }) => (
+                <Form.Item
+                  label={t('notes.editor.fields.linkedTasks')}
+                  validateStatus={errors.linkedTaskIds ? 'error' : ''}
+                  help={errors.linkedTaskIds ? t(errors.linkedTaskIds.message as string) : undefined}
+                >
+                  <Select
+                    {...field}
+                    mode="multiple"
+                    allowClear
+                    placeholder={t('notes.editor.placeholders.linkedTasks')}
+                    options={taskOptions}
+                  />
+                </Form.Item>
+              )}
+            />
+          </Form>
+        ) : (
+          <Space direction="vertical" size={16} style={{ width: '100%' }}>
+            <Space size={8} wrap>
+              {note.isPrivate ? (
+                <Badge color="orange" text={t('notes.labels.private')} />
+              ) : (
+                <Badge color="green" text={t('notes.labels.public')} />
+              )}
+              {note.notebook ? <Tag color="geekblue">{note.notebook}</Tag> : null}
+              {note.tags.map((tag) => (
+                <Tag key={tag}>{tag}</Tag>
+              ))}
+            </Space>
+            <Typography.Text type="secondary">
+              {t('notes.viewer.updatedBy', {
+                user: note.owner.displayName,
+                date: dayjs(note.updatedAt).format('LLL')
+              })}
+            </Typography.Text>
+            <Divider style={{ margin: '8px 0' }} />
+            <MarkdownViewer value={note.body} />
+            <Divider />
+            <Space direction="vertical" size={12} style={{ width: '100%' }}>
+              <Typography.Text strong>{t('notes.viewer.linkedTasks')}</Typography.Text>
+              {note.linkedTasks.length ? (
+                note.linkedTasks.map((linked) => (
+                  <Button
+                    key={linked.id}
+                    type="link"
+                    icon={<LinkOutlined />}
+                    onClick={() => {
+                      onClose()
+                      setTimeout(() => onOpenTask(linked.id), 150)
+                    }}
+                  >
+                    {linked.title} ({linked.key})
+                  </Button>
+                ))
+              ) : (
+                <Typography.Text type="secondary">{t('notes.viewer.noLinks')}</Typography.Text>
+              )}
+            </Space>
           </Space>
-        </Space>
+        )
       ) : (
         <Typography.Text type="secondary">{t('notes.viewer.empty')}</Typography.Text>
       )}
-    </Drawer>
+    </Modal>
   )
 }
 
