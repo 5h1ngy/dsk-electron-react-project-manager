@@ -153,8 +153,6 @@ describe('ProjectService', () => {
         role: 'admin'
       })
 
-      const maintainerActor = createActor(maintainer.id, ['Maintainer'])
-
       await expect(
         projectService.removeMember(adminActor, project.id, admin.id)
       ).rejects.toMatchObject({

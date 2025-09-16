@@ -55,7 +55,10 @@ class SessionLifecycleManager {
         }
       }
     } catch (error) {
-      this.options.logger.warn('Failed to load session timeout setting; using default value', 'Auth', error)
+      this.options.logger.warn('Failed to load session timeout setting; using default value', 'Auth')
+      const detail =
+        error instanceof Error ? error.stack ?? error.message : String(error)
+      this.options.logger.debug(`Session timeout lookup failed: ${detail}`, 'Auth')
     }
 
     this.options.sessionManager.setTimeoutMinutes(timeout)

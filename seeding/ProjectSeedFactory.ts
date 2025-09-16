@@ -3,6 +3,7 @@ import type { Faker } from '@faker-js/faker'
 import type { RoleName } from '../packages/main/src/services/auth/constants'
 import type { User } from '../packages/main/src/models/User'
 import type {
+  CommentSeedDefinition,
   ProjectSeedDefinition,
   ProjectMemberSeed,
   TaskSeedDefinition
@@ -33,10 +34,11 @@ const TAG_CATALOG = [
   'ux'
 ] as const
 
-const MIN_PROJECTS = 9
-const MAX_PROJECTS = 14
-const MIN_TASKS_PER_PROJECT = 12
-const MAX_TASKS_PER_PROJECT = 28
+const MIN_PROJECTS = 12
+const MAX_PROJECTS = 18
+const MIN_TASKS_PER_PROJECT = 24
+const MAX_TASKS_PER_PROJECT = 52
+const MAX_BACKLOG_BUFFER = 8
 
 const STATUS_WEIGHTS: ReadonlyArray<WeightedValue<TaskSeedDefinition['status']>> = [
   { value: 'todo', weight: 5 },
@@ -50,6 +52,32 @@ const PRIORITY_WEIGHTS: ReadonlyArray<WeightedValue<TaskSeedDefinition['priority
   { value: 'medium', weight: 5 },
   { value: 'high', weight: 3 },
   { value: 'critical', weight: 1 }
+] as const
+
+const BLOCKER_PREFIXES = [
+  'Blocked by',
+  'Awaiting input from',
+  'Pending approval from',
+  'External dependency:',
+  'Waiting on vendor response:',
+  'Need clarification from'
+] as const
+
+const PROGRESS_PREFIXES = [
+  'Progress update:',
+  'Latest findings:',
+  'Status note:',
+  'QA notes:',
+  'Implementation detail:',
+  'Risk assessment:'
+] as const
+
+const NEXT_STEP_PREFIXES = [
+  'Next step:',
+  'Proposed action:',
+  'Follow-up:',
+  'Pending task:',
+  'Suggested approach:'
 ] as const
 
 export class ProjectSeedFactory {
@@ -93,42 +121,16 @@ export class ProjectSeedFactory {
       const assigneeCandidates = Array.from(members.entries())
         .filter(([, role]) => role !== 'view')
         .map(([userId]) => userId)
+      const ownerCandidates =
+        assigneeCandidates.length > 0 ? assigneeCandidates : [primaryOwner.id, adminUser.id]
+      const commentAuthors = Array.from(members.keys())
 
-      const taskCount = this.random.number.int({
-        min: MIN_TASKS_PER_PROJECT,
-        max: MAX_TASKS_PER_PROJECT
+      const tasks = this.buildTaskSeeds({
+        assigneeCandidates,
+        ownerCandidates,
+        commentAuthors,
+        createdBy: primaryOwner.id
       })
-      const tasks: TaskSeedDefinition[] = []
-
-      for (let taskIndex = 0; taskIndex < taskCount; taskIndex += 1) {
-        const status = pickWeighted(this.random, STATUS_WEIGHTS)
-        const priority = pickWeighted(this.random, PRIORITY_WEIGHTS)
-        const dueDate = this.random.helpers.maybe(
-          () => formatIsoDate(this.random.date.soon({ days: 120 })),
-          { probability: 0.7 }
-        )
-
-        const assigneeId =
-          assigneeCandidates.length > 0
-            ? (
-                this.random.helpers.maybe(
-                  () => this.random.helpers.arrayElement(assigneeCandidates),
-                  {
-                    probability: 0.85
-                  }
-                ) ?? null
-              )
-            : null
-
-        tasks.push({
-          title: this.buildTaskTitle(),
-          description: this.buildTaskDescription(),
-          status,
-          priority,
-          dueDate: dueDate ?? null,
-          assigneeId
-        })
-      }
 
       seeds.push({
         key,
@@ -204,6 +206,176 @@ export class ProjectSeedFactory {
     }
   }
 
+  private buildTaskSeeds(params: {
+    assigneeCandidates: string[]
+    ownerCandidates: string[]
+    commentAuthors: string[]
+    createdBy: string
+  }): TaskSeedDefinition[] {
+    const baseCount = this.random.number.int({
+      min: MIN_TASKS_PER_PROJECT,
+      max: MAX_TASKS_PER_PROJECT
+    })
+    const backlogExtra =
+      this.random.helpers.maybe(() => this.random.number.int({ min: 1, max: MAX_BACKLOG_BUFFER }), {
+        probability: 0.55
+      }) ?? 0
+
+    const total = baseCount + backlogExtra
+    const tasks: TaskSeedDefinition[] = []
+
+    for (let taskIndex = 0; taskIndex < total; taskIndex += 1) {
+      tasks.push(
+        this.buildTaskSeed({
+          assigneeCandidates: params.assigneeCandidates,
+          ownerCandidates: params.ownerCandidates,
+          commentAuthors: params.commentAuthors,
+          createdBy: params.createdBy
+        })
+      )
+    }
+
+    return tasks
+  }
+
+  private buildTaskSeed(params: {
+    assigneeCandidates: string[]
+    ownerCandidates: string[]
+    commentAuthors: string[]
+    createdBy: string
+  }): TaskSeedDefinition {
+    const status = pickWeighted(this.random, STATUS_WEIGHTS)
+    const priority = pickWeighted(this.random, PRIORITY_WEIGHTS)
+    const dueDate =
+      this.random.helpers.maybe(
+        () => formatIsoDate(this.random.date.soon({ days: 150 })),
+        { probability: status === 'done' ? 0.45 : 0.8 }
+      ) ?? null
+
+    const ownerId =
+      params.ownerCandidates.length > 0
+        ? this.random.helpers.arrayElement(params.ownerCandidates)
+        : params.createdBy
+
+    const assigneeId =
+      params.assigneeCandidates.length > 0
+        ? (
+            this.random.helpers.maybe(
+              () => this.random.helpers.arrayElement(params.assigneeCandidates),
+              { probability: 0.9 }
+            ) ?? null
+          )
+        : null
+
+    const comments = this.buildCommentSeeds({
+      status,
+      ownerId,
+      assigneeId,
+      commentAuthors: params.commentAuthors
+    })
+
+    return {
+      title: this.buildTaskTitle(),
+      description: this.buildTaskDescription(status, priority),
+      status,
+      priority,
+      dueDate,
+      assigneeId: assigneeId ?? null,
+      ownerId,
+      comments
+    }
+  }
+
+  private buildCommentSeeds(params: {
+    status: TaskSeedDefinition['status']
+    ownerId: string
+    assigneeId: string | null
+    commentAuthors: string[]
+  }): CommentSeedDefinition[] {
+    if (!params.commentAuthors.length) {
+      return []
+    }
+
+    const maxCommentsByStatus: Record<TaskSeedDefinition['status'], number> = {
+      todo: 2,
+      in_progress: 4,
+      blocked: 5,
+      done: 3
+    }
+    const minCommentsByStatus: Record<TaskSeedDefinition['status'], number> = {
+      todo: 0,
+      in_progress: 1,
+      blocked: 1,
+      done: 0
+    }
+
+    const commentCount = this.random.number.int({
+      min: minCommentsByStatus[params.status],
+      max: maxCommentsByStatus[params.status]
+    })
+
+    if (commentCount === 0) {
+      return []
+    }
+
+    const authors = this.random.helpers.arrayElements(
+      params.commentAuthors,
+      Math.min(params.commentAuthors.length, commentCount + 1)
+    )
+
+    const comments: CommentSeedDefinition[] = []
+    for (let index = 0; index < commentCount; index += 1) {
+      const authorId = authors[index % authors.length]
+      comments.push({
+        authorId,
+        body: this.buildCommentBody({
+          status: params.status,
+          authorRole:
+            authorId === params.assigneeId
+              ? 'assignee'
+              : authorId === params.ownerId
+                ? 'owner'
+                : 'member'
+        })
+      })
+    }
+
+    return comments
+  }
+
+  private buildCommentBody(params: {
+    status: TaskSeedDefinition['status']
+    authorRole: 'owner' | 'assignee' | 'member'
+  }): string {
+    const progressPrefix = this.random.helpers.arrayElement(PROGRESS_PREFIXES)
+    const blockerPrefix = this.random.helpers.arrayElement(BLOCKER_PREFIXES)
+    const nextPrefix = this.random.helpers.arrayElement(NEXT_STEP_PREFIXES)
+
+    const baseSentence =
+      params.status === 'blocked'
+        ? `${blockerPrefix} ${this.random.company.name()} — ${this.random.lorem.sentence()}`
+        : `${progressPrefix} ${this.random.lorem.sentence()}`
+
+    const insight = this.random.helpers.maybe(
+      () =>
+        `${this.random.lorem.sentences({ min: 1, max: 2 })} ${
+          params.authorRole === 'owner'
+            ? 'Please keep the scope tight to stay within our milestone.'
+            : params.authorRole === 'assignee'
+              ? 'Flagging any surprises before the next stand-up.'
+              : 'Let me know if you need support to unblock this.'
+        }`,
+      { probability: 0.65 }
+    )
+
+    const nextStep = this.random.helpers.maybe(
+      () => `${nextPrefix} ${this.random.lorem.sentence()}`,
+      { probability: 0.75 }
+    )
+
+    return [baseSentence, insight, nextStep].filter(Boolean).join('\n')
+  }
+
   private buildTaskTitle(): string {
     const verb = capitalize(this.random.hacker.verb())
     const noun = this.random.hacker.noun().replace(/_/g, ' ')
@@ -214,13 +386,44 @@ export class ProjectSeedFactory {
     return title.slice(0, 160)
   }
 
-  private buildTaskDescription(): string {
-    const overview = this.random.lorem.paragraphs({ min: 1, max: 2 }, '\n\n')
-    const checklist = this.random.helpers
-      .multiple(() => `- ${this.random.hacker.phrase()}`, { count: 3 })
-      .join('\n')
-    const acceptance = this.random.lorem.sentences({ min: 2, max: 3 })
+  private buildTaskDescription(
+    status: TaskSeedDefinition['status'],
+    priority: TaskSeedDefinition['priority']
+  ): string {
+    const context = this.random.lorem.paragraphs({ min: 1, max: 2 }, '\n\n')
+    const goals = this.random.lorem.sentences({ min: 1, max: 2 })
+    const checklistItems = this.random.helpers.multiple(
+      () => `- [ ] ${capitalize(this.random.hacker.phrase())}`,
+      { count: this.random.number.int({ min: 3, max: 5 }) }
+    )
+    const definitionOfDone = this.random.helpers.multiple(
+      () => `- ${capitalize(this.random.company.bsBuzz())}`,
+      { count: 2 }
+    )
+    const riskNote = this.random.helpers.maybe(
+      () => `> Risk: ${capitalize(this.random.hacker.phrase())}.`,
+      { probability: priority === 'critical' ? 0.9 : 0.35 }
+    )
+    const statusNote =
+      status === 'blocked'
+        ? '> Current state:  Blocked, see thread below.'
+        : status === 'done'
+          ? '> Current state:  Delivered and awaiting retrospective notes.'
+          : '> Current state: In progress.'
 
-    return `${overview}\n\n${checklist}\n\n**Acceptance Criteria**\n${acceptance}`
+    return [
+      '## Context',
+      context,
+      '\n## Goals',
+      goals,
+      '\n## Checklist',
+      checklistItems.join('\n'),
+      '\n## Definition of Done',
+      definitionOfDone.join('\n'),
+      '\n## Notes',
+      [statusNote, riskNote].filter(Boolean).join('\n')
+    ]
+      .filter(Boolean)
+      .join('\n')
   }
 }

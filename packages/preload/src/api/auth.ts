@@ -5,7 +5,6 @@ import type {
   LoginInput,
   RegisterUserInput
 } from '@main/services/auth/schemas'
-import type { IpcResponse } from '@preload/types'
 import { invokeIpc } from '@preload/api/shared'
 
 const CHANNELS = {

@@ -18,15 +18,15 @@ const createRegistry = () => {
 }
 
 describe('HealthIpcRegistrar', () => {
-  let sequelize: { authenticate: jest.Mock } & Partial<Sequelize>
+  let authenticate: jest.Mock
+  let sequelize: Sequelize
   let handlers: Map<string, (...args: any[]) => Promise<unknown>>
   let registrar: IpcChannelRegistrar
   const appRef = { getVersion: () => '1.2.3' }
 
   beforeEach(() => {
-    sequelize = {
-      authenticate: jest.fn().mockResolvedValue(undefined)
-    } as unknown as { authenticate: jest.Mock } & Partial<Sequelize>
+    authenticate = jest.fn().mockResolvedValue(undefined)
+    sequelize = { authenticate } as unknown as Sequelize
 
     const registry = createRegistry()
     handlers = registry.handlers
@@ -34,7 +34,7 @@ describe('HealthIpcRegistrar', () => {
   })
 
   it('reports healthy status when authentication succeeds', async () => {
-    new HealthIpcRegistrar({ sequelize: sequelize as Sequelize, appRef, registrar }).register()
+    new HealthIpcRegistrar({ sequelize, appRef, registrar }).register()
 
     const response = await handlers.get(HEALTH_CHANNEL)!({})
 
@@ -45,13 +45,13 @@ describe('HealthIpcRegistrar', () => {
         version: '1.2.3'
       }
     })
-    expect(sequelize.authenticate).toHaveBeenCalledTimes(1)
+    expect(authenticate).toHaveBeenCalledTimes(1)
   })
 
   it('returns an error response when authentication fails', async () => {
-    sequelize.authenticate.mockRejectedValue(new Error('boom'))
+    authenticate.mockRejectedValue(new Error('boom'))
 
-    new HealthIpcRegistrar({ sequelize: sequelize as Sequelize, appRef, registrar }).register()
+    new HealthIpcRegistrar({ sequelize, appRef, registrar }).register()
 
     const response = await handlers.get(HEALTH_CHANNEL)!({})
     expect(response).toEqual({

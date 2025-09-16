@@ -46,8 +46,7 @@ export const buildLightComponents = (
   },
   Tag: {
     defaultBg: lighten(brand.primary, 0.6),
-    defaultColor: darken(brand.primary, 0.35),
-    defaultBorderColor: 'transparent'
+    defaultColor: darken(brand.primary, 0.35)
   },
   Table: {
     headerBg: lighten(palette.surfaceBase, 0.02),

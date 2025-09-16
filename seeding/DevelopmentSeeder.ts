@@ -33,7 +33,7 @@ export class DevelopmentSeeder {
     this.options = { ...DEFAULT_OPTIONS, ...options }
     this.userFactory = new UserSeedFactory(this.random)
     this.projectFactory = new ProjectSeedFactory(this.random)
-    this.userSeeder = new UserSeeder(this.options.passwordSeed)
+    this.userSeeder = new UserSeeder(this.options.passwordSeed, this.random)
     this.projectSeeder = new ProjectSeeder()
   }
 
@@ -92,20 +92,25 @@ export class DevelopmentSeeder {
     }
   }
 
-  private async persistProjects(transaction: Transaction, seeds: ProjectSeedDefinition[]): Promise<void> {
+  private async persistProjects(
+    transaction: Transaction,
+    seeds: ProjectSeedDefinition[]
+  ): Promise<void> {
     let createdProjects = 0
     let taskTotal = 0
+    let commentTotal = 0
 
     for (const seed of seeds) {
-      const project = await this.projectSeeder.upsert(transaction, seed)
-      taskTotal += seed.tasks.length
-      if (project) {
+      const result = await this.projectSeeder.upsert(transaction, seed)
+      taskTotal += result.taskCount
+      commentTotal += result.commentCount
+      if (result.project) {
         createdProjects += 1
       }
     }
 
     logger.success(
-      `Seed complete: ${createdProjects} projects, ${taskTotal} tasks`,
+      `Seed complete: ${createdProjects} projects, ${taskTotal} tasks, ${commentTotal} comments`,
       'Seed'
     )
   }

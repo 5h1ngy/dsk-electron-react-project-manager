@@ -1,6 +1,8 @@
 import { randomUUID } from 'node:crypto'
 import { Op, type Transaction } from 'sequelize'
 
+import type { Faker } from '@faker-js/faker'
+
 import { hashPassword } from '../packages/main/src/services/auth/password'
 import { Role } from '../packages/main/src/models/Role'
 import { User } from '../packages/main/src/models/User'
@@ -10,7 +12,10 @@ import { logger } from '../packages/main/src/config/logger'
 import type { UserSeedDefinition } from './DevelopmentSeeder.types'
 
 export class UserSeeder {
-  constructor(private readonly passwordSeed: string) {}
+  constructor(
+    private readonly passwordSeed: string,
+    private readonly random: Faker
+  ) {}
 
   async upsert(transaction: Transaction, seed: UserSeedDefinition) {
     const existing = await User.findOne({ where: { username: seed.username }, transaction })
@@ -20,13 +25,20 @@ export class UserSeeder {
     }
 
     const hashed = await hashPassword(this.passwordSeed)
+    const lastLoginAt =
+      this.random.helpers.maybe(
+        () => this.random.date.recent({ days: 120 }),
+        { probability: 0.7 }
+      ) ?? null
+
     const user = await User.create(
       {
         id: randomUUID(),
         username: seed.username,
         displayName: seed.displayName,
         passwordHash: hashed,
-        isActive: true
+        isActive: true,
+        lastLoginAt
       },
       { transaction }
     )

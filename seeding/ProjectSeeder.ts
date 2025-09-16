@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto'
 import type { Transaction } from 'sequelize'
 
+import { Comment } from '../packages/main/src/models/Comment'
 import { Project } from '../packages/main/src/models/Project'
 import { ProjectMember } from '../packages/main/src/models/ProjectMember'
 import { ProjectTag } from '../packages/main/src/models/ProjectTag'
@@ -10,11 +11,14 @@ import { logger } from '../packages/main/src/config/logger'
 import type { ProjectSeedDefinition } from './DevelopmentSeeder.types'
 
 export class ProjectSeeder {
-  async upsert(transaction: Transaction, seed: ProjectSeedDefinition) {
+  async upsert(
+    transaction: Transaction,
+    seed: ProjectSeedDefinition
+  ): Promise<{ project: Project | null; taskCount: number; commentCount: number }> {
     const existing = await Project.findOne({ where: { key: seed.key }, transaction })
     if (existing) {
       logger.debug(`Project ${seed.key} already present, skipping`, 'Seed')
-      return null
+      return { project: null, taskCount: 0, commentCount: 0 }
     }
 
     const project = await Project.create(
@@ -59,8 +63,10 @@ export class ProjectSeeder {
     )
 
     let taskIndex = 1
+    let commentTotal = 0
+
     for (const taskSeed of seed.tasks) {
-      await Task.create(
+      const task = await Task.create(
         {
           id: randomUUID(),
           projectId: project.id,
@@ -72,17 +78,35 @@ export class ProjectSeeder {
           priority: taskSeed.priority,
           dueDate: taskSeed.dueDate,
           assigneeId: taskSeed.assigneeId,
-          ownerUserId: seed.createdBy
+          ownerUserId: taskSeed.ownerId ?? seed.createdBy
         },
         { transaction }
       )
+
+      if (taskSeed.comments.length > 0) {
+        await Promise.all(
+          taskSeed.comments.map((comment) =>
+            Comment.create(
+              {
+                id: randomUUID(),
+                taskId: task.id,
+                authorId: comment.authorId,
+                body: comment.body
+              },
+              { transaction }
+            )
+          )
+        )
+        commentTotal += taskSeed.comments.length
+      }
+
       taskIndex += 1
     }
 
     logger.debug(
-      `Seeded project ${seed.key} with ${seed.members.length} members, ${seed.tags.length} tags and ${seed.tasks.length} tasks`,
+      `Seeded project ${seed.key} with ${seed.members.length} members, ${seed.tags.length} tags, ${seed.tasks.length} tasks and ${commentTotal} comments`,
       'Seed'
     )
-    return project
+    return { project, taskCount: seed.tasks.length, commentCount: commentTotal }
   }
 }
