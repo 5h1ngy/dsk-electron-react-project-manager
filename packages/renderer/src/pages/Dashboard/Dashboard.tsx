@@ -1,7 +1,7 @@
 import type { JSX } from 'react'
 import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Alert, Card, Space, Tag, Typography } from 'antd'
+import { Alert, Breadcrumb, Card, Space, Tag, Typography } from 'antd'
 
 import { LoadingSkeleton } from '@renderer/components/DataStates'
 import { HealthStatusCard } from '@renderer/components/HealthStatusCard'
@@ -13,6 +13,8 @@ import { CreateUserModal } from '@renderer/pages/Dashboard/components/CreateUser
 import { EditUserModal } from '@renderer/pages/Dashboard/components/EditUserModal'
 import { UserTable } from '@renderer/pages/Dashboard/components/UserTable'
 import { ActionBar } from '@renderer/pages/Dashboard/components/ActionBar'
+import { ShellHeaderPortal } from '@renderer/layout/Shell/ShellHeader.context'
+import { usePrimaryBreadcrumb } from '@renderer/layout/Shell/hooks/usePrimaryBreadcrumb'
 import { UserFilters, type UserFiltersValue } from '@renderer/pages/Dashboard/components/UserFilters'
 import { UserCardsGrid } from '@renderer/pages/Dashboard/components/UserCardsGrid'
 import { useUserManagement } from '@renderer/pages/Dashboard/hooks/useUserManagement'
@@ -80,6 +82,12 @@ const Dashboard = ({}: DashboardProps): JSX.Element => {
     return Array.from(set).sort((a, b) => a.localeCompare(b))
   }, [users])
 
+  const baseBreadcrumbItems = useMemo(
+    () => [{ title: t('appShell.navigation.dashboard', { ns: 'common' }) }],
+    [t]
+  )
+  const breadcrumbItems = usePrimaryBreadcrumb(baseBreadcrumbItems)
+
   const filteredUsers = useMemo(() => {
     const needle = userFilters.search.trim().toLowerCase()
     return users.filter((user) => {
@@ -139,84 +147,98 @@ const Dashboard = ({}: DashboardProps): JSX.Element => {
     const roleTagElements = renderRoleTags(roleTags)
 
     return (
-      <Space direction="vertical" size="large" style={{ width: '100%' }}>
-        {messageContext}
-        <Typography.Title level={3}>{t('personal.heading')}</Typography.Title>
-        <Space direction="horizontal" size="large" wrap style={{ width: '100%' }}>
-          <Card title={t('personal.profileTitle')} style={{ flex: 1, minWidth: 260 }}>
-            <Space direction="vertical" size={8}>
-              <Typography.Text>
-                {t('personal.username', { username: currentUser?.username })}
-              </Typography.Text>
-              {roleTagElements}
-            </Space>
-          </Card>
-          <Card title={t('personal.projectsTitle')} style={{ flex: 2, minWidth: 320 }}>
-            {projectListSkeleton ? (
-              <LoadingSkeleton variant="list" />
-            ) : (
-              renderProjectsList(recentProjects, t)
-            )}
-          </Card>
+      <>
+        <ShellHeaderPortal>
+          <Breadcrumb items={breadcrumbItems} />
+        </ShellHeaderPortal>
+        <Space direction="vertical" size="large" style={{ width: '100%' }}>
+          {messageContext}
+          <Typography.Title level={3}>{t('personal.heading')}</Typography.Title>
+          <Space direction="horizontal" size="large" wrap style={{ width: '100%' }}>
+            <Card title={t('personal.profileTitle')} style={{ flex: 1, minWidth: 260 }}>
+              <Space direction="vertical" size={8}>
+                <Typography.Text>
+                  {t('personal.username', { username: currentUser?.username })}
+                </Typography.Text>
+                {roleTagElements}
+              </Space>
+            </Card>
+            <Card title={t('personal.projectsTitle')} style={{ flex: 2, minWidth: 320 }}>
+              {projectListSkeleton ? (
+                <LoadingSkeleton variant="list" />
+              ) : (
+                renderProjectsList(recentProjects, t)
+              )}
+            </Card>
+          </Space>
         </Space>
-      </Space>
+      </>
     )
   }
 
   return (
-    <Space direction="vertical" size="large" style={{ width: '100%' }}>
-      {messageContext}
-      <HealthStatusCard />
-      <ActionBar onCreate={openCreateModal} onRefresh={refreshUsers} isRefreshing={loading} />
-      <UserFilters
-        value={userFilters}
-        onChange={handleUserFiltersChange}
-        roleOptions={availableRoles}
-        viewMode={userViewMode}
-        onViewModeChange={(mode) => setUserViewMode(mode)}
-        aria-label={t('filters.users.ariaLabel')}
-      />
-      {error && (
-        <Alert
-          type="error"
-          message={t('dashboard:error.title')}
-          description={error}
-          onClose={clearError}
-          closable
+    <>
+      <ShellHeaderPortal>
+        <Breadcrumb items={breadcrumbItems} />
+      </ShellHeaderPortal>
+      <Space direction="vertical" size="large" style={{ width: '100%' }}>
+        {messageContext}
+        <HealthStatusCard />
+        <ActionBar
+          onCreate={openCreateModal}
+          onRefresh={refreshUsers}
+          isRefreshing={loading}
         />
-      )}
-      {userViewMode === 'table' ? (
-        <UserTable
-          columns={columns}
-          users={filteredUsers}
-          loading={loading}
-          hasLoaded={hasLoaded}
+        <UserFilters
+          value={userFilters}
+          onChange={handleUserFiltersChange}
+          roleOptions={availableRoles}
+          viewMode={userViewMode}
+          onViewModeChange={(mode) => setUserViewMode(mode)}
+          aria-label={t('filters.users.ariaLabel')}
         />
-      ) : (
-        <UserCardsGrid
-          users={filteredUsers}
-          loading={loading}
-          page={userCardPage}
-          pageSize={USER_CARD_PAGE_SIZE}
-          onPageChange={setUserCardPage}
-          onEdit={openEditModal}
-          onDelete={removeUser}
+        {error ? (
+          <Alert
+            type="error"
+            message={t('dashboard:error.title')}
+            description={error}
+            onClose={clearError}
+            closable
+          />
+        ) : null}
+        {userViewMode === 'table' ? (
+          <UserTable
+            columns={columns}
+            users={filteredUsers}
+            loading={loading}
+            hasLoaded={hasLoaded}
+          />
+        ) : (
+          <UserCardsGrid
+            users={filteredUsers}
+            loading={loading}
+            page={userCardPage}
+            pageSize={USER_CARD_PAGE_SIZE}
+            onPageChange={setUserCardPage}
+            onEdit={openEditModal}
+            onDelete={removeUser}
+          />
+        )}
+        <CreateUserModal
+          open={isCreateOpen}
+          onCancel={closeCreateModal}
+          onSubmit={submitCreate}
+          form={createForm}
         />
-      )}
-      <CreateUserModal
-        open={isCreateOpen}
-        onCancel={closeCreateModal}
-        onSubmit={submitCreate}
-        form={createForm}
-      />
-      <EditUserModal
-        user={editingUser}
-        open={Boolean(editingUser)}
-        onCancel={closeEditModal}
-        onSubmit={submitUpdate}
-        form={updateForm}
-      />
-    </Space>
+        <EditUserModal
+          user={editingUser}
+          open={Boolean(editingUser)}
+          onCancel={closeEditModal}
+          onSubmit={submitUpdate}
+          form={updateForm}
+        />
+      </Space>
+    </>
   )
 }
 
@@ -224,3 +246,6 @@ Dashboard.displayName = 'Dashboard'
 
 export { Dashboard }
 export default Dashboard
+
+
+

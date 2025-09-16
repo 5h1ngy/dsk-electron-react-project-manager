@@ -13,12 +13,12 @@ export interface BrandTokens {
 }
 
 export const ACCENT_PRESETS = [
-  '#00F5D4',
-  '#00D4FF',
-  '#5BFF70',
-  '#FF00C8',
-  '#FFB400',
-  '#C0FF00'
+  '#2563EB',
+  '#6366F1',
+  '#0EA5E9',
+  '#10B981',
+  '#F97316',
+  '#F43F5E'
 ] as const
 
 export const buildBrandTokens = (
@@ -63,3 +63,6 @@ export const resolveAccentForeground = (accentColor: string, palette: PaletteTok
   const brightness = (r * 299 + g * 587 + b * 114) / 1000
   return brightness > 140 ? palette.textOnBright : palette.textOnDark
 }
+
+
+

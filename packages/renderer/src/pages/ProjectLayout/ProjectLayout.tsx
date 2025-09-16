@@ -21,6 +21,7 @@ import type {
   ProjectRouteContext,
   ProjectTabKey
 } from '@renderer/pages/ProjectLayout/ProjectLayout.types'
+import { usePrimaryBreadcrumb } from '@renderer/layout/Shell/hooks/usePrimaryBreadcrumb'
 import { ShellHeaderPortal } from '@renderer/layout/Shell/ShellHeader.context'
 
 export const useProjectRouteContext = (): ProjectRouteContext =>
@@ -69,6 +70,7 @@ const ProjectLayout = (): JSX.Element => {
       }),
     [t, project, tabLabelMap, activeKey, navigate]
   )
+  const emphasizedBreadcrumbItems = usePrimaryBreadcrumb(breadcrumbItems)
 
   if (!projectId) {
     return (
@@ -126,7 +128,7 @@ const ProjectLayout = (): JSX.Element => {
   return (
     <>
       <ShellHeaderPortal>
-        <Breadcrumb items={breadcrumbItems} />
+        <Breadcrumb items={emphasizedBreadcrumbItems} />
       </ShellHeaderPortal>
       <Space direction="vertical" size={24} style={{ width: '100%' }}>
         {messageContext}
@@ -200,3 +202,9 @@ ProjectLayout.displayName = 'ProjectLayout'
 
 export { ProjectLayout }
 export default ProjectLayout
+
+
+
+
+
+

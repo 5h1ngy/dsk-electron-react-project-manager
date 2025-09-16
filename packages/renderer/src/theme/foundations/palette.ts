@@ -21,15 +21,15 @@ const LIGHT_PALETTE: PaletteTokens = {
   surfaceBase: '#f7f9fc',
   surfaceContainer: '#ffffff',
   surfaceElevated: '#ffffff',
-  surfaceMuted: '#eef2ff',
+  surfaceMuted: '#f1f5f9',
   surfaceBackdrop: 'rgba(15, 23, 42, 0.08)',
   textPrimary: '#1f2937',
-  textSecondary: '#4b5563',
+  textSecondary: '#475569',
   textInverse: '#ffffff',
   textOnBright: '#0f172a',
   textOnDark: '#ffffff',
-  borderSubtle: '#d0d7e1',
-  borderStrong: '#e3e8ef'
+  borderSubtle: '#d4dce7',
+  borderStrong: '#e2e8f0'
 }
 
 const DARK_PALETTE: PaletteTokens = {
@@ -50,3 +50,4 @@ const DARK_PALETTE: PaletteTokens = {
 
 export const resolvePalette = (mode: ThemeMode): PaletteTokens =>
   mode === 'dark' ? DARK_PALETTE : LIGHT_PALETTE
+

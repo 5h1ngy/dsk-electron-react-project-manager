@@ -1,0 +1,107 @@
+import { Avatar, Button, Dropdown, Flex, Typography } from 'antd'
+import { useCallback, useMemo, useState, type JSX, type ReactNode } from 'react'
+
+import { AccountMenu } from '@renderer/layout/Shell/components/AccountMenu'
+import { getInitials } from '@renderer/layout/Shell/utils/userIdentity'
+import ShellView from '@renderer/layout/Shell/Shell.view'
+import { useShellLayout } from '@renderer/layout/Shell/Shell.hooks'
+import { useShellStyles } from '@renderer/layout/Shell/Shell.style'
+import { ShellHeaderProvider } from '@renderer/layout/Shell/ShellHeader.context'
+import type { ShellProps } from '@renderer/layout/Shell/Shell.types'
+
+const ShellContainer = ({ currentUser, onLogout, children }: ShellProps): JSX.Element => {
+  const {
+    collapsed,
+    menuTheme,
+    menuItems,
+    selectedKeys,
+    handleMenuSelect,
+    handleToggleCollapse,
+    handleCollapseChange,
+    handleBreakpoint,
+    labels
+  } = useShellLayout()
+
+  const styles = useShellStyles({
+    menuTheme,
+    collapsed,
+    displayName: currentUser.displayName
+  })
+  const { accountButtonStyle, accountAvatarStyle, dropdownWidth, token } = styles
+
+  const [headerContent, setHeaderContent] = useState<ReactNode>(null)
+  const handleHeaderChange = useCallback((content: ReactNode) => {
+    setHeaderContent(content)
+  }, [])
+
+  const accountMenu = useMemo(
+    () => (
+      <AccountMenu
+        displayName={currentUser.displayName}
+        username={currentUser.username}
+        onLogout={onLogout}
+        labels={labels}
+        width={dropdownWidth}
+      />
+    ),
+    [currentUser.displayName, currentUser.username, labels, onLogout, dropdownWidth]
+  )
+
+  const accountButton = useMemo(
+    () => (
+      <Dropdown trigger={['click']} dropdownRender={() => accountMenu} placement="topLeft">
+        <Button
+          block
+          size="large"
+          style={accountButtonStyle}
+          aria-label={labels.logout}
+        >
+          <Avatar
+            style={accountAvatarStyle}
+            size={collapsed ? token.controlHeightSM : token.controlHeightLG}
+          >
+            {getInitials(currentUser.displayName)}
+          </Avatar>
+          {!collapsed && (
+            <Flex vertical gap={0} style={{ textAlign: 'left' }}>
+              <Typography.Text strong style={{ fontSize: token.fontSizeSM }}>
+                {currentUser.displayName}
+              </Typography.Text>
+              <Typography.Text type="secondary" style={{ fontSize: token.fontSizeSM }}>
+                {currentUser.username}
+              </Typography.Text>
+            </Flex>
+          )}
+        </Button>
+      </Dropdown>
+    ),
+    [accountAvatarStyle, accountButtonStyle, accountMenu, collapsed, currentUser.displayName, currentUser.username, labels.logout, token.controlHeightLG, token.controlHeightSM, token.fontSizeSM]
+  )
+
+  return (
+    <ShellHeaderProvider onHeaderChange={handleHeaderChange}>
+      <ShellView
+        styles={styles}
+        collapsed={collapsed}
+        menuTheme={menuTheme}
+        menuItems={menuItems}
+        selectedKeys={selectedKeys}
+        labels={labels}
+        headerContent={headerContent}
+        accountButton={accountButton}
+        onMenuSelect={handleMenuSelect}
+        onToggleCollapse={handleToggleCollapse}
+        onCollapseChange={handleCollapseChange}
+        onBreakpoint={handleBreakpoint}
+      >
+        {children}
+      </ShellView>
+    </ShellHeaderProvider>
+  )
+}
+
+ShellContainer.displayName = 'ShellContainer'
+
+export { ShellContainer as Shell }
+export default ShellContainer
+

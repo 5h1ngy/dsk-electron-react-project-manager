@@ -13,6 +13,7 @@ import { useProjectsPage } from '@renderer/pages/Projects/hooks/useProjectsPage'
 import { PROJECTS_CONTAINER_STYLE, createProjectsBreadcrumb } from '@renderer/pages/Projects/Projects.helpers'
 import type { ProjectsPageProps } from '@renderer/pages/Projects/Projects.types'
 import { ShellHeaderPortal } from '@renderer/layout/Shell/ShellHeader.context'
+import { usePrimaryBreadcrumb } from '@renderer/layout/Shell/hooks/usePrimaryBreadcrumb'
 
 const ProjectsPage = ({}: ProjectsPageProps): JSX.Element => {
   const { t } = useTranslation('projects')
@@ -62,6 +63,7 @@ const ProjectsPage = ({}: ProjectsPageProps): JSX.Element => {
   }
 
   const breadcrumbItems = useMemo(() => createProjectsBreadcrumb(t), [t])
+  const emphasizedBreadcrumbItems = usePrimaryBreadcrumb(breadcrumbItems)
 
   useEffect(() => {
     if (viewMode === 'cards') {
@@ -79,7 +81,7 @@ const ProjectsPage = ({}: ProjectsPageProps): JSX.Element => {
   return (
     <div style={PROJECTS_CONTAINER_STYLE}>
       <ShellHeaderPortal>
-        <Breadcrumb items={breadcrumbItems} />
+        <Breadcrumb items={emphasizedBreadcrumbItems} />
       </ShellHeaderPortal>
       {messageContext}
       <div>
@@ -158,6 +160,7 @@ ProjectsPage.displayName = 'ProjectsPage'
 
 export { ProjectsPage }
 export default ProjectsPage
+
 
 
 
