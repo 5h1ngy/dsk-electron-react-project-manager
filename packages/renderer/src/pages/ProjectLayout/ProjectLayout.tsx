@@ -1,11 +1,11 @@
-import { ReloadOutlined } from '@ant-design/icons'
+import { ReloadOutlined, SearchOutlined } from '@ant-design/icons'
 import { Breadcrumb, Button, Skeleton, Space, Tabs, Typography } from 'antd'
-import { useMemo } from 'react'
-import type { JSX } from 'react'
+import { useEffect, useMemo, useState, type JSX } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Outlet, useLocation, useNavigate, useOutletContext, useParams } from 'react-router-dom'
+import { Outlet, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 
 import { EmptyState } from '@renderer/components/DataStates'
+import TaskSearchDrawer from '@renderer/components/TaskSearch/TaskSearchDrawer'
 import { useDelayedLoading } from '@renderer/hooks/useDelayedLoading'
 import { useProjectDetails } from '@renderer/pages/Projects/hooks/useProjectDetails'
 import { useTaskModals } from '@renderer/pages/Projects/hooks/useTaskModals'
@@ -23,25 +23,19 @@ import type {
 } from '@renderer/pages/ProjectLayout/ProjectLayout.types'
 import { usePrimaryBreadcrumb } from '@renderer/layout/Shell/hooks/usePrimaryBreadcrumb'
 import { ShellHeaderPortal } from '@renderer/layout/Shell/ShellHeader.context'
-
-export const useProjectRouteContext = (): ProjectRouteContext =>
-  useOutletContext<ProjectRouteContext>()
+import type { TaskDetails } from '@renderer/store/slices/tasks'
 
 const ProjectLayout = (): JSX.Element => {
   const { projectId } = useParams<{ projectId: string }>()
   const location = useLocation()
   const navigate = useNavigate()
+  const [searchParams, setSearchParams] = useSearchParams()
   const { t } = useTranslation('projects')
 
-  const {
-    project,
-    tasks,
-    tasksStatus,
-    projectLoading,
-    refresh,
-    canManageTasks,
-    messageContext
-  } = useProjectDetails(projectId)
+  const { project, tasks, tasksStatus, projectLoading, refresh, canManageTasks, messageContext } =
+    useProjectDetails(projectId)
+
+  const [isSearchOpen, setIsSearchOpen] = useState(false)
 
   const taskModals = useTaskModals({
     project: project ?? null,
@@ -50,13 +44,38 @@ const ProjectLayout = (): JSX.Element => {
     canManageTasks
   })
 
+  useEffect(() => {
+    if (!projectId) {
+      return
+    }
+
+    const taskToFocus = searchParams.get('task')
+    if (!taskToFocus) {
+      return
+    }
+
+    const located = tasks.find((task) => task.id === taskToFocus)
+    if (located) {
+      taskModals.openDetail(located.id)
+      const next = new URLSearchParams(searchParams)
+      next.delete('task')
+      setSearchParams(next, { replace: true })
+      return
+    }
+
+    if (tasksStatus === 'succeeded') {
+      const next = new URLSearchParams(searchParams)
+      next.delete('task')
+      setSearchParams(next, { replace: true })
+    }
+  }, [projectId, searchParams, setSearchParams, taskModals, tasks, tasksStatus])
+
   const showSkeleton = useDelayedLoading(projectLoading)
 
   const basePath = `/projects/${projectId ?? ''}`
   const activeKey = projectId ? resolveActiveTab(location.pathname, basePath) : 'overview'
 
   const tabItems = useMemo(() => buildTabItems(t), [t])
-
   const tabLabelMap = useMemo(() => buildTabLabelMap(t), [t])
 
   const breadcrumbItems = useMemo(
@@ -70,6 +89,7 @@ const ProjectLayout = (): JSX.Element => {
       }),
     [t, project, tabLabelMap, activeKey, navigate]
   )
+
   const emphasizedBreadcrumbItems = usePrimaryBreadcrumb(breadcrumbItems)
 
   if (!projectId) {
@@ -125,6 +145,17 @@ const ProjectLayout = (): JSX.Element => {
     }
   }
 
+  const handleSearchSelect = (task: TaskDetails) => {
+    setIsSearchOpen(false)
+    if (task.projectId !== projectId) {
+      const params = new URLSearchParams()
+      params.set('task', task.id)
+      navigate(`/projects/${task.projectId}?${params.toString()}`)
+      return
+    }
+    taskModals.openDetail(task.id)
+  }
+
   return (
     <>
       <ShellHeaderPortal>
@@ -143,57 +174,70 @@ const ProjectLayout = (): JSX.Element => {
             flexWrap: 'wrap'
           }}
         >
-        {showSkeleton ? (
-          <Space direction="vertical" size={4}>
-            <Skeleton.Input active size="large" style={{ width: 240 }} />
-            <Skeleton.Input active size="small" style={{ width: 120 }} />
+          {showSkeleton ? (
+            <Space direction="vertical" size={4}>
+              <Skeleton.Input active size="large" style={{ width: 240 }} />
+              <Skeleton.Input active size="small" style={{ width: 120 }} />
+            </Space>
+          ) : (
+            <div>
+              <Typography.Title level={3} style={{ marginBottom: 0 }}>
+                {project?.name}
+              </Typography.Title>
+              {project?.key ? (
+                <Typography.Text type="secondary">{project.key}</Typography.Text>
+              ) : null}
+            </div>
+          )}
+          <Space size={12}>
+            <Button
+              icon={<ReloadOutlined />}
+              onClick={refresh}
+              loading={projectLoading}
+              disabled={projectLoading}
+            >
+              {t('details.refresh')}
+            </Button>
+            <Button icon={<SearchOutlined />} onClick={() => setIsSearchOpen(true)}>
+              {t('search.button')}
+            </Button>
           </Space>
-        ) : (
-          <div>
-            <Typography.Title level={3} style={{ marginBottom: 0 }}>
-              {project?.name}
-            </Typography.Title>
-            {project?.key ? (
-              <Typography.Text type="secondary">{project.key}</Typography.Text>
-            ) : null}
-          </div>
-        )}
-        <Button
-          icon={<ReloadOutlined />}
-          onClick={refresh}
-          loading={projectLoading}
-          disabled={projectLoading}
-        >
-          {t('details.refresh')}
-        </Button>
+        </Space>
+        <Tabs
+          activeKey={activeKey}
+          items={tabItems}
+          onChange={handleTabChange}
+          destroyInactiveTabPane
+        />
+        <Outlet context={contextValue} />
       </Space>
-      <Tabs
-        activeKey={activeKey}
-        items={tabItems}
-        onChange={handleTabChange}
-        destroyInactiveTabPane
+      <TaskDetailsModal
+        open={taskModals.isDetailOpen}
+        task={taskModals.detailTask}
+        allowManage={canManageTasks}
+        onClose={taskModals.closeDetail}
+        onEdit={(task) => taskModals.openEdit(task.id)}
+        onDelete={(task) => taskModals.deleteTask(task.id)}
+        deleting={
+          taskModals.deletingTaskId !== null &&
+          taskModals.deletingTaskId === taskModals.detailTask?.id
+        }
       />
-      <Outlet context={contextValue} />
-    </Space>
-    <TaskDetailsModal
-      open={taskModals.isDetailOpen}
-      task={taskModals.detailTask}
-      allowManage={canManageTasks}
-      onClose={taskModals.closeDetail}
-      onEdit={(task) => taskModals.openEdit(task.id)}
-      onDelete={(task) => taskModals.deleteTask(task.id)}
-      deleting={taskModals.deletingTaskId !== null && taskModals.deletingTaskId === taskModals.detailTask?.id}
-    />
-    <TaskFormModal
-      open={taskModals.isEditorOpen}
-      mode={taskModals.editorMode ?? 'create'}
-      onCancel={taskModals.closeEditor}
-      onSubmit={taskModals.submitEditor}
-      form={taskModals.editorForm}
-      submitting={taskModals.submitting}
-      assigneeOptions={taskModals.assigneeOptions}
-      taskTitle={taskModals.editorTask?.title}
-    />
+      <TaskFormModal
+        open={taskModals.isEditorOpen}
+        mode={taskModals.editorMode ?? 'create'}
+        onCancel={taskModals.closeEditor}
+        onSubmit={taskModals.submitEditor}
+        form={taskModals.editorForm}
+        submitting={taskModals.submitting}
+        assigneeOptions={taskModals.assigneeOptions}
+        taskTitle={taskModals.editorTask?.title}
+      />
+      <TaskSearchDrawer
+        open={isSearchOpen}
+        onClose={() => setIsSearchOpen(false)}
+        onSelect={handleSearchSelect}
+      />
     </>
   )
 }
@@ -202,9 +246,3 @@ ProjectLayout.displayName = 'ProjectLayout'
 
 export { ProjectLayout }
 export default ProjectLayout
-
-
-
-
-
-

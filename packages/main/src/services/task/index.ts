@@ -442,7 +442,7 @@ export class TaskService {
       `SELECT t.id as taskId
          FROM tasks_fts f
          JOIN tasks t ON t.id = f.taskId
-         WHERE f MATCH :query
+         WHERE tasks_fts MATCH :query
            AND t.deletedAt IS NULL
            ${whereClause}`,
       {

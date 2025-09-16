@@ -1,24 +1,24 @@
 {
   "users": {
     "profiles": [
-      { "roles": ["Maintainer", "Contributor"], "count": 20 },
-      { "roles": ["Maintainer"], "count": 10 },
-      { "roles": ["Contributor"], "count": 40 },
-      { "roles": ["Contributor", "Viewer"], "count": 20 },
-      { "roles": ["Viewer"], "count": 30 },
-      { "roles": ["Maintainer", "Viewer"], "count": 10 }
+      { "roles": ["Maintainer", "Contributor"], "count": 6 },
+      { "roles": ["Maintainer"], "count": 4 },
+      { "roles": ["Contributor"], "count": 14 },
+      { "roles": ["Contributor", "Viewer"], "count": 6 },
+      { "roles": ["Viewer"], "count": 10 },
+      { "roles": ["Maintainer", "Viewer"], "count": 4 }
     ]
   },
   "projects": {
-    "min": 3,
-    "max": 60,
+    "min": 4,
+    "max": 12,
     "tasksPerProject": { "min": 6, "max": 12 },
-    "backlogBufferMax": 2,
+    "backlogBufferMax": 1,
     "tagsPerProject": { "min": 1, "max": 3 },
     "members": {
       "maintainerAdmin": { "min": 0, "max": 1 },
-      "contributor": { "min": 1, "max": 3 },
-      "viewer": { "min": 0, "max": 2 }
+      "contributor": { "min": 1, "max": 2 },
+      "viewer": { "min": 0, "max": 1 }
     }
   },
   "comments": {

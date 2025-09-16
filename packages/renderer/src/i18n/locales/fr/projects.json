@@ -1,274 +1,295 @@
 {
-    "title": "Projets",
-    "viewSwitcher": {
-        "table": "Vue tableau",
-        "cards": "Vue cartes"
+  "title": "Projets",
+  "viewSwitcher": {
+    "table": "Vue tableau",
+    "cards": "Vue cartes"
+  },
+  "actions": {
+    "refresh": "Actualiser",
+    "refreshHint": "Recharger la liste des projets",
+    "create": "Nouveau projet",
+    "createHint": "Creer un nouveau projet",
+    "edit": "Modifier",
+    "deleteTitle": "Supprimer le projet",
+    "deleteDescription": "Voulez-vous vraiment supprimer {{name}} ?",
+    "deleteConfirm": "Supprimer",
+    "cancel": "Annuler"
+  },
+  "filters": {
+    "searchPlaceholder": "Rechercher par nom, cle ou tag",
+    "tagsPlaceholder": "Filtrer par tags",
+    "createdRange": {
+      "start": "Cree a partir du",
+      "end": "Cree jusqu'au"
+    },
+    "roleOptions": {
+      "all": "Tous les roles",
+      "admin": "Administrateur",
+      "edit": "Editeur",
+      "view": "Lecteur"
+    },
+    "ownedOnly": "Crees par moi"
+  },
+  "permissions": {
+    "createDenied": "Seuls les administrateurs ou mainteneurs peuvent creer des projets.",
+    "createDeniedTooltip": "Vous n'avez pas les droits pour creer des projets.",
+    "updateDenied": "Seuls les administrateurs ou mainteneurs peuvent modifier des projets.",
+    "manageMembersDenied": "Seuls les administrateurs ou mainteneurs peuvent gerer les membres.",
+    "tasksCreateDenied": "Vous n'avez pas les droits pour creer des taches dans ce projet.",
+    "tasksUpdateDenied": "Vous n'avez pas les droits pour modifier les taches de ce projet.",
+    "deleteDenied": "Seuls les administrateurs peuvent supprimer des projets."
+  },
+  "errors": {
+    "generic": "Echec de l'operation"
+  },
+  "create": {
+    "success": "Projet cree"
+  },
+  "update": {
+    "success": "Projet mis a jour"
+  },
+  "members": {
+    "addSuccess": "Membre ajoute",
+    "removeSuccess": "Membre supprime"
+  },
+  "list": {
+    "loading": "Chargement des projets...",
+    "empty": "Aucun projet trouve",
+    "noTags": "Aucun tag",
+    "memberCount_one": "{{count}} membre",
+    "memberCount_other": "{{count}} membres",
+    "createdOn": "Cree le {{date}}",
+    "columns": {
+      "key": "Cle",
+      "name": "Nom",
+      "tags": "Tags",
+      "role": "Role",
+      "members": "Membres",
+      "createdAt": "Cree",
+      "actions": "Actions"
+    },
+    "role": {
+      "admin": "Administrateur",
+      "edit": "Editeur",
+      "view": "Lecteur"
+    }
+  },
+  "breadcrumbs": {
+    "projects": "Projets",
+    "overview": "Apercu",
+    "tasks": "Taches",
+    "board": "Kanban"
+  },
+  "cards": {
+    "noDescription": "Aucune description"
+  },
+  "details": {
+    "title": "Details du projet",
+    "loading": "Chargement...",
+    "refresh": "Actualiser",
+    "tabs": {
+      "overview": "Apercu",
+      "tasks": "Taches",
+      "board": "Kanban"
+    },
+    "overview": {
+      "metrics": {
+        "title": "Vue d'ensemble",
+        "total": "Taches totales",
+        "active": "En cours",
+        "done": "Terminees"
+      }
+    },
+    "tasksTitle": "Taches du projet",
+    "kanbanTitle": "Tableau Kanban",
+    "tasksLoading": "Chargement des taches...",
+    "tasksEmpty": "Aucune tache disponible",
+    "tasksSearchPlaceholder": "Rechercher des taches...",
+    "filters": {
+      "status": "Statut",
+      "statusOptions": {
+        "all": "Tous les statuts"
+      },
+      "priority": "Priorite",
+      "priorityOptions": {
+        "all": "Toutes les priorites"
+      },
+      "assignee": "Assigne",
+      "assigneeOptions": {
+        "all": "Tous les assignes",
+        "unassigned": "Non assigne"
+      },
+      "dueDateRange": {
+        "start": "Echeance a partir du",
+        "end": "Echeance jusqu'au"
+      }
+    },
+    "noAssignee": "Non assigne",
+    "noDueDate": "Pas de date d'echeance",
+    "status": {
+      "todo": "A faire",
+      "in_progress": "En cours",
+      "blocked": "Bloque",
+      "done": "Termine"
+    },
+    "priority": {
+      "low": "Priorite basse",
+      "medium": "Priorite moyenne",
+      "high": "Priorite elevee",
+      "critical": "Priorite critique"
+    },
+    "summary": {
+      "title": "Resume du projet",
+      "empty": "Selectionnez un projet pour voir les details",
+      "createdOn": "Cree",
+      "createdBy": "{{date}} par {{user}}",
+      "description": "Description",
+      "noDescription": "Aucune description disponible",
+      "tags": "Tags",
+      "noTags": "Aucun tag",
+      "members": "Membres",
+      "noMembers": "Aucun membre assigne"
+    },
+    "tasksColumns": {
+      "key": "Cle",
+      "title": "Titre",
+      "status": "Statut",
+      "priority": "Priorite",
+      "assignee": "Assigne",
+      "dueDate": "Echeance"
+    },
+    "drawer": {
+      "title": "Details de la tache",
+      "description": "Description",
+      "assignment": "Assignation",
+      "owner": "Proprietaire : {{owner}}",
+      "assignee": "Assigne : {{assignee}}",
+      "timing": "Chronologie",
+      "createdAt": "Cree le {{date}}",
+      "dueDate": "Echeance le {{date}}",
+      "dueDate": "Echeance le {{date}}",
+      "dueDate": "Echeance le {{date}}",
+      "empty": "Selectionnez une tache pour voir les details"
+    },
+    "missingId": "Identifiant du projet manquant",
+    "notFound": "Projet introuvable",
+    "backToList": "Retour aux projets"
+  },
+  "board": {
+    "empty": "Selectionnez un projet pour ouvrir le Kanban",
+    "permissions": {
+      "title": "Permissions limitees",
+      "description": "Vous n'avez pas les droits pour modifier les taches de ce projet."
+    },
+    "columns": {
+      "todo": "A faire",
+      "inProgress": "En cours",
+      "blocked": "Bloque",
+      "done": "Termine"
+    },
+    "composer": {
+      "title": "Creer une nouvelle tache",
+      "titlePlaceholder": "Titre de la tache",
+      "descriptionPlaceholder": "Description (optionnelle)",
+      "submit": "Ajouter la tache"
+    }
+  },
+  "notifications": {
+    "taskCreated": "Tache creee",
+    "taskUpdated": "Tache mise a jour"
+  },
+  "form": {
+    "createTitle": "Nouveau projet",
+    "fields": {
+      "key": {
+        "placeholder": "ex. PROJ",
+        "label": "Cle"
+      },
+      "name": {
+        "placeholder": "Nom du projet",
+        "label": "Nom"
+      },
+      "description": {
+        "placeholder": "Description (optionnelle)",
+        "label": "Description"
+      },
+      "tags": {
+        "placeholder": "Ajouter des tags (Entrer pour valider)",
+        "label": "Tags"
+      }
+    },
+    "createAction": "Creer",
+    "editTitle": "Modifier {{name}}",
+    "editTitleFallback": "Modifier le projet",
+    "updateAction": "Enregistrer"
+  },
+  "delete": {
+    "success": "Projet supprime"
+  },
+  "tasks": {
+    "columns": {
+      "actions": "Actions"
     },
     "actions": {
-        "refresh": "Actualiser",
-        "refreshHint": "Recharger la liste des projets",
-        "create": "Nouveau projet",
-        "createHint": "Creer un nouveau projet",
-        "edit": "Modifier",
-        "deleteTitle": "Supprimer le projet",
-        "deleteDescription": "Voulez-vous vraiment supprimer {{name}} ?",
-        "deleteConfirm": "Supprimer",
-        "cancel": "Annuler"
-    },
-    "filters": {
-        "searchPlaceholder": "Rechercher par nom, cle ou tag",
-        "tagsPlaceholder": "Filtrer par tags",
-        "createdRange": {
-            "start": "Cree a partir du",
-            "end": "Cree jusqu'au"
-        },
-        "roleOptions": {
-            "all": "Tous les roles",
-            "admin": "Administrateur",
-            "edit": "Editeur",
-            "view": "Lecteur"
-        },
-        "ownedOnly": "Crees par moi"
-    },
-    "permissions": {
-        "createDenied": "Seuls les administrateurs ou mainteneurs peuvent creer des projets.",
-        "createDeniedTooltip": "Vous n'avez pas les droits pour creer des projets.",
-        "updateDenied": "Seuls les administrateurs ou mainteneurs peuvent modifier des projets.",
-        "manageMembersDenied": "Seuls les administrateurs ou mainteneurs peuvent gerer les membres.",
-        "tasksCreateDenied": "Vous n'avez pas les droits pour creer des taches dans ce projet.",
-        "tasksUpdateDenied": "Vous n'avez pas les droits pour modifier les taches de ce projet.",
-        "deleteDenied": "Seuls les administrateurs peuvent supprimer des projets."
-    },
-    "errors": {
-        "generic": "Echec de l'operation"
-    },
-    "create": {
-        "success": "Projet cree"
-    },
-    "update": {
-        "success": "Projet mis a jour"
-    },
-    "members": {
-        "addSuccess": "Membre ajoute",
-        "removeSuccess": "Membre supprime"
-    },
-    "list": {
-        "loading": "Chargement des projets...",
-        "empty": "Aucun projet trouve",
-        "noTags": "Aucun tag",
-        "memberCount_one": "{{count}} membre",
-        "memberCount_other": "{{count}} membres",
-        "createdOn": "Cree le {{date}}",
-        "columns": {
-            "key": "Cle",
-            "name": "Nom",
-            "tags": "Tags",
-            "role": "Role",
-            "members": "Membres",
-            "createdAt": "Cree",
-            "actions": "Actions"
-        },
-        "role": {
-            "admin": "Administrateur",
-            "edit": "Editeur",
-            "view": "Lecteur"
-        }
-    },
-    "breadcrumbs": {
-        "projects": "Projets",
-        "overview": "Apercu",
-        "tasks": "Taches",
-        "board": "Kanban"
-    },
-    "cards": {
-        "noDescription": "Aucune description"
-    },
-    "details": {
-        "title": "Details du projet",
-        "loading": "Chargement...",
-        "refresh": "Actualiser",
-        "tabs": {
-            "overview": "Apercu",
-            "tasks": "Taches",
-            "board": "Kanban"
-        },
-        "overview": {
-            "metrics": {
-                "title": "Vue d'ensemble",
-                "total": "Taches totales",
-                "active": "En cours",
-                "done": "Terminees"
-            }
-        },
-        "tasksTitle": "Taches du projet",
-        "kanbanTitle": "Tableau Kanban",
-        "tasksLoading": "Chargement des taches...",
-        "tasksEmpty": "Aucune tache disponible",
-        "tasksSearchPlaceholder": "Rechercher des taches...",
-        "filters": {
-            "status": "Statut",
-            "statusOptions": {
-                "all": "Tous les statuts"
-            },
-            "priority": "Priorite",
-            "priorityOptions": {
-                "all": "Toutes les priorites"
-            },
-            "assignee": "Assigne",
-            "assigneeOptions": {
-                "all": "Tous les assignes",
-                "unassigned": "Non assigne"
-            },
-            "dueDateRange": {
-                "start": "Echeance a partir du",
-                "end": "Echeance jusqu'au"
-            }
-        },
-        "noAssignee": "Non assigne",
-        "noDueDate": "Pas de date d'echeance",
-        "status": {
-            "todo": "A faire",
-            "in_progress": "En cours",
-            "blocked": "Bloque",
-            "done": "Termine"
-        },
-        "priority": {
-            "low": "Priorite basse",
-            "medium": "Priorite moyenne",
-            "high": "Priorite elevee",
-            "critical": "Priorite critique"
-        },
-        "summary": {
-            "title": "Resume du projet",
-            "empty": "Selectionnez un projet pour voir les details",
-            "createdOn": "Cree",
-            "createdBy": "{{date}} par {{user}}",
-            "description": "Description",
-            "noDescription": "Aucune description disponible",
-            "tags": "Tags",
-            "noTags": "Aucun tag",
-            "members": "Membres",
-            "noMembers": "Aucun membre assigne"
-        },
-        "tasksColumns": {
-            "key": "Cle",
-            "title": "Titre",
-            "status": "Statut",
-            "priority": "Priorite",
-            "assignee": "Assigne",
-            "dueDate": "Echeance"
-        },
-        "drawer": {
-            "title": "Details de la tache",
-            "description": "Description",
-            "assignment": "Assignation",
-            "owner": "Proprietaire : {{owner}}",
-            "assignee": "Assigne : {{assignee}}",
-            "timing": "Chronologie",
-            "createdAt": "Cree le {{date}}",
-            "dueDate": "Echeance le {{date}}",
-            "empty": "Selectionnez une tache pour voir les details"
-        },
-        "missingId": "Identifiant du projet manquant",
-        "notFound": "Projet introuvable",
-        "backToList": "Retour aux projets"
-    },
-    "board": {
-        "empty": "Selectionnez un projet pour ouvrir le Kanban",
-        "permissions": {
-            "title": "Permissions limitees",
-            "description": "Vous n'avez pas les droits pour modifier les taches de ce projet."
-        },
-        "columns": {
-            "todo": "A faire",
-            "inProgress": "En cours",
-            "blocked": "Bloque",
-            "done": "Termine"
-        },
-        "composer": {
-            "title": "Creer une nouvelle tache",
-            "titlePlaceholder": "Titre de la tache",
-            "descriptionPlaceholder": "Description (optionnelle)",
-            "submit": "Ajouter la tache"
-        }
-    },
-    "notifications": {
-        "taskCreated": "Tache creee",
-        "taskUpdated": "Tache mise a jour"
+      "create": "Nouvelle tache",
+      "edit": "Modifier",
+      "delete": "Supprimer",
+      "deleteTitle": "Supprimer la tache",
+      "deleteDescription": "Voulez-vous vraiment supprimer \"{{title}}\" ?",
+      "deleteConfirm": "Supprimer",
+      "cancel": "Annuler"
     },
     "form": {
-        "createTitle": "Nouveau projet",
-        "fields": {
-            "key": {
-                "placeholder": "ex. PROJ",
-                "label": "Cle"
-            },
-            "name": {
-                "placeholder": "Nom du projet",
-                "label": "Nom"
-            },
-            "description": {
-                "placeholder": "Description (optionnelle)",
-                "label": "Description"
-            },
-            "tags": {
-                "placeholder": "Ajouter des tags (Entrer pour valider)",
-                "label": "Tags"
-            }
-        },
-        "createAction": "Creer",
-        "editTitle": "Modifier {{name}}",
-        "editTitleFallback": "Modifier le projet",
-        "updateAction": "Enregistrer"
+      "createTitle": "Nouvelle tache",
+      "editTitle": "Modifier {{title}}",
+      "createAction": "Creer la tache",
+      "updateAction": "Enregistrer",
+      "fields": {
+        "title": "Titre",
+        "description": "Description",
+        "status": "Statut",
+        "priority": "Priorite",
+        "assignee": "Assignation",
+        "dueDate": "Date limite"
+      },
+      "placeholders": {
+        "title": "Titre de la tache",
+        "description": "Description (optionnelle)",
+        "assignee": "Selectionnez un responsable",
+        "dueDate": "Choisir la date limite"
+      }
     },
-    "delete": {
-        "success": "Projet supprime"
+    "messages": {
+      "createSuccess": "Tache creee",
+      "updateSuccess": "Tache mise a jour",
+      "deleteSuccess": "Tache supprimee",
+      "notFound": "Tache introuvable"
     },
-    "tasks": {
-        "columns": {
-            "actions": "Actions"
-        },
-        "actions": {
-            "create": "Nouvelle tache",
-            "edit": "Modifier",
-            "delete": "Supprimer",
-            "deleteTitle": "Supprimer la tache",
-            "deleteDescription": "Voulez-vous vraiment supprimer \"{{title}}\" ?",
-            "deleteConfirm": "Supprimer",
-            "cancel": "Annuler"
-        },
-        "form": {
-            "createTitle": "Nouvelle tache",
-            "editTitle": "Modifier {{title}}",
-            "createAction": "Creer la tache",
-            "updateAction": "Enregistrer",
-            "fields": {
-                "title": "Titre",
-                "description": "Description",
-                "status": "Statut",
-                "priority": "Priorite",
-                "assignee": "Assignation",
-                "dueDate": "Date limite"
-            },
-            "placeholders": {
-                "title": "Titre de la tache",
-                "description": "Description (optionnelle)",
-                "assignee": "Selectionnez un responsable",
-                "dueDate": "Choisir la date limite"
-            }
-        },
-        "messages": {
-            "createSuccess": "Tache creee",
-            "updateSuccess": "Tache mise a jour",
-            "deleteSuccess": "Tache supprimee",
-            "notFound": "Tache introuvable"
-        },
-        "details": {
-            "description": "Description",
-            "noDescription": "Aucune description disponible",
-            "owner": "Proprietaire : {{owner}}",
-            "createdAt": "Cree le {{date}}",
-            "empty": "Aucune tache selectionnee"
-        }
+    "details": {
+      "description": "Description",
+      "noDescription": "Aucune description disponible",
+      "owner": "Proprietaire : {{owner}}",
+      "assignee": "Assigne : {{assignee}}",
+      "createdAt": "Cree le {{date}}",
+      "dueDate": "Echeance le {{date}}",
+      "empty": "Aucune tache selectionnee",
+      "comments": {
+        "title": "Commentaires",
+        "count_one": "{{count}} commentaire",
+        "count_other": "{{count}} commentaires",
+        "empty": "Aucun commentaire",
+        "addLabel": "Ajouter un commentaire",
+        "validation": "Saisissez un commentaire",
+        "submit": "Publier"
+      }
     }
+  },
+  "search": {
+    "button": "Rechercher des taches",
+    "title": "Recherche globale",
+    "placeholder": "Rechercher par titre ou description",
+    "submit": "Rechercher",
+    "empty": "Aucune tache trouvee",
+    "openTask": "Ouvrir"
+  }
 }
