@@ -18,7 +18,8 @@ import {
   Tag,
   Tooltip,
   Typography,
-  message
+  message,
+  theme
 } from 'antd'
 import {
   DeleteOutlined,
@@ -400,11 +401,11 @@ const ProjectNotesPage = (): ReactElement => {
                   <Typography.Link onClick={() => handleViewerOpen(note.id)}>{note.title}</Typography.Link>
                   {note.isPrivate ? (
                     <Tooltip title={t('notes.labels.private')}>
-                      <LockOutlined style={{ color: '#f97316' }} />
+                      <LockOutlined style={{ color: token.colorWarning }} />
                     </Tooltip>
                   ) : (
                     <Tooltip title={t('notes.labels.public')}>
-                      <UnlockOutlined style={{ color: '#10b981' }} />
+                      <UnlockOutlined style={{ color: token.colorSuccess }} />
                     </Tooltip>
                   )}
                 </Space>
@@ -650,6 +651,7 @@ const NoteDetailsModal = ({
   onOpenTask
 }: NoteDetailsModalProps): ReactElement => {
   const { t } = useTranslation('projects')
+  const { token } = theme.useToken()
   const dispatch = useAppDispatch()
   const [isEditing, setIsEditing] = useState(false)
   const detailState = useAppSelector(noteId ? selectNoteDetailsState(noteId) : () => null)

@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState } from 'react'
-import { Button, Input, Segmented, Space, Tooltip } from 'antd'
+import { Button, Input, Segmented, Space, Tooltip, theme } from 'antd'
 import {
   BoldOutlined,
   ItalicOutlined,
@@ -15,6 +15,7 @@ import remarkGfm from 'remark-gfm'
 import rehypeSanitize from 'rehype-sanitize'
 import type { TextAreaRef } from 'antd/es/input/TextArea'
 import './markdown.css'
+import { useThemeTokens } from '@renderer/theme/hooks/useThemeTokens'
 
 export interface MarkdownEditorProps {
   value: string
@@ -37,6 +38,8 @@ export const MarkdownEditor = ({
 }: MarkdownEditorProps) => {
   const [mode, setMode] = useState<EditorMode>('write')
   const textareaRef = useRef<TextAreaRef | null>(null)
+  const { token } = theme.useToken()
+  const { spacing } = useThemeTokens()
 
   const emitCursorChange = () => {
     if (!onCursorChange) {
@@ -181,14 +184,20 @@ export const MarkdownEditor = ({
       ) : (
         <div
           className="markdown-body"
-          style={{ minHeight: 160, padding: 12, border: '1px solid #d9d9d9', borderRadius: 8 }}
+          style={{
+            minHeight: 160,
+            padding: spacing.md,
+            border: `${token.lineWidth}px solid ${token.colorBorderSecondary}`,
+            borderRadius: token.borderRadiusLG,
+            background: token.colorBgContainer
+          }}
         >
           {value.trim() ? (
             <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeSanitize]}>
               {value}
             </ReactMarkdown>
           ) : (
-            <span style={{ color: '#9ca3af' }}>Nessun contenuto da mostrare</span>
+            <span style={{ color: token.colorTextQuaternary }}>Nessun contenuto da mostrare</span>
           )}
         </div>
       )}

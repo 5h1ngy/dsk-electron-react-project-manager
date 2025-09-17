@@ -14,7 +14,8 @@ import {
   Tag,
   Tooltip,
   Typography,
-  message
+  message,
+  theme
 } from 'antd'
 import {
   CalendarOutlined,
@@ -82,6 +83,7 @@ export const TaskDetailsModal = ({
   assigneeOptions = []
 }: TaskDetailsModalProps): JSX.Element => {
   const { t, i18n } = useTranslation('projects')
+  const { token } = theme.useToken()
   const dispatch = useAppDispatch()
   const badgeTokens = useSemanticBadges()
   const navigate = useNavigate()
@@ -566,7 +568,7 @@ export const TaskDetailsModal = ({
 
           <Space size={24} wrap>
             <Space size={6} align="center">
-              <UserOutlined style={{ color: '#6366f1' }} aria-hidden />
+              <UserOutlined style={{ color: token.colorPrimary }} aria-hidden />
               <Typography.Text type="secondary">
                 {t('tasks.details.owner', {
                   owner: task.owner?.displayName ?? 'N/A'
@@ -574,7 +576,7 @@ export const TaskDetailsModal = ({
               </Typography.Text>
             </Space>
             <Space size={6} align="center">
-              <UserOutlined style={{ color: '#10b981' }} aria-hidden />
+              <UserOutlined style={{ color: token.colorSuccess }} aria-hidden />
               <Typography.Text type="secondary">
                 {t('tasks.details.assignee', {
                   assignee: task.assignee?.displayName ?? t('details.noAssignee')
@@ -585,7 +587,7 @@ export const TaskDetailsModal = ({
 
           <Space size={24} wrap>
             <Space size={6} align="center">
-              <CalendarOutlined style={{ color: '#0ea5e9' }} aria-hidden />
+              <CalendarOutlined style={{ color: token.colorInfo }} aria-hidden />
               <Typography.Text type="secondary">
                 {t('tasks.details.createdAt', {
                   date: formatDate(task.createdAt, i18n.language)
@@ -593,7 +595,7 @@ export const TaskDetailsModal = ({
               </Typography.Text>
             </Space>
             <Space size={6} align="center">
-              <CalendarOutlined style={{ color: '#f97316' }} aria-hidden />
+              <CalendarOutlined style={{ color: token.colorWarning }} aria-hidden />
               <Typography.Text type="secondary">
                 {task.dueDate
                   ? t('tasks.details.dueDate', {

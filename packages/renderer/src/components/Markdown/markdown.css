@@ -31,14 +31,14 @@
 
 .markdown-body code {
   font-family: 'Fira Code', Consolas, 'Courier New', monospace;
-  background-color: #f3f4f6;
+  background-color: var(--markdown-code-bg, #f3f4f6);
   padding: 0.1em 0.3em;
   border-radius: 4px;
 }
 
 .markdown-body pre {
-  background-color: #f9fafb;
-  border: 1px solid #e5e7eb;
+  background-color: var(--markdown-pre-bg, #f9fafb);
+  border: 1px solid var(--markdown-code-border, #e5e7eb);
   border-radius: 8px;
   padding: 12px;
   overflow-x: auto;
@@ -50,13 +50,13 @@
 }
 
 .markdown-body blockquote {
-  border-left: 3px solid #d1d5db;
+  border-left: 3px solid var(--markdown-blockquote-border, #d1d5db);
   margin: 0.8em 0;
   padding-left: 12px;
-  color: #6b7280;
+  color: var(--markdown-blockquote-color, #6b7280);
   font-style: italic;
 }
 
 .markdown-body a {
-  color: #2563eb;
+  color: var(--markdown-link-color, #2563eb);
 }

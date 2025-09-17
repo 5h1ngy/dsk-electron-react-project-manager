@@ -20,7 +20,23 @@ const BodyStyleSynchronizer = () => {
     body.style.color = token.colorTextBase
     body.style.fontFamily = token.fontFamily
     documentElement.style.backgroundColor = token.colorBgLayout
-  }, [token.colorBgLayout, token.colorTextBase, token.fontFamily])
+    documentElement.style.setProperty('--markdown-code-bg', token.colorFillTertiary)
+    documentElement.style.setProperty('--markdown-pre-bg', token.colorFillSecondary)
+    documentElement.style.setProperty('--markdown-code-border', token.colorBorderSecondary)
+    documentElement.style.setProperty('--markdown-blockquote-border', token.colorBorder)
+    documentElement.style.setProperty('--markdown-blockquote-color', token.colorTextSecondary)
+    documentElement.style.setProperty('--markdown-link-color', token.colorLink)
+  }, [
+    token.colorBgLayout,
+    token.colorTextBase,
+    token.fontFamily,
+    token.colorFillTertiary,
+    token.colorFillSecondary,
+    token.colorBorderSecondary,
+    token.colorBorder,
+    token.colorTextSecondary,
+    token.colorLink
+  ])
 
   return null
 }

@@ -8,7 +8,8 @@ import {
   Space,
   Tag,
   Tooltip,
-  Typography
+  Typography,
+  theme
 } from 'antd'
 import { useSemanticBadges, buildBadgeStyle } from '@renderer/theme/hooks/useSemanticBadges'
 import {
@@ -56,6 +57,7 @@ export const UserCardsGrid = ({
   const { t } = useTranslation('dashboard')
   const showSkeleton = useDelayedLoading(loading)
   const badgeTokens = useSemanticBadges()
+  const { token } = theme.useToken()
 
   const items = useMemo(() => {
     const start = (page - 1) * pageSize
@@ -145,7 +147,7 @@ export const UserCardsGrid = ({
                 </Space>
                 {user.lastLoginAt ? (
                   <Space size={6} align="center">
-                    <ClockCircleOutlined style={{ color: '#64748b' }} aria-hidden />
+                    <ClockCircleOutlined style={{ color: token.colorTextSecondary }} aria-hidden />
                     <Typography.Text type="secondary">
                       {t('filters.users.lastLogin', {
                         defaultValue: 'Last login: {{date}}',

@@ -9,7 +9,8 @@ import {
   Space,
   Tag,
   Tooltip,
-  Typography
+  Typography,
+  theme
 } from 'antd'
 import { useMemo, type JSX } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -53,6 +54,7 @@ export const ProjectCardsGrid = ({
   const { t, i18n } = useTranslation('projects')
   const showSkeleton = useDelayedLoading(loading)
   const badgeTokens = useSemanticBadges()
+  const { token } = theme.useToken()
 
   const { items, total } = useMemo(() => {
     const totalCount = projects.length
@@ -155,13 +157,13 @@ export const ProjectCardsGrid = ({
                     )}
                   </Space>
                   <Space size={6} align="center">
-                    <TeamOutlined style={{ color: '#4f46e5' }} aria-hidden />
+                    <TeamOutlined style={{ color: token.colorPrimary }} aria-hidden />
                     <Typography.Text type="secondary">
                       {t('list.memberCount', { count: project.memberCount })}
                     </Typography.Text>
                   </Space>
                   <Space size={6} align="center">
-                    <CalendarOutlined style={{ color: '#0ea5e9' }} aria-hidden />
+                    <CalendarOutlined style={{ color: token.colorInfo }} aria-hidden />
                     <Typography.Text type="secondary">
                       {t('list.createdOn', {
                         date: new Intl.DateTimeFormat(i18n.language, {
