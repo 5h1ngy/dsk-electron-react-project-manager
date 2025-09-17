@@ -1,10 +1,26 @@
 {
-  "name": "react-ts",
+  "name": "dsk-electron-react-project-manager",
+  "productName": "DSK Project Manager",
   "version": "7.4.19",
   "description": "Secure offline project manager built with Electron, React, Ant Design, and SQLite",
   "main": "./out/main/index.js",
-  "author": "example.com",
-  "homepage": "https://electron-vite.org",
+  "author": "DSK Team",
+  "license": "UNLICENSED",
+  "homepage": "https://github.com/dsk-labs/dsk-electron-react-project-manager",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dsk-labs/dsk-electron-react-project-manager.git"
+  },
+  "bugs": {
+    "url": "https://github.com/dsk-labs/dsk-electron-react-project-manager/issues"
+  },
+  "keywords": [
+    "electron",
+    "project-management",
+    "desktop",
+    "sqlite",
+    "react"
+  ],
   "scripts": {
     "format": "prettier --write .",
     "lint": "eslint --cache .",
