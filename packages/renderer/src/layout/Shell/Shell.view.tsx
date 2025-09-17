@@ -54,7 +54,7 @@ export const ShellView = ({
             {headerContent}
           </Flex>
         </Flex>
-        <Flex vertical style={{ flex: 1, minHeight: 0 }}>
+        <Flex vertical style={{ flex: 1, minHeight: 0, overflow: 'auto' }}>
           {children}
         </Flex>
       </Content>

@@ -54,12 +54,15 @@ export const useShellStyles = ({ menuTheme, collapsed, displayName }: UseShellSt
   )
 
   const layoutStyle: CSSProperties = {
-    minHeight: '100vh',
+    height: '100vh',
     padding: token.paddingSM,
     gap: spacing.xl,
     background: token.colorBgLayout,
     display: 'flex',
-    alignItems: 'stretch'
+    alignItems: 'stretch',
+    width: '100%',
+    boxSizing: 'border-box',
+    overflow: 'hidden'
   }
 
   const innerLayoutStyle: CSSProperties = {
@@ -67,7 +70,8 @@ export const useShellStyles = ({ menuTheme, collapsed, displayName }: UseShellSt
     flexDirection: 'column',
     flex: 1,
     minWidth: 0,
-    background: 'transparent'
+    background: 'transparent',
+    overflow: 'hidden'
   }
 
   const contentStyle: CSSProperties = {
@@ -77,7 +81,10 @@ export const useShellStyles = ({ menuTheme, collapsed, displayName }: UseShellSt
     flexDirection: 'column',
     gap: spacing.lg,
     minHeight: 0,
-    background: 'transparent'
+    background: 'transparent',
+    flex: 1,
+    height: '100%',
+    overflow: 'hidden'
   }
 
   const collapseButtonStyle: CSSProperties = {
