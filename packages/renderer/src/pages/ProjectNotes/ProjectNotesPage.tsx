@@ -2,7 +2,6 @@ import { useCallback, useEffect, useMemo, useState, type ReactElement } from 're
 import {
   Badge,
   Button,
-  Col,
   Divider,
   Drawer,
   Form,
@@ -10,7 +9,6 @@ import {
   List,
   Modal,
   Popconfirm,
-  Row,
   Select,
   Skeleton,
   Space,
@@ -59,6 +57,7 @@ import type { SearchNotesInput } from '@main/services/note/schemas'
 import { extractErrorMessage } from '@renderer/store/slices/auth/helpers'
 import MarkdownEditor from '@renderer/components/Markdown/MarkdownEditor'
 import MarkdownViewer from '@renderer/components/Markdown/MarkdownViewer'
+import { BorderedPanel } from '@renderer/components/Surface/BorderedPanel'
 
 type NoteEditorMode = 'create' | 'edit'
 
@@ -324,26 +323,20 @@ const ProjectNotesPage = (): ReactElement => {
   return (
     <Space direction="vertical" size={24} style={{ width: '100%' }}>
       {contextHolder}
-      <Row gutter={[16, 16]} align="middle" justify="space-between">
-        <Col>
-          <Space size={16} align="center">
-            <Typography.Title level={4} style={{ marginBottom: 0 }}>
-              {project?.name ?? t('notes.title')}
-            </Typography.Title>
-            {canManageNotes ? (
-              <Space size={8}>
-                <Switch
-                  checked={includePrivate}
-                  onChange={setIncludePrivate}
-                  checkedChildren={t('notes.filters.includePrivate')}
-                  unCheckedChildren={t('notes.filters.includePrivate')}
-                />
-              </Space>
-            ) : null}
-          </Space>
-        </Col>
-        <Col>
-          <Space wrap align="center">
+      <Typography.Title level={4} style={{ marginBottom: 0 }}>
+        {project?.name ?? t('notes.title')}
+      </Typography.Title>
+      <BorderedPanel padding="lg" style={{ width: '100%' }}>
+        <Space direction="vertical" size="middle" style={{ width: '100%' }}>
+          {canManageNotes ? (
+            <Switch
+              checked={includePrivate}
+              onChange={setIncludePrivate}
+              checkedChildren={t('notes.filters.includePrivate')}
+              unCheckedChildren={t('notes.filters.includePrivate')}
+            />
+          ) : null}
+          <Space wrap align="center" size="middle">
             <Input.Search
               placeholder={t('notes.actions.searchPlaceholder')}
               onSearch={handleSearch}
@@ -367,17 +360,21 @@ const ProjectNotesPage = (): ReactElement => {
               value={selectedTag ?? undefined}
               onChange={(value) => setSelectedTag(value ?? null)}
             />
-            <Button icon={<ReloadOutlined />} onClick={handleRefresh} disabled={noteLoading}>
-              {t('details.refresh')}
-            </Button>
-            {canManageNotes ? (
-              <Button type="primary" icon={<PlusOutlined />} onClick={handleCreateNote}>
-                {t('notes.actions.create')}
-              </Button>
-            ) : null}
           </Space>
-        </Col>
-      </Row>
+        </Space>
+      </BorderedPanel>
+      <BorderedPanel padding="md" style={{ width: '100%' }}>
+        <Space wrap align="center" size="small">
+          <Button icon={<ReloadOutlined />} onClick={handleRefresh} disabled={noteLoading}>
+            {t('details.refresh')}
+          </Button>
+          {canManageNotes ? (
+            <Button type="primary" icon={<PlusOutlined />} onClick={handleCreateNote}>
+              {t('notes.actions.create')}
+            </Button>
+          ) : null}
+        </Space>
+      </BorderedPanel>
       <List
         loading={noteLoading}
         dataSource={notes}

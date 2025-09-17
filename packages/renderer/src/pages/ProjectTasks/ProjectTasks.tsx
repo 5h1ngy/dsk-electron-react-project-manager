@@ -1,8 +1,7 @@
 import type { JSX } from 'react'
-import { Button, Space, Typography } from 'antd'
+import { Space, Typography } from 'antd'
 import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { PlusOutlined } from '@ant-design/icons'
 
 import { EmptyState } from '@renderer/components/DataStates'
 import { ProjectTasksTable } from '@renderer/pages/Projects/components/ProjectTasksTable'
@@ -95,19 +94,9 @@ const ProjectTasksPage = (): JSX.Element => {
 
   return (
     <Space direction="vertical" size={24} style={{ width: '100%' }}>
-      <Space
-        align="center"
-        style={{ width: '100%', justifyContent: 'space-between', flexWrap: 'wrap' }}
-      >
-        <Typography.Title level={4} style={{ marginBottom: 0 }}>
-          {effectiveTitle}
-        </Typography.Title>
-        {canManageTasks ? (
-          <Button type="primary" icon={<PlusOutlined />} onClick={() => openTaskCreate()}>
-            {t('tasks.actions.create')}
-          </Button>
-        ) : null}
-      </Space>
+      <Typography.Title level={4} style={{ marginBottom: 0 }}>
+        {effectiveTitle}
+      </Typography.Title>
       <TaskFiltersBar
         filters={filters}
         statusOptions={statusOptions}
@@ -116,6 +105,8 @@ const ProjectTasksPage = (): JSX.Element => {
         onChange={handleFiltersChange}
         viewMode={viewMode}
         onViewModeChange={setViewMode}
+        onCreate={canManageTasks ? () => openTaskCreate() : undefined}
+        canCreate={canManageTasks}
       />
       {viewMode === 'table' ? (
         <ProjectTasksTable

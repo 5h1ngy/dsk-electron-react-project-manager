@@ -206,14 +206,18 @@ const Dashboard = (): JSX.Element => {
       <Space direction="vertical" size="large" style={{ width: '100%' }}>
         {messageContext}
         <HealthStatusCard />
-        <ActionBar onCreate={openCreateModal} onRefresh={refreshUsers} isRefreshing={loading} />
         <UserFilters
           value={userFilters}
           onChange={handleUserFiltersChange}
           roleOptions={availableRoles}
+          aria-label={t('filters.users.ariaLabel')}
+        />
+        <ActionBar
+          onCreate={openCreateModal}
+          onRefresh={refreshUsers}
+          isRefreshing={loading}
           viewMode={userViewMode}
           onViewModeChange={(mode) => setUserViewMode(mode)}
-          aria-label={t('filters.users.ariaLabel')}
         />
         {error ? (
           <Alert

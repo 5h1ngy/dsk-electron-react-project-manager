@@ -5,6 +5,8 @@ import type { ChangeEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import dayjs, { type Dayjs } from 'dayjs'
 
+import { BorderedPanel } from '@renderer/components/Surface/BorderedPanel'
+
 type ViewMode = 'table' | 'cards'
 type RoleFilter = 'all' | 'admin' | 'edit' | 'view'
 type CreatedRange = [string | null, string | null] | null
@@ -85,16 +87,56 @@ export const ProjectsActionBar = ({
   }
 
   return (
-    <Space direction="vertical" size="middle" style={{ width: '100%' }}>
-      <Space align="center" style={{ width: '100%', justifyContent: 'space-between' }} wrap>
-        <Input
-          placeholder={t('filters.searchPlaceholder')}
-          style={{ maxWidth: 360, flex: 1 }}
-          allowClear
-          value={searchValue}
-          onChange={handleSearchChange}
-        />
-        <Space align="center" wrap>
+    <Space direction="vertical" size="small" style={{ width: '100%' }}>
+      <BorderedPanel padding="lg" style={{ width: '100%' }}>
+        <Space direction="vertical" size="middle" style={{ width: '100%' }}>
+          <Input
+            placeholder={t('filters.searchPlaceholder')}
+            allowClear
+            value={searchValue}
+            onChange={handleSearchChange}
+            style={{ maxWidth: 360 }}
+          />
+          <Space size="middle" wrap align="center">
+            <RangePicker
+              allowClear
+              value={rangeValue}
+              onChange={(dates) => handleRangeChange(dates as [Dayjs | null, Dayjs | null] | null)}
+              style={{ minWidth: 260 }}
+              placeholder={[
+                t('filters.createdRange.start'),
+                t('filters.createdRange.end')
+              ]}
+            />
+            <Select
+              mode="multiple"
+              style={{ minWidth: 220 }}
+              placeholder={t('filters.tagsPlaceholder')}
+              value={selectedTags}
+              onChange={onTagsChange}
+              options={availableTags.map((tag) => ({ label: tag, value: tag }))}
+              allowClear
+            />
+            <Select
+              value={roleFilter}
+              onChange={(value) => onRoleFilterChange(value as RoleFilter)}
+              style={{ width: 200 }}
+              options={[
+                { value: 'all', label: t('filters.roleOptions.all') },
+                { value: 'admin', label: t('filters.roleOptions.admin') },
+                { value: 'edit', label: t('filters.roleOptions.edit') },
+                { value: 'view', label: t('filters.roleOptions.view') }
+              ]}
+            />
+            <Space align="center">
+              <Switch checked={ownedOnly} onChange={(checked) => onOwnedOnlyChange(checked)} />
+              <Typography.Text>{t('filters.ownedOnly')}</Typography.Text>
+            </Space>
+          </Space>
+        </Space>
+      </BorderedPanel>
+      <BorderedPanel padding="md" style={{ width: '100%' }}>
+        <Space align="center" style={{ width: '100%', justifyContent: 'space-between' }} wrap>
           <Segmented
             size="large"
             value={viewMode}
@@ -120,69 +162,35 @@ export const ProjectsActionBar = ({
               }
             ]}
           />
-          <Tooltip title={t('actions.refreshHint')}>
-            <Button
-              icon={<ReloadOutlined />}
-              onClick={onRefresh}
-              loading={isRefreshing}
-              aria-label={t('actions.refresh')}
-            />
-          </Tooltip>
-          <Tooltip
-            title={
-              canCreate
-                ? t('actions.createHint')
-                : t('permissions.createDeniedTooltip')
-            }
-          >
-            <Button
-              type="primary"
-              icon={<PlusOutlined />}
-              onClick={onCreate}
-              loading={isCreating}
-              disabled={!canCreate}
+          <Space size="small" wrap>
+            <Tooltip title={t('actions.refreshHint')}>
+              <Button
+                icon={<ReloadOutlined />}
+                onClick={onRefresh}
+                loading={isRefreshing}
+                aria-label={t('actions.refresh')}
+              />
+            </Tooltip>
+            <Tooltip
+              title={
+                canCreate
+                  ? t('actions.createHint')
+                  : t('permissions.createDeniedTooltip')
+              }
             >
-              {t('actions.create')}
-            </Button>
-          </Tooltip>
+              <Button
+                type="primary"
+                icon={<PlusOutlined />}
+                onClick={onCreate}
+                loading={isCreating}
+                disabled={!canCreate}
+              >
+                {t('actions.create')}
+              </Button>
+            </Tooltip>
+          </Space>
         </Space>
-      </Space>
-      <Space size="middle" wrap>
-        <RangePicker
-          allowClear
-          value={rangeValue}
-          onChange={(dates) => handleRangeChange(dates as [Dayjs | null, Dayjs | null] | null)}
-          style={{ minWidth: 260 }}
-          placeholder={[
-            t('filters.createdRange.start'),
-            t('filters.createdRange.end')
-          ]}
-        />
-        <Select
-          mode="multiple"
-          style={{ minWidth: 220 }}
-          placeholder={t('filters.tagsPlaceholder')}
-          value={selectedTags}
-          onChange={onTagsChange}
-          options={availableTags.map((tag) => ({ label: tag, value: tag }))}
-          allowClear
-        />
-        <Select
-          value={roleFilter}
-          onChange={(value) => onRoleFilterChange(value as RoleFilter)}
-          style={{ width: 200 }}
-          options={[
-            { value: 'all', label: t('filters.roleOptions.all') },
-            { value: 'admin', label: t('filters.roleOptions.admin') },
-            { value: 'edit', label: t('filters.roleOptions.edit') },
-            { value: 'view', label: t('filters.roleOptions.view') }
-          ]}
-        />
-        <Space align="center">
-          <Switch checked={ownedOnly} onChange={(checked) => onOwnedOnlyChange(checked)} />
-          <Typography.Text>{t('filters.ownedOnly')}</Typography.Text>
-        </Space>
-      </Space>
+      </BorderedPanel>
     </Space>
   )
 }
