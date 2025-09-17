@@ -6,6 +6,8 @@
 [![TypeScript Shield][typescript-shield]][typescript-link]
 [![Jest Shield][jest-shield]][jest-link]
 
+![Application preview](assets/preview.png)
+
 >  Modern desktop project manager with a hardened Electron main process, a typed preload bridge, and a polished React/Redux experience (auth, Kanban, dashboards, theming, multilingual UI).
 
 ---
