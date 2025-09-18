@@ -40,7 +40,7 @@ const DARK_PALETTE: PaletteTokens = {
   surfaceMuted: '#1e293b',
   surfaceBackdrop: 'rgba(2, 6, 23, 0.6)',
   textPrimary: '#e2e8f0',
-  textSecondary: '#94a3b8',
+  textSecondary: '#cbd5f5',
   textInverse: '#0f172a',
   textOnBright: '#0f172a',
   textOnDark: '#f8fafc',

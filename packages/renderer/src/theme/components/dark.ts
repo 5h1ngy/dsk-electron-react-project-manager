@@ -45,8 +45,8 @@ export const buildDarkComponents = (
     optionPadding: `${spacing.sm}px ${spacing.md}px`
   },
   Tag: {
-    defaultBg: darken(brand.primary, 0.6),
-    defaultColor: lighten(brand.primary, 0.5)
+    defaultBg: darken(brand.primary, 0.45),
+    defaultColor: lighten(brand.primary, 0.6)
   },
   Table: {
     headerBg: darken(palette.surfaceElevated, 0.08),
@@ -56,7 +56,10 @@ export const buildDarkComponents = (
     rowSelectedBg: darken(brand.primary, 0.58),
     borderColor: palette.borderStrong,
     cellPaddingBlock: spacing.md,
-    cellPaddingInline: spacing.lg
+    cellPaddingInline: spacing.lg,
+    colorText: palette.textPrimary,
+    colorTextHeading: palette.textPrimary,
+    colorTextSecondary: palette.textSecondary
   },
   Tabs: {
     itemColor: palette.textSecondary,
@@ -102,6 +105,8 @@ export const buildDarkComponents = (
     itemActiveBg: darken(brand.primary, 0.45)
   },
   Typography: {
-    titleMarginBottom: spacing.md
+    titleMarginBottom: spacing.md,
+    colorText: palette.textPrimary,
+    colorTextDescription: palette.textSecondary
   }
 })
