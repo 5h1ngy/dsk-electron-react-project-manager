@@ -3,31 +3,41 @@ import type { Faker } from '@faker-js/faker'
 import type { RoleName } from '../packages/main/src/services/auth/constants'
 
 import type { UserSeedDefinition } from './DevelopmentSeeder.types'
+import type { UsersSeedConfig } from './seedConfig'
 import { capitalize, stripAccents } from './seed.helpers'
 
-const ROLE_PROFILES: ReadonlyArray<{ roles: RoleName[]; count: number }> = [
-  { roles: ['Maintainer', 'Contributor'], count: 4 },
-  { roles: ['Maintainer'], count: 3 },
-  { roles: ['Contributor'], count: 8 },
-  { roles: ['Contributor', 'Viewer'], count: 4 },
-  { roles: ['Viewer'], count: 5 },
-  { roles: ['Maintainer', 'Viewer'], count: 2 }
+const DEFAULT_ROLE_PROFILES: ReadonlyArray<{ roles: RoleName[]; count: number }> = [
+  { roles: ['Maintainer', 'Contributor'], count: 2 },
+  { roles: ['Maintainer'], count: 1 },
+  { roles: ['Contributor'], count: 4 },
+  { roles: ['Contributor', 'Viewer'], count: 2 },
+  { roles: ['Viewer'], count: 3 },
+  { roles: ['Maintainer', 'Viewer'], count: 1 }
 ]
 
 export class UserSeedFactory {
-  constructor(private readonly random: Faker) {}
+  constructor(
+    private readonly random: Faker,
+    private readonly config: UsersSeedConfig
+  ) {}
 
   createSeeds(): UserSeedDefinition[] {
     const seeds: UserSeedDefinition[] = []
     const seen = new Set<string>()
 
-    for (const profile of ROLE_PROFILES) {
-      for (let index = 0; index < profile.count; index += 1) {
+    const profiles =
+      this.config.profiles && this.config.profiles.length > 0
+        ? this.config.profiles
+        : DEFAULT_ROLE_PROFILES
+
+    for (const profile of profiles) {
+      const count = Math.max(0, profile.count ?? 0)
+      for (let index = 0; index < count; index += 1) {
         const composite = this.createUniqueUsername(seen)
         seeds.push({
           username: composite.username,
           displayName: composite.displayName,
-          roles: [...profile.roles]
+          roles: [...(profile.roles as RoleName[])]
         })
       }
     }

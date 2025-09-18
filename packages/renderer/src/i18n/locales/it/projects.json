@@ -1,201 +1,375 @@
 {
-    "title": "Progetti",
-    "viewSwitcher": {
-        "table": "Vista tabellare",
-        "cards": "Vista a card"
+  "title": "Progetti",
+  "viewSwitcher": {
+    "table": "Vista tabella",
+    "cards": "Vista card"
+  },
+  "actions": {
+    "refresh": "Aggiorna",
+    "refreshHint": "Ricarica l'elenco progetti",
+    "create": "Nuovo progetto",
+    "createHint": "Crea un nuovo progetto",
+    "edit": "Modifica",
+    "deleteTitle": "Rimuovi progetto",
+    "deleteDescription": "Vuoi davvero rimuovere {{name}}?",
+    "deleteConfirm": "Rimuovi",
+    "cancel": "Annulla"
+  },
+  "filters": {
+    "searchPlaceholder": "Cerca per nome, key o tag",
+    "tagsPlaceholder": "Filtra per tag",
+    "createdRange": {
+      "start": "Creato da",
+      "end": "Creato fino a"
+    },
+    "roleOptions": {
+      "all": "Tutti i ruoli",
+      "admin": "Amministratore",
+      "edit": "Editor",
+      "view": "Viewer"
+    },
+    "ownedOnly": "Creati da me"
+  },
+  "permissions": {
+    "createDenied": "Solo amministratori o maintainer possono creare progetti.",
+    "createDeniedTooltip": "Non hai i permessi per creare progetti.",
+    "updateDenied": "Solo amministratori o maintainer possono modificare progetti.",
+    "manageMembersDenied": "Solo amministratori o maintainer possono gestire i membri.",
+    "tasksCreateDenied": "Non hai i permessi per creare task in questo progetto.",
+    "tasksUpdateDenied": "Non hai i permessi per modificare i task di questo progetto.",
+    "deleteDenied": "Solo gli amministratori possono eliminare i progetti."
+  },
+  "errors": {
+    "generic": "Operazione non riuscita"
+  },
+  "create": {
+    "success": "Progetto creato"
+  },
+  "update": {
+    "success": "Progetto aggiornato"
+  },
+  "members": {
+    "addSuccess": "Membro aggiunto",
+    "removeSuccess": "Membro rimosso"
+  },
+  "list": {
+    "loading": "Caricamento progetti...",
+    "empty": "Nessun progetto trovato",
+    "noTags": "Nessun tag",
+    "memberCount_one": "{{count}} membro",
+    "memberCount_other": "{{count}} membri",
+    "createdOn": "Creato il {{date}}",
+    "columns": {
+      "key": "Key",
+      "name": "Nome",
+      "tags": "Tag",
+      "role": "Ruolo",
+      "members": "Membri",
+      "createdAt": "Creato",
+      "actions": "Azioni"
+    },
+    "role": {
+      "admin": "Amministratore",
+      "edit": "Editor",
+      "view": "Viewer"
+    }
+  },
+  "breadcrumbs": {
+    "projects": "Progetti",
+    "overview": "Panoramica",
+    "tasks": "Task",
+    "notes": "Note",
+    "board": "Kanban"
+  },
+  "cards": {
+    "noDescription": "Nessuna descrizione"
+  },
+  "details": {
+    "title": "Dettagli progetto",
+    "loading": "Caricamento...",
+    "refresh": "Aggiorna",
+    "tabs": {
+      "overview": "Panoramica",
+      "tasks": "Task",
+      "notes": "Note",
+      "board": "Kanban"
+    },
+    "overview": {
+      "metrics": {
+        "title": "Stato del lavoro",
+        "total": "Task totali",
+        "active": "In corso",
+        "done": "Completati"
+      }
+    },
+    "tasksTitle": "Task del progetto",
+    "kanbanTitle": "Board Kanban",
+    "tasksLoading": "Caricamento task...",
+    "tasksEmpty": "Nessun task disponibile",
+    "tasksSearchPlaceholder": "Cerca task...",
+    "filters": {
+      "status": "Stato",
+      "statusOptions": {
+        "all": "Tutti gli stati"
+      },
+      "priority": "Priorita",
+      "priorityOptions": {
+        "all": "Tutte le priorita"
+      },
+      "assignee": "Assegnatario",
+      "assigneeOptions": {
+        "all": "Tutti gli assegnatari",
+        "unassigned": "Non assegnato"
+      },
+      "dueDateRange": {
+        "start": "Scadenza da",
+        "end": "Scadenza a"
+      },
+      "showComments": "Mostra contatore commenti"
+    },
+    "noAssignee": "Non assegnato",
+    "noDueDate": "Nessuna scadenza",
+    "status": {
+      "todo": "Da fare",
+      "in_progress": "In corso",
+      "blocked": "Bloccato",
+      "done": "Completato"
+    },
+    "priority": {
+      "low": "Priorita bassa",
+      "medium": "Priorita media",
+      "high": "Priorita alta",
+      "critical": "Priorita critica"
+    },
+    "summary": {
+      "title": "Riepilogo progetto",
+      "empty": "Seleziona un progetto per vedere i dettagli",
+      "createdOn": "Creato",
+      "createdBy": "{{date}} da {{user}}",
+      "description": "Descrizione",
+      "noDescription": "Nessuna descrizione disponibile",
+      "tags": "Tag",
+      "noTags": "Nessun tag",
+      "members": "Membri",
+      "noMembers": "Nessun membro assegnato"
+    },
+    "tasksColumns": {
+      "key": "Key",
+      "title": "Titolo",
+      "status": "Stato",
+      "priority": "Priorita",
+      "assignee": "Assegnatario",
+      "dueDate": "Scadenza",
+      "comments": "Commenti"
+    },
+    "drawer": {
+      "title": "Dettagli task",
+      "description": "Descrizione",
+      "assignment": "Assegnazione",
+      "owner": "Owner: {{owner}}",
+      "assignee": "Assegnato a: {{assignee}}",
+      "timing": "Cronologia",
+      "createdAt": "Creato il {{date}}",
+      "dueDate": "Scade il {{date}}",
+      "empty": "Seleziona un task per vedere i dettagli"
+    },
+    "missingId": "ID progetto mancante",
+    "notFound": "Progetto non trovato",
+    "backToList": "Torna ai progetti"
+  },
+  "board": {
+    "empty": "Seleziona un progetto per aprire il Kanban",
+    "permissions": {
+      "title": "Permessi limitati",
+      "description": "Non hai i permessi per modificare i task di questo progetto."
+    },
+    "columns": {
+      "todo": "Da fare",
+      "inProgress": "In corso",
+      "blocked": "Bloccato",
+      "done": "Completato"
+    },
+    "composer": {
+      "title": "Crea un nuovo task",
+      "titlePlaceholder": "Titolo del task",
+      "descriptionPlaceholder": "Descrizione (opzionale)",
+      "submit": "Aggiungi task"
+    }
+  },
+  "notifications": {
+    "taskCreated": "Task creato",
+    "taskUpdated": "Task aggiornato"
+  },
+  "form": {
+    "createTitle": "Nuovo progetto",
+    "fields": {
+      "key": {
+        "placeholder": "es. PROJ",
+        "label": "Key"
+      },
+      "name": {
+        "placeholder": "Nome progetto",
+        "label": "Nome"
+      },
+      "description": {
+        "placeholder": "Descrizione (opzionale)",
+        "label": "Descrizione"
+      },
+      "tags": {
+        "placeholder": "Aggiungi tag (premi Invio)",
+        "label": "Tag"
+      }
+    },
+    "createAction": "Crea",
+    "editTitle": "Modifica {{name}}",
+    "editTitleFallback": "Modifica progetto",
+    "updateAction": "Salva modifiche"
+  },
+  "delete": {
+    "success": "Progetto eliminato"
+  },
+  "tasks": {
+    "columns": {
+      "actions": "Azioni"
     },
     "actions": {
-        "refresh": "Aggiorna",
-        "refreshHint": "Ricarica l'elenco dei progetti",
-        "create": "Nuovo progetto",
-        "createHint": "Crea un nuovo progetto"
-    },
-    "filters": {
-        "searchPlaceholder": "Cerca per nome, chiave o tag",
-        "tagsPlaceholder": "Filtra per tag",
-        "roleOptions": {
-            "all": "Tutti i ruoli",
-            "admin": "Amministratore",
-            "edit": "Editor",
-            "view": "Viewer"
-        },
-        "ownedOnly": "Creati da me"
-    },
-    "permissions": {
-        "createDenied": "Solo amministratori o manutentori possono creare progetti.",
-        "createDeniedTooltip": "Non hai i permessi per creare progetti.",
-        "updateDenied": "Solo amministratori o manutentori possono modificare i progetti.",
-        "manageMembersDenied": "Solo amministratori o manutentori possono gestire i membri del progetto.",
-        "tasksCreateDenied": "Non hai i permessi per creare task in questo progetto.",
-        "tasksUpdateDenied": "Non hai i permessi per modificare i task in questo progetto."
-    },
-    "errors": {
-        "generic": "Operazione non riuscita"
-    },
-    "create": {
-        "success": "Progetto creato"
-    },
-    "update": {
-        "success": "Progetto aggiornato"
-    },
-    "members": {
-        "addSuccess": "Membro aggiunto",
-        "removeSuccess": "Membro rimosso"
-    },
-    "list": {
-        "loading": "Caricamento progetti...",
-        "empty": "Nessun progetto disponibile",
-        "noTags": "Nessun tag",
-        "memberCount_one": "{{count}} membro",
-        "memberCount_other": "{{count}} membri",
-        "createdOn": "Creato il {{date}}",
-        "columns": {
-            "key": "Key",
-            "name": "Nome",
-            "tags": "Tag",
-            "role": "Ruolo",
-            "members": "Membri",
-            "createdAt": "Creato"
-        },
-        "role": {
-            "admin": "Amministratore",
-            "edit": "Editor",
-            "view": "Viewer"
-        }
-    },
-    "breadcrumbs": {
-        "projects": "Progetti",
-        "overview": "Panoramica",
-        "tasks": "Task",
-        "board": "Kanban"
-    },
-    "cards": {
-        "noDescription": "Nessuna descrizione disponibile"
-    },
-    "details": {
-        "title": "Dettagli progetto",
-        "loading": "Caricamento...",
-        "refresh": "Aggiorna",
-        "tabs": {
-            "overview": "Panoramica",
-            "tasks": "Task",
-            "board": "Kanban"
-        },
-        "overview": {
-            "metrics": {
-                "title": "Stato del lavoro",
-                "total": "Task totali",
-                "active": "In lavorazione",
-                "done": "Completati"
-            }
-        },
-        "tasksTitle": "Task del progetto",
-        "kanbanTitle": "Board Kanban",
-        "tasksLoading": "Caricamento task...",
-        "tasksEmpty": "Nessun task disponibile",
-        "tasksSearchPlaceholder": "Cerca nei task...",
-        "filters": {
-            "status": "Stato",
-            "statusOptions": {
-                "all": "Tutti gli stati"
-            },
-            "priority": "Priorita",
-            "priorityOptions": {
-                "all": "Tutte le priorita"
-            }
-        },
-        "noAssignee": "Non assegnato",
-        "noDueDate": "Nessuna scadenza",
-        "status": {
-            "todo": "Da fare",
-            "in_progress": "In corso",
-            "blocked": "Bloccato",
-            "done": "Completato"
-        },
-        "priority": {
-            "low": "Priorità bassa",
-            "medium": "Priorità media",
-            "high": "Priorità alta",
-            "critical": "Priorità critica"
-        },
-        "summary": {
-            "title": "Panoramica progetto",
-            "empty": "Seleziona un progetto per visualizzare i dettagli",
-            "createdOn": "Creato",
-            "createdBy": "{{date}} da {{user}}",
-            "description": "Descrizione",
-            "noDescription": "Nessuna descrizione disponibile",
-            "tags": "Tag",
-            "noTags": "Nessun tag",
-            "members": "Membri",
-            "noMembers": "Nessun membro assegnato"
-        },
-        "tasksColumns": {
-            "key": "Key",
-            "title": "Titolo",
-            "status": "Stato",
-            "priority": "Priorità",
-            "assignee": "Assegnato a",
-            "dueDate": "Scadenza"
-        },
-        "drawer": {
-            "title": "Dettagli task",
-            "description": "Descrizione",
-            "assignment": "Assegnazione",
-            "owner": "Proprietario: {{owner}}",
-            "assignee": "Assegnato a: {{assignee}}",
-            "timing": "Tempistiche",
-            "createdAt": "Creato il {{date}}",
-            "dueDate": "Scadenza: {{date}}",
-            "empty": "Seleziona un task per visualizzare i dettagli"
-        },
-        "missingId": "Identificativo progetto mancante",
-        "notFound": "Progetto non trovato",
-        "backToList": "Torna ai progetti"
-    },
-    "board": {
-        "empty": "Seleziona un progetto per visualizzare la Kanban board",
-        "permissions": {
-            "title": "Permessi limitati",
-            "description": "Non hai i permessi necessari per modificare i task di questo progetto."
-        },
-        "columns": {
-            "todo": "Da fare",
-            "inProgress": "In corso",
-            "blocked": "Bloccato",
-            "done": "Completato"
-        },
-        "composer": {
-            "title": "Crea un nuovo task",
-            "titlePlaceholder": "Titolo del task",
-            "descriptionPlaceholder": "Descrizione (opzionale)",
-            "submit": "Aggiungi task"
-        }
-    },
-    "notifications": {
-        "taskCreated": "Task creato",
-        "taskUpdated": "Task aggiornato"
+      "create": "Nuovo task",
+      "edit": "Modifica",
+      "delete": "Elimina",
+      "deleteTitle": "Rimuovi task",
+      "deleteDescription": "Vuoi davvero rimuovere \"{{title}}\"?",
+      "deleteConfirm": "Rimuovi",
+      "cancel": "Annulla"
     },
     "form": {
-        "createTitle": "Nuovo progetto",
-        "fields": {
-            "key": {
-                "placeholder": "es. PROG",
-                "label": "Key"
-            },
-            "name": {
-                "placeholder": "Nome del progetto",
-                "label": "Nome"
-            },
-            "description": {
-                "placeholder": "Descrizione (opzionale)",
-                "label": "Descrizione"
-            },
-            "tags": {
-                "placeholder": "Aggiungi tag (Invio per confermare)",
-                "label": "Tag"
-            }
-        },
-        "createAction": "Crea"
+      "createTitle": "Nuovo task",
+      "editTitle": "Modifica {{title}}",
+      "createAction": "Crea task",
+      "updateAction": "Salva modifiche",
+      "fields": {
+        "title": "Titolo",
+        "description": "Descrizione",
+        "status": "Stato",
+        "priority": "Priorita",
+        "assignee": "Assegnatario",
+        "dueDate": "Scadenza"
+      },
+      "placeholders": {
+        "title": "Titolo del task",
+        "description": "Descrizione (opzionale)",
+        "assignee": "Seleziona assegnatario",
+        "dueDate": "Seleziona la scadenza"
+      }
+    },
+    "messages": {
+      "createSuccess": "Task creato",
+      "updateSuccess": "Task aggiornato",
+      "deleteSuccess": "Task eliminato",
+      "notFound": "Task non trovato"
+    },
+    "details": {
+      "description": "Descrizione",
+      "noDescription": "Nessuna descrizione disponibile",
+      "owner": "Creato da: {{owner}}",
+      "assignee": "Assegnato a: {{assignee}}",
+      "createdAt": "Creato il {{date}}",
+      "dueDate": "Scadenza il {{date}}",
+      "linkedNotes": "Note collegate",
+      "noLinkedNotes": "Nessuna nota collegata",
+      "empty": "Nessun task selezionato",
+      "comments": {
+        "title": "Commenti",
+        "count_one": "{{count}} commento",
+        "count_other": "{{count}} commenti",
+        "empty": "Nessun commento",
+        "addLabel": "Aggiungi un commento",
+        "validation": "Inserisci un commento",
+        "submit": "Invia commento"
+      }
     }
+  },
+  "notes": {
+    "title": "Note del progetto",
+    "filters": {
+      "includePrivate": "Includi note private",
+      "notebook": "Taccuino",
+      "tag": "Tag"
+    },
+    "actions": {
+      "create": "Nuova nota",
+      "save": "Salva nota",
+      "cancel": "Annulla",
+      "searchPlaceholder": "Cerca note...",
+      "view": "Apri",
+      "edit": "Modifica",
+      "deleteTitle": "Elimina nota",
+      "deleteConfirmText": "Vuoi davvero eliminare questa nota?",
+      "delete": "Elimina"
+    },
+    "labels": {
+      "private": "Privata",
+      "public": "Pubblica"
+    },
+    "list": {
+      "updatedBy": "Ultimo aggiornamento {{date}} da {{user}}"
+    },
+    "editor": {
+      "createTitle": "Crea nota",
+      "editTitle": "Modifica nota",
+      "fields": {
+        "title": "Titolo",
+        "notebook": "Taccuino",
+        "tags": "Tag",
+        "visibility": "Visibilit\u00e0",
+        "body": "Contenuto Markdown",
+        "linkedTasks": "Task collegati"
+      },
+      "placeholders": {
+        "notebook": "Taccuino o raccolta (facoltativo)",
+        "tags": "Aggiungi tag e premi Invio",
+        "body": "Scrivi qui il contenuto in markdown...",
+        "linkedTasks": "Seleziona i task da collegare"
+      },
+      "suggestions": {
+        "title": "Suggerimenti task ([[key]])",
+        "empty": "Digita dopo [[ per vedere i task suggeriti"
+      }
+    },
+    "viewer": {
+      "title": "Nota",
+      "linkedTasks": "Task collegati",
+      "noLinks": "Nessun task collegato.",
+      "empty": "Seleziona una nota per vedere i dettagli",
+      "updatedBy": "Ultimo aggiornamento {{date}} da {{user}}"
+    },
+    "feedback": {
+      "created": "Nota creata",
+      "updated": "Nota aggiornata",
+      "deleted": "Nota eliminata"
+    },
+    "validation": {
+      "title": "Il titolo \u00e8 obbligatorio",
+      "titleMax": "Il titolo pu\u00f2 contenere al massimo 160 caratteri",
+      "body": "Il contenuto \u00e8 obbligatorio",
+      "notebookMax": "Il nome del taccuino pu\u00f2 avere al massimo 80 caratteri",
+      "tag": "Il tag non pu\u00f2 essere vuoto",
+      "tagMax": "Il tag pu\u00f2 avere al massimo 40 caratteri",
+      "tooManyTags": "Massimo 20 tag per nota",
+      "tooManyLinks": "Massimo 20 task collegati"
+    },
+    "search": {
+      "title": "Cerca note",
+      "empty": "Nessuna nota trovata",
+      "open": "Apri nota",
+      "noHighlight": "Nessuna anteprima disponibile"
+    }
+  },
+  "search": {
+    "button": "Cerca task",
+    "title": "Ricerca globale task",
+    "placeholder": "Cerca per titolo o descrizione",
+    "submit": "Cerca",
+    "empty": "Nessun task trovato",
+    "openTask": "Apri"
+  }
 }

@@ -1,5 +1,6 @@
 import {
   BelongsTo,
+  BelongsToMany,
   Column,
   DataType,
   DefaultScope,
@@ -11,6 +12,8 @@ import {
 import { Project } from '@main/models/Project'
 import { User } from '@main/models/User'
 import { Comment } from '@main/models/Comment'
+import { Note } from '@main/models/Note'
+import { NoteTaskLink } from '@main/models/NoteTaskLink'
 
 export type TaskStatus = 'todo' | 'in_progress' | 'blocked' | 'done'
 export type TaskPriority = 'low' | 'medium' | 'high' | 'critical'
@@ -113,4 +116,7 @@ export class Task extends Model {
 
   @HasMany(() => Comment)
   declare comments?: Comment[]
+
+  @BelongsToMany(() => Note, () => NoteTaskLink)
+  declare notes?: Note[]
 }

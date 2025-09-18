@@ -6,7 +6,7 @@ export type ProjectDetails = ProjectDetailsDTO
 
 export type LoadStatus = 'idle' | 'loading' | 'succeeded' | 'failed'
 
-export interface ProjectsState extends EntityState<ProjectSummary> {
+export interface ProjectsState extends EntityState<ProjectSummary, string> {
   details: Record<string, ProjectDetails>
   listStatus: LoadStatus
   mutationStatus: LoadStatus

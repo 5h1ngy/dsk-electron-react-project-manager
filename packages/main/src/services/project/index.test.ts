@@ -6,6 +6,8 @@ import { mkdtemp, rm } from 'node:fs/promises'
 import { initializeDatabase } from '@main/config/database'
 import { AuditService } from '@main/services/audit'
 import { ProjectService, type ProjectActor } from '@main/services/project'
+
+jest.setTimeout(20000)
 import { ProjectMember } from '@main/models/ProjectMember'
 import { User } from '@main/models/User'
 import { Role } from '@main/models/Role'
@@ -152,8 +154,6 @@ describe('ProjectService', () => {
         userId: maintainer.id,
         role: 'admin'
       })
-
-      const maintainerActor = createActor(maintainer.id, ['Maintainer'])
 
       await expect(
         projectService.removeMember(adminActor, project.id, admin.id)

@@ -3,6 +3,7 @@ import type { Sequelize } from 'sequelize-typescript'
 
 import { AppError } from '@main/config/appError'
 import { IpcChannelRegistrar } from '@main/ipc/utils'
+import type { IpcResponse } from '@main/ipc/utils'
 
 export interface HealthStatus {
   status: 'healthy'
@@ -50,3 +51,5 @@ export class HealthIpcRegistrar {
     })
   }
 }
+
+export type HealthResponse = IpcResponse<HealthStatus>

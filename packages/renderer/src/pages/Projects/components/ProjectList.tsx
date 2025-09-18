@@ -1,8 +1,12 @@
-import { Table, Tag, Typography } from 'antd'
+import { Button, Popconfirm, Space, Table, Tag, Typography, Tooltip } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
 import { useTranslation } from 'react-i18next'
+import { DeleteOutlined, EditOutlined } from '@ant-design/icons'
 
+import { EmptyState, LoadingSkeleton } from '@renderer/components/DataStates'
+import { useDelayedLoading } from '@renderer/hooks/useDelayedLoading'
 import type { ProjectSummary } from '@renderer/store/slices/projects'
+import { useSemanticBadges, buildBadgeStyle } from '@renderer/theme/hooks/useSemanticBadges'
 
 type ProjectRow = ProjectSummary
 
@@ -10,6 +14,9 @@ export interface ProjectListProps {
   projects: ProjectRow[]
   loading: boolean
   onSelect: (projectId: string) => void
+  onEdit?: (project: ProjectSummary) => void
+  onDelete?: (project: ProjectSummary) => void
+  deletingProjectId?: string | null
 }
 
 const formatDate = (value: Date | string, locale: string): string => {
@@ -21,8 +28,17 @@ const formatDate = (value: Date | string, locale: string): string => {
   }).format(date)
 }
 
-export const ProjectList = ({ projects, loading, onSelect }: ProjectListProps) => {
+export const ProjectList = ({
+  projects,
+  loading,
+  onSelect,
+  onEdit,
+  onDelete,
+  deletingProjectId
+}: ProjectListProps) => {
   const { t, i18n } = useTranslation('projects')
+  const showSkeleton = useDelayedLoading(loading)
+  const badgeTokens = useSemanticBadges()
 
   const columns: ColumnsType<ProjectRow> = [
     {
@@ -30,7 +46,11 @@ export const ProjectList = ({ projects, loading, onSelect }: ProjectListProps) =
       dataIndex: 'key',
       key: 'key',
       width: 120,
-      render: (value: string) => <Tag color="blue">{value}</Tag>
+      render: (value: string) => (
+        <Tag bordered={false} style={buildBadgeStyle(badgeTokens.projectKey)}>
+          {value}
+        </Tag>
+      )
     },
     {
       title: t('list.columns.name'),
@@ -56,7 +76,9 @@ export const ProjectList = ({ projects, loading, onSelect }: ProjectListProps) =
         tags && tags.length > 0 ? (
           <span>
             {tags.map((tag) => (
-              <Tag key={tag}>{tag}</Tag>
+              <Tag key={tag} bordered={false} style={buildBadgeStyle(badgeTokens.tag)}>
+                {tag}
+              </Tag>
             ))}
           </span>
         ) : (
@@ -68,7 +90,11 @@ export const ProjectList = ({ projects, loading, onSelect }: ProjectListProps) =
       dataIndex: 'role',
       key: 'role',
       width: 140,
-      render: (value: ProjectRow['role']) => <Tag>{t(`list.role.${value}`)}</Tag>
+      render: (value: ProjectRow['role']) => (
+        <Tag bordered={false} style={buildBadgeStyle(badgeTokens.projectRole[value])}>
+          {t(`list.role.${value}`)}
+        </Tag>
+      )
     },
     {
       title: t('list.columns.members'),
@@ -83,15 +109,58 @@ export const ProjectList = ({ projects, loading, onSelect }: ProjectListProps) =
       key: 'createdAt',
       width: 160,
       render: (value: Date | string) => formatDate(value, i18n.language)
+    },
+    {
+      title: t('list.columns.actions'),
+      key: 'actions',
+      width: 120,
+      render: (_value: unknown, record) => {
+        if (record.role !== 'admin') {
+          return null
+        }
+        return (
+          <Space size={4}>
+            <Tooltip title={t('actions.edit')}>
+              <Button
+                type="text"
+                icon={<EditOutlined />}
+                onClick={(event) => {
+                  event.stopPropagation()
+                  onEdit?.(record)
+                }}
+              />
+            </Tooltip>
+            <Popconfirm
+              title={t('actions.deleteTitle')}
+              description={t('actions.deleteDescription', { name: record.name })}
+              okText={t('actions.deleteConfirm')}
+              cancelText={t('actions.cancel')}
+              okButtonProps={{ loading: deletingProjectId === record.id }}
+              onConfirm={async () => onDelete?.(record)}
+              disabled={!onDelete}
+            >
+              <Button
+                type="text"
+                danger
+                icon={<DeleteOutlined />}
+                onClick={(event) => event.stopPropagation()}
+              />
+            </Popconfirm>
+          </Space>
+        )
+      }
     }
   ]
+
+  if (showSkeleton) {
+    return <LoadingSkeleton variant="table" />
+  }
 
   return (
     <Table<ProjectRow>
       rowKey="id"
       columns={columns}
       dataSource={projects}
-      loading={loading}
       size="middle"
       scroll={{ x: 1024 }}
       onRow={(record) => ({
@@ -99,7 +168,9 @@ export const ProjectList = ({ projects, loading, onSelect }: ProjectListProps) =
         style: { cursor: 'pointer' }
       })}
       locale={{
-        emptyText: loading ? t('list.loading') : t('list.empty')
+        emptyText: (
+          <EmptyState title={t('list.empty')} description={t('filters.searchPlaceholder')} />
+        )
       }}
     />
   )

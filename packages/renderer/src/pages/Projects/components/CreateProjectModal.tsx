@@ -1,3 +1,4 @@
+import type { JSX } from 'react'
 import { Modal, Form, Input, Select } from 'antd'
 import { useTranslation } from 'react-i18next'
 import { Controller, type UseFormReturn } from 'react-hook-form'
@@ -29,7 +30,7 @@ export const CreateProjectModal = ({
       okText={t('form.createAction')}
       onOk={onSubmit}
       confirmLoading={submitting}
-      destroyOnHidden
+      destroyOnClose
     >
       <Form
         layout="vertical"

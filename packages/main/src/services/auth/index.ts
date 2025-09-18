@@ -369,4 +369,49 @@ export class AuthService {
 
     return updatedDto
   }
+
+  async deleteUser(token: string, userId: string): Promise<void> {
+    const context = await this.getContext(token, { touch: true })
+    this.requireAdmin(context.roles)
+
+    if (context.user.id === userId) {
+      throw new AppError('ERR_PERMISSION', 'Non è possibile eliminare il proprio account')
+    }
+
+    try {
+      const user = await User.findOne({
+        where: { id: userId },
+        include: [{ model: UserRole, include: [Role] }]
+      })
+
+      if (!user) {
+        throw new AppError('ERR_NOT_FOUND', 'Utente non trovato')
+      }
+
+      const userRoles = extractRoleNames(user)
+
+      if (userRoles.includes('Admin')) {
+        const adminRole = await Role.findOne({ where: { name: 'Admin' } })
+        if (adminRole) {
+          const remainingAdmins = await UserRole.count({ where: { roleId: adminRole.id } })
+          if (remainingAdmins <= 1) {
+            throw new AppError(
+              'ERR_PERMISSION',
+              'Non è possibile eliminare l\'ultimo amministratore del sistema'
+            )
+          }
+        }
+      }
+
+      await UserRole.destroy({ where: { userId: user.id } })
+      await user.destroy()
+      this.sessionManager.endSessionsForUser(user.id)
+
+      await this.auditService.record(context.user.id, 'user', user.id, 'delete', {
+        username: user.username
+      })
+    } catch (error) {
+      throw wrapError(error)
+    }
+  }
 }

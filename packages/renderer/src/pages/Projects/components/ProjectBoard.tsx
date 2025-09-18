@@ -1,6 +1,9 @@
-import { Alert, Col, Empty, Row, Spin } from 'antd'
+import { Alert, Col, Row } from 'antd'
 import { useTranslation } from 'react-i18next'
+import type { JSX } from 'react'
 
+import { EmptyState, LoadingSkeleton } from '@renderer/components/DataStates'
+import { useDelayedLoading } from '@renderer/hooks/useDelayedLoading'
 import type { ProjectDetails } from '@renderer/store/slices/projects'
 import type { TaskDetails } from '@renderer/store/slices/tasks'
 import { KanbanColumn } from '@renderer/pages/Projects/components/KanbanColumn'
@@ -11,18 +14,33 @@ export interface ProjectBoardProps {
   project: ProjectDetails | null
   canManageTasks: boolean
   onTaskSelect: (task: TaskDetails) => void
+  onTaskEdit: (task: TaskDetails) => void
+  onTaskDelete: (task: TaskDetails) => Promise<void> | void
+  deletingTaskId?: string | null
 }
 
-export const ProjectBoard = ({ project, canManageTasks, onTaskSelect }: ProjectBoardProps): JSX.Element => {
+export const ProjectBoard = ({
+  project,
+  canManageTasks,
+  onTaskSelect,
+  onTaskEdit,
+  onTaskDelete,
+  deletingTaskId
+}: ProjectBoardProps): JSX.Element => {
   const { t } = useTranslation('projects')
   const { messageContext, columns, boardStatus, createTaskForm, handleCreateTask, handleMoveTask } =
     useProjectBoard(project, canManageTasks)
 
   if (!project) {
-    return <Empty description={t('board.empty')} style={{ marginTop: 32 }} />
+    return (
+      <div style={{ marginTop: 32 }}>
+        <EmptyState title={t('board.empty')} />
+      </div>
+    )
   }
 
   const isLoading = boardStatus === 'loading'
+  const showSkeleton = useDelayedLoading(isLoading)
 
   return (
     <>
@@ -36,7 +54,9 @@ export const ProjectBoard = ({ project, canManageTasks, onTaskSelect }: ProjectB
           style={{ marginBottom: 16 }}
         />
       ) : null}
-      <Spin spinning={isLoading}>
+      {showSkeleton ? (
+        <LoadingSkeleton variant="cards" items={4} />
+      ) : (
         <Row gutter={16}>
           {columns.map((column) => (
             <Col span={6} key={column.status}>
@@ -46,6 +66,9 @@ export const ProjectBoard = ({ project, canManageTasks, onTaskSelect }: ProjectB
                 tasks={column.tasks}
                 onTaskDrop={handleMoveTask}
                 onTaskSelect={onTaskSelect}
+                onTaskEdit={onTaskEdit}
+                onTaskDelete={onTaskDelete}
+                deletingTaskId={deletingTaskId}
                 canManage={canManageTasks}
                 renderComposer={
                   canManageTasks && column.status === 'todo'
@@ -62,7 +85,7 @@ export const ProjectBoard = ({ project, canManageTasks, onTaskSelect }: ProjectB
             </Col>
           ))}
         </Row>
-      </Spin>
+      )}
     </>
   )
 }

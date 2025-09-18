@@ -47,6 +47,10 @@ export class AuthIpcRegistrar {
         return await this.authService.updateUser(token, userId, payload)
       }
     )
+
+    this.registrar.register('auth:delete-user', async (token: string, userId: string) => {
+      await this.authService.deleteUser(token, userId)
+      return { success: true }
+    })
   }
 }
-

@@ -5,26 +5,60 @@ import type { ThemeMode } from '@renderer/store/slices/theme'
 
 import { buildDarkComponents } from '@renderer/theme/components/dark'
 import { buildLightComponents } from '@renderer/theme/components/light'
-import { DARK_TOKENS, LIGHT_TOKENS } from '@renderer/theme/tokens/base'
-import { buildSharedTokens, extractAccentVariants } from '@renderer/theme/tokens/shared'
+import { buildBrandTokens } from '@renderer/theme/foundations/brand'
+import { buildShadowTokens } from '@renderer/theme/foundations/shadow'
+import { buildSpacingTokens, spacingScale } from '@renderer/theme/foundations/spacing'
+import { buildShapeTokenOverrides, shapeTokens } from '@renderer/theme/foundations/shape'
+import { buildTypographyTokens } from '@renderer/theme/foundations/typography'
+import { resolvePalette } from '@renderer/theme/foundations/palette'
 
 const { darkAlgorithm, defaultAlgorithm } = antdTheme
 
 export const createThemeConfig = (mode: ThemeMode, accentColor: string): ThemeConfig => {
-  const sharedTokens = buildSharedTokens(accentColor)
-  const { accent, hover, active } = extractAccentVariants(sharedTokens)
+  const palette = resolvePalette(mode)
+  const brand = buildBrandTokens(accentColor, palette, mode)
+  const spacing = buildSpacingTokens()
+  const shapeOverrides = buildShapeTokenOverrides()
+  const typography = buildTypographyTokens()
+  const shadow = buildShadowTokens()
+
+  const tokenOverrides = {
+    ...spacing,
+    ...shapeOverrides,
+    ...typography,
+    ...shadow,
+    colorPrimary: brand.primary,
+    colorPrimaryHover: brand.primaryHover,
+    colorPrimaryActive: brand.primaryActive,
+    colorInfo: brand.primary,
+    colorLink: brand.primary,
+    colorLinkHover: brand.primaryHover,
+    colorLinkActive: brand.primaryActive,
+    colorTextSelection: brand.primarySubtle,
+    colorTextLightSolid: brand.onPrimary,
+    controlOutline: brand.primaryHover,
+    colorBgBase: palette.surfaceApp,
+    colorBgLayout: palette.surfaceApp,
+    colorBgContainer: palette.surfaceContainer,
+    colorBgElevated: palette.surfaceElevated,
+    colorBgSpotlight: palette.surfaceMuted,
+    colorFillSecondary: palette.surfaceMuted,
+    colorTextBase: palette.textPrimary,
+    colorTextSecondary: palette.textSecondary,
+    colorTextHeading: palette.textPrimary,
+    colorBorder: palette.borderSubtle,
+    colorBorderSecondary: palette.borderSubtle,
+    colorSplit: palette.borderStrong,
+    colorBgMask: palette.surfaceBackdrop,
+    motionDurationMid: '0.22s'
+  }
 
   return {
     algorithm: mode === 'dark' ? [darkAlgorithm] : [defaultAlgorithm],
-    token: {
-      ...sharedTokens,
-      ...(mode === 'dark' ? DARK_TOKENS : LIGHT_TOKENS)
-    },
+    token: tokenOverrides,
     components:
       mode === 'dark'
-        ? buildDarkComponents(accent, hover, active)
-        : buildLightComponents(accent, hover, active)
+        ? buildDarkComponents(palette, brand, spacingScale, shapeTokens)
+        : buildLightComponents(palette, brand, spacingScale, shapeTokens)
   }
 }
-
-export type { SharedTokenOverrides } from '@renderer/theme/tokens/shared'

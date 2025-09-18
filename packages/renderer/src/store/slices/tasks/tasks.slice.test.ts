@@ -1,5 +1,5 @@
-import { tasksReducer } from '@renderer/store/slices/tasks/slice'
-import { addComment, fetchTasks, moveTask } from '@renderer/store/slices/tasks/thunks'
+import { tasksReducer, resetTaskSearch } from '@renderer/store/slices/tasks/slice'
+import { addComment, fetchTasks, moveTask, searchTasks } from '@renderer/store/slices/tasks/thunks'
 import type { TaskDetails } from '@renderer/store/slices/tasks/types'
 
 describe('tasks slice', () => {
@@ -22,19 +22,16 @@ describe('tasks slice', () => {
       username: 'admin',
       displayName: 'Administrator'
     },
-    ownerUserId: 'admin',
     createdAt: now,
-    updatedAt: now
+    updatedAt: now,
+    linkedNotes: [],
+    commentCount: 0
   }
 
   it('handles fetchTasks.fulfilled', () => {
     const state = tasksReducer(
       undefined,
-      fetchTasks.fulfilled(
-        { projectId: 'proj-1', tasks: [baseTask] },
-        'request-id',
-        'proj-1'
-      )
+      fetchTasks.fulfilled({ projectId: 'proj-1', tasks: [baseTask] }, 'request-id', 'proj-1')
     )
 
     const projectState = state.byProjectId['proj-1']
@@ -48,11 +45,7 @@ describe('tasks slice', () => {
   it('handles moveTask.fulfilled', () => {
     const stateWithTask = tasksReducer(
       undefined,
-      fetchTasks.fulfilled(
-        { projectId: 'proj-1', tasks: [baseTask] },
-        'request-id',
-        'proj-1'
-      )
+      fetchTasks.fulfilled({ projectId: 'proj-1', tasks: [baseTask] }, 'request-id', 'proj-1')
     )
 
     const updatedTask: TaskDetails = {
@@ -75,11 +68,7 @@ describe('tasks slice', () => {
   it('handles addComment.fulfilled', () => {
     const stateWithTask = tasksReducer(
       undefined,
-      fetchTasks.fulfilled(
-        { projectId: 'proj-1', tasks: [baseTask] },
-        'request-id',
-        'proj-1'
-      )
+      fetchTasks.fulfilled({ projectId: 'proj-1', tasks: [baseTask] }, 'request-id', 'proj-1')
     )
 
     const stateAfterComment = tasksReducer(
@@ -106,5 +95,29 @@ describe('tasks slice', () => {
     )
 
     expect(stateAfterComment.commentsByTaskId[baseTask.id]?.items).toHaveLength(1)
+    expect(stateAfterComment.byProjectId['proj-1'].entities[baseTask.id]?.commentCount).toBe(1)
+  })
+
+  it('handles searchTasks.fulfilled', () => {
+    const fulfilled = searchTasks.fulfilled({ query: 'auth', results: [baseTask] }, 'request-id', {
+      query: 'auth'
+    })
+    const stateAfterSearch = tasksReducer(undefined, fulfilled)
+
+    expect(stateAfterSearch.search.status).toBe('succeeded')
+    expect(stateAfterSearch.search.results).toHaveLength(1)
+    expect(stateAfterSearch.search.query).toBe('auth')
+  })
+
+  it('resets search state', () => {
+    const fulfilled = searchTasks.fulfilled({ query: 'auth', results: [baseTask] }, 'request-id', {
+      query: 'auth'
+    })
+    const stateAfterSearch = tasksReducer(undefined, fulfilled)
+    const resetState = tasksReducer(stateAfterSearch, resetTaskSearch())
+
+    expect(resetState.search.query).toBe('')
+    expect(resetState.search.results).toHaveLength(0)
+    expect(resetState.search.status).toBe('idle')
   })
 })

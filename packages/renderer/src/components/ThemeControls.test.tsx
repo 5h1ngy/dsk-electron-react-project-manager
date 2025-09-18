@@ -34,6 +34,6 @@ describe('ThemeControls', () => {
     const swatches = screen.getAllByRole('button', { name: /Opzione colore/ })
     await userEvent.click(swatches[1])
 
-    expect(store.getState().theme.accentColor).not.toBe('#00F5D4')
+    expect(store.getState().theme.accentColor).not.toBe('#2563EB')
   })
 })

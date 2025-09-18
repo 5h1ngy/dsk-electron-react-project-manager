@@ -1,74 +1,102 @@
 {
-    "actionBar":  {
-                      "create":  "Nouvel utilisateur",
-                      "refresh":  "Actualiser"
-                  },
-    "table":  {
-                  "username":  "Nom d\u0027utilisateur",
-                  "displayName":  "Nom",
-                  "roles":  "Rles",
-                  "status":  "Statut",
-                  "actions":  "Actions",
-                  "empty":  "Aucun utilisateur"
-              },
-    "status":  {
-                   "active":  "Actif",
-                   "inactive":  "Inactif"
-               },
-    "actions":  {
-                    "edit":  "Modifier"
-                },
-    "modals":  {
-                   "create":  {
-                                  "title":  "Crer un utilisateur",
-                                  "confirm":  "Crer",
-                                  "fields":  {
-                                                 "username":  "Nom d\u0027utilisateur",
-                                                 "displayName":  "Nom",
-                                                 "password":  "Mot de passe",
-                                                 "roles":  "Rles",
-                                                 "rolesPlaceholder":  "Slectionnez les rles",
-                                                 "active":  "Actif"
-                                             }
-                              },
-                   "edit":  {
-                                "title":  "Modifier l\u0027utilisateur {{username}}",
-                                "confirm":  "Enregistrer",
-                                "fields":  {
-                                               "displayName":  "Nom",
-                                               "password":  "Nouveau mot de passe",
-                                               "passwordHint":  "Laissez vide pour conserver le mot de passe actuel",
-                                               "roles":  "Rles",
-                                               "rolesPlaceholder":  "Slectionnez les rles",
-                                               "active":  "Actif"
-                                           }
-                            }
-               },
-    "messages":  {
-                     "createSuccess":  "Utilisateur cr avec succs",
-                     "createErrorFallback":  "Impossible de crer l\u0027utilisateur",
-                     "updateSuccess":  "Utilisateur mis  jour avec succs",
-                     "updateErrorFallback":  "Impossible de mettre  jour l\u0027utilisateur"
-                 },
-    "error":  {
-                  "title":  "Erreur"
-              },
-    "roles":  {
-                  "Admin":  "Administrateur",
-                  "Maintainer":  "Mainteneur",
-                  "Contributor":  "Contributeur",
-                  "Viewer":  "Lecteur"
-              },
-    "permissions":  {
-                        "title":  "Permissions insuffisantes",
-                        "description":  "Seuls les administrateurs peuvent grer les utilisateurs."
-                    },
-    "personal":  {
-                     "projectsTitle":  "Mes projets",
-                     "profileTitle":  "Rsum du profil",
-                     "username":  "Connect en tant que {{username}}",
-                     "noDescription":  "Aucune description disponible",
-                     "noProjects":  "Vous ne participez  aucun projet pour le moment.",
-                     "heading":  "Vue personnelle"
-                 }
+    "actionBar": {
+        "create": "Nouvel utilisateur",
+        "refresh": "Actualiser"
+    },
+    "filters": {
+        "users": {
+            "ariaLabel": "Filtrer les utilisateurs",
+            "searchPlaceholder": "Rechercher des utilisateurs...",
+            "statusTooltip": "Filtrer par statut",
+            "status": {
+                "all": "Tous",
+                "active": "Actifs",
+                "inactive": "Inactifs"
+            },
+            "roles": {
+                "all": "Tous les roles"
+            },
+            "view": {
+                "table": "Vue tableau",
+                "cards": "Vue cartes"
+            },
+            "lastLogin": "Derniere connexion : {{date}}"
+        }
+    },
+    "table": {
+        "username": "Nom d'utilisateur",
+        "displayName": "Nom",
+        "roles": "Roles",
+        "status": "Statut",
+        "actions": "Actions",
+        "empty": "Aucun utilisateur"
+    },
+    "status": {
+        "active": "Actif",
+        "inactive": "Inactif"
+    },
+    "actions": {
+        "edit": "Modifier",
+        "delete": "Supprimer",
+        "deleteTitle": "Supprimer l'utilisateur",
+        "deleteDescription": "Voulez-vous vraiment supprimer {{username}} ?",
+        "confirmDelete": "Supprimer",
+        "cancel": "Annuler"
+    },
+    "modals": {
+        "create": {
+            "title": "Creer un utilisateur",
+            "confirm": "Creer",
+            "fields": {
+                "username": "Nom d'utilisateur",
+                "displayName": "Nom",
+                "password": "Mot de passe",
+                "roles": "Roles",
+                "rolesPlaceholder": "Selectionnez les roles",
+                "active": "Actif"
+            }
+        },
+        "edit": {
+            "title": "Modifier l'utilisateur {{username}}",
+            "confirm": "Enregistrer",
+            "fields": {
+                "displayName": "Nom",
+                "password": "Nouveau mot de passe",
+                "passwordHint": "Laissez vide pour conserver le mot de passe actuel",
+                "roles": "Roles",
+                "rolesPlaceholder": "Selectionnez les roles",
+                "active": "Actif"
+            }
+        }
+    },
+    "messages": {
+        "createSuccess": "Utilisateur cree avec succes",
+        "createErrorFallback": "Impossible de creer l'utilisateur",
+        "updateSuccess": "Utilisateur mis a jour avec succes",
+        "updateErrorFallback": "Impossible de mettre a jour l'utilisateur",
+        "deleteSuccess": "Utilisateur supprime avec succes",
+        "deleteErrorFallback": "Impossible de supprimer l'utilisateur",
+        "deleteSelfWarning": "Vous ne pouvez pas supprimer votre propre compte"
+    },
+    "error": {
+        "title": "Erreur"
+    },
+    "roles": {
+        "Admin": "Administrateur",
+        "Maintainer": "Mainteneur",
+        "Contributor": "Contributeur",
+        "Viewer": "Lecteur"
+    },
+    "permissions": {
+        "title": "Permissions insuffisantes",
+        "description": "Seuls les administrateurs peuvent gerer les utilisateurs."
+    },
+    "personal": {
+        "projectsTitle": "Mes projets",
+        "profileTitle": "Resume du profil",
+        "username": "Connecte en tant que {{username}}",
+        "noDescription": "Aucune description disponible",
+        "noProjects": "Vous ne participez a aucun projet pour le moment.",
+        "heading": "Vue personnelle"
+    }
 }

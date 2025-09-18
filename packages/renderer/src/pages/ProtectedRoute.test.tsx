@@ -8,8 +8,6 @@ import { logout, selectCurrentUser, selectIsAuthenticated } from '@renderer/stor
 import { useAppDispatch, useAppSelector } from '@renderer/store/hooks'
 import { useSessionWatcher } from '@renderer/hooks/useSessionWatcher'
 import type { UserDTO } from '@main/services/auth'
-import Shell from '@renderer/layout/Shell'
-
 jest.mock('@renderer/hooks/useSessionWatcher', () => ({
   useSessionWatcher: jest.fn()
 }))
@@ -24,6 +22,10 @@ jest.mock('@renderer/store/slices/auth', () => ({
   selectCurrentUser: jest.fn(),
   selectIsAuthenticated: jest.fn()
 }))
+
+const mockedUseAppDispatch = useAppDispatch as unknown as jest.Mock
+const mockedUseAppSelector = useAppSelector as unknown as jest.Mock
+const mockedLogout = logout as unknown as jest.Mock
 
 const shellMock = jest.fn(({ children, onLogout }: { children: ReactNode; onLogout: () => void }) => (
   <div data-testid="shell">
@@ -59,7 +61,7 @@ describe('ProtectedRoute', () => {
     isAuthenticated: boolean
     currentUser: UserDTO | null
   }) => {
-    ;(useAppSelector as jest.Mock).mockImplementation((selector) => {
+    ;mockedUseAppSelector.mockImplementation((selector) => {
       if (selector === selectIsAuthenticated) {
         return isAuthenticated
       }
@@ -84,8 +86,8 @@ describe('ProtectedRoute', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
-    ;(useAppDispatch as jest.Mock).mockReturnValue(mockDispatch)
-    ;(logout as jest.Mock).mockImplementation(() => ({ type: 'auth/logout' }))
+    ;mockedUseAppDispatch.mockReturnValue(mockDispatch)
+    ;mockedLogout.mockImplementation(() => ({ type: 'auth/logout' }))
     shellMock.mockClear()
   })
 
@@ -117,7 +119,7 @@ describe('ProtectedRoute', () => {
 
   it('dispatches the logout thunk when the provided handler fires', async () => {
     const logoutAction = { type: 'auth/logout' }
-    ;(logout as jest.Mock).mockReturnValue(logoutAction)
+    ;mockedLogout.mockReturnValue(logoutAction)
     setupSelectors({ isAuthenticated: true, currentUser: mockUser })
 
     renderWithRouter()

@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, type UseFormReturn, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 import {
@@ -10,16 +10,16 @@ import {
 } from '@renderer/pages/Projects/schemas/projectSchemas'
 
 export interface ProjectForms {
-  createForm: ReturnType<typeof useForm<CreateProjectValues>>
-  updateForm: ReturnType<typeof useForm<UpdateProjectValues>>
+  createForm: UseFormReturn<CreateProjectValues>
+  updateForm: UseFormReturn<UpdateProjectValues>
 }
 
 export const useProjectForms = (): ProjectForms => {
-  const createResolver = useMemo(() => zodResolver(createProjectSchema), [])
-  const updateResolver = useMemo(() => zodResolver(updateProjectSchema), [])
-
   const createForm = useForm<CreateProjectValues>({
-    resolver: createResolver,
+    resolver: useMemo(
+      () => zodResolver(createProjectSchema) as unknown as Resolver<CreateProjectValues>,
+      []
+    ),
     mode: 'onChange',
     defaultValues: {
       key: '',
@@ -30,7 +30,10 @@ export const useProjectForms = (): ProjectForms => {
   })
 
   const updateForm = useForm<UpdateProjectValues>({
-    resolver: updateResolver,
+    resolver: useMemo(
+      () => zodResolver(updateProjectSchema) as unknown as Resolver<UpdateProjectValues>,
+      []
+    ),
     mode: 'onChange',
     defaultValues: {
       name: '',

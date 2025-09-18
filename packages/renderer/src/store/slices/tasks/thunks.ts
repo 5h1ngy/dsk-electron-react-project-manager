@@ -19,11 +19,11 @@ import type { RootState } from '@renderer/store/types'
 
 const ensureToken = (state: RootState): string | null => state.auth.token
 
-const handleTaskError = (
+const handleTaskError = <T>(
   error: unknown,
   dispatch: (action: unknown) => unknown,
-  rejectWithValue: (value: string) => unknown
-) => {
+  rejectWithValue: (value: string) => T
+): T => {
   if (isSessionExpiredError(error)) {
     persistToken(null)
     dispatch(forceLogout())

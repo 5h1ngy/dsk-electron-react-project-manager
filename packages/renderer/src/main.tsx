@@ -14,16 +14,6 @@ if (!container) {
   throw new Error('Root container not found')
 }
 
-const fontStack =
-  "'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif"
-
-document.body.style.margin = '0'
-document.body.style.minHeight = '100vh'
-document.body.style.fontFamily = fontStack
-document.body.style.backgroundColor = '#f5f5f5'
-
-container.style.minHeight = '100vh'
-
 createRoot(container).render(
   <StrictMode>
     <Provider store={store}>

@@ -1,4 +1,4 @@
-import type { AuthService } from '@main/services/auth'
+import type { AuthService, SessionPayload, UserDTO } from '@main/services/auth'
 import { AppError } from '@main/config/appError'
 import { AuthIpcRegistrar } from '@main/ipc/auth'
 import { IpcChannelRegistrar } from '@main/ipc/utils'
@@ -27,6 +27,22 @@ const createHandlerRegistry = (): HandlerMap => {
   return { handlers, ipcMock }
 }
 
+const createUserDto = (overrides: Partial<UserDTO> = {}): UserDTO => ({
+  id: overrides.id ?? 'user-1',
+  username: overrides.username ?? 'jane.doe',
+  displayName: overrides.displayName ?? 'Jane Doe',
+  isActive: overrides.isActive ?? true,
+  roles: overrides.roles ?? ['Admin'],
+  lastLoginAt: overrides.lastLoginAt ?? null,
+  createdAt: overrides.createdAt ?? new Date('2024-01-01T09:00:00.000Z'),
+  updatedAt: overrides.updatedAt ?? new Date('2024-01-10T09:00:00.000Z')
+})
+
+const createSessionPayload = (overrides: Partial<SessionPayload> = {}): SessionPayload => ({
+  token: overrides.token ?? 'token-abc',
+  user: overrides.user ?? createUserDto()
+})
+
 describe('AuthIpcRegistrar', () => {
   let registry: HandlerMap
   let loggerMock: { warn: jest.Mock; error: jest.Mock }
@@ -47,18 +63,23 @@ describe('AuthIpcRegistrar', () => {
       currentSession: jest.fn(),
       listUsers: jest.fn(),
       createUser: jest.fn(),
-      updateUser: jest.fn()
+      updateUser: jest.fn(),
+      deleteUser: jest.fn(),
+      resolveActor: jest.fn()
     } as unknown as jest.Mocked<AuthService>
   })
 
   it('registers auth handlers and emits success responses', async () => {
-    authService.login.mockResolvedValue({ token: 't' })
-    authService.register.mockResolvedValue({ token: 'r' })
+    const loginPayload = createSessionPayload({ token: 't' })
+    const registerPayload = createSessionPayload({ token: 'r' })
+    authService.login.mockResolvedValue(loginPayload)
+    authService.register.mockResolvedValue(registerPayload)
     authService.logout.mockResolvedValue(undefined)
     authService.currentSession.mockResolvedValue(null)
-    authService.listUsers.mockResolvedValue([])
-    authService.createUser.mockResolvedValue({ id: '1' })
-    authService.updateUser.mockResolvedValue({ id: '2' })
+    authService.listUsers.mockResolvedValue([createUserDto({ id: 'catalog-1' })])
+    authService.createUser.mockResolvedValue(createUserDto({ id: '1', username: 'new.user' }))
+    authService.updateUser.mockResolvedValue(createUserDto({ id: '2', username: 'updated.user' }))
+    authService.deleteUser.mockResolvedValue(undefined)
 
     const authRegistrar = new AuthIpcRegistrar({ authService, registrar })
     authRegistrar.register()
@@ -66,11 +87,16 @@ describe('AuthIpcRegistrar', () => {
     const loginResponse = await registry.handlers
       .get('auth:login')!
       ({}, { username: 'a', password: 'b' })
-    expect(loginResponse).toEqual({ ok: true, data: { token: 't' } })
+    expect(loginResponse).toEqual({ ok: true, data: loginPayload })
 
     const logoutResponse = await registry.handlers.get('auth:logout')!({}, 'token')
     expect(logoutResponse).toEqual({ ok: true, data: { success: true } })
     expect(authService.logout).toHaveBeenCalledWith('token')
+
+    const deleteResponse = await registry.handlers
+      .get('auth:delete-user')!({}, 'token', 'target-user')
+    expect(deleteResponse).toEqual({ ok: true, data: { success: true } })
+    expect(authService.deleteUser).toHaveBeenCalledWith('token', 'target-user')
   })
 
   it('formats application errors', async () => {

@@ -1,25 +1,20 @@
 import { useCallback, useMemo, useState } from 'react'
-import { theme, type MenuProps } from 'antd'
+import type { MenuProps } from 'antd'
 import { useTranslation } from 'react-i18next'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 import { useAppSelector } from '@renderer/store/hooks'
-import { selectAccentColor, selectThemeMode } from '@renderer/store/slices/theme'
-import { buildNavigationItems, resolveSelectedKey } from '@renderer/layout/Shell/helpers/navigation'
-import type {
-  ShellLayoutParams,
-  ShellRoleBadge,
-  UseShellLayoutResult
-} from '@renderer/layout/Shell/Shell.types'
+import { selectThemeMode } from '@renderer/store/slices/theme'
+import { buildNavigationItems, resolveSelectedKey } from '@renderer/layout/Shell/Shell.helpers'
+import type { UseShellLayoutResult } from '@renderer/layout/Shell/Shell.types'
 
-export const useShellLayout = ({ currentUser, onLogout }: ShellLayoutParams): UseShellLayoutResult => {
+export const useShellLayout = (): UseShellLayoutResult => {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const location = useLocation()
-  const { token } = theme.useToken()
 
   const [collapsed, setCollapsed] = useState(false)
-  const accentColor = useAppSelector(selectAccentColor)
+  const [breakpointCollapsed, setBreakpointCollapsed] = useState(false)
   const mode = useAppSelector(selectThemeMode)
 
   const menuTheme: 'light' | 'dark' = useMemo(
@@ -44,41 +39,33 @@ export const useShellLayout = ({ currentUser, onLogout }: ShellLayoutParams): Us
   )
 
   const handleToggleCollapse = useCallback(() => {
-    setCollapsed((value) => !value)
-  }, [])
+    setCollapsed((value) => {
+      const next = !value
+      if (!next) {
+        setBreakpointCollapsed(false)
+      }
+      return next
+    })
+  }, [setBreakpointCollapsed])
 
   const handleCollapseChange = useCallback((value: boolean) => {
     setCollapsed(value)
-  }, [])
+    if (!value) {
+      setBreakpointCollapsed(false)
+    }
+  }, [setBreakpointCollapsed])
 
-  const layoutStyle = useMemo(
-    () => ({
-      minHeight: '100vh',
-      height: '100vh',
-      overflow: 'hidden',
-      background: token.colorBgLayout
-    }),
-    [token]
-  )
-
-  const contentStyle = useMemo(
-    () => ({
-      background: token.colorBgLayout,
-      padding: 24,
-      overflowY: 'auto',
-      minHeight: 0,
-      flex: '1 1 auto'
-    }),
-    [token]
-  )
-
-  const roles = useMemo<ShellRoleBadge[]>(
-    () =>
-      currentUser.roles.map((role) => ({
-        id: role,
-        label: t(`roles.${role}`, { defaultValue: role })
-      })),
-    [currentUser.roles, t]
+  const handleBreakpoint = useCallback(
+    (broken: boolean) => {
+      if (broken) {
+        setBreakpointCollapsed(true)
+        setCollapsed(true)
+      } else if (breakpointCollapsed) {
+        setBreakpointCollapsed(false)
+        setCollapsed(false)
+      }
+    },
+    [breakpointCollapsed, setBreakpointCollapsed]
   )
 
   const labels = useMemo(
@@ -91,30 +78,15 @@ export const useShellLayout = ({ currentUser, onLogout }: ShellLayoutParams): Us
     [t]
   )
 
-  const footerData = useMemo(
-    () => ({
-      displayName: currentUser.displayName,
-      username: currentUser.username,
-      roles,
-      accentColor,
-      onLogout,
-      logoutLabel: labels.logout
-    }),
-    [accentColor, currentUser.displayName, currentUser.username, labels.logout, onLogout, roles]
-  )
-
   return {
     collapsed,
     menuTheme,
-    layoutStyle,
-    contentStyle,
     menuItems,
     selectedKeys,
     handleMenuSelect,
     handleToggleCollapse,
     handleCollapseChange,
-    footerData,
+    handleBreakpoint,
     labels
   }
 }
-

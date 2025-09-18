@@ -8,13 +8,14 @@ import { User } from '../packages/main/src/models/User'
 
 import type {
   DevelopmentSeederOptions,
-  SeederState,
-  ProjectSeedDefinition
+  ProjectSeedDefinition,
+  SeederState
 } from './DevelopmentSeeder.types'
-import { UserSeedFactory } from './UserSeedFactory'
-import { ProjectSeedFactory } from './ProjectSeedFactory'
-import { UserSeeder } from './UserSeeder'
 import { ProjectSeeder } from './ProjectSeeder'
+import { ProjectSeedFactory } from './ProjectSeedFactory'
+import { UserSeedFactory } from './UserSeedFactory'
+import { UserSeeder } from './UserSeeder'
+import { loadSeedConfig, type SeedConfig } from './seedConfig'
 
 const DEFAULT_OPTIONS: Required<DevelopmentSeederOptions> = {
   fakerSeed: 20251018,
@@ -24,6 +25,7 @@ const DEFAULT_OPTIONS: Required<DevelopmentSeederOptions> = {
 export class DevelopmentSeeder {
   private readonly random = faker
   private readonly options: Required<DevelopmentSeederOptions>
+  private readonly config: SeedConfig
   private readonly userFactory: UserSeedFactory
   private readonly projectFactory: ProjectSeedFactory
   private readonly userSeeder: UserSeeder
@@ -31,9 +33,15 @@ export class DevelopmentSeeder {
 
   constructor(private readonly sequelize: Sequelize, options: DevelopmentSeederOptions = {}) {
     this.options = { ...DEFAULT_OPTIONS, ...options }
-    this.userFactory = new UserSeedFactory(this.random)
-    this.projectFactory = new ProjectSeedFactory(this.random)
-    this.userSeeder = new UserSeeder(this.options.passwordSeed)
+    this.config = loadSeedConfig()
+    this.userFactory = new UserSeedFactory(this.random, this.config.users)
+    this.projectFactory = new ProjectSeedFactory(
+      this.random,
+      this.config.projects,
+      this.config.comments,
+      this.config.notes
+    )
+    this.userSeeder = new UserSeeder(this.options.passwordSeed, this.random)
     this.projectSeeder = new ProjectSeeder()
   }
 
@@ -54,7 +62,7 @@ export class DevelopmentSeeder {
       logger.info('Seeding development data...', 'Seed')
 
       const userSeeds = this.userFactory.createSeeds()
-      logger.debug(`Generated ${userSeeds.length} user seeds`, 'Seed')
+      logger.debug(`Configured ${userSeeds.length} user seeds`, 'Seed')
 
       let createdUsers = 0
       for (const seed of userSeeds) {
@@ -73,7 +81,7 @@ export class DevelopmentSeeder {
         state.userRoles,
         state.adminUser
       )
-      logger.debug(`Generated ${projectSeeds.length} project seeds`, 'Seed')
+      logger.debug(`Configured ${projectSeeds.length} project seeds`, 'Seed')
 
       await this.persistProjects(transaction, projectSeeds)
     })
@@ -92,20 +100,27 @@ export class DevelopmentSeeder {
     }
   }
 
-  private async persistProjects(transaction: Transaction, seeds: ProjectSeedDefinition[]): Promise<void> {
+  private async persistProjects(
+    transaction: Transaction,
+    seeds: ProjectSeedDefinition[]
+  ): Promise<void> {
     let createdProjects = 0
     let taskTotal = 0
+    let commentTotal = 0
+    let noteTotal = 0
 
     for (const seed of seeds) {
-      const project = await this.projectSeeder.upsert(transaction, seed)
-      taskTotal += seed.tasks.length
-      if (project) {
+      const result = await this.projectSeeder.upsert(transaction, seed)
+      taskTotal += result.taskCount
+      commentTotal += result.commentCount
+      noteTotal += result.noteCount
+      if (result.project) {
         createdProjects += 1
       }
     }
 
     logger.success(
-      `Seed complete: ${createdProjects} projects, ${taskTotal} tasks`,
+      `Seed complete: ${createdProjects} projects, ${taskTotal} tasks, ${commentTotal} comments, ${noteTotal} notes`,
       'Seed'
     )
   }

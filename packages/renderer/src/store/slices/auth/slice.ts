@@ -8,7 +8,8 @@ import {
   logout,
   register,
   restoreSession,
-  updateUser
+  updateUser,
+  deleteUser
 } from '@renderer/store/slices/auth/thunks'
 
 const initialState: AuthState = {
@@ -108,6 +109,17 @@ const authSlice = createSlice({
         state.error = undefined
       })
       .addCase(updateUser.rejected, (state, action) => {
+        state.error = action.payload ?? 'Operazione non riuscita'
+      })
+      .addCase(deleteUser.fulfilled, (state, action) => {
+        state.users = state.users.filter((user) => user.id !== action.payload)
+        if (state.currentUser && state.currentUser.id === action.payload) {
+          state.currentUser = null
+          state.token = null
+        }
+        state.error = undefined
+      })
+      .addCase(deleteUser.rejected, (state, action) => {
         state.error = action.payload ?? 'Operazione non riuscita'
       })
   }

@@ -12,6 +12,7 @@ import { appContext, mainWindowManager, MainWindowManager } from '@main/appConte
 import { AuthIpcRegistrar } from '@main/ipc/auth'
 import { ProjectIpcRegistrar } from '@main/ipc/project'
 import { TaskIpcRegistrar } from '@main/ipc/task'
+import { NoteIpcRegistrar } from '@main/ipc/note'
 import { HealthIpcRegistrar } from '@main/ipc/health'
 import { IpcChannelRegistrar, ipcChannelRegistrar } from '@main/ipc/utils'
 
@@ -55,7 +56,10 @@ class SessionLifecycleManager {
         }
       }
     } catch (error) {
-      this.options.logger.warn('Failed to load session timeout setting; using default value', 'Auth', error)
+      this.options.logger.warn('Failed to load session timeout setting; using default value', 'Auth')
+      const detail =
+        error instanceof Error ? error.stack ?? error.message : String(error)
+      this.options.logger.debug(`Session timeout lookup failed: ${detail}`, 'Auth')
     }
 
     this.options.sessionManager.setTimeoutMinutes(timeout)
@@ -207,9 +211,9 @@ class MainProcessApplication {
       registrar: this.deps.ipcRegistrar
     }).register()
 
-    const { projectService, taskService } = this.deps.context
-    if (!projectService || !taskService) {
-      throw new Error('Project and Task services must be initialized before registering IPC')
+    const { projectService, taskService, noteService } = this.deps.context
+    if (!projectService || !taskService || !noteService) {
+      throw new Error('Project, Task and Note services must be initialized before registering IPC')
     }
 
     new ProjectIpcRegistrar({
@@ -223,7 +227,13 @@ class MainProcessApplication {
       taskService,
       registrar: this.deps.ipcRegistrar
     }).register()
-    this.deps.logger.debug('Auth, Project and Task IPC channels registered', 'IPC')
+
+    new NoteIpcRegistrar({
+      authService: this.deps.context.authService,
+      noteService,
+      registrar: this.deps.ipcRegistrar
+    }).register()
+    this.deps.logger.debug('Auth, Project, Task and Note IPC channels registered', 'IPC')
   }
 }
 

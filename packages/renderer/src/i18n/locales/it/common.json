@@ -17,12 +17,17 @@
     "title": "DSK Project Manager",
     "welcome": "Benvenuto, {{name}}",
     "logout": "Esci",
-    "navigation": {"dashboard": "Dashboard", "projects": "Progetti"},
+    "navigation": {"dashboard": "Dashboard", "projects": "Progetti", "settings": "Impostazioni"},
     "collapseSidebar": "Comprimi navigazione",
     "expandSidebar": "Espandi navigazione",
+    "searchPlaceholder": "Cerca tra file e progetti",
+    "quickCreate": "Nuovo",
+    "help": "Assistenza",
+    "notifications": "Notifiche",
+    "settings": "Impostazioni",
     "theme": {
       "title": "Aspetto",
-      "mode": "Modalit scura",
+      "mode": "Modalità scura",
       "accent": "Colore secondario"
     },
     "accent": {
@@ -35,6 +40,17 @@
     "Maintainer": "Manutentore",
     "Contributor": "Collaboratore",
     "Viewer": "Visualizzatore"
+  },
+  "settingsPage": {
+    "title": "Impostazioni workspace",
+    "appearance": {
+      "title": "Aspetto",
+      "description": "Scegli modalità tema e colore secondario preferiti."
+    },
+    "language": {
+      "title": "Lingua",
+      "description": "Seleziona la lingua usata nell'applicazione."
+    }
   }
 }
 

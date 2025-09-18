@@ -6,243 +6,169 @@
 [![TypeScript Shield][typescript-shield]][typescript-link]
 [![Jest Shield][jest-shield]][jest-link]
 
->  Modern desktop project manager with a hardened Electron main process, a typed preload bridge, and a polished React/Redux experience (auth, Kanban, dashboards, theming, multilingual UI).
+![Application preview](assets/preview.png)
+
+> Release 7.4.19 - Modern desktop project manager with a hardened Electron main process, a typed preload bridge, and a polished React/Redux experience.
 
 ---
 
-##  Table of Contents
-
-1. [ Feature Highlights](#-feature-highlights)
-2. [ Tech Stack](#-tech-stack)
-3. [ Project Structure](#-project-structure)
-4. [ Architecture Overview](#-architecture-overview)
-5. [ Quick Start](#-quick-start)
-6. [ Scripts & Tooling](#-scripts--tooling)
-7. [ Database & Seeding](#-database--seeding)
-8. [ Testing Strategy](#-testing-strategy)
-9. [ window.api Contract](#-windowapi-contract)
-10. [ Configuration](#-configuration)
-11. [ Security](#-security)
-12. [ Troubleshooting](#-troubleshooting)
-13. [ Contributing](#-contributing)
-
----
-
-##  Feature Highlights
-
-*  **Secure shell** – sandboxed `BrowserWindow`, enforced CSP, blocked navigation, console proxying.
-*  **Domain-driven services** – RBAC auth, project/task orchestration, audit logging, Argon2 hashing.
-*  **Typed preload bridge** – `window.api` exposes health/auth/project/task IPC with DTO safety.
-*  **Rich renderer** – React 19 + Ant Design 5, Redux Toolkit slices, i18next (it/en/de/fr), dynamic theming.
-*  **Serious testing** – Jest multi-project (node + jsdom), Testing Library, helper utilities, solid coverage.
-*  **Seed everything** – Faker-powered `DevelopmentSeeder` spins realistic roles, users, projects, Kanban tasks.
+## Table of Contents
+- [Feature Highlights](#feature-highlights)
+- [Tech Stack](#tech-stack)
+- [Project Structure](#project-structure)
+- [Architecture Overview](#architecture-overview)
+- [Quick Start](#quick-start)
+- [Scripts & Tooling](#scripts--tooling)
+- [Database & Seeding](#database--seeding)
+- [Testing Strategy](#testing-strategy)
+- [window.api Contract](#windowapi-contract)
+- [Configuration](#configuration)
+- [Security](#security)
+- [Troubleshooting](#troubleshooting)
+- [Contributing](#contributing)
 
 ---
 
-##  Tech Stack
+## Feature Highlights
 
-| Layer    | Ingredients                                                                                                          |
-| -------- | -------------------------------------------------------------------------------------------------------------------- |
-| Runtime  | Electron 38 • Node 22                                                                                                |
-| Renderer | React 19 • React Router 6 • Ant Design 5 • Redux Toolkit • React Hook Form • i18next                                 |
-| Domain   | SQLite • Sequelize (TypeScript) • Zod • `@node-rs/argon2`                                                            |
-| Tooling  | electron-vite • ts-node + tsconfig-paths • Jest + ts-jest • Testing Library • ESLint 9 • Prettier 3 • TypeScript 5.7 |
+- Hardened Electron main process with single instance lock, security hooks, and structured logging.
+- Domain-driven services for auth, projects, tasks, notes, and auditing backed by Sequelize.
+- Strongly typed preload bridge exposing the `window.api` contract with runtime validation.
+- Rich React 19 renderer using Ant Design 5, Redux Toolkit, i18next, and dynamic accent theming.
+- Comprehensive testing setup spanning Jest, Testing Library, and ts-jest across processes.
+- Faker-powered seeders that bootstrap realistic demo data for local development.
 
 ---
 
-##  Project Structure
+## Tech Stack
+
+| Layer | Highlights |
+| ----- | ---------- |
+| Runtime | Electron 38, Node 22 |
+| Renderer | React 19, React Router 6, Ant Design 5, Redux Toolkit, React Hook Form, i18next |
+| Domain | SQLite, Sequelize (TypeScript), Zod, @node-rs/argon2 |
+| Tooling | electron-vite, ts-node + tsconfig-paths, Jest + ts-jest, Testing Library, ESLint 9, Prettier 3, TypeScript 5.7 |
+
+---
+
+## Project Structure
 
 ```text
 dsk-electron-react-project-manager
- packages
-   main        # Electron main process (window mgr, services, IPC, Sequelize)
-   preload     # Typed context bridge exposing window.api
-   renderer    # React/Redux UI, routes, layout, store, theme, i18n
- seeding        # DevelopmentSeeder + CLI entry points
- test           # Jest setup + static mocks
- resources      # Icons/assets for electron-builder
- out | build    # Generated artifacts
- configs        # electron.vite.config.ts, tsconfig.*.json, jest.config.ts, etc.
-```
-
-**Path aliases**
-
-| Alias         | Target                    |
-| ------------- | ------------------------- |
-| `@main/*`     | `packages/main/src/*`     |
-| `@preload/*`  | `packages/preload/src/*`  |
-| `@renderer/*` | `packages/renderer/src/*` |
-
- **Note:** `ts-node` CLIs preload `tsconfig-paths/register` so aliases also work outside bundlers.
-
----
-
-##  Architecture Overview
-
-### Main Process (`packages/main`)
-
-* `appContext.ts` wires session/auth/project/task services and exposes `MainWindowManager`.
-* `services/security` enforces CSP, network whitelist, navigation guards, and permission denials.
-* `services/{auth,project,task}` encapsulate Zod validation, RBAC, audit trails, Kanban logic.
-* `ipc/*` registrars surface a consistent `IpcResponse` envelope to preload consumers.
-* `config/database.ts` bootstraps Sequelize and is reused for seeding.
-* `config/logger.ts` provides colorized logging plus renderer console forwarding.
-
-### Preload (`packages/preload`)
-
-* `contextBridge.exposeInMainWorld('api', api)` offers a typed API surface (health, auth, project, task).
-* `invokeIpc` validates `IpcResponse` payloads before resolving Promises.
-
-### Renderer (`packages/renderer`)
-
-* `main.tsx` loads i18n, fonts, styles, and renders `<App />` within a Redux Provider.
-* `App.tsx` orchestrates session restore, accent color injection, theme tokens, and routing.
-* `layout/Shell` supplies a collapsible sidebar, header actions, user info, and accent-aware palette.
-* `pages` cover login/register (public) plus dashboard, project overview/tasks/board, task details (guarded by `ProtectedRoute` + `useSessionWatcher`).
-* Redux slices (`auth`, `locale`, `theme`, `projects`, `tasks`) include selectors, async thunks (IPC calls), helpers, and tests.
-* Theme utilities override Ant Design tokens, support accent colors, and respond to light/dark toggles.
-
-### Data & Persistence
-
-* SQLite lives under `%APPDATA%/react-ts/storage/app.sqlite` (or OS equivalents) via `resolveAppStoragePath`.
-* `SessionLifecycleManager` loads timeout from env/DB (`auth.sessionTimeoutMinutes`) and prunes sessions every 5 minutes.
-* Seeding reuses the same Sequelize models to prevent schema drift.
-
----
-
-##  Quick Start
-
-### Prerequisites
-
-* Node.js ≥ 20
-* npm ≥ 10
-* (Windows) Desktop development with C++ workload or comparable build tools (for `sqlite3`)
-
-### Install
-
-```bash
-npm install
-```
-
-### Develop
-
-```bash
-npm run dev       # HMR for main + preload + renderer
-npm start         # Preview production build
-```
-
-### Build
-
-```bash
-npm run build         # Typecheck + electron-vite build
-npm run build:unpack  # Build + unpacked dir
-npm run build:win     # Windows installer
-npm run build:mac     # macOS dmg
-npm run build:linux   # Linux AppImage
+|- packages
+|  |- main        # Electron main process, IPC registrars, services, Sequelize models
+|  |- preload     # Typed context bridge defining window.api
+|  \- renderer    # React/Redux UI, routes, layout, theme system, i18n
+|- seeding        # Seeder entry points and dataset builders
+|- resources      # Icons and extra assets for packaging
+|- test           # Jest configuration, mocks, and helpers
+|- assets         # Static resources (preview, logos, etc.)
+\- build/out/dist # Generated artifacts
 ```
 
 ---
 
-##  Scripts & Tooling
+## Architecture Overview
 
-| Command                           | Description                                                                                |
-| --------------------------------- | ------------------------------------------------------------------------------------------ |
-| `npm run lint`                    | ESLint (cached)                                                                            |
-| `npm run format`                  | Prettier write                                                                             |
-| `npm run typecheck`               | Aggregated TS check (node + web)                                                           |
-| `npm test` / `npm run test:watch` | Jest multi-project (main/preload node env, renderer jsdom)                                 |
-| `npm run db:seed`                 | `DevelopmentSeeder` via `ts-node --project tsconfig.tools.json -r tsconfig-paths/register` |
+See `docs/architecture-overview.md` for a deeper walkthrough of the Electron lifecycle, IPC surface, renderer composition, and data flow between layers. The document is kept alongside this README so the implementation notes evolve with the codebase.
 
 ---
 
-##  Database & Seeding
+## Quick Start
 
-Default storage path comes from `app.getPath('userData')`. Override via `DB_STORAGE_PATH` during runtime or seeding:
+1. Install dependencies: `npm install`
+2. Launch the app in development: `npm run dev`
+3. Run the renderer preview in a browser-only context: `npm start`
+4. Build production assets: `npm run build`
+5. Package the desktop app: `npm run build:win` (or `build:mac`, `build:linux`)
 
-```bash
-DB_STORAGE_PATH="c:/tmp/dsk-app.sqlite" npm run db:seed
-```
-
-Seeder output includes base roles, default admin + sample users, projects, tags, Kanban tasks, comments, and audit logs. SQL statements are logged (Sequelize debug) so you can observe what happens.
-
----
-
-##  Testing Strategy
-
-* **Jest multi-project** – node env for main/preload, jsdom for renderer, both sharing alias mappers.
-* **Testing Library** – exercises components (`ThemeControls`, `LanguageSwitcher`, `HealthStatusCard`) and hooks (`useSessionWatcher`).
-* **ts-jest** – respects `tsconfig.node.json` / `tsconfig.web.json`, so decorators, paths, and JSX stay in sync.
-* Coverage pulls from `packages/**/*.{ts,tsx}` and `seeding/**/*.ts` (excluding entry points, `.d.ts`, and tests).
-
-```bash
-npm test
-npm run test:watch
-```
+All commands assume a recent Node 22 environment. The Electron app automatically seeds sane defaults on first launch.
 
 ---
 
-##  window.api Contract
+## Scripts & Tooling
 
-Typed in `packages/preload/src/types.ts` and exposed globally:
-
-* `window.api.health.check() → HealthResponse`
-* `window.api.auth.{login, register, logout, session, listUsers, createUser, updateUser}`
-* `window.api.project.{list, get, create, update, remove, addMember, removeMember}`
-* `window.api.task.{list, get, create, update, move, remove, listComments, addComment, search}`
-
-Every call resolves to `IpcResponse<T>`:
-
-```ts
-type IpcResponse<T> =
-  | { ok: true; data: T }
-  | { ok: false; code: string; message: string };
-```
-
-Renderer helpers unwrap responses, attach `error.code`, and trigger Redux thunks or logout flows when sessions expire.
+| Command | Purpose |
+| ------- | ------- |
+| `npm run format` | Prettier formatting across the repo |
+| `npm run lint` | ESLint with caching |
+| `npm run typecheck` | Aggregated TypeScript checks for Node and web |
+| `npm test`, `npm run test:watch` | Jest multi-project test runner |
+| `npm run db:seed` | Execute `DevelopmentSeeder` via ts-node with path aliases |
 
 ---
 
-##  Configuration
+## Database & Seeding
 
-| Variable                  | Default         | Purpose                                                             |
-| ------------------------- | --------------- | ------------------------------------------------------------------- |
-| `LOG_LEVEL`               | `info`          | Controls logger verbosity                                           |
-| `SESSION_TIMEOUT_MINUTES` | `60`            | Overrides default session TTL (also stored in DB `system_settings`) |
-| `DB_STORAGE_PATH`         | OS app data dir | Override SQLite location                                            |
-
-Create a `.env` (see `.env.example`) to customize logging or storage without touching shell environments.
+Set `DB_STORAGE_PATH` to override the default SQLite location (Electron `app.getPath('userData')`). Run `npm run db:seed` to populate the database with roles, users, projects, Kanban boards, notes, comments, and audit logs. Seeders log progress to the console so large batches remain traceable.
 
 ---
 
-##  Security
+## Testing Strategy
 
-*  Sandbox + `contextIsolation` + disabled `nodeIntegration` in `BrowserWindow`.
-*  CSP enforces strict `script-src`, `connect-src`, `img-src`, etc., with optional dev allowances.
-*  Network blocker only allows offline protocols plus `localhost` when not packaged.
-*  Renderer navigation is prevented; `window.open` is denied; permission prompts auto-reject.
-*  Console noise (Chromium autofill warnings) is filtered to keep logs readable.
-
----
-
-##  Troubleshooting
-
-*  **`MODULE_NOT_FOUND` for `@main/*` in ts-node** → run scripts via npm so `tsconfig-paths` is preloaded.
-*  **SQLite native build errors (Windows)** → install VS Build Tools / “Desktop development with C++” workload.
-*  **Renderer fails to load in dev** → ensure `ELECTRON_RENDERER_URL` is set by electron-vite; restarting `npm run dev` usually fixes stale ports.
-*  **React Router warnings in tests** → opt into v7 future flags to silence upcoming behavior changes.
+- Jest multi-project setup covers both Node (main/preload) and jsdom (renderer) environments.
+- Testing Library exercises UI components, hooks, and flows relevant to routing and theming.
+- ts-jest respects the repo's TypeScript configuration, enabling decorators and module aliases without extra setup.
+- Coverage targets `packages/**/*.{ts,tsx}` and seeding modules while excluding generated code and declaration files.
 
 ---
 
-##  Contributing
+## window.api Contract
 
-1. Fork & clone, run `npm install`.
-2. Use feature branches, keep imports on `@main`, `@preload`, `@renderer`.
-3. Add or update tests next to your changes.
-4. Validate with `npm run lint && npm run typecheck && npm test`.
+The preload script exposes a single `window.api` namespace typed in `packages/preload/src/types.ts`. Every action resolves to an `IpcResponse<T>` discriminated union. Available modules include:
 
-No explicit license is bundled yet—decide internally before distributing binaries.
+- `health.check()`
+- `auth.login`, `auth.logout`, `auth.session`, `auth.listUsers`, `auth.createUser`, `auth.updateUser`
+- `project.list`, `project.get`, `project.create`, `project.update`, `project.remove`, `project.addMember`, `project.removeMember`
+- `task.list`, `task.get`, `task.create`, `task.update`, `task.move`, `task.remove`, `task.listComments`, `task.addComment`, `task.search`
+- `note.list`, `note.get`, `note.create`, `note.update`, `note.remove`, `note.attachTask`, `note.detachTask`
 
-Enjoy shipping 
+Utility helpers unwrap the union inside the renderer and trigger session recovery or logout flows on failure.
+
+---
+
+## Configuration
+
+| Variable | Default | Description |
+| -------- | ------- | ----------- |
+| `LOG_LEVEL` | `info` | Adjusts the structured logger verbosity |
+| `SESSION_TIMEOUT_MINUTES` | `60` | Overrides the default auth session TTL (also persisted in `system_settings`) |
+| `DB_STORAGE_PATH` | Electron app data dir | Custom database location for runtime and seeding |
+| `ELECTRON_START_URL` | auto | Dev server URL, injected by electron-vite during `npm run dev` |
+| `ENABLE_DEVTOOLS` | auto | `true` forces DevTools on, `false` blocks them regardless of environment |
+
+Use `.env` or per-machine environment variables to customize settings; see `.env.example` for guidance.
+
+---
+
+## Security
+
+- BrowserWindow instances disable `nodeIntegration`, enforce `contextIsolation`, and apply a strict content security policy.
+- Navigation and new window requests are denied unless explicitly whitelisted.
+- Network access defaults to offline-only with optional localhost allowances in development.
+- Session lifecycle management prunes expired tokens on an interval to reduce attack surface.
+- Console noise is filtered and re-routed through the structured logger for easier diagnostics.
+
+---
+
+## Troubleshooting
+
+- **Missing `@main/*` imports in scripts**: Always execute CLIs via `npm run` so `tsconfig-paths/register` is loaded.
+- **SQLite build issues on Windows**: Install Visual Studio Build Tools with the "Desktop development with C++" workload.
+- **Renderer fails to load in dev**: Restart `npm run dev` to refresh the electron-vite dev server and ports.
+- **React Router warnings in tests**: Future-facing flags are enabled; re-run tests after clearing Jest cache if warnings persist.
+
+---
+
+## Contributing
+
+1. Clone the repository and install dependencies.
+2. Branch off `main` before starting work.
+3. Keep imports aligned with the configured path aliases (`@main/*`, `@preload/*`, `@renderer/*`).
+4. Add or update tests alongside code changes.
+5. Validate with `npm run lint && npm run typecheck && npm test`.
+
+No explicit OSS license is bundled; coordinate internally before distributing binaries.
 
 ---
 

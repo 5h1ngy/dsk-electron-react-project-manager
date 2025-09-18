@@ -5,7 +5,6 @@ import type {
   LoginInput,
   RegisterUserInput
 } from '@main/services/auth/schemas'
-import type { IpcResponse } from '@preload/types'
 import { invokeIpc } from '@preload/api/shared'
 
 const CHANNELS = {
@@ -15,7 +14,8 @@ const CHANNELS = {
   session: 'auth:session',
   listUsers: 'auth:list-users',
   createUser: 'auth:create-user',
-  updateUser: 'auth:update-user'
+  updateUser: 'auth:update-user',
+  deleteUser: 'auth:delete-user'
 } as const
 
 export const authApi = {
@@ -30,5 +30,7 @@ export const authApi = {
   createUser: async (token: string, payload: CreateUserInput) =>
     await invokeIpc<UserDTO>(CHANNELS.createUser, token, payload),
   updateUser: async (token: string, userId: string, payload: UpdateUserInput) =>
-    await invokeIpc<UserDTO>(CHANNELS.updateUser, token, userId, payload)
+    await invokeIpc<UserDTO>(CHANNELS.updateUser, token, userId, payload),
+  deleteUser: async (token: string, userId: string) =>
+    await invokeIpc<{ success: boolean }>(CHANNELS.deleteUser, token, userId)
 }

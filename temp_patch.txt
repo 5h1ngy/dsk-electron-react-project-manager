@@ -1,0 +1,35 @@
+*** Begin Patch
+*** Update File: packages/renderer/src/theme/components/light.ts
+@@
+   Pagination: {
+     itemBg: palette.surfaceContainer,
+     itemActiveBg: brand.primary,
+     itemInputBg: palette.surfaceContainer,
+     itemSize: shape.controlHeightSM
+   },
+   Segmented: {
+     itemColor: palette.textSecondary,
+     itemHoverColor: palette.textPrimary,
+     itemHoverBg: lighten(brand.primary, 0.85),
+     itemSelectedBg: brand.primarySubtle,
+     itemSelectedColor: palette.textPrimary,
+     trackBg: lighten(palette.surfaceBase, 0.03),
+     trackPadding: 2
+   },
++  Menu: {
++    itemBorderRadius: shape.radius,
++    itemPaddingInline: spacing.md,
++    itemMarginInline: 0,
++    itemMarginBlock: spacing.xs,
++    itemColor: palette.textSecondary,
++    itemHoverColor: palette.textPrimary,
++    itemSelectedBg: brand.primarySurface,
++    itemSelectedColor: palette.textPrimary,
++    itemActiveBg: brand.primarySubtle
++  },
+   Typography: {
+     titleMarginBottom: spacing.md
+   }
+ }
+*** End Patch
+

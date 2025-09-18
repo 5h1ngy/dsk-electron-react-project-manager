@@ -1,0 +1,54 @@
+import { AppstoreOutlined, DashboardOutlined, SettingOutlined } from '@ant-design/icons'
+import type { MenuProps } from 'antd'
+import type { TFunction } from 'i18next'
+import type { ReactNode } from 'react'
+
+export interface NavigationDefinition {
+  path: string
+  labelKey: string
+  icon: ReactNode
+}
+
+const NAVIGATION: NavigationDefinition[] = [
+  {
+    path: '/',
+    labelKey: 'appShell.navigation.dashboard',
+    icon: <DashboardOutlined />
+  },
+  {
+    path: '/projects',
+    labelKey: 'appShell.navigation.projects',
+    icon: <AppstoreOutlined />
+  },
+  {
+    path: '/settings',
+    labelKey: 'appShell.navigation.settings',
+    icon: <SettingOutlined />
+  }
+]
+
+export const buildNavigationItems = (t: TFunction): MenuProps['items'] =>
+  NAVIGATION.map((item) => ({
+    key: item.path,
+    icon: item.icon,
+    label: t(item.labelKey),
+    style: {
+      borderRadius: 10,
+      marginBlock: 2,
+      paddingInline: 12,
+      paddingBlock: 6
+    }
+  }))
+
+export const resolveSelectedKey = (pathname: string): string | undefined => {
+  const match = NAVIGATION.find((item) =>
+    item.path === '/' ? pathname === '/' : pathname.startsWith(item.path)
+  )
+  return match?.path
+}
+
+export const resolveNavigationMeta = (pathname: string): NavigationDefinition | undefined => {
+  return NAVIGATION.find((item) =>
+    item.path === '/' ? pathname === '/' : pathname.startsWith(item.path)
+  )
+}

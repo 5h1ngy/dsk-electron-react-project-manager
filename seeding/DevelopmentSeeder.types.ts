@@ -19,6 +19,11 @@ export interface ProjectMemberSeed {
   role: ProjectMembershipRole
 }
 
+export interface CommentSeedDefinition {
+  authorId: string
+  body: string
+}
+
 export interface TaskSeedDefinition {
   title: string
   description: string
@@ -26,6 +31,18 @@ export interface TaskSeedDefinition {
   priority: TaskPriority
   dueDate: string | null
   assigneeId: string | null
+  ownerId: string
+  comments: CommentSeedDefinition[]
+}
+
+export interface NoteSeedDefinition {
+  title: string
+  body: string
+  tags: string[]
+  isPrivate: boolean
+  notebook: string | null
+  ownerId: string
+  linkedTaskIndexes: number[]
 }
 
 export interface ProjectSeedDefinition {
@@ -36,6 +53,7 @@ export interface ProjectSeedDefinition {
   members: ProjectMemberSeed[]
   tags: string[]
   tasks: TaskSeedDefinition[]
+  notes: NoteSeedDefinition[]
 }
 
 export interface SeederState {

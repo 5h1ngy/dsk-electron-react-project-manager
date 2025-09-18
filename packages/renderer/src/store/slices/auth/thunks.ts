@@ -148,6 +148,28 @@ export const updateUser = createAsyncThunk<
   }
 })
 
+export const deleteUser = createAsyncThunk<
+  string,
+  string,
+  { state: RootState; rejectValue: string }
+>('auth/deleteUser', async (userId, { getState, dispatch, rejectWithValue }) => {
+  const token = getState().auth.token
+  if (!token) {
+    return rejectWithValue('Sessione non valida')
+  }
+  try {
+    await handleResponse(window.api.auth.deleteUser(token, userId))
+    return userId
+  } catch (error) {
+    if (isSessionExpiredError(error)) {
+      persistToken(null)
+      dispatch(forceLogout())
+      return rejectWithValue('Sessione scaduta')
+    }
+    return rejectWithValue(extractErrorMessage(error))
+  }
+})
+
 export const loadUsers = (): AppThunk => async (dispatch, getState) => {
   const token = getState().auth.token
   if (!token) {

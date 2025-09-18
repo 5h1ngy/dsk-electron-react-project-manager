@@ -1,6 +1,8 @@
 import { Card, List, Skeleton, Space, Tag, Typography } from 'antd'
 import { useTranslation } from 'react-i18next'
+import type { JSX } from 'react'
 
+import { useDelayedLoading } from '@renderer/hooks/useDelayedLoading'
 import type { ProjectDetails } from '@renderer/store/slices/projects'
 
 export interface ProjectDetailsCardProps {
@@ -16,8 +18,9 @@ const roleColors: Record<string, string> = {
 
 export const ProjectDetailsCard = ({ project, loading }: ProjectDetailsCardProps): JSX.Element => {
   const { t, i18n } = useTranslation('projects')
+  const showSkeleton = useDelayedLoading(loading)
 
-  if (loading) {
+  if (showSkeleton) {
     return (
       <Card title={t('details.summary.title')} style={{ minHeight: 320 }}>
         <Skeleton active paragraph={{ rows: 4 }} />

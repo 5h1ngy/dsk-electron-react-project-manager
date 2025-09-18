@@ -8,6 +8,7 @@ import { AuditService } from '@main/services/audit'
 import { AuthService } from '@main/services/auth'
 import { ProjectService } from '@main/services/project'
 import { TaskService } from '@main/services/task'
+import { NoteService } from '@main/services/note'
 
 export const MAIN_WINDOW_OPTIONS: Electron.BrowserWindowConstructorOptions = {
   width: 1280,
@@ -43,6 +44,7 @@ export class MainWindowManager {
   private readonly isDev: () => boolean
   private readonly env: NodeJS.ProcessEnv
   private readonly shouldSuppress: typeof shouldSuppressDevtoolsMessage
+  private readonly devtoolsToggle: boolean | null
 
   constructor(options: MainWindowManagerOptions = {}) {
     this.BrowserWindowCtor = options.browserWindowCtor ?? BrowserWindow
@@ -50,6 +52,7 @@ export class MainWindowManager {
     this.isDev = options.isDev ?? (() => process.env.NODE_ENV !== 'production')
     this.env = options.env ?? process.env
     this.shouldSuppress = options.shouldSuppress ?? shouldSuppressDevtoolsMessage
+    this.devtoolsToggle = this.parseDevtoolsToggle(this.env.ENABLE_DEVTOOLS)
   }
 
   async createMainWindow(): Promise<BrowserWindow> {
@@ -75,14 +78,37 @@ export class MainWindowManager {
   }
 
   private registerDevtoolsHooks(window: BrowserWindow): void {
-    if (!this.isDev()) {
+    const allowDevtools = this.shouldAllowDevtools()
+
+    if (!allowDevtools) {
+      this.logger.info('DevTools disabled via configuration toggle', 'Window')
+      window.webContents.on('before-input-event', (event, input) => {
+        const isToggleShortcut =
+          (input.control || input.meta) && input.shift && input.key.toLowerCase() === 'i'
+        const isF12 = input.key.toLowerCase() === 'f12'
+        if (isToggleShortcut || isF12) {
+          event.preventDefault()
+        }
+      })
+
+      window.webContents.on('devtools-opened', () => {
+        this.logger.warn('DevTools requested but disabled via configuration', 'Window')
+        window.webContents.closeDevTools()
+      })
+
+      return
+    }
+
+    const shouldAutoOpen = this.shouldAutoOpenDevtools()
+
+    if (!shouldAutoOpen) {
       return
     }
 
     window.webContents.once('dom-ready', () => {
       if (!window.webContents.isDevToolsOpened()) {
-        this.logger.debug('Opening detached DevTools in development mode', 'Window')
-        window.webContents.openDevTools({ mode: 'detach' })
+        this.logger.debug('Opening docked DevTools per configuration', 'Window')
+        window.webContents.openDevTools({ mode: 'right' })
       }
     })
   }
@@ -116,6 +142,38 @@ export class MainWindowManager {
     this.logger.debug('Loading renderer from bundled HTML', 'Window')
     void window.loadFile(join(__dirname, '../renderer/index.html'))
   }
+
+  private parseDevtoolsToggle(value: string | undefined): boolean | null {
+    if (!value) {
+      return null
+    }
+    const normalized = value.trim().toLowerCase()
+    if (['1', 'true', 'yes', 'on'].includes(normalized)) {
+      return true
+    }
+    if (['0', 'false', 'no', 'off'].includes(normalized)) {
+      return false
+    }
+    this.logger.warn(
+      `Invalid ENABLE_DEVTOOLS value "${value}". Falling back to environment defaults.`,
+      'Window'
+    )
+    return null
+  }
+
+  private shouldAllowDevtools(): boolean {
+    if (this.devtoolsToggle !== null) {
+      return this.devtoolsToggle
+    }
+    return this.isDev()
+  }
+
+  private shouldAutoOpenDevtools(): boolean {
+    if (this.devtoolsToggle === true) {
+      return true
+    }
+    return this.devtoolsToggle === null && this.isDev()
+  }
 }
 
 class AppContext {
@@ -126,11 +184,13 @@ class AppContext {
   sequelize?: Sequelize
   projectService?: ProjectService
   taskService?: TaskService
+  noteService?: NoteService
 
   setDatabase(sequelize: Sequelize): void {
     this.sequelize = sequelize
     this.projectService = new ProjectService(sequelize, this.auditService)
     this.taskService = new TaskService(sequelize, this.auditService)
+    this.noteService = new NoteService(sequelize, this.auditService)
   }
 }
 

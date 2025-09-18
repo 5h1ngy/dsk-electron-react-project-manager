@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react'
+import { createElement, useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { useAppDispatch, useAppSelector } from '@renderer/store/hooks'
@@ -21,10 +21,14 @@ export const useLanguageSwitcher = (): UseLanguageSwitcherResult => {
     () =>
       supportedLocales.map((value) => ({
         value,
-        label: (
-          <span role="img" aria-label={t(`language.options.${value}`)} style={{ fontSize: 18 }}>
-            {getLocaleFlag(value)}
-          </span>
+        label: createElement(
+          'span',
+          {
+            role: 'img',
+            'aria-label': t(`language.options.${value}`),
+            style: { fontSize: 18 }
+          },
+          getLocaleFlag(value)
         ),
         title: t(`language.options.${value}`)
       })),
@@ -46,4 +50,3 @@ export const useLanguageSwitcher = (): UseLanguageSwitcherResult => {
     defaultSize: 'small'
   }
 }
-

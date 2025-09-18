@@ -7,6 +7,7 @@ export {
   restoreSession,
   createUser,
   updateUser,
+  deleteUser,
   loadUsers
 } from '@renderer/store/slices/auth/thunks'
 export {

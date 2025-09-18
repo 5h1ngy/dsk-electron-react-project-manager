@@ -2,7 +2,6 @@ import { randomUUID } from 'node:crypto'
 import { UniqueConstraintError, Op } from 'sequelize'
 import type { Sequelize, Transaction } from 'sequelize'
 import { z } from 'zod'
-import type { RoleName } from '@main/services/auth/constants'
 import { AuditService } from '@main/services/audit'
 import { Project } from '@main/models/Project'
 import { ProjectMember, type ProjectMembershipRole } from '@main/models/ProjectMember'
@@ -16,7 +15,7 @@ import {
   type CreateProjectInput,
   type UpdateProjectInput
 } from '@main/services/project/schemas'
-import type { ProjectActor, ProjectDetailsDTO, ProjectMemberDTO, ProjectSummaryDTO } from '@main/services/project/types'
+import type { ProjectActor, ProjectDetailsDTO, ProjectSummaryDTO } from '@main/services/project/types'
 import {
   DEFAULT_MEMBER_ROLE,
   assertProjectRole,
@@ -431,5 +430,7 @@ export class ProjectService {
     }
   }
 }
+
+export type { ProjectActor } from '@main/services/project/types'
 
 

@@ -196,6 +196,12 @@ const tasksSlice = createSlice({
         const commentsState = ensureCommentsState(state, action.payload.taskId)
         commentsState.status = 'succeeded'
         commentsState.items = action.payload.comments
+        Object.values(state.byProjectId).forEach((projectState) => {
+          const task = projectState.entities[action.payload.taskId]
+          if (task) {
+            task.commentCount = action.payload.comments.length
+          }
+        })
       })
       .addCase(fetchComments.rejected, (state, action) => {
         const commentsState = ensureCommentsState(state, action.meta.arg)
@@ -210,6 +216,12 @@ const tasksSlice = createSlice({
         const commentsState = ensureCommentsState(state, action.payload.taskId)
         commentsState.items.push(action.payload.comment)
         commentsState.status = 'succeeded'
+        Object.values(state.byProjectId).forEach((projectState) => {
+          const task = projectState.entities[action.payload.taskId]
+          if (task) {
+            task.commentCount = (task.commentCount ?? 0) + 1
+          }
+        })
       })
       .addCase(addComment.rejected, (state, action) => {
         state.mutationStatus = 'failed'
