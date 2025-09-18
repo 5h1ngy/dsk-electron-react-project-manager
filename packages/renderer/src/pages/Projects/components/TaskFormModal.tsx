@@ -55,7 +55,7 @@ export const TaskFormModal = ({
       onOk={onSubmit}
       okText={okText}
       confirmLoading={submitting}
-      destroyOnClose
+      destroyOnHidden
       width={520}
     >
       <Form

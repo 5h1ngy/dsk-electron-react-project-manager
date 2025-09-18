@@ -19,6 +19,7 @@ export interface BorderedPanelProps {
   extra?: ReactNode
   style?: CSSProperties
   bodyStyle?: CSSProperties
+  headerStyle?: CSSProperties
   className?: string
   padding?: PanelPadding
 }
@@ -29,6 +30,7 @@ export const BorderedPanel = ({
   extra,
   style,
   bodyStyle,
+  headerStyle,
   className,
   padding = 'md'
 }: PropsWithChildren<BorderedPanelProps>) => {
@@ -38,18 +40,25 @@ export const BorderedPanel = ({
     <Card
       title={title}
       extra={extra}
-      bordered
+      variant="outlined"
       className={className}
-      headStyle={{ borderBottom: 'none', padding: 0, marginBottom: token.marginSM }}
       style={{
         background: 'transparent',
         boxShadow: 'none',
         borderColor: token.colorBorderSecondary,
         ...style
       }}
-      bodyStyle={{
-        padding: mapPadding(padding, token),
-        ...bodyStyle
+      styles={{
+        header: {
+          borderBottom: 'none',
+          padding: 0,
+          marginBottom: token.marginSM,
+          ...headerStyle
+        },
+        body: {
+          padding: mapPadding(padding, token),
+          ...bodyStyle
+        }
       }}
     >
       {children}

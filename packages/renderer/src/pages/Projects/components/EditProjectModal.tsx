@@ -41,7 +41,7 @@ export const EditProjectModal = ({
       onOk={onSubmit}
       okText={t('form.updateAction', { defaultValue: 'Salva modifiche' })}
       confirmLoading={submitting}
-      destroyOnClose
+      destroyOnHidden
     >
       <Form
         layout="vertical"
