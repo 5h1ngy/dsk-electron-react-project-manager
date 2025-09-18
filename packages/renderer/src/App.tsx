@@ -59,7 +59,12 @@ const App = () => {
   return (
     <ErrorBoundary>
       <ConfigProvider theme={themeConfig}>
-        <HashRouter>
+        <HashRouter
+          future={{
+            v7_startTransition: true,
+            v7_relativeSplatPath: true
+          }}
+        >
           <AntdApp>
             <BodyStyleSynchronizer />
             <AppRoutes />

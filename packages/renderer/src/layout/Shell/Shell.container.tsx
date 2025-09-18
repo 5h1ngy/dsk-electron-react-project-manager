@@ -49,7 +49,7 @@ const ShellContainer = ({ currentUser, onLogout, children }: ShellProps): JSX.El
 
   const accountButton = useMemo(
     () => (
-      <Dropdown trigger={['click']} dropdownRender={() => accountMenu} placement="topLeft">
+      <Dropdown trigger={['click']} popupRender={() => accountMenu} placement="topLeft">
         <Button
           block
           size="large"

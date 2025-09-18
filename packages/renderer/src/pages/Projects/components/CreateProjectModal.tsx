@@ -30,7 +30,7 @@ export const CreateProjectModal = ({
       okText={t('form.createAction')}
       onOk={onSubmit}
       confirmLoading={submitting}
-      destroyOnClose
+      destroyOnHidden
     >
       <Form
         layout="vertical"

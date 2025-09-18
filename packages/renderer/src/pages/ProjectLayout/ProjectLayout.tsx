@@ -181,7 +181,11 @@ const ProjectLayout = (): JSX.Element => {
       </ShellHeaderPortal>
       <Space direction="vertical" size={24} style={{ width: '100%' }}>
         {messageContext}
-        {taskModals.taskMessageContext}
+        {taskModals.taskMessageContext ? (
+          <div key="task-message-context" style={{ display: 'contents' }}>
+            {taskModals.taskMessageContext}
+          </div>
+        ) : null}
         <Space
           align="center"
           style={{
@@ -225,7 +229,7 @@ const ProjectLayout = (): JSX.Element => {
           activeKey={activeKey}
           items={tabItems}
           onChange={handleTabChange}
-          destroyInactiveTabPane
+          destroyOnHidden
         />
         <Outlet context={contextValue} />
       </Space>

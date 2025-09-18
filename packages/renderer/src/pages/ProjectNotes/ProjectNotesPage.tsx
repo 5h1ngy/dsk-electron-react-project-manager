@@ -163,6 +163,7 @@ const ProjectNotesPage = (): ReactElement => {
   } = useProjectRouteContext()
   const dispatch = useAppDispatch()
   const { t } = useTranslation('projects')
+  const { token } = theme.useToken()
   const [messageApi, contextHolder] = message.useMessage()
 
   const [includePrivate, setIncludePrivate] = useState(false)
@@ -518,7 +519,7 @@ const NoteEditorModal = ({
       okText={mode === 'create' ? t('notes.actions.create') : t('notes.actions.save')}
       cancelText={t('notes.actions.cancel')}
       title={mode === 'create' ? t('notes.editor.createTitle') : t('notes.editor.editTitle')}
-      destroyOnClose
+      destroyOnHidden
     >
       <Form layout="vertical" onFinish={handleSubmit(onSubmit)}>
         <Controller
@@ -648,7 +649,6 @@ const NoteDetailsModal = ({
   onOpenTask
 }: NoteDetailsModalProps): ReactElement => {
   const { t } = useTranslation('projects')
-  const { token } = theme.useToken()
   const dispatch = useAppDispatch()
   const [isEditing, setIsEditing] = useState(false)
   const detailState = useAppSelector(noteId ? selectNoteDetailsState(noteId) : () => null)
@@ -746,7 +746,7 @@ const NoteDetailsModal = ({
           </Space>
         ) : null
       }
-      destroyOnClose
+      destroyOnHidden
     >
       {loading ? (
         <Skeleton active />
