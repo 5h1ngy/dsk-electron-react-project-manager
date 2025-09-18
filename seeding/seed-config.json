@@ -1,99 +1,68 @@
 {
   "users": {
     "profiles": [
-      {
-        "roles": [
-          "Maintainer",
-          "Contributor"
-        ],
-        "count": 6
-      },
-      {
-        "roles": [
-          "Maintainer"
-        ],
-        "count": 4
-      },
-      {
-        "roles": [
-          "Contributor"
-        ],
-        "count": 14
-      },
-      {
-        "roles": [
-          "Contributor",
-          "Viewer"
-        ],
-        "count": 6
-      },
-      {
-        "roles": [
-          "Viewer"
-        ],
-        "count": 10
-      },
-      {
-        "roles": [
-          "Maintainer",
-          "Viewer"
-        ],
-        "count": 4
-      }
+      { "roles": ["Maintainer", "Contributor"], "count": 10 },
+      { "roles": ["Maintainer"], "count": 6 },
+      { "roles": ["Contributor"], "count": 28 },
+      { "roles": ["Contributor", "Viewer"], "count": 12 },
+      { "roles": ["Viewer"], "count": 20 },
+      { "roles": ["Maintainer", "Viewer"], "count": 8 }
     ]
   },
   "projects": {
-    "min": 4,
-    "max": 12,
+    "min": 12,
+    "max": 18,
     "tasksPerProject": {
-      "min": 6,
-      "max": 12
+      "min": 12,
+      "max": 22
     },
-    "backlogBufferMax": 1,
+    "backlogBufferMax": 2,
     "tagsPerProject": {
-      "min": 1,
-      "max": 3
+      "min": 2,
+      "max": 4
     },
     "members": {
       "maintainerAdmin": {
-        "min": 0,
-        "max": 1
-      },
-      "contributor": {
         "min": 1,
         "max": 2
       },
+      "contributor": {
+        "min": 2,
+        "max": 4
+      },
       "viewer": {
-        "min": 0,
-        "max": 1
+        "min": 1,
+        "max": 3
       }
     }
   },
   "comments": {
     "minByStatus": {
       "todo": 0,
-      "in_progress": 0,
-      "blocked": 1,
-      "done": 0
+      "in_progress": 1,
+      "blocked": 2,
+      "done": 1
     },
     "maxByStatus": {
-      "todo": 1,
-      "in_progress": 2,
-      "blocked": 3,
-      "done": 1
+      "todo": 2,
+      "in_progress": 4,
+      "blocked": 5,
+      "done": 3
     }
   },
   "notes": {
     "perProject": {
-      "min": 3,
-      "max": 6
+      "min": 6,
+      "max": 12
     },
-    "privateRatio": 0.2,
+    "privateRatio": 0.3,
     "notebooks": [
       "Discovery",
       "Retro",
       "Runbook",
-      "Weekly Sync"
+      "Weekly Sync",
+      "Incident Review",
+      "Strategy"
     ],
     "tagsCatalog": [
       "retro",
@@ -102,21 +71,26 @@
       "risk",
       "handoff",
       "customer",
-      "support"
+      "support",
+      "ops",
+      "kpi",
+      "roadmap",
+      "review",
+      "audit"
     ],
     "tagsPerNote": {
+      "min": 2,
+      "max": 4
+    },
+    "linkProbability": 0.7,
+    "linkTargets": {
       "min": 1,
       "max": 3
     },
-    "linkProbability": 0.6,
-    "linkTargets": {
-      "min": 1,
-      "max": 2
-    },
-    "checklistProbability": 0.5,
+    "checklistProbability": 0.55,
     "summaryParagraphs": {
-      "min": 2,
-      "max": 4
+      "min": 3,
+      "max": 6
     }
   }
 }

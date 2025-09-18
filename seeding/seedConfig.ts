@@ -54,60 +54,63 @@ export interface SeedConfig {
 const DEFAULT_CONFIG: SeedConfig = {
   users: {
     profiles: [
-      { roles: ['Maintainer', 'Contributor'], count: 2 },
-      { roles: ['Maintainer'], count: 1 },
-      { roles: ['Contributor'], count: 4 },
-      { roles: ['Contributor', 'Viewer'], count: 2 },
-      { roles: ['Viewer'], count: 3 },
-      { roles: ['Maintainer', 'Viewer'], count: 1 }
+      { roles: ['Maintainer', 'Contributor'], count: 6 },
+      { roles: ['Maintainer'], count: 4 },
+      { roles: ['Contributor'], count: 18 },
+      { roles: ['Contributor', 'Viewer'], count: 8 },
+      { roles: ['Viewer'], count: 14 },
+      { roles: ['Maintainer', 'Viewer'], count: 4 }
     ]
   },
   projects: {
-    min: 3,
-    max: 6,
-    tasksPerProject: { min: 6, max: 12 },
+    min: 8,
+    max: 14,
+    tasksPerProject: { min: 10, max: 18 },
     backlogBufferMax: 2,
-    tagsPerProject: { min: 1, max: 3 },
+    tagsPerProject: { min: 2, max: 4 },
     members: {
-      maintainerAdmin: { min: 0, max: 1 },
-      contributor: { min: 1, max: 3 },
-      viewer: { min: 0, max: 2 }
+      maintainerAdmin: { min: 1, max: 2 },
+      contributor: { min: 2, max: 4 },
+      viewer: { min: 1, max: 3 }
     }
   },
   comments: {
     minByStatus: {
       todo: 0,
-      in_progress: 0,
-      blocked: 1,
-      done: 0
+      in_progress: 1,
+      blocked: 2,
+      done: 1
     },
     maxByStatus: {
-      todo: 1,
-      in_progress: 2,
-      blocked: 3,
-      done: 1
+      todo: 2,
+      in_progress: 3,
+      blocked: 4,
+      done: 2
     }
   },
   notes: {
-    perProject: { min: 4, max: 9 },
-    privateRatio: 0.25,
-    notebooks: ['Discovery', 'Retro', 'Runbook', 'Weekly Sync'],
+    perProject: { min: 5, max: 10 },
+    privateRatio: 0.28,
+    notebooks: ['Discovery', 'Retro', 'Runbook', 'Weekly Sync', 'Incident Review'],
     tagsCatalog: [
-      'meeting',
       'retro',
-      'roadmap',
+      'summary',
       'risk',
       'decision',
       'handoff',
       'support',
-      'research',
-      'customer'
+      'customer',
+      'ops',
+      'kpi',
+      'roadmap',
+      'review',
+      'audit'
     ],
-    tagsPerNote: { min: 1, max: 3 },
+    tagsPerNote: { min: 2, max: 4 },
     linkProbability: 0.7,
     linkTargets: { min: 1, max: 3 },
     checklistProbability: 0.55,
-    summaryParagraphs: { min: 2, max: 4 }
+    summaryParagraphs: { min: 3, max: 5 }
   }
 }
 
