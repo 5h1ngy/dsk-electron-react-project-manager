@@ -135,6 +135,7 @@ Utility helpers unwrap the union inside the renderer and trigger session recover
 | `SESSION_TIMEOUT_MINUTES` | `60` | Overrides the default auth session TTL (also persisted in `system_settings`) |
 | `DB_STORAGE_PATH` | Electron app data dir | Custom database location for runtime and seeding |
 | `ELECTRON_START_URL` | auto | Dev server URL, injected by electron-vite during `npm run dev` |
+| `ENABLE_DEVTOOLS` | auto | `true` forces DevTools on, `false` blocks them regardless of environment |
 
 Use `.env` or per-machine environment variables to customize settings; see `.env.example` for guidance.
 
