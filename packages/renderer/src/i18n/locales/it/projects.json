@@ -232,6 +232,16 @@
     "columns": {
       "actions": "Azioni"
     },
+    "savedViews": {
+      "placeholder": "Viste salvate",
+      "saveButton": "Salva vista",
+      "saveTooltip": "Salva i filtri correnti come nuova vista",
+      "deleteButton": "Elimina",
+      "deleteTooltip": "Rimuovi la vista selezionata",
+      "modalTitle": "Salva vista corrente",
+      "nameLabel": "Nome",
+      "nameRequired": "Inserisci un nome"
+    },
     "actions": {
       "create": "Nuovo task",
       "edit": "Modifica",
@@ -373,3 +383,4 @@
     "openTask": "Apri"
   }
 }
+

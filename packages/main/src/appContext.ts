@@ -9,6 +9,7 @@ import { AuthService } from '@main/services/auth'
 import { ProjectService } from '@main/services/project'
 import { TaskService } from '@main/services/task'
 import { NoteService } from '@main/services/note'
+import { ViewService } from '@main/services/view'
 
 export const MAIN_WINDOW_OPTIONS: Electron.BrowserWindowConstructorOptions = {
   width: 1280,
@@ -185,12 +186,14 @@ class AppContext {
   projectService?: ProjectService
   taskService?: TaskService
   noteService?: NoteService
+  viewService?: ViewService
 
   setDatabase(sequelize: Sequelize): void {
     this.sequelize = sequelize
     this.projectService = new ProjectService(sequelize, this.auditService)
     this.taskService = new TaskService(sequelize, this.auditService)
     this.noteService = new NoteService(sequelize, this.auditService)
+    this.viewService = new ViewService(sequelize, this.auditService)
   }
 }
 

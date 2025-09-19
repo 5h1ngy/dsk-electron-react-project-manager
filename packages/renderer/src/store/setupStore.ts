@@ -6,6 +6,7 @@ import { themeReducer } from '@renderer/store/slices/theme'
 import { projectsReducer } from '@renderer/store/slices/projects'
 import { tasksReducer } from '@renderer/store/slices/tasks'
 import { notesReducer } from '@renderer/store/slices/notes'
+import { viewsReducer } from '@renderer/store/slices/views'
 
 export const setupStore = () =>
   configureStore({
@@ -15,7 +16,8 @@ export const setupStore = () =>
       theme: themeReducer,
       projects: projectsReducer,
       tasks: tasksReducer,
-      notes: notesReducer
+      notes: notesReducer,
+      views: viewsReducer
     },
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({

@@ -34,6 +34,12 @@ import type {
   NoteSummaryDTO,
   NoteSearchResultDTO
 } from '@main/services/note/types'
+import type { SavedViewDTO } from '@main/services/view/types'
+import type {
+  CreateViewInput,
+  UpdateViewInput,
+  ListViewsInput
+} from '@main/services/view/schemas'
 
 export interface IpcSuccess<T> {
   ok: true
@@ -130,10 +136,22 @@ export interface NoteApi {
   ) => Promise<IpcResponse<NoteSearchResultDTO[]>>
 }
 
+export interface ViewApi {
+  list: (token: string, payload: ListViewsInput) => Promise<IpcResponse<SavedViewDTO[]>>
+  create: (token: string, payload: CreateViewInput) => Promise<IpcResponse<SavedViewDTO>>
+  update: (
+    token: string,
+    viewId: string,
+    payload: UpdateViewInput
+  ) => Promise<IpcResponse<SavedViewDTO>>
+  remove: (token: string, viewId: string) => Promise<IpcResponse<{ success: boolean }>>
+}
+
 export interface PreloadApi {
   health: HealthApi
   auth: AuthApi
   project: ProjectApi
   task: TaskApi
   note: NoteApi
+  view: ViewApi
 }
