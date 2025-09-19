@@ -56,7 +56,7 @@ export const ThemeControls = ({ className }: ThemeControlsProps = {}): JSX.Eleme
                   style={{
                     backgroundColor: color,
                     borderColor: isActive ? token.colorBgContainer : 'transparent',
-                    color: resolveAccentForeground(color, palette),
+                    color: resolveAccentForeground(color, palette, mode),
                     boxShadow: isActive ? token.boxShadowSecondary : token.boxShadow,
                     display: 'inline-flex',
                     alignItems: 'center',

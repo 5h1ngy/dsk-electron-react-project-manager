@@ -49,8 +49,8 @@ export const useShellStyles = ({ menuTheme, collapsed, displayName }: UseShellSt
   }, [avatarPalette, displayName])
 
   const avatarForeground = useMemo(
-    () => resolveAccentForeground(avatarColor, palette),
-    [avatarColor, palette]
+    () => resolveAccentForeground(avatarColor, palette, menuTheme),
+    [avatarColor, palette, menuTheme]
   )
 
   const layoutStyle: CSSProperties = {

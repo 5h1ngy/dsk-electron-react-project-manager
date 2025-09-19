@@ -26,7 +26,7 @@ export const useSiderStyles = (themeMode: 'light' | 'dark'): SiderStyle => {
       background,
       borderColor: token.colorBorderSecondary,
       accent: token.colorPrimary,
-      accentForeground: resolveAccentForeground(token.colorPrimary, palette),
+      accentForeground: resolveAccentForeground(token.colorPrimary, palette, themeMode),
       muted: token.colorTextSecondary,
       text: token.colorTextHeading,
       shadow: themeMode === 'dark' ? '0 12px 28px rgba(2, 6, 23, 0.4)' : '0 6px 18px rgba(15, 23, 42, 0.12)'
