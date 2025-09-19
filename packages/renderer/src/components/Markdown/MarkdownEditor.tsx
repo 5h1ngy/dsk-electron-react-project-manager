@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Button, Input, Segmented, Space, Tooltip, theme } from 'antd'
 import {
   BoldOutlined,
@@ -24,9 +24,19 @@ export interface MarkdownEditorProps {
   disabled?: boolean
   maxLength?: number
   onCursorChange?: (value: string, cursor: number) => void
+  suggestions?: MarkdownSuggestion[]
+  onInsertSuggestion?: (item: MarkdownSuggestion) => void
+  suggestionTrigger?: string
 }
 
 type EditorMode = 'write' | 'preview'
+
+export interface MarkdownSuggestion {
+  id: string
+  label: string
+  description?: string
+  insertText?: string
+}
 
 export const MarkdownEditor = ({
   value,
@@ -34,12 +44,20 @@ export const MarkdownEditor = ({
   placeholder,
   disabled = false,
   maxLength,
-  onCursorChange
+  onCursorChange,
+  suggestions = [],
+  onInsertSuggestion,
+  suggestionTrigger = '[['
 }: MarkdownEditorProps) => {
   const [mode, setMode] = useState<EditorMode>('write')
   const textareaRef = useRef<TextAreaRef | null>(null)
   const { token } = theme.useToken()
   const { spacing } = useThemeTokens()
+  const [cursor, setCursor] = useState<number>(0)
+  const [triggerIndex, setTriggerIndex] = useState<number | null>(null)
+  const [query, setQuery] = useState<string>('')
+  const [isSuggestOpen, setIsSuggestOpen] = useState(false)
+  const [activeSuggestion, setActiveSuggestion] = useState(0)
 
   const emitCursorChange = () => {
     if (!onCursorChange) {
@@ -47,8 +65,9 @@ export const MarkdownEditor = ({
     }
     const textarea = textareaRef.current?.resizableTextArea?.textArea
     const currentValue = textarea?.value ?? value
-    const cursor = textarea?.selectionStart ?? currentValue.length
-    onCursorChange(currentValue, cursor)
+    const caret = textarea?.selectionStart ?? currentValue.length
+    setCursor(caret)
+    onCursorChange(currentValue, caret)
   }
 
   const handleModeChange = (next: SegmentedValue) => {
@@ -77,6 +96,96 @@ export const MarkdownEditor = ({
       emitCursorChange()
     })
   }
+
+  const updateSuggestionState = useCallback(
+    (currentValue: string, caretPosition: number) => {
+      if (!suggestions.length) {
+        if (isSuggestOpen) {
+          setIsSuggestOpen(false)
+        }
+        return
+      }
+      const searchRange = currentValue.slice(0, caretPosition)
+      const triggerPos = searchRange.lastIndexOf(suggestionTrigger)
+      if (triggerPos === -1) {
+        setTriggerIndex(null)
+        setIsSuggestOpen(false)
+        setQuery('')
+        return
+      }
+
+      const afterTrigger = searchRange.slice(triggerPos + suggestionTrigger.length)
+      if (afterTrigger.includes(']') || afterTrigger.includes('\n') || afterTrigger.includes('\r')) {
+        setTriggerIndex(null)
+        setIsSuggestOpen(false)
+        setQuery('')
+        return
+      }
+
+      setTriggerIndex(triggerPos)
+      setQuery(afterTrigger)
+      setIsSuggestOpen(true)
+      setActiveSuggestion(0)
+    },
+    [suggestions, suggestionTrigger, isSuggestOpen]
+  )
+
+  useEffect(() => {
+    updateSuggestionState(value, cursor)
+  }, [value, cursor, updateSuggestionState])
+
+  const filteredSuggestions = useMemo(() => {
+    if (!query.trim()) {
+      return suggestions
+    }
+    const normalized = query.trim().toLowerCase()
+    return suggestions.filter((item) => {
+      const labelMatch = item.label.toLowerCase().includes(normalized)
+      const descMatch = item.description?.toLowerCase().includes(normalized)
+      return labelMatch || Boolean(descMatch)
+    })
+  }, [query, suggestions])
+
+  const closeSuggestions = () => {
+    setIsSuggestOpen(false)
+    setTriggerIndex(null)
+    setQuery('')
+    setActiveSuggestion(0)
+  }
+
+  const handleSuggestionInsert = (item: MarkdownSuggestion) => {
+    const textarea = textareaRef.current?.resizableTextArea?.textArea
+    if (!textarea || triggerIndex === null) {
+      return
+    }
+    const beforeTrigger = value.slice(0, triggerIndex)
+    const afterCaret = value.slice(cursor)
+    const insertLabel = item.insertText ?? item.label
+    const nextValue = `${beforeTrigger}${suggestionTrigger}${insertLabel}]]${afterCaret}`
+    const nextCursor = beforeTrigger.length + suggestionTrigger.length + insertLabel.length + 2
+
+    onChange(nextValue)
+    requestAnimationFrame(() => {
+      textarea.focus()
+      textarea.setSelectionRange(nextCursor, nextCursor)
+      setCursor(nextCursor)
+      emitCursorChange()
+    })
+
+    onInsertSuggestion?.(item)
+    closeSuggestions()
+  }
+
+  useEffect(() => {
+    if (!isSuggestOpen) {
+      return
+    }
+    if (!filteredSuggestions.length) {
+      setActiveSuggestion(0)
+    } else if (activeSuggestion >= filteredSuggestions.length) {
+      setActiveSuggestion(Math.max(filteredSuggestions.length - 1, 0))
+    }
+  }, [filteredSuggestions, isSuggestOpen, activeSuggestion])
 
   const toolbar = useMemo(
     () => [
@@ -166,21 +275,76 @@ export const MarkdownEditor = ({
       </Space>
 
       {mode === 'write' ? (
-        <Input.TextArea
-          ref={textareaRef}
-          value={value}
-          onChange={(event) => {
-            onChange(event.target.value)
-            requestAnimationFrame(emitCursorChange)
-          }}
-          placeholder={placeholder}
-          autoSize={{ minRows: 8 }}
-          disabled={disabled}
-          maxLength={maxLength}
-          onSelect={emitCursorChange}
-          onClick={emitCursorChange}
-          onKeyUp={emitCursorChange}
-        />
+        <div className="markdown-editor-wrapper">
+          <Input.TextArea
+            ref={textareaRef}
+            value={value}
+            onChange={(event) => {
+              onChange(event.target.value)
+              requestAnimationFrame(() => {
+                const caret = textareaRef.current?.resizableTextArea?.textArea?.selectionStart ?? event.target.value.length
+                setCursor(caret)
+                emitCursorChange()
+              })
+            }}
+            placeholder={placeholder}
+            autoSize={{ minRows: 8 }}
+            disabled={disabled}
+            maxLength={maxLength}
+            onSelect={() => {
+              emitCursorChange()
+            }}
+            onClick={() => {
+              emitCursorChange()
+            }}
+            onKeyDown={(event) => {
+              if (!isSuggestOpen) {
+                return
+              }
+              if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+                event.preventDefault()
+                const delta = event.key === 'ArrowDown' ? 1 : -1
+                setActiveSuggestion((prev) => {
+                  const count = filteredSuggestions.length
+                  if (!count) {
+                    return 0
+                  }
+                  return (prev + delta + count) % count
+                })
+              } else if (event.key === 'Enter' && filteredSuggestions[activeSuggestion]) {
+                event.preventDefault()
+                handleSuggestionInsert(filteredSuggestions[activeSuggestion])
+              } else if (event.key === 'Escape') {
+                event.preventDefault()
+                closeSuggestions()
+              }
+            }}
+            onKeyUp={() => {
+              emitCursorChange()
+            }}
+            onBlur={() => {
+              setTimeout(() => {
+                closeSuggestions()
+              }, 150)
+            }}
+          />
+          {isSuggestOpen && filteredSuggestions.length ? (
+            <div className="markdown-suggestions">
+              {filteredSuggestions.slice(0, 8).map((item, index) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  className={index === activeSuggestion ? 'active' : ''}
+                  onMouseDown={(event) => event.preventDefault()}
+                  onClick={() => handleSuggestionInsert(item)}
+                >
+                  <span className="label">{item.label}</span>
+                  {item.description ? <span className="description">{item.description}</span> : null}
+                </button>
+              ))}
+            </div>
+          ) : null}
+        </div>
       ) : (
         <div
           className="markdown-body"
