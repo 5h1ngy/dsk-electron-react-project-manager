@@ -36,9 +36,9 @@ const ProjectBoardPage = ({}: ProjectBoardPageProps): JSX.Element => {
 
   if (!project) {
     return (
-      <div style={EMPTY_STATE_STYLE}>
+      <Space direction="vertical" style={EMPTY_STATE_STYLE} align="center">
         <EmptyState title={t('details.notFound')} />
-      </div>
+      </Space>
     )
   }
 

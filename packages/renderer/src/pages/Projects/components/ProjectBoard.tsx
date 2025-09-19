@@ -1,4 +1,4 @@
-import { Alert, Col, Row } from 'antd'
+import { Alert, Col, Row, Space } from 'antd'
 import { useTranslation } from 'react-i18next'
 import type { JSX } from 'react'
 
@@ -33,9 +33,9 @@ export const ProjectBoard = ({
 
   if (!project) {
     return (
-      <div style={{ marginTop: 32 }}>
+      <Space direction="vertical" align="center" style={{ marginTop: 32, width: '100%' }}>
         <EmptyState title={t('board.empty')} />
-      </div>
+      </Space>
     )
   }
 

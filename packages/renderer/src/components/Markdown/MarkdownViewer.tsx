@@ -1,9 +1,10 @@
-import type { ReactNode } from 'react'
-import { Typography } from 'antd'
+import { useMemo, type ReactNode } from 'react'
+import { Card, Typography, theme } from 'antd'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import rehypeSanitize from 'rehype-sanitize'
-import './markdown.css'
+
+import { buildMarkdownComponents } from '@renderer/components/Markdown/markdownRenderers'
 
 export interface MarkdownViewerProps {
   value?: string | null
@@ -11,6 +12,9 @@ export interface MarkdownViewerProps {
 }
 
 export const MarkdownViewer = ({ value, emptyFallback }: MarkdownViewerProps) => {
+  const { token } = theme.useToken()
+  const components = useMemo(() => buildMarkdownComponents(token), [token])
+
   if (!value || value.trim().length === 0) {
     return emptyFallback ? (
       <>{emptyFallback}</>
@@ -20,11 +24,26 @@ export const MarkdownViewer = ({ value, emptyFallback }: MarkdownViewerProps) =>
   }
 
   return (
-    <div className="markdown-body">
-      <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeSanitize]}>
+    <Card
+      size="small"
+      bordered
+      style={{
+        background: token.colorBgContainer,
+        borderColor: token.colorBorder,
+        boxShadow: 'none'
+      }}
+      bodyStyle={{
+        padding: token.paddingLG
+      }}
+    >
+      <ReactMarkdown
+        remarkPlugins={[remarkGfm]}
+        rehypePlugins={[rehypeSanitize]}
+        components={components}
+      >
         {value}
       </ReactMarkdown>
-    </div>
+    </Card>
   )
 }
 

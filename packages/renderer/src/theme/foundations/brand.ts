@@ -10,6 +10,12 @@ export interface BrandTokens {
   primarySubtle: string
   primarySurface: string
   onPrimary: string
+  secondary: string
+  secondaryHover: string
+  secondaryActive: string
+  secondarySurface: string
+  secondaryBorder: string
+  onSecondary: string
 }
 
 export const ACCENT_PRESETS = [
@@ -32,6 +38,16 @@ export const buildBrandTokens = (
 
   const primarySurface =
     mode === 'dark' ? darken(accentColor, 0.6) : lighten(accentColor, 0.82)
+  const secondaryBase =
+    mode === 'dark' ? lighten(accentColor, 0.32) : darken(accentColor, 0.18)
+  const secondaryHover =
+    mode === 'dark' ? lighten(secondaryBase, 0.12) : darken(secondaryBase, 0.12)
+  const secondaryActive =
+    mode === 'dark' ? darken(secondaryBase, 0.08) : lighten(secondaryBase, 0.08)
+  const secondarySurface =
+    mode === 'dark' ? darken(accentColor, 0.5) : lighten(accentColor, 0.74)
+  const secondaryBorder =
+    mode === 'dark' ? darken(accentColor, 0.35) : lighten(accentColor, 0.48)
 
   return {
     primary,
@@ -39,7 +55,13 @@ export const buildBrandTokens = (
     primaryActive,
     primarySubtle: mode === 'dark' ? darken(accentColor, 0.3) : lighten(accentColor, 0.32),
     primarySurface,
-    onPrimary: resolveAccentForeground(accentColor, palette)
+    onPrimary: resolveAccentForeground(accentColor, palette, mode),
+    secondary: secondaryBase,
+    secondaryHover,
+    secondaryActive,
+    secondarySurface,
+    secondaryBorder,
+    onSecondary: resolveAccentForeground(secondaryBase, palette, mode)
   }
 }
 
@@ -58,7 +80,15 @@ const toChannels = (hex: string) => {
   return { r, g, b }
 }
 
-export const resolveAccentForeground = (accentColor: string, palette: PaletteTokens) => {
+export const resolveAccentForeground = (
+  accentColor: string,
+  palette: PaletteTokens,
+  mode: ThemeMode
+) => {
+  if (mode === 'dark') {
+    return palette.textOnDark
+  }
+
   const { r, g, b } = toChannels(accentColor)
   const brightness = (r * 299 + g * 587 + b * 114) / 1000
   return brightness > 140 ? palette.textOnBright : palette.textOnDark

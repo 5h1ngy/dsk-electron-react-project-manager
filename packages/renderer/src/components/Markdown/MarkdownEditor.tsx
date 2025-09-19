@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Button, Input, Segmented, Space, Tooltip, theme } from 'antd'
+import { Button, Card, Input, List, Segmented, Space, Typography, Tooltip, theme } from 'antd'
 import {
   BoldOutlined,
   ItalicOutlined,
@@ -14,8 +14,8 @@ import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import rehypeSanitize from 'rehype-sanitize'
 import type { TextAreaRef } from 'antd/es/input/TextArea'
-import './markdown.css'
 import { useThemeTokens } from '@renderer/theme/hooks/useThemeTokens'
+import { buildMarkdownComponents } from '@renderer/components/Markdown/markdownRenderers'
 
 export interface MarkdownEditorProps {
   value: string
@@ -58,6 +58,7 @@ export const MarkdownEditor = ({
   const [query, setQuery] = useState<string>('')
   const [isSuggestOpen, setIsSuggestOpen] = useState(false)
   const [activeSuggestion, setActiveSuggestion] = useState(0)
+  const markdownComponents = useMemo(() => buildMarkdownComponents(token), [token])
 
   const emitCursorChange = () => {
     if (!onCursorChange) {
@@ -275,14 +276,16 @@ export const MarkdownEditor = ({
       </Space>
 
       {mode === 'write' ? (
-        <div className="markdown-editor-wrapper">
+        <Space direction="vertical" style={{ width: '100%' }} size={8}>
           <Input.TextArea
             ref={textareaRef}
             value={value}
             onChange={(event) => {
               onChange(event.target.value)
               requestAnimationFrame(() => {
-                const caret = textareaRef.current?.resizableTextArea?.textArea?.selectionStart ?? event.target.value.length
+                const caret =
+                  textareaRef.current?.resizableTextArea?.textArea?.selectionStart ??
+                  event.target.value.length
                 setCursor(caret)
                 emitCursorChange()
               })
@@ -329,41 +332,76 @@ export const MarkdownEditor = ({
             }}
           />
           {isSuggestOpen && filteredSuggestions.length ? (
-            <div className="markdown-suggestions">
-              {filteredSuggestions.slice(0, 8).map((item, index) => (
-                <button
-                  key={item.id}
-                  type="button"
-                  className={index === activeSuggestion ? 'active' : ''}
-                  onMouseDown={(event) => event.preventDefault()}
-                  onClick={() => handleSuggestionInsert(item)}
-                >
-                  <span className="label">{item.label}</span>
-                  {item.description ? <span className="description">{item.description}</span> : null}
-                </button>
-              ))}
-            </div>
+            <Card
+              size="small"
+              bordered
+              style={{
+                background: token.colorBgElevated,
+                borderColor: token.colorBorderSecondary,
+                boxShadow: token.boxShadowSecondary ?? token.boxShadow
+              }}
+              bodyStyle={{
+                padding: token.paddingXS
+              }}
+            >
+              <List
+                size="small"
+                dataSource={filteredSuggestions.slice(0, 8)}
+                split={false}
+                renderItem={(item, index) => {
+                  const isActive = index === activeSuggestion
+                  return (
+                    <List.Item
+                      key={item.id}
+                      onMouseDown={(event) => event.preventDefault()}
+                      onClick={() => handleSuggestionInsert(item)}
+                      style={{
+                        padding: token.paddingXS,
+                        borderRadius: token.borderRadiusSM,
+                        cursor: 'pointer',
+                        background: isActive
+                          ? token.colorPrimaryBg
+                          : token.colorBgContainer
+                      }}
+                    >
+                      <Space direction="vertical" size={token.marginXXS} style={{ width: '100%' }}>
+                        <Typography.Text strong>{item.label}</Typography.Text>
+                        {item.description ? (
+                          <Typography.Text type="secondary">{item.description}</Typography.Text>
+                        ) : null}
+                      </Space>
+                    </List.Item>
+                  )
+                }}
+              />
+            </Card>
           ) : null}
-        </div>
+        </Space>
       ) : (
-        <div
-          className="markdown-body"
+        <Card
+          size="small"
+          bordered
           style={{
             minHeight: 160,
-            padding: spacing.md,
-            border: `${token.lineWidth}px solid ${token.colorBorderSecondary}`,
-            borderRadius: token.borderRadiusLG,
-            background: token.colorBgContainer
+            background: token.colorBgContainer,
+            borderColor: token.colorBorderSecondary
+          }}
+          bodyStyle={{
+            padding: spacing.md
           }}
         >
           {value.trim() ? (
-            <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeSanitize]}>
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm]}
+              rehypePlugins={[rehypeSanitize]}
+              components={markdownComponents}
+            >
               {value}
             </ReactMarkdown>
           ) : (
-            <span style={{ color: token.colorTextQuaternary }}>Nessun contenuto da mostrare</span>
+            <Typography.Text type="secondary">Nessun contenuto da mostrare</Typography.Text>
           )}
-        </div>
+        </Card>
       )}
     </Space>
   )
