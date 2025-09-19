@@ -228,9 +228,9 @@ const ProjectTasksPage = (): JSX.Element => {
 
   if (!project && !projectLoading) {
     return (
-      <div style={{ marginTop: 64 }}>
+      <Space direction="vertical" align="center" style={{ marginTop: 64, width: '100%' }}>
         <EmptyState title={t('details.notFound')} />
-      </div>
+      </Space>
     )
   }
 

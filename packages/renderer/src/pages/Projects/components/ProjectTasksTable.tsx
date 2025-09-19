@@ -1,4 +1,4 @@
-import { Button, Popconfirm, Space, Table, Tag, Tooltip, Typography } from 'antd'
+import { Button, Popconfirm, Space, Table, Tag, Tooltip, Typography, theme } from 'antd'
 import type { ColumnsType, TablePaginationConfig } from 'antd/es/table'
 import { useTranslation } from 'react-i18next'
 import { DeleteOutlined, EditOutlined, MessageOutlined } from '@ant-design/icons'
@@ -35,6 +35,7 @@ export const ProjectTasksTable = ({
   const { t, i18n } = useTranslation('projects')
   const showSkeleton = useDelayedLoading(loading)
   const badgeTokens = useSemanticBadges()
+  const { token } = theme.useToken()
 
   const columns: ColumnsType<TaskDetails> = [
     {
@@ -49,7 +50,11 @@ export const ProjectTasksTable = ({
       dataIndex: 'title',
       key: 'title',
       render: (value: string, record) => (
-        <div style={{ maxWidth: 480 }}>
+        <Space
+          direction="vertical"
+          size={token.marginXXS}
+          style={{ maxWidth: 480, width: '100%' }}
+        >
           <Typography.Text ellipsis>{value}</Typography.Text>
           {record.description ? (
             <Typography.Paragraph
@@ -60,7 +65,7 @@ export const ProjectTasksTable = ({
               {record.description}
             </Typography.Paragraph>
           ) : null}
-        </div>
+        </Space>
       )
     },
     {
