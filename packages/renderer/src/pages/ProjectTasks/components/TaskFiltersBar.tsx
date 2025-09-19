@@ -2,6 +2,7 @@ import { useMemo, type JSX } from 'react'
 import { AppstoreOutlined, PlusOutlined, TableOutlined } from '@ant-design/icons'
 import { Button, DatePicker, Input, Segmented, Select, Space, Switch, Typography } from 'antd'
 import type { SelectProps } from 'antd'
+import type { ReactNode } from 'react'
 import { SearchOutlined } from '@ant-design/icons'
 import dayjs, { type Dayjs } from 'dayjs'
 import { useTranslation } from 'react-i18next'
@@ -23,6 +24,7 @@ export interface TaskFiltersBarProps {
   onViewModeChange: (mode: 'table' | 'cards') => void
   onCreate?: () => void
   canCreate?: boolean
+  secondaryActions?: ReactNode
 }
 
 export const TaskFiltersBar = ({
@@ -34,7 +36,8 @@ export const TaskFiltersBar = ({
   viewMode,
   onViewModeChange,
   onCreate,
-  canCreate = true
+  canCreate = true,
+  secondaryActions
 }: TaskFiltersBarProps): JSX.Element => {
   const { t } = useTranslation('projects')
 
@@ -161,6 +164,7 @@ export const TaskFiltersBar = ({
             options={viewSegmentedOptions}
           />
           <Space size="small" wrap>
+            {secondaryActions}
             {onCreate ? (
               <Button
                 type="primary"

@@ -234,6 +234,16 @@
     "columns": {
       "actions": "Aktionen"
     },
+    "savedViews": {
+      "placeholder": "Gespeicherte Ansichten",
+      "saveButton": "Ansicht speichern",
+      "saveTooltip": "Aktuelle Filter als neue Ansicht speichern",
+      "deleteButton": "Löschen",
+      "deleteTooltip": "Ausgewählte Ansicht entfernen",
+      "modalTitle": "Aktuelle Ansicht speichern",
+      "nameLabel": "Name",
+      "nameRequired": "Bitte einen Namen eingeben"
+    },
     "actions": {
       "create": "Neuer Task",
       "edit": "Bearbeiten",

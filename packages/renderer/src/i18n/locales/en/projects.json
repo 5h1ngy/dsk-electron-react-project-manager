@@ -232,6 +232,16 @@
     "columns": {
       "actions": "Actions"
     },
+    "savedViews": {
+      "placeholder": "Saved views",
+      "saveButton": "Save view",
+      "saveTooltip": "Save current filters as a new view",
+      "deleteButton": "Delete",
+      "deleteTooltip": "Remove selected view",
+      "modalTitle": "Save current view",
+      "nameLabel": "Name",
+      "nameRequired": "Please enter a name"
+    },
     "actions": {
       "create": "New task",
       "edit": "Edit",

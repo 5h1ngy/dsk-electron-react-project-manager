@@ -55,7 +55,9 @@ import type { NoteDetails, NoteSummary } from '@renderer/store/slices/notes/type
 import type { TaskDetails } from '@renderer/store/slices/tasks/types'
 import type { SearchNotesInput } from '@main/services/note/schemas'
 import { extractErrorMessage } from '@renderer/store/slices/auth/helpers'
-import MarkdownEditor from '@renderer/components/Markdown/MarkdownEditor'
+import MarkdownEditor, {
+  type MarkdownSuggestion
+} from '@renderer/components/Markdown/MarkdownEditor'
 import MarkdownViewer from '@renderer/components/Markdown/MarkdownViewer'
 import { BorderedPanel } from '@renderer/components/Surface/BorderedPanel'
 
@@ -122,8 +124,15 @@ const sanitizeFormValues = (values: NoteFormValues): NoteFormValues => ({
 
 const buildTaskOptions = (tasks: TaskDetails[]) =>
   tasks.map((task) => ({
-    label: `${task.key} · ${task.title}`,
+    label: `${task.key} - ${task.title}`,
     value: task.id
+  }))
+
+const buildTaskSuggestions = (tasks: TaskDetails[]): MarkdownSuggestion[] =>
+  tasks.map((task) => ({
+    id: task.id,
+    label: task.key,
+    description: task.title
   }))
 
 const buildTagOptions = (notes: NoteSummary[]) =>
@@ -490,12 +499,15 @@ const NoteEditorModal = ({
 }: NoteEditorProps): ReactElement => {
   const { t } = useTranslation('projects')
   const taskOptions = useMemo(() => buildTaskOptions(tasks), [tasks])
+  const taskSuggestions = useMemo(() => buildTaskSuggestions(tasks), [tasks])
   const defaultValues = useMemo(() => noteDefaultValues(initialValues, mode), [initialValues, mode])
 
   const {
     control,
     handleSubmit,
     reset,
+    setValue,
+    getValues,
     formState: { errors }
   } = useForm<NoteFormValues>({
     mode: 'onSubmit',
@@ -508,6 +520,18 @@ const NoteEditorModal = ({
       reset(defaultValues)
     }
   }, [defaultValues, open, reset])
+
+  const ensureTaskLinked = useCallback(
+    (taskId: string) => {
+      const current = getValues('linkedTaskIds') ?? []
+      if (current.includes(taskId)) {
+        return
+      }
+      const next = [...current, taskId]
+      setValue('linkedTaskIds', next, { shouldDirty: true, shouldValidate: true })
+    },
+    [getValues, setValue]
+  )
 
   return (
     <Modal
@@ -601,6 +625,8 @@ const NoteEditorModal = ({
                 onChange={(next) => field.onChange(next)}
                 placeholder={t('notes.editor.placeholders.body')}
                 maxLength={50000}
+                suggestions={taskSuggestions}
+                onInsertSuggestion={(item) => ensureTaskLinked(item.id)}
               />
             </Form.Item>
           )}
@@ -662,11 +688,14 @@ const NoteDetailsModal = ({
     defaultValues: noteDefaultValues(null, 'edit')
   })
   const taskOptions = useMemo(() => buildTaskOptions(tasks), [tasks])
+  const taskSuggestions = useMemo(() => buildTaskSuggestions(tasks), [tasks])
 
   const {
     control,
     handleSubmit,
     reset,
+    setValue,
+    getValues,
     formState: { errors }
   } = form
 
@@ -681,6 +710,18 @@ const NoteDetailsModal = ({
       setIsEditing(false)
     }
   }, [open])
+
+  const ensureTaskLinked = useCallback(
+    (taskId: string) => {
+      const current = getValues('linkedTaskIds') ?? []
+      if (current.includes(taskId)) {
+        return
+      }
+      const next = [...current, taskId]
+      setValue('linkedTaskIds', next, { shouldDirty: true, shouldValidate: true })
+    },
+    [getValues, setValue]
+  )
 
   const handleUpdate = handleSubmit(async (values) => {
     if (!note) {
@@ -832,6 +873,8 @@ const NoteDetailsModal = ({
                     onChange={(next) => field.onChange(next)}
                     placeholder={t('notes.editor.placeholders.body')}
                     maxLength={50000}
+                    suggestions={taskSuggestions}
+                    onInsertSuggestion={(item) => ensureTaskLinked(item.id)}
                   />
                 </Form.Item>
               )}
@@ -992,3 +1035,4 @@ const HighlightSnippet = ({ highlight }: { highlight: string | null | undefined 
 
 export { ProjectNotesPage }
 export default ProjectNotesPage
+

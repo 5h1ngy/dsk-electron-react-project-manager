@@ -15,6 +15,7 @@ import { Comment } from '@main/models/Comment'
 import { Note } from '@main/models/Note'
 import { NoteTag } from '@main/models/NoteTag'
 import { NoteTaskLink } from '@main/models/NoteTaskLink'
+import { View } from '@main/models/View'
 import type { DatabaseInitializationOptions } from '@main/config/database.types'
 import { logger } from '@main/config/logger'
 import { ROLE_NAMES } from '@main/services/auth/constants'
@@ -77,7 +78,8 @@ export class DatabaseManager {
     Comment,
     Note,
     NoteTag,
-    NoteTaskLink
+    NoteTaskLink,
+    View
   ]
 
   private async ensureCoreData(sequelize: Sequelize): Promise<void> {

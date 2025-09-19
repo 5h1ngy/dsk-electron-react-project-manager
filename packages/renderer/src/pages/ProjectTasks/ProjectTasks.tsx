@@ -1,6 +1,6 @@
 import type { JSX } from 'react'
-import { Space, Typography } from 'antd'
-import { useEffect, useMemo, useState } from 'react'
+import { Form, Input, Modal, Space, Typography } from 'antd'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { EmptyState } from '@renderer/components/DataStates'
@@ -17,8 +17,25 @@ import type { TaskFilters } from '@renderer/pages/ProjectTasks/ProjectTasks.type
 import { TaskFiltersBar } from '@renderer/pages/ProjectTasks/components/TaskFiltersBar'
 import { ProjectTasksCardGrid } from '@renderer/pages/ProjectTasks/components/ProjectTasksCardGrid'
 
+import TaskSavedViewsControls from '@renderer/pages/ProjectTasks/components/TaskSavedViewsControls'
+import { useAppDispatch, useAppSelector } from '@renderer/store/hooks'
+import {
+  fetchViews,
+  createView,
+  deleteView,
+  selectProjectSavedViews,
+  selectProjectViewsStatus,
+  selectSelectedViewId,
+  selectViewsMutationStatus,
+  selectSavedView
+} from '@renderer/store/slices/views'
+import type { SavedView } from '@renderer/store/slices/views/types'
+import type { LoadStatus } from '@renderer/store/slices/tasks/types'
+import { VIEW_COLUMN_VALUES } from '@main/services/view/schemas'
+
 const ProjectTasksPage = (): JSX.Element => {
   const {
+    projectId,
     project,
     projectLoading,
     tasks,
@@ -42,6 +59,32 @@ const ProjectTasksPage = (): JSX.Element => {
   const [viewMode, setViewMode] = useState<'table' | 'cards'>('table')
   const [tablePage, setTablePage] = useState(1)
   const [cardPage, setCardPage] = useState(1)
+  const dispatch = useAppDispatch()
+  const [isSaveModalOpen, setIsSaveModalOpen] = useState(false)
+  const [viewForm] = Form.useForm<{ name: string }>()
+  const lastAppliedViewId = useRef<string | null>(null)
+  const isApplyingViewRef = useRef(false)
+  const savedViewsSelector = useMemo(
+    () => (projectId ? selectProjectSavedViews(projectId) : () => []),
+    [projectId]
+  )
+  const savedViews = useAppSelector(savedViewsSelector)
+
+  const viewsStatusSelector = useMemo(
+    () =>
+      projectId
+        ? selectProjectViewsStatus(projectId)
+        : (() => 'idle' as LoadStatus),
+    [projectId]
+  )
+  const viewsStatus = useAppSelector(viewsStatusSelector)
+
+  const selectedViewSelector = useMemo(
+    () => (projectId ? selectSelectedViewId(projectId) : () => null),
+    [projectId]
+  )
+  const selectedViewId = useAppSelector(selectedViewSelector)
+  const mutationStatus = useAppSelector(selectViewsMutationStatus)
   const TABLE_PAGE_SIZE = 10
   const CARD_PAGE_SIZE = 8
 
@@ -54,13 +97,112 @@ const ProjectTasksPage = (): JSX.Element => {
 
   const filteredTasks = useMemo(() => filterTasks(tasks, filters), [tasks, filters])
 
+  const applyFiltersFromView = useCallback(
+    (view: SavedView) => {
+      isApplyingViewRef.current = true
+      setFilters(view.filters)
+      setTablePage(1)
+      setCardPage(1)
+      if (projectId) {
+        dispatch(selectSavedView({ projectId, viewId: view.id }))
+      }
+      lastAppliedViewId.current = view.id
+      isApplyingViewRef.current = false
+    },
+    [dispatch, projectId]
+  )
+
+  const handleViewSelect = useCallback(
+    (viewId: string | null) => {
+      if (!projectId) {
+        return
+      }
+      if (!viewId) {
+        dispatch(selectSavedView({ projectId, viewId: null }))
+        lastAppliedViewId.current = null
+        return
+      }
+      const view = savedViews.find((candidate) => candidate.id === viewId)
+      if (view) {
+        applyFiltersFromView(view)
+      }
+    },
+    [dispatch, projectId, savedViews, applyFiltersFromView]
+  )
+
+  const handleOpenSaveModal = useCallback(() => {
+    viewForm.resetFields()
+    setIsSaveModalOpen(true)
+  }, [viewForm])
+
+  const handleSaveView = useCallback(async () => {
+    if (!projectId) {
+      return
+    }
+    try {
+      const { name } = await viewForm.validateFields()
+      const payload = {
+        projectId,
+        name: name.trim(),
+        filters,
+        sort: null,
+        columns: Array.from(VIEW_COLUMN_VALUES)
+      }
+      const created = await dispatch(createView(payload)).unwrap()
+      applyFiltersFromView(created)
+      setIsSaveModalOpen(false)
+      viewForm.resetFields()
+    } catch (error: any) {
+      if (error?.errorFields) {
+        return
+      }
+    }
+  }, [projectId, viewForm, filters, dispatch, applyFiltersFromView])
+
+  const handleDeleteView = useCallback(
+    async (viewId: string) => {
+      if (!projectId) {
+        return
+      }
+      await dispatch(deleteView({ projectId, viewId })).unwrap()
+    },
+    [dispatch, projectId]
+  )
+
   const loading = tasksStatus === 'loading'
 
-  const handleFiltersChange = (patch: Partial<TaskFilters>) => {
-    setFilters((prev) => ({ ...prev, ...patch }))
-    setTablePage(1)
-    setCardPage(1)
-  }
+  const handleFiltersChange = useCallback(
+    (patch: Partial<TaskFilters>) => {
+      setFilters((prev) => ({ ...prev, ...patch }))
+      setTablePage(1)
+      setCardPage(1)
+      if (!isApplyingViewRef.current && projectId && selectedViewId) {
+        dispatch(selectSavedView({ projectId, viewId: null }))
+        lastAppliedViewId.current = null
+      }
+    },
+    [dispatch, projectId, selectedViewId]
+  )
+
+  useEffect(() => {
+    if (!projectId || viewsStatus !== 'idle') {
+      return
+    }
+    void dispatch(fetchViews({ projectId }))
+  }, [dispatch, projectId, viewsStatus])
+
+  useEffect(() => {
+    if (!projectId || !selectedViewId) {
+      return
+    }
+    if (selectedViewId === lastAppliedViewId.current) {
+      return
+    }
+    const selected = savedViews.find((view) => view.id === selectedViewId)
+    if (selected) {
+      applyFiltersFromView(selected)
+    }
+  }, [projectId, selectedViewId, savedViews, applyFiltersFromView])
 
   useEffect(() => {
     const maxPage = Math.max(1, Math.ceil(filteredTasks.length / CARD_PAGE_SIZE))
@@ -93,11 +235,12 @@ const ProjectTasksPage = (): JSX.Element => {
   }
 
   return (
-    <Space direction="vertical" size={24} style={{ width: '100%' }}>
-      <Typography.Title level={4} style={{ marginBottom: 0 }}>
-        {effectiveTitle}
-      </Typography.Title>
-      <TaskFiltersBar
+    <>
+      <Space direction="vertical" size={24} style={{ width: '100%' }}>
+        <Typography.Title level={4} style={{ marginBottom: 0 }}>
+          {effectiveTitle}
+        </Typography.Title>
+        <TaskFiltersBar
         filters={filters}
         statusOptions={statusOptions}
         priorityOptions={priorityOptions}
@@ -107,6 +250,19 @@ const ProjectTasksPage = (): JSX.Element => {
         onViewModeChange={setViewMode}
         onCreate={canManageTasks ? () => openTaskCreate() : undefined}
         canCreate={canManageTasks}
+        secondaryActions={
+          projectId ? (
+            <TaskSavedViewsControls
+              views={savedViews}
+              selectedViewId={selectedViewId}
+              onSelect={handleViewSelect}
+              onCreate={handleOpenSaveModal}
+              onDelete={handleDeleteView}
+              loadingStatus={viewsStatus}
+              mutationStatus={mutationStatus}
+            />
+          ) : null
+        }
       />
       {viewMode === 'table' ? (
         <ProjectTasksTable
@@ -139,6 +295,28 @@ const ProjectTasksPage = (): JSX.Element => {
         />
       )}
     </Space>
+      <Modal
+        open={isSaveModalOpen}
+        title={t('tasks.savedViews.modalTitle')}
+        onCancel={() => {
+          setIsSaveModalOpen(false)
+          viewForm.resetFields()
+        }}
+        onOk={handleSaveView}
+        confirmLoading={mutationStatus === 'loading'}
+        destroyOnClose
+      >
+        <Form form={viewForm} layout="vertical">
+          <Form.Item
+            label={t('tasks.savedViews.nameLabel')}
+            name="name"
+            rules={[{ required: true, message: t('tasks.savedViews.nameRequired') }]}
+          >
+            <Input maxLength={80} />
+          </Form.Item>
+        </Form>
+      </Modal>
+    </>
   )
 }
 

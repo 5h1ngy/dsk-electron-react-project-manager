@@ -232,6 +232,16 @@
     "columns": {
       "actions": "Actions"
     },
+    "savedViews": {
+      "placeholder": "Vues enregistrées",
+      "saveButton": "Enregistrer la vue",
+      "saveTooltip": "Enregistrer les filtres actuels comme nouvelle vue",
+      "deleteButton": "Supprimer",
+      "deleteTooltip": "Supprimer la vue sélectionnée",
+      "modalTitle": "Enregistrer la vue actuelle",
+      "nameLabel": "Nom",
+      "nameRequired": "Veuillez saisir un nom"
+    },
     "actions": {
       "create": "Nouvelle tache",
       "edit": "Modifier",
