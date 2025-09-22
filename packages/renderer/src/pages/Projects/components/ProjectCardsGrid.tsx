@@ -149,7 +149,11 @@ export const ProjectCardsGrid = ({
                   <Space size={4} wrap>
                     {tagList.length > 0 ? (
                       tagList.map((tag) => (
-                        <Tag key={tag} bordered={false} style={buildBadgeStyle(badgeTokens.tag)}>
+                        <Tag
+                          key={tag}
+                          bordered={false}
+                          style={buildBadgeStyle(badgeTokens.tag(tag))}
+                        >
                           {tag}
                         </Tag>
                       ))

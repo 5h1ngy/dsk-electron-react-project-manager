@@ -76,7 +76,7 @@ export const ProjectList = ({
         tags && tags.length > 0 ? (
           <span>
             {tags.map((tag) => (
-              <Tag key={tag} bordered={false} style={buildBadgeStyle(badgeTokens.tag)}>
+              <Tag key={tag} bordered={false} style={buildBadgeStyle(badgeTokens.tag(tag))}>
                 {tag}
               </Tag>
             ))}

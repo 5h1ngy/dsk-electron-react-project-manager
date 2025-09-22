@@ -21,7 +21,7 @@ export interface SemanticBadgeTokens {
     inactive: BadgeSpec
   }
   projectKey: BadgeSpec
-  tag: BadgeSpec
+  tag: (label: string) => BadgeSpec
   notebook: BadgeSpec
   noteVisibility: {
     private: BadgeSpec
@@ -43,6 +43,57 @@ export const useSemanticBadges = (): SemanticBadgeTokens => {
     const primaryBadge = {
       background: token.colorPrimaryBg,
       color: token.colorPrimaryText
+    }
+
+    const tagPalette: BadgeSpec[] = [
+      {
+        background: token.colorPrimaryBg,
+        color: token.colorPrimaryText,
+        border: token.colorPrimaryBorder
+      },
+      {
+        background: token.colorSuccessBg,
+        color: token.colorSuccessText,
+        border: token.colorSuccessBorder
+      },
+      {
+        background: token.colorWarningBg,
+        color: token.colorWarningText,
+        border: token.colorWarningBorder
+      },
+      {
+        background: token.colorInfoBg,
+        color: token.colorInfoText,
+        border: token.colorInfoBorder
+      },
+      {
+        background: token.colorErrorBg,
+        color: token.colorErrorText,
+        border: token.colorErrorBorder
+      },
+      {
+        background: token.colorBgSpotlight,
+        color: token.colorTextLightSolid,
+        border: token.colorBorderSecondary
+      }
+    ]
+
+    const resolveTagSpec = (label: string): BadgeSpec => {
+      if (!label) {
+        return {
+          background: neutralBackground,
+          color: neutralColor,
+          border: token.colorBorderSecondary
+        }
+      }
+      let hash = 0
+      const normalized = label.trim().toLowerCase()
+      for (let index = 0; index < normalized.length; index += 1) {
+        hash = (hash << 5) - hash + normalized.charCodeAt(index)
+        hash |= 0
+      }
+      const paletteIndex = Math.abs(hash) % tagPalette.length
+      return tagPalette[paletteIndex] ?? tagPalette[0]
     }
 
     return {
@@ -74,7 +125,7 @@ export const useSemanticBadges = (): SemanticBadgeTokens => {
         inactive: { background: token.colorErrorBg, color: token.colorErrorText }
       },
       projectKey: primaryBadge,
-      tag: { background: neutralBackground, color: neutralColor },
+      tag: resolveTagSpec,
       notebook: infoBadge,
       noteVisibility: {
         private: { background: token.colorWarningBg, color: token.colorWarningText },
