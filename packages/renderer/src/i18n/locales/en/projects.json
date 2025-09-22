@@ -6,9 +6,7 @@
   },
   "actions": {
     "refresh": "Refresh",
-    "refreshHint": "Reload the project list",
     "create": "New project",
-    "createHint": "Create a new project",
     "edit": "Edit",
     "deleteTitle": "Remove project",
     "deleteDescription": "Are you sure you want to remove {{name}}?",
@@ -28,11 +26,13 @@
       "edit": "Editor",
       "view": "Viewer"
     },
-    "ownedOnly": "Created by me"
+    "ownedOptions": {
+      "all": "All projects",
+      "mine": "Created by me"
+    }
   },
   "permissions": {
     "createDenied": "Only administrators or maintainers can create projects.",
-    "createDeniedTooltip": "You do not have permissions to create projects.",
     "updateDenied": "Only administrators or maintainers can update projects.",
     "manageMembersDenied": "Only administrators or maintainers can manage project members.",
     "tasksCreateDenied": "You do not have permissions to create tasks in this project.",
@@ -235,9 +235,7 @@
     "savedViews": {
       "placeholder": "Saved views",
       "saveButton": "Save view",
-      "saveTooltip": "Save current filters as a new view",
       "deleteButton": "Delete",
-      "deleteTooltip": "Remove selected view",
       "modalTitle": "Save current view",
       "nameLabel": "Name",
       "nameRequired": "Please enter a name"

@@ -7,7 +7,6 @@
         "users": {
             "ariaLabel": "Filtrer les utilisateurs",
             "searchPlaceholder": "Rechercher des utilisateurs...",
-            "statusTooltip": "Filtrer par statut",
             "status": {
                 "all": "Tous",
                 "active": "Actifs",
@@ -20,7 +19,8 @@
                 "table": "Vue tableau",
                 "cards": "Vue cartes"
             },
-            "lastLogin": "Derniere connexion : {{date}}"
+            "lastLogin": "Derniere connexion : {{date}}",
+            "statusLabel": "Statut des utilisateurs"
         }
     },
     "table": {

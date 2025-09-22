@@ -7,7 +7,6 @@
         "users": {
             "ariaLabel": "Filtra utenti",
             "searchPlaceholder": "Cerca utenti...",
-            "statusTooltip": "Filtra per stato",
             "status": {
                 "all": "Tutti",
                 "active": "Attivi",
@@ -20,7 +19,8 @@
                 "table": "Vista tabella",
                 "cards": "Vista card"
             },
-            "lastLogin": "Ultimo accesso: {{date}}"
+            "lastLogin": "Ultimo accesso: {{date}}",
+            "statusLabel": "Stato utenti"
         }
     },
     "table": {
