@@ -6,9 +6,7 @@
   },
   "actions": {
     "refresh": "Aktualisieren",
-    "refreshHint": "Projektliste neu laden",
     "create": "Neues Projekt",
-    "createHint": "Ein neues Projekt anlegen",
     "edit": "Bearbeiten",
     "deleteTitle": "Projekt entfernen",
     "deleteDescription": "Moechten Sie {{name}} wirklich entfernen?",
@@ -28,11 +26,13 @@
       "edit": "Bearbeiter",
       "view": "Betrachter"
     },
-    "ownedOnly": "Von mir erstellt"
+    "ownedOptions": {
+      "all": "Alle Projekte",
+      "mine": "Von mir erstellt"
+    }
   },
   "permissions": {
     "createDenied": "Nur Administratoren oder Maintainer koennen Projekte erstellen.",
-    "createDeniedTooltip": "Keine Berechtigung zum Erstellen von Projekten.",
     "updateDenied": "Nur Administratoren oder Maintainer koennen Projekte bearbeiten.",
     "manageMembersDenied": "Nur Administratoren oder Maintainer koennen Mitglieder verwalten.",
     "tasksCreateDenied": "Keine Berechtigung, Aufgaben in diesem Projekt zu erstellen.",
@@ -171,8 +171,8 @@
       "timing": "Zeitplan",
       "createdAt": "Erstellt am {{date}}",
       "dueDate": "Faellig am {{date}}",
-      "linkedNotes": "Verkn\u00fcpfte Notizen",
-      "noLinkedNotes": "Keine verkn\u00fcpften Notizen",
+      "linkedNotes": "Verknüpfte Notizen",
+      "noLinkedNotes": "Keine verknüpften Notizen",
       "empty": "Aufgabe auswaehlen, um Details zu sehen"
     },
     "missingId": "Projekt-ID fehlt",
@@ -237,9 +237,7 @@
     "savedViews": {
       "placeholder": "Gespeicherte Ansichten",
       "saveButton": "Ansicht speichern",
-      "saveTooltip": "Aktuelle Filter als neue Ansicht speichern",
       "deleteButton": "Löschen",
-      "deleteTooltip": "Ausgewählte Ansicht entfernen",
       "modalTitle": "Aktuelle Ansicht speichern",
       "nameLabel": "Name",
       "nameRequired": "Bitte einen Namen eingeben"
@@ -286,8 +284,8 @@
       "assignee": "Zustaendig: {{assignee}}",
       "createdAt": "Erstellt am {{date}}",
       "dueDate": "Faellig am {{date}}",
-      "linkedNotes": "Verkn\u00fcpfte Notizen",
-      "noLinkedNotes": "Keine verkn\u00fcpften Notizen",
+      "linkedNotes": "Verknüpfte Notizen",
+      "noLinkedNotes": "Keine verknüpften Notizen",
       "empty": "Kein Task ausgewaehlt",
       "comments": {
         "title": "Kommentare",

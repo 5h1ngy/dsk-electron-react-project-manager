@@ -1,13 +1,12 @@
 {
-    "actionBar":  {
-                      "create":  "New user",
-                      "refresh":  "Refresh"
-                  },
+    "actionBar": {
+        "create": "New user",
+        "refresh": "Refresh"
+    },
     "filters": {
         "users": {
             "ariaLabel": "Filter users",
             "searchPlaceholder": "Search users...",
-            "statusTooltip": "Filter by status",
             "status": {
                 "all": "All",
                 "active": "Active",
@@ -20,83 +19,84 @@
                 "table": "Table view",
                 "cards": "Card view"
             },
-            "lastLogin": "Last login: {{date}}"
+            "lastLogin": "Last login: {{date}}",
+            "statusLabel": "User status"
         }
     },
-    "table":  {
-                  "username":  "Username",
-                  "displayName":  "Name",
-                  "roles":  "Roles",
-                  "status":  "Status",
-                  "actions":  "Actions",
-                  "empty":  "No users yet"
-              },
-    "status":  {
-                   "active":  "Active",
-                   "inactive":  "Inactive"
-               },
-    "actions":  {
-                    "edit":  "Edit",
-                    "delete": "Delete",
-                    "deleteTitle": "Remove user",
-                    "deleteDescription": "Do you really want to remove {{username}}?",
-                    "confirmDelete": "Remove",
-                    "cancel": "Cancel"
-                },
-    "modals":  {
-                   "create":  {
-                                  "title":  "Create user",
-                                  "confirm":  "Create",
-                                  "fields":  {
-                                                 "username":  "Username",
-                                                 "displayName":  "Name",
-                                                 "password":  "Password",
-                                                 "roles":  "Roles",
-                                                 "rolesPlaceholder":  "Select roles",
-                                                 "active":  "Active"
-                                             }
-                              },
-                   "edit":  {
-                                "title":  "Edit user {{username}}",
-                                "confirm":  "Save",
-                                "fields":  {
-                                               "displayName":  "Name",
-                                               "password":  "New password",
-                                               "passwordHint":  "Leave blank to keep the current password",
-                                               "roles":  "Roles",
-                                               "rolesPlaceholder":  "Select roles",
-                                               "active":  "Active"
-                                           }
-                            }
-               },
-    "messages":  {
-                     "createSuccess":  "User created successfully",
-                     "createErrorFallback":  "Unable to create user",
-                     "updateSuccess":  "User updated successfully",
-                     "updateErrorFallback":  "Unable to update user",
-                     "deleteSuccess": "User removed successfully",
-                     "deleteErrorFallback": "Unable to remove user",
-                     "deleteSelfWarning": "You cannot remove your own account"
-                 },
-    "error":  {
-                  "title":  "Error"
-              },
-    "roles":  {
-                  "Admin":  "Administrator",
-                  "Maintainer":  "Maintainer",
-                  "Contributor":  "Contributor",
-                  "Viewer":  "Viewer"
-              },
-    "permissions":  {
-                        "title":  "Insufficient permissions",
-                        "description":  "Only administrators can manage user accounts."
-                    },
-    "personal":  {
-                     "projectsTitle":  "My projects",
-                     "profileTitle":  "Profile summary",
-                     "username":  "Logged in as {{username}}",
-                     "noDescription":  "No description available",
-                     "noProjects":  "You are not part of any project yet.",
-                     "heading":  "Overview"
-                 }
+    "table": {
+        "username": "Username",
+        "displayName": "Name",
+        "roles": "Roles",
+        "status": "Status",
+        "actions": "Actions",
+        "empty": "No users yet"
+    },
+    "status": {
+        "active": "Active",
+        "inactive": "Inactive"
+    },
+    "actions": {
+        "edit": "Edit",
+        "delete": "Delete",
+        "deleteTitle": "Remove user",
+        "deleteDescription": "Do you really want to remove {{username}}?",
+        "confirmDelete": "Remove",
+        "cancel": "Cancel"
+    },
+    "modals": {
+        "create": {
+            "title": "Create user",
+            "confirm": "Create",
+            "fields": {
+                "username": "Username",
+                "displayName": "Name",
+                "password": "Password",
+                "roles": "Roles",
+                "rolesPlaceholder": "Select roles",
+                "active": "Active"
+            }
+        },
+        "edit": {
+            "title": "Edit user {{username}}",
+            "confirm": "Save",
+            "fields": {
+                "displayName": "Name",
+                "password": "New password",
+                "passwordHint": "Leave blank to keep the current password",
+                "roles": "Roles",
+                "rolesPlaceholder": "Select roles",
+                "active": "Active"
+            }
+        }
+    },
+    "messages": {
+        "createSuccess": "User created successfully",
+        "createErrorFallback": "Unable to create user",
+        "updateSuccess": "User updated successfully",
+        "updateErrorFallback": "Unable to update user",
+        "deleteSuccess": "User removed successfully",
+        "deleteErrorFallback": "Unable to remove user",
+        "deleteSelfWarning": "You cannot remove your own account"
+    },
+    "error": {
+        "title": "Error"
+    },
+    "roles": {
+        "Admin": "Administrator",
+        "Maintainer": "Maintainer",
+        "Contributor": "Contributor",
+        "Viewer": "Viewer"
+    },
+    "permissions": {
+        "title": "Insufficient permissions",
+        "description": "Only administrators can manage user accounts."
+    },
+    "personal": {
+        "projectsTitle": "My projects",
+        "profileTitle": "Profile summary",
+        "username": "Logged in as {{username}}",
+        "noDescription": "No description available",
+        "noProjects": "You are not part of any project yet.",
+        "heading": "Overview"
+    }
 }

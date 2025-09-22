@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Button, Card, Input, List, Segmented, Space, Typography, Tooltip, theme } from 'antd'
+import { Button, Card, Input, List, Segmented, Space, Typography, theme } from 'antd'
 import {
   BoldOutlined,
   ItalicOutlined,
@@ -240,14 +240,14 @@ export const MarkdownEditor = ({
       >
         <Space size={4} wrap>
           {toolbar.map((item) => (
-            <Tooltip title={item.label} key={item.label}>
-              <Button
-                size="small"
-                disabled={disabled}
-                icon={item.icon}
-                onClick={() => applyFormatting(item.handler)}
-              />
-            </Tooltip>
+            <Button
+              key={item.label}
+              size="small"
+              disabled={disabled}
+              icon={item.icon}
+              onClick={() => applyFormatting(item.handler)}
+              aria-label={item.label}
+            />
           ))}
         </Space>
         <Segmented

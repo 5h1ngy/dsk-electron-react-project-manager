@@ -56,7 +56,8 @@ export const TaskFormModal = ({
       okText={okText}
       confirmLoading={submitting}
       destroyOnHidden
-      width={520}
+      width={820}
+      styles={{ body: { maxHeight: '70vh', overflowY: 'auto' } }}
     >
       <Form
         layout="vertical"

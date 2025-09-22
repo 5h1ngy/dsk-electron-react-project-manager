@@ -8,7 +8,6 @@ import {
   Row,
   Space,
   Tag,
-  Tooltip,
   Typography,
   theme
 } from 'antd'
@@ -107,16 +106,16 @@ export const ProjectCardsGrid = ({
                 extra={
                   project.role === 'admin' ? (
                     <Space size={4}>
-                      <Tooltip title={t('actions.edit')}>
-                        <Button
-                          type="text"
-                          icon={<EditOutlined />}
-                          onClick={(event) => {
-                            event.stopPropagation()
-                            onEdit?.(project)
-                          }}
-                        />
-                      </Tooltip>
+                      <Button
+                        type="text"
+                        icon={<EditOutlined />}
+                        onClick={(event) => {
+                          event.stopPropagation()
+                          onEdit?.(project)
+                        }}
+                      >
+                        {t('actions.edit')}
+                      </Button>
                       <Popconfirm
                         title={t('actions.deleteTitle')}
                         description={t('actions.deleteDescription', { name: project.name })}
@@ -131,7 +130,9 @@ export const ProjectCardsGrid = ({
                           danger
                           icon={<DeleteOutlined />}
                           onClick={(event) => event.stopPropagation()}
-                        />
+                        >
+                          {t('actions.delete')}
+                        </Button>
                       </Popconfirm>
                     </Space>
                   ) : undefined

@@ -1,4 +1,4 @@
-import { Button, Card, Popconfirm, Space, Tag, Tooltip, Typography } from 'antd'
+import { Button, Card, Popconfirm, Space, Tag, Typography } from 'antd'
 import type { DragEvent, JSX } from 'react'
 import { useTranslation } from 'react-i18next'
 import { DeleteOutlined, EditOutlined, MessageOutlined } from '@ant-design/icons'
@@ -47,16 +47,16 @@ export const TaskCard = ({
       extra={
         draggable ? (
           <Space size={4}>
-            <Tooltip title={t('tasks.actions.edit')}>
-              <Button
-                type="text"
-                icon={<EditOutlined />}
-                onClick={(event) => {
-                  event.stopPropagation()
-                  onEdit()
-                }}
-              />
-            </Tooltip>
+            <Button
+              type="text"
+              icon={<EditOutlined />}
+              onClick={(event) => {
+                event.stopPropagation()
+                onEdit()
+              }}
+            >
+              {t('tasks.actions.edit')}
+            </Button>
             <Popconfirm
               title={t('tasks.actions.deleteTitle')}
               description={t('tasks.actions.deleteDescription', { title: task.title })}
@@ -71,7 +71,9 @@ export const TaskCard = ({
                 icon={<DeleteOutlined />}
                 loading={deleting}
                 onClick={(event) => event.stopPropagation()}
-              />
+              >
+                {t('tasks.actions.delete')}
+              </Button>
             </Popconfirm>
           </Space>
         ) : undefined

@@ -1,5 +1,5 @@
 import { DeleteOutlined, SaveOutlined } from '@ant-design/icons'
-import { Button, Select, Space, Tooltip } from 'antd'
+import { Button, Select, Space } from 'antd'
 import { useTranslation } from 'react-i18next'
 
 import type { SavedView } from '@renderer/store/slices/views/types'
@@ -42,27 +42,23 @@ export const TaskSavedViewsControls = ({
         loading={isLoading}
         disabled={isLoading}
       />
-      <Tooltip title={t('tasks.savedViews.saveTooltip')}>
-        <Button
-          icon={<SaveOutlined />}
-          onClick={onCreate}
-          loading={isMutating}
-          disabled={isLoading || isMutating}
-        >
-          {t('tasks.savedViews.saveButton')}
-        </Button>
-      </Tooltip>
-      <Tooltip title={t('tasks.savedViews.deleteTooltip')}>
-        <Button
-          danger
-          icon={<DeleteOutlined />}
-          disabled={!selectedViewId || isMutating}
-          loading={isMutating}
-          onClick={() => selectedViewId && onDelete(selectedViewId)}
-        >
-          {t('tasks.savedViews.deleteButton')}
-        </Button>
-      </Tooltip>
+      <Button
+        icon={<SaveOutlined />}
+        onClick={onCreate}
+        loading={isMutating}
+        disabled={isLoading || isMutating}
+      >
+        {t('tasks.savedViews.saveButton')}
+      </Button>
+      <Button
+        danger
+        icon={<DeleteOutlined />}
+        disabled={!selectedViewId || isMutating}
+        loading={isMutating}
+        onClick={() => selectedViewId && onDelete(selectedViewId)}
+      >
+        {t('tasks.savedViews.deleteButton')}
+      </Button>
     </Space>
   )
 }

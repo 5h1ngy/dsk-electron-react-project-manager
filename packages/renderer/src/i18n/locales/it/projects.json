@@ -6,9 +6,7 @@
   },
   "actions": {
     "refresh": "Aggiorna",
-    "refreshHint": "Ricarica l'elenco progetti",
     "create": "Nuovo progetto",
-    "createHint": "Crea un nuovo progetto",
     "edit": "Modifica",
     "deleteTitle": "Rimuovi progetto",
     "deleteDescription": "Vuoi davvero rimuovere {{name}}?",
@@ -28,11 +26,13 @@
       "edit": "Editor",
       "view": "Viewer"
     },
-    "ownedOnly": "Creati da me"
+    "ownedOptions": {
+      "all": "Tutti i progetti",
+      "mine": "Creati da me"
+    }
   },
   "permissions": {
     "createDenied": "Solo amministratori o maintainer possono creare progetti.",
-    "createDeniedTooltip": "Non hai i permessi per creare progetti.",
     "updateDenied": "Solo amministratori o maintainer possono modificare progetti.",
     "manageMembersDenied": "Solo amministratori o maintainer possono gestire i membri.",
     "tasksCreateDenied": "Non hai i permessi per creare task in questo progetto.",
@@ -235,9 +235,7 @@
     "savedViews": {
       "placeholder": "Viste salvate",
       "saveButton": "Salva vista",
-      "saveTooltip": "Salva i filtri correnti come nuova vista",
       "deleteButton": "Elimina",
-      "deleteTooltip": "Rimuovi la vista selezionata",
       "modalTitle": "Salva vista corrente",
       "nameLabel": "Nome",
       "nameRequired": "Inserisci un nome"
@@ -330,7 +328,7 @@
         "title": "Titolo",
         "notebook": "Taccuino",
         "tags": "Tag",
-        "visibility": "Visibilit\u00e0",
+        "visibility": "VisibilitÃ ",
         "body": "Contenuto Markdown",
         "linkedTasks": "Task collegati"
       },
@@ -358,12 +356,12 @@
       "deleted": "Nota eliminata"
     },
     "validation": {
-      "title": "Il titolo \u00e8 obbligatorio",
-      "titleMax": "Il titolo pu\u00f2 contenere al massimo 160 caratteri",
-      "body": "Il contenuto \u00e8 obbligatorio",
-      "notebookMax": "Il nome del taccuino pu\u00f2 avere al massimo 80 caratteri",
-      "tag": "Il tag non pu\u00f2 essere vuoto",
-      "tagMax": "Il tag pu\u00f2 avere al massimo 40 caratteri",
+      "title": "Il titolo Ã¨ obbligatorio",
+      "titleMax": "Il titolo puÃ² contenere al massimo 160 caratteri",
+      "body": "Il contenuto Ã¨ obbligatorio",
+      "notebookMax": "Il nome del taccuino puÃ² avere al massimo 80 caratteri",
+      "tag": "Il tag non puÃ² essere vuoto",
+      "tagMax": "Il tag puÃ² avere al massimo 40 caratteri",
       "tooManyTags": "Massimo 20 tag per nota",
       "tooManyLinks": "Massimo 20 task collegati"
     },

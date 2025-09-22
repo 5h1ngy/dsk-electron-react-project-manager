@@ -1,6 +1,13 @@
 import { useMemo, type JSX } from 'react'
-import { AppstoreOutlined, PlusOutlined, ReloadOutlined, TableOutlined } from '@ant-design/icons'
-import { Button, DatePicker, Input, Segmented, Select, Space, Switch, Tooltip, Typography } from 'antd'
+import {
+  AppstoreOutlined,
+  PlusOutlined,
+  ReloadOutlined,
+  TableOutlined,
+  TeamOutlined,
+  UserOutlined
+} from '@ant-design/icons'
+import { Button, DatePicker, Input, Segmented, Select, Space, Typography } from 'antd'
 import type { ChangeEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import dayjs, { type Dayjs } from 'dayjs'
@@ -60,10 +67,7 @@ export const ProjectsActionBar = ({
       return null
     }
     const [start, end] = createdBetween
-    return [
-      start ? dayjs(start) : null,
-      end ? dayjs(end) : null
-    ]
+    return [start ? dayjs(start) : null, end ? dayjs(end) : null]
   }, [createdBetween])
 
   const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -103,10 +107,7 @@ export const ProjectsActionBar = ({
               value={rangeValue}
               onChange={(dates) => handleRangeChange(dates as [Dayjs | null, Dayjs | null] | null)}
               style={{ minWidth: 260 }}
-              placeholder={[
-                t('filters.createdRange.start'),
-                t('filters.createdRange.end')
-              ]}
+              placeholder={[t('filters.createdRange.start'), t('filters.createdRange.end')]}
             />
             <Select
               mode="multiple"
@@ -128,10 +129,35 @@ export const ProjectsActionBar = ({
                 { value: 'view', label: t('filters.roleOptions.view') }
               ]}
             />
-            <Space align="center">
-              <Switch checked={ownedOnly} onChange={(checked) => onOwnedOnlyChange(checked)} />
-              <Typography.Text>{t('filters.ownedOnly')}</Typography.Text>
-            </Space>
+            <Segmented
+              size="large"
+              value={ownedOnly ? 'owned' : 'all'}
+              onChange={(next) => onOwnedOnlyChange(next === 'owned')}
+              options={[
+                {
+                  label: (
+                    <Space size={6}>
+                      <TeamOutlined />
+                      <Typography.Text type="secondary">
+                        {t('filters.ownedOptions.all')}
+                      </Typography.Text>
+                    </Space>
+                  ),
+                  value: 'all'
+                },
+                {
+                  label: (
+                    <Space size={6}>
+                      <UserOutlined />
+                      <Typography.Text type="secondary">
+                        {t('filters.ownedOptions.mine')}
+                      </Typography.Text>
+                    </Space>
+                  ),
+                  value: 'owned'
+                }
+              ]}
+            />
           </Space>
         </Space>
       </BorderedPanel>
@@ -146,7 +172,9 @@ export const ProjectsActionBar = ({
                 label: (
                   <Space size={6}>
                     <TableOutlined />
-                    <Typography.Text type="secondary">{t('viewSwitcher.table')}</Typography.Text>
+                    <Typography.Text type="secondary">
+                      {t('viewSwitcher.table')}
+                    </Typography.Text>
                   </Space>
                 ),
                 value: 'table'
@@ -155,7 +183,9 @@ export const ProjectsActionBar = ({
                 label: (
                   <Space size={6}>
                     <AppstoreOutlined />
-                    <Typography.Text type="secondary">{t('viewSwitcher.cards')}</Typography.Text>
+                    <Typography.Text type="secondary">
+                      {t('viewSwitcher.cards')}
+                    </Typography.Text>
                   </Space>
                 ),
                 value: 'cards'
@@ -163,36 +193,21 @@ export const ProjectsActionBar = ({
             ]}
           />
           <Space size="small" wrap>
-            <Tooltip title={t('actions.refreshHint')}>
-              <Button
-                icon={<ReloadOutlined />}
-                onClick={onRefresh}
-                loading={isRefreshing}
-                aria-label={t('actions.refresh')}
-              />
-            </Tooltip>
-            <Tooltip
-              title={
-                canCreate
-                  ? t('actions.createHint')
-                  : t('permissions.createDeniedTooltip')
-              }
+            <Button icon={<ReloadOutlined />} onClick={onRefresh} loading={isRefreshing}>
+              {t('actions.refresh')}
+            </Button>
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={onCreate}
+              loading={isCreating}
+              disabled={!canCreate}
             >
-              <Button
-                type="primary"
-                icon={<PlusOutlined />}
-                onClick={onCreate}
-                loading={isCreating}
-                disabled={!canCreate}
-              >
-                {t('actions.create')}
-              </Button>
-            </Tooltip>
+              {t('actions.create')}
+            </Button>
           </Space>
         </Space>
       </BorderedPanel>
     </Space>
   )
 }
-
-

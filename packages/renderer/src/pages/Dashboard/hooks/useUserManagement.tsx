@@ -1,6 +1,6 @@
 import { JSX, useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Button, Popconfirm, Space, Tag, Tooltip, message } from 'antd'
+import { Button, Popconfirm, Space, Tag, message } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons'
 
@@ -201,16 +201,16 @@ export const useUserManagement = (): UserManagementState => {
         key: 'actions',
         render: (_value: unknown, record: UserDTO) => (
           <Space size={4}>
-            <Tooltip title={t('dashboard:actions.edit')}>
-              <Button
-                type="text"
-                icon={<EditOutlined />}
-                onClick={(event) => {
-                  event.stopPropagation()
-                  openEditModal(record)
-                }}
-              />
-            </Tooltip>
+            <Button
+              type="text"
+              icon={<EditOutlined />}
+              onClick={(event) => {
+                event.stopPropagation()
+                openEditModal(record)
+              }}
+            >
+              {t('dashboard:actions.edit')}
+            </Button>
             <Popconfirm
               title={t('dashboard:actions.deleteTitle')}
               description={t('dashboard:actions.deleteDescription', { username: record.username })}
@@ -223,7 +223,9 @@ export const useUserManagement = (): UserManagementState => {
                 danger
                 icon={<DeleteOutlined />}
                 onClick={(event) => event.stopPropagation()}
-              />
+              >
+                {t('dashboard:actions.delete')}
+              </Button>
             </Popconfirm>
           </Space>
         )

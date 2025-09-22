@@ -12,7 +12,6 @@ import {
   Skeleton,
   Space,
   Tag,
-  Tooltip,
   Typography,
   message,
   theme
@@ -317,7 +316,14 @@ export const TaskDetailsModal = ({
   }
 
   return (
-    <Modal open={open} onCancel={onClose} footer={null} width={640} destroyOnHidden>
+    <Modal
+      open={open}
+      onCancel={onClose}
+      footer={null}
+      width="80vw"
+      destroyOnHidden
+      styles={{ body: { maxHeight: '70vh', overflowY: 'auto' } }}
+    >
       {loading ? (
         <Skeleton active title paragraph={{ rows: 5 }} />
       ) : task ? (
@@ -554,9 +560,13 @@ export const TaskDetailsModal = ({
                       {note.title}
                     </Button>
                     {note.isPrivate ? (
-                      <Tooltip title={t('notes.labels.private')}>
-                        <LockOutlined style={{ color: badgeTokens.noteVisibility.private.color }} />
-                      </Tooltip>
+                      <Tag
+                        bordered={false}
+                        icon={<LockOutlined />}
+                        style={buildBadgeStyle(badgeTokens.noteVisibility.private)}
+                      >
+                        {t('notes.labels.private')}
+                      </Tag>
                     ) : null}
                   </Space>
                 ))}
