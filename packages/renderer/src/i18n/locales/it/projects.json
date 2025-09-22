@@ -302,6 +302,10 @@
     "title": "Note del progetto",
     "filters": {
       "includePrivate": "Includi note private",
+      "includePrivateOptions": {
+        "public": "Solo note pubbliche",
+        "private": "Includi note private"
+      },
       "notebook": "Taccuino",
       "tag": "Tag"
     },

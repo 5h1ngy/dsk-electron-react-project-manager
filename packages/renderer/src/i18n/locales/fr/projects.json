@@ -302,6 +302,10 @@
     "title": "Notes du projet",
     "filters": {
       "includePrivate": "Inclure les notes privees",
+      "includePrivateOptions": {
+        "public": "Notes publiques uniquement",
+        "private": "Inclure les notes privees"
+      },
       "notebook": "Carnet",
       "tag": "Tag"
     },

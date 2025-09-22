@@ -304,6 +304,10 @@
     "title": "Projektnotizen",
     "filters": {
       "includePrivate": "Private Notizen anzeigen",
+      "includePrivateOptions": {
+        "public": "Nur oeffentliche Notizen",
+        "private": "Private Notizen einschliessen"
+      },
       "notebook": "Notizbuch",
       "tag": "Tag"
     },

@@ -302,6 +302,10 @@
     "title": "Project notes",
     "filters": {
       "includePrivate": "Include private notes",
+      "includePrivateOptions": {
+        "public": "Public only",
+        "private": "Include private notes"
+      },
       "notebook": "Notebook",
       "tag": "Tag"
     },
