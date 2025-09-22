@@ -316,7 +316,14 @@ export const TaskDetailsModal = ({
   }
 
   return (
-    <Modal open={open} onCancel={onClose} footer={null} width={640} destroyOnHidden>
+    <Modal
+      open={open}
+      onCancel={onClose}
+      footer={null}
+      width="80vw"
+      destroyOnHidden
+      styles={{ body: { maxHeight: '70vh', overflowY: 'auto' } }}
+    >
       {loading ? (
         <Skeleton active title paragraph={{ rows: 5 }} />
       ) : task ? (
