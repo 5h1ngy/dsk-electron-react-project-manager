@@ -124,8 +124,7 @@
       "dueDateRange": {
         "start": "Faellig ab",
         "end": "Faellig bis"
-      },
-      "showComments": "Kommentarzaehler anzeigen"
+      }
     },
     "noAssignee": "Nicht zugewiesen",
     "noDueDate": "Kein Faelligkeitsdatum",
@@ -233,6 +232,9 @@
   "tasks": {
     "columns": {
       "actions": "Aktionen"
+    },
+    "optionalColumns": {
+      "label": "Optionale Felder"
     },
     "savedViews": {
       "placeholder": "Gespeicherte Ansichten",

@@ -12,8 +12,7 @@ const baseView = () => ({
     status: 'all' as const,
     priority: 'all' as const,
     assignee: 'all' as const,
-    dueDateRange: null,
-    showCommentColumn: false
+    dueDateRange: null
   },
   sort: null,
   columns: ['key', 'title'] as ('key' | 'title' | 'status' | 'priority' | 'assignee' | 'dueDate' | 'commentCount')[],

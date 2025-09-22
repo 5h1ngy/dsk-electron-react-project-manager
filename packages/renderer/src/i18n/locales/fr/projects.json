@@ -124,8 +124,7 @@
       "dueDateRange": {
         "start": "Echeance a partir du",
         "end": "Echeance jusqu'au"
-      },
-      "showComments": "Afficher le compteur de commentaires"
+      }
     },
     "noAssignee": "Non assigne",
     "noDueDate": "Pas de date d'echeance",
@@ -231,6 +230,9 @@
   "tasks": {
     "columns": {
       "actions": "Actions"
+    },
+    "optionalColumns": {
+      "label": "Champs optionnels"
     },
     "savedViews": {
       "placeholder": "Vues enregistrÃƒÂ©es",

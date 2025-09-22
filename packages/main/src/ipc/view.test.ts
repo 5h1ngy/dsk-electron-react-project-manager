@@ -28,8 +28,7 @@ const baseView = (): SavedViewDTO => ({
     status: 'in_progress',
     priority: 'all',
     assignee: 'all',
-    dueDateRange: null,
-    showCommentColumn: false
+    dueDateRange: null
   },
   sort: {
     field: 'dueDate',
@@ -110,4 +109,3 @@ describe('ViewIpcRegistrar', () => {
     expect(response).toEqual({ ok: false, code: 'ERR_INTERNAL', message: 'boom' })
   })
 })
-

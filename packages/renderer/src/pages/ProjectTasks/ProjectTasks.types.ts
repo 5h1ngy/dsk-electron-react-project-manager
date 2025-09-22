@@ -13,5 +13,4 @@ export interface TaskFilters {
   priority: 'all' | TaskDetails['priority']
   assignee: 'all' | 'unassigned' | string
   dueDateRange: [string | null, string | null] | null
-  showCommentColumn: boolean
 }

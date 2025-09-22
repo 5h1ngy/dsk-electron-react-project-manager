@@ -8,6 +8,9 @@ import { useSemanticBadges, buildBadgeStyle } from '@renderer/theme/hooks/useSem
 import { EmptyState, LoadingSkeleton } from '@renderer/components/DataStates'
 import { useDelayedLoading } from '@renderer/hooks/useDelayedLoading'
 import type { TaskDetails } from '@renderer/store/slices/tasks'
+import { VIEW_COLUMN_VALUES } from '@main/services/view/schemas'
+
+type TaskTableColumn = (typeof VIEW_COLUMN_VALUES)[number]
 
 export interface ProjectTasksTableProps {
   tasks: TaskDetails[]
@@ -18,7 +21,7 @@ export interface ProjectTasksTableProps {
   canManage: boolean
   deletingTaskId?: string | null
   pagination?: TablePaginationConfig | false
-  showCommentColumn?: boolean
+  columns?: ReadonlyArray<TaskTableColumn>
 }
 
 export const ProjectTasksTable = ({
@@ -30,22 +33,22 @@ export const ProjectTasksTable = ({
   canManage,
   deletingTaskId,
   pagination,
-  showCommentColumn = false
+  columns = VIEW_COLUMN_VALUES
 }: ProjectTasksTableProps) => {
   const { t, i18n } = useTranslation('projects')
   const showSkeleton = useDelayedLoading(loading)
   const badgeTokens = useSemanticBadges()
   const { token } = theme.useToken()
 
-  const columns: ColumnsType<TaskDetails> = [
-    {
+  const columnConfig: Record<TaskTableColumn, ColumnsType<TaskDetails>[number]> = {
+    key: {
       title: t('details.tasksColumns.key'),
       dataIndex: 'key',
       key: 'key',
       width: 120,
       render: (value: string) => <Typography.Text strong>{value}</Typography.Text>
     },
-    {
+    title: {
       title: t('details.tasksColumns.title'),
       dataIndex: 'title',
       key: 'title',
@@ -68,7 +71,7 @@ export const ProjectTasksTable = ({
         </Space>
       )
     },
-    {
+    status: {
       title: t('details.tasksColumns.status'),
       dataIndex: 'status',
       key: 'status',
@@ -79,7 +82,7 @@ export const ProjectTasksTable = ({
         </Tag>
       )
     },
-    {
+    priority: {
       title: t('details.tasksColumns.priority'),
       dataIndex: 'priority',
       key: 'priority',
@@ -90,14 +93,14 @@ export const ProjectTasksTable = ({
         </Tag>
       )
     },
-    {
+    assignee: {
       title: t('details.tasksColumns.assignee'),
       dataIndex: ['assignee', 'displayName'],
       key: 'assignee',
       width: 180,
       render: (_value: string, record) => record.assignee?.displayName ?? t('details.noAssignee')
     },
-    {
+    dueDate: {
       title: t('details.tasksColumns.dueDate'),
       dataIndex: 'dueDate',
       key: 'dueDate',
@@ -111,48 +114,7 @@ export const ProjectTasksTable = ({
             }).format(new Date(value))
           : t('details.noDueDate')
     },
-    {
-      title: canManage ? t('tasks.columns.actions') : undefined,
-      key: 'actions',
-      width: canManage ? 120 : 0,
-        render: (_value: unknown, record: TaskDetails) =>
-        canManage ? (
-          <Space size={4}>
-            <Button
-              type="text"
-              icon={<EditOutlined />}
-              onClick={(event) => {
-                event.stopPropagation()
-                onEdit(record)
-              }}
-            >
-              {t('tasks.actions.edit')}
-            </Button>
-            <Popconfirm
-              title={t('tasks.actions.deleteTitle')}
-              description={t('tasks.actions.deleteDescription', { title: record.title })}
-              okText={t('tasks.actions.deleteConfirm')}
-              cancelText={t('tasks.actions.cancel')}
-              onConfirm={async () => await onDelete(record)}
-              okButtonProps={{ loading: deletingTaskId === record.id }}
-            >
-              <Button
-                type="text"
-                danger
-                icon={<DeleteOutlined />}
-                loading={deletingTaskId === record.id}
-                onClick={(event) => event.stopPropagation()}
-              >
-                {t('tasks.actions.delete')}
-              </Button>
-            </Popconfirm>
-          </Space>
-        ) : null
-    }
-  ]
-
-  if (showCommentColumn) {
-    columns.splice(4, 0, {
+    commentCount: {
       title: t('details.tasksColumns.comments'),
       dataIndex: 'commentCount',
       key: 'commentCount',
@@ -166,8 +128,51 @@ export const ProjectTasksTable = ({
           {record.commentCount ?? 0}
         </Tag>
       )
-    })
+    }
   }
+
+  const resolvedColumns: ColumnsType<TaskDetails> = columns
+    .map((column) => columnConfig[column])
+    .filter((column): column is ColumnsType<TaskDetails>[number] => Boolean(column))
+
+  resolvedColumns.push({
+    title: canManage ? t('tasks.columns.actions') : undefined,
+    key: 'actions',
+    width: canManage ? 120 : 0,
+    render: (_value: unknown, record: TaskDetails) =>
+      canManage ? (
+        <Space size={4}>
+          <Button
+            type="text"
+            icon={<EditOutlined />}
+            onClick={(event) => {
+              event.stopPropagation()
+              onEdit(record)
+            }}
+          >
+            {t('tasks.actions.edit')}
+          </Button>
+          <Popconfirm
+            title={t('tasks.actions.deleteTitle')}
+            description={t('tasks.actions.deleteDescription', { title: record.title })}
+            okText={t('tasks.actions.deleteConfirm')}
+            cancelText={t('tasks.actions.cancel')}
+            onConfirm={async () => await onDelete(record)}
+            okButtonProps={{ loading: deletingTaskId === record.id }}
+          >
+            <Button
+              type="text"
+              danger
+              icon={<DeleteOutlined />}
+              loading={deletingTaskId === record.id}
+              onClick={(event) => event.stopPropagation()}
+            >
+              {t('tasks.actions.delete')}
+            </Button>
+          </Popconfirm>
+        </Space>
+      ) : null
+  })
 
   if (showSkeleton) {
     return <LoadingSkeleton variant="table" />
@@ -176,7 +181,7 @@ export const ProjectTasksTable = ({
   return (
     <Table<TaskDetails>
       rowKey="id"
-      columns={columns}
+      columns={resolvedColumns}
       dataSource={tasks}
       pagination={pagination}
       size="middle"

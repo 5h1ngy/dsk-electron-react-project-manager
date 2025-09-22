@@ -124,8 +124,7 @@
       "dueDateRange": {
         "start": "Scadenza da",
         "end": "Scadenza a"
-      },
-      "showComments": "Mostra contatore commenti"
+      }
     },
     "noAssignee": "Non assegnato",
     "noDueDate": "Nessuna scadenza",
@@ -231,6 +230,9 @@
   "tasks": {
     "columns": {
       "actions": "Azioni"
+    },
+    "optionalColumns": {
+      "label": "Campi opzionali"
     },
     "savedViews": {
       "placeholder": "Viste salvate",
