@@ -1,4 +1,4 @@
-import { Button, Popconfirm, Space, Table, Tag, Tooltip, Typography, theme } from 'antd'
+import { Button, Popconfirm, Space, Table, Tag, Typography, theme } from 'antd'
 import type { ColumnsType, TablePaginationConfig } from 'antd/es/table'
 import { useTranslation } from 'react-i18next'
 import { DeleteOutlined, EditOutlined, MessageOutlined } from '@ant-design/icons'
@@ -115,19 +115,19 @@ export const ProjectTasksTable = ({
       title: canManage ? t('tasks.columns.actions') : undefined,
       key: 'actions',
       width: canManage ? 120 : 0,
-      render: (_value: unknown, record: TaskDetails) =>
+        render: (_value: unknown, record: TaskDetails) =>
         canManage ? (
           <Space size={4}>
-            <Tooltip title={t('tasks.actions.edit')}>
-              <Button
-                type="text"
-                icon={<EditOutlined />}
-                onClick={(event) => {
-                  event.stopPropagation()
-                  onEdit(record)
-                }}
-              />
-            </Tooltip>
+            <Button
+              type="text"
+              icon={<EditOutlined />}
+              onClick={(event) => {
+                event.stopPropagation()
+                onEdit(record)
+              }}
+            >
+              {t('tasks.actions.edit')}
+            </Button>
             <Popconfirm
               title={t('tasks.actions.deleteTitle')}
               description={t('tasks.actions.deleteDescription', { title: record.title })}
@@ -142,7 +142,9 @@ export const ProjectTasksTable = ({
                 icon={<DeleteOutlined />}
                 loading={deletingTaskId === record.id}
                 onClick={(event) => event.stopPropagation()}
-              />
+              >
+                {t('tasks.actions.delete')}
+              </Button>
             </Popconfirm>
           </Space>
         ) : null

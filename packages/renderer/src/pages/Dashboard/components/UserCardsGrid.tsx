@@ -7,7 +7,6 @@ import {
   Row,
   Space,
   Tag,
-  Tooltip,
   Typography,
   theme
 } from 'antd'
@@ -83,16 +82,16 @@ export const UserCardsGrid = ({
               bodyStyle={CARD_BODY_STYLE}
               extra={
                 <Space size={4}>
-                  <Tooltip title={t('actions.edit')}>
-                    <Button
-                      type="text"
-                      icon={<EditOutlined />}
-                      onClick={(event) => {
-                        event.stopPropagation()
-                        onEdit(user)
-                      }}
-                    />
-                  </Tooltip>
+                  <Button
+                    type="text"
+                    icon={<EditOutlined />}
+                    onClick={(event) => {
+                      event.stopPropagation()
+                      onEdit(user)
+                    }}
+                  >
+                    {t('actions.edit')}
+                  </Button>
                   <Popconfirm
                     title={t('actions.deleteTitle')}
                     description={t('actions.deleteDescription', { username: user.username })}
@@ -105,7 +104,9 @@ export const UserCardsGrid = ({
                       danger
                       icon={<DeleteOutlined />}
                       onClick={(event) => event.stopPropagation()}
-                    />
+                    >
+                      {t('actions.delete')}
+                    </Button>
                   </Popconfirm>
                 </Space>
               }

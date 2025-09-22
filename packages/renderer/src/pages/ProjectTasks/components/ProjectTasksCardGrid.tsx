@@ -14,7 +14,6 @@ import {
   Row,
   Space,
   Tag,
-  Tooltip,
   Typography,
   theme
 } from 'antd'
@@ -103,16 +102,16 @@ export const ProjectTasksCardGrid = ({
               extra={
                 canManage ? (
                   <Space size={4}>
-                    <Tooltip title={t('tasks.actions.edit')}>
-                      <Button
-                        type="text"
-                        icon={<EditOutlined />}
-                        onClick={(event) => {
-                          event.stopPropagation()
-                          onEdit(task)
-                        }}
-                      />
-                    </Tooltip>
+                    <Button
+                      type="text"
+                      icon={<EditOutlined />}
+                      onClick={(event) => {
+                        event.stopPropagation()
+                        onEdit(task)
+                      }}
+                    >
+                      {t('tasks.actions.edit')}
+                    </Button>
                     <Popconfirm
                       title={t('tasks.actions.deleteTitle')}
                       description={t('tasks.actions.deleteDescription', { title: task.title })}
@@ -127,7 +126,9 @@ export const ProjectTasksCardGrid = ({
                         icon={<DeleteOutlined />}
                         loading={deletingTaskId === task.id}
                         onClick={(event) => event.stopPropagation()}
-                      />
+                      >
+                        {t('tasks.actions.delete')}
+                      </Button>
                     </Popconfirm>
                   </Space>
                 ) : undefined

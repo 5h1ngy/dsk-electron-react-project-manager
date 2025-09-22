@@ -14,10 +14,8 @@ import {
   Space,
   Switch,
   Tag,
-  Tooltip,
   Typography,
-  message,
-  theme
+  message
 } from 'antd'
 import {
   DeleteOutlined,
@@ -172,7 +170,6 @@ const ProjectNotesPage = (): ReactElement => {
   } = useProjectRouteContext()
   const dispatch = useAppDispatch()
   const { t } = useTranslation('projects')
-  const { token } = theme.useToken()
   const [messageApi, contextHolder] = message.useMessage()
 
   const [includePrivate, setIncludePrivate] = useState(false)
@@ -392,13 +389,23 @@ const ProjectNotesPage = (): ReactElement => {
           <List.Item
             key={note.id}
             actions={[
-              <Tooltip title={t('notes.actions.view')} key="view">
-                <Button type="text" icon={<FileMarkdownOutlined />} onClick={() => handleViewerOpen(note.id)} />
-              </Tooltip>,
+              <Button
+                key="view"
+                type="text"
+                icon={<FileMarkdownOutlined />}
+                onClick={() => handleViewerOpen(note.id)}
+              >
+                {t('notes.actions.view')}
+              </Button>,
               canManageNotes ? (
-                <Tooltip title={t('notes.actions.edit')} key="edit">
-                  <Button type="text" icon={<EditOutlined />} onClick={() => handleEditNote(note)} />
-                </Tooltip>
+                <Button
+                  key="edit"
+                  type="text"
+                  icon={<EditOutlined />}
+                  onClick={() => handleEditNote(note)}
+                >
+                  {t('notes.actions.edit')}
+                </Button>
               ) : null
             ].filter(Boolean)}
           >
@@ -407,13 +414,13 @@ const ProjectNotesPage = (): ReactElement => {
                 <Space size={8}>
                   <Typography.Link onClick={() => handleViewerOpen(note.id)}>{note.title}</Typography.Link>
                   {note.isPrivate ? (
-                    <Tooltip title={t('notes.labels.private')}>
-                      <LockOutlined style={{ color: token.colorWarning }} />
-                    </Tooltip>
+                    <Tag icon={<LockOutlined />} color="orange">
+                      {t('notes.labels.private')}
+                    </Tag>
                   ) : (
-                    <Tooltip title={t('notes.labels.public')}>
-                      <UnlockOutlined style={{ color: token.colorSuccess }} />
-                    </Tooltip>
+                    <Tag icon={<UnlockOutlined />} color="success">
+                      {t('notes.labels.public')}
+                    </Tag>
                   )}
                 </Space>
               }

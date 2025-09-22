@@ -1,5 +1,5 @@
 import { useMemo, type JSX } from 'react'
-import { Input, Segmented, Select, Space, Tooltip } from 'antd'
+import { Input, Segmented, Select, Space, Typography } from 'antd'
 import { SearchOutlined, UserSwitchOutlined } from '@ant-design/icons'
 import type { SegmentedValue } from 'antd/es/segmented'
 import { useTranslation } from 'react-i18next'
@@ -42,7 +42,10 @@ export const UserFilters = ({
           size="large"
         />
         <Space size="middle" wrap align="center">
-          <Tooltip title={t('filters.users.statusTooltip')}>
+          <Space direction="vertical" size={4}>
+            <Typography.Text type="secondary">
+              {t('filters.users.statusLabel')}
+            </Typography.Text>
             <Segmented
               size="large"
               value={segmentedValue}
@@ -53,7 +56,7 @@ export const UserFilters = ({
                 { label: t('filters.users.status.inactive'), value: 'inactive' }
               ]}
             />
-          </Tooltip>
+          </Space>
           <Select<RoleName | 'all'>
             allowClear={false}
             size="large"

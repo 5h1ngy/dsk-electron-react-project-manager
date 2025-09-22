@@ -12,7 +12,6 @@ import {
   Skeleton,
   Space,
   Tag,
-  Tooltip,
   Typography,
   message,
   theme
@@ -554,9 +553,13 @@ export const TaskDetailsModal = ({
                       {note.title}
                     </Button>
                     {note.isPrivate ? (
-                      <Tooltip title={t('notes.labels.private')}>
-                        <LockOutlined style={{ color: badgeTokens.noteVisibility.private.color }} />
-                      </Tooltip>
+                      <Tag
+                        bordered={false}
+                        icon={<LockOutlined />}
+                        style={buildBadgeStyle(badgeTokens.noteVisibility.private)}
+                      >
+                        {t('notes.labels.private')}
+                      </Tag>
                     ) : null}
                   </Space>
                 ))}

@@ -1,6 +1,6 @@
 import { useMemo, type JSX } from 'react'
 import { AppstoreOutlined, PlusOutlined, ReloadOutlined, TableOutlined } from '@ant-design/icons'
-import { Button, DatePicker, Input, Segmented, Select, Space, Switch, Tooltip, Typography } from 'antd'
+import { Button, DatePicker, Input, Segmented, Select, Space, Switch, Typography } from 'antd'
 import type { ChangeEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import dayjs, { type Dayjs } from 'dayjs'
@@ -163,31 +163,22 @@ export const ProjectsActionBar = ({
             ]}
           />
           <Space size="small" wrap>
-            <Tooltip title={t('actions.refreshHint')}>
-              <Button
-                icon={<ReloadOutlined />}
-                onClick={onRefresh}
-                loading={isRefreshing}
-                aria-label={t('actions.refresh')}
-              />
-            </Tooltip>
-            <Tooltip
-              title={
-                canCreate
-                  ? t('actions.createHint')
-                  : t('permissions.createDeniedTooltip')
-              }
+            <Button
+              icon={<ReloadOutlined />}
+              onClick={onRefresh}
+              loading={isRefreshing}
             >
-              <Button
-                type="primary"
-                icon={<PlusOutlined />}
-                onClick={onCreate}
-                loading={isCreating}
-                disabled={!canCreate}
-              >
-                {t('actions.create')}
-              </Button>
-            </Tooltip>
+              {t('actions.refresh')}
+            </Button>
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={onCreate}
+              loading={isCreating}
+              disabled={!canCreate}
+            >
+              {t('actions.create')}
+            </Button>
           </Space>
         </Space>
       </BorderedPanel>
