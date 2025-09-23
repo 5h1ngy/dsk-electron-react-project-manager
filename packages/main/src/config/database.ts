@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto'
 import { mkdirSync } from 'node:fs'
 import { dirname } from 'node:path'
+import { fn, col } from 'sequelize'
 import { Sequelize } from 'sequelize-typescript'
 import { SystemSetting } from '@main/models/SystemSetting'
 import { Role } from '@main/models/Role'
@@ -11,11 +12,13 @@ import { Project } from '@main/models/Project'
 import { ProjectMember } from '@main/models/ProjectMember'
 import { ProjectTag } from '@main/models/ProjectTag'
 import { Task } from '@main/models/Task'
+import { TaskStatus } from '@main/models/TaskStatus'
 import { Comment } from '@main/models/Comment'
 import { Note } from '@main/models/Note'
 import { NoteTag } from '@main/models/NoteTag'
 import { NoteTaskLink } from '@main/models/NoteTaskLink'
 import { View } from '@main/models/View'
+import { DEFAULT_TASK_STATUSES } from '@main/services/taskStatus/defaults'
 import type { DatabaseInitializationOptions } from '@main/config/database.types'
 import { logger } from '@main/config/logger'
 import { ROLE_NAMES } from '@main/services/auth/constants'
@@ -75,6 +78,7 @@ export class DatabaseManager {
     ProjectMember,
     ProjectTag,
     Task,
+    TaskStatus,
     Comment,
     Note,
     NoteTag,
@@ -85,8 +89,110 @@ export class DatabaseManager {
   private async ensureCoreData(sequelize: Sequelize): Promise<void> {
     await this.ensureRoles()
     await this.ensureAdminUser()
+    await this.ensureTaskStatuses()
     await this.ensureTaskFtsInfrastructure(sequelize)
     await this.ensureNoteFtsInfrastructure(sequelize)
+  }
+
+  private async ensureTaskStatuses(): Promise<void> {
+    const projects = await Project.findAll({ attributes: ['id'] })
+    if (!projects.length) {
+      return
+    }
+
+    const defaultStatuses = DEFAULT_TASK_STATUSES
+
+    for (const project of projects) {
+      const existingStatuses = await TaskStatus.findAll({
+        where: { projectId: project.id },
+        order: [['position', 'ASC']]
+      })
+
+      if (existingStatuses.length === 0) {
+        const distinctTaskStatuses = await Task.findAll({
+          attributes: [[fn('DISTINCT', col('status')), 'status']],
+          where: { projectId: project.id },
+          raw: true
+        }) as Array<{ status: string | null }>
+
+        const existingKeys = new Set(
+          distinctTaskStatuses
+            .map((row) => row.status)
+            .filter((status): status is string => Boolean(status))
+        )
+
+        const definitions: Array<{ key: string; label: string }> = []
+        for (const status of defaultStatuses) {
+          definitions.push(status)
+          existingKeys.delete(status.key)
+        }
+        for (const key of existingKeys) {
+          const label = key
+            .replace(/[_-]+/g, ' ')
+            .replace(/\b\w/g, (match) => match.toUpperCase())
+          definitions.push({ key, label })
+        }
+
+        await TaskStatus.bulkCreate(
+          definitions.map((definition, index) => ({
+            id: randomUUID(),
+            projectId: project.id,
+            key: definition.key,
+            label: definition.label,
+            position: index + 1
+          }))
+        )
+        continue
+      }
+
+      const existingKeySet = new Set(existingStatuses.map((status) => status.key))
+      const maxPosition =
+        existingStatuses.reduce((max, status) => Math.max(max, status.position), 0) || 0
+
+      const distinctTaskStatuses = await Task.findAll({
+        attributes: [[fn('DISTINCT', col('status')), 'status']],
+        where: { projectId: project.id },
+        raw: true
+      }) as Array<{ status: string | null }>
+
+      const missingTaskStatuses = distinctTaskStatuses.filter((row): row is { status: string } => {
+        if (typeof row.status !== 'string' || row.status.length === 0) {
+          return false
+        }
+        return !existingKeySet.has(row.status)
+      })
+
+      const newStatuses: Array<{ key: string; label: string; position: number }> = []
+      let nextPosition = maxPosition + 1
+      for (const row of missingTaskStatuses) {
+        const statusKey = row.status
+        if (!statusKey || existingKeySet.has(statusKey)) {
+          continue
+        }
+        const label = statusKey
+          .replace(/[_-]+/g, ' ')
+          .replace(/\b\w/g, (match) => match.toUpperCase())
+        newStatuses.push({
+          key: statusKey,
+          label,
+          position: nextPosition
+        })
+        existingKeySet.add(statusKey)
+        nextPosition += 1
+      }
+
+      if (newStatuses.length > 0) {
+        await TaskStatus.bulkCreate(
+          newStatuses.map((definition) => ({
+            id: randomUUID(),
+            projectId: project.id,
+            key: definition.key,
+            label: definition.label,
+            position: definition.position
+          }))
+        )
+      }
+    }
   }
 
   private async ensureRoles(): Promise<void> {

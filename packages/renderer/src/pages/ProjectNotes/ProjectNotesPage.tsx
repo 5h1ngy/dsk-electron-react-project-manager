@@ -8,6 +8,7 @@ import {
   Input,
   List,
   Modal,
+  Switch,
   Popconfirm,
   Select,
   Skeleton,
@@ -327,29 +328,25 @@ const ProjectNotesPage = (): ReactElement => {
   const tags = useMemo(() => buildTagOptions(notes), [notes])
   const noteLoading = notesStatus === 'loading'
   const includePrivateOptions = useMemo(
-    () => [
-      {
-        label: (
-          <Space size={6}>
-            <UnlockOutlined />
-            <Typography.Text type="secondary">
-              {t('notes.filters.includePrivateOptions.public')}
-            </Typography.Text>
-          </Space>
-        ),
-        value: 'public'
-      },
-      {
-        label: (
-          <Space size={6}>
-            <LockOutlined />
-            <Typography.Text type="secondary">
-              {t('notes.filters.includePrivateOptions.private')}
-            </Typography.Text>
-          </Space>
-        ),
-        value: 'private'
-      }
+      () => [
+        {
+          label: (
+            <Space size={6} style={{ color: 'inherit' }}>
+              <UnlockOutlined />
+              <span>{t('notes.filters.includePrivateOptions.public')}</span>
+            </Space>
+          ),
+          value: 'public'
+        },
+        {
+          label: (
+            <Space size={6} style={{ color: 'inherit' }}>
+              <LockOutlined />
+              <span>{t('notes.filters.includePrivateOptions.private')}</span>
+            </Space>
+          ),
+          value: 'private'
+        }
     ],
     [t]
   )
@@ -1070,4 +1067,5 @@ const HighlightSnippet = ({ highlight }: { highlight: string | null | undefined 
 
 export { ProjectNotesPage }
 export default ProjectNotesPage
+
 

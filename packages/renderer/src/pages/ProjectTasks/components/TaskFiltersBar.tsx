@@ -1,5 +1,5 @@
 import { useMemo, type JSX } from 'react'
-import { AppstoreOutlined, PlusOutlined, TableOutlined } from '@ant-design/icons'
+import { AppstoreOutlined, ColumnWidthOutlined, PlusOutlined, TableOutlined } from '@ant-design/icons'
 import { Button, DatePicker, Input, Segmented, Select, Space } from 'antd'
 import type { SelectProps } from 'antd'
 import type { ReactNode } from 'react'
@@ -20,8 +20,8 @@ export interface TaskFiltersBarProps {
   priorityOptions: SelectOption[]
   assigneeOptions: SelectOption[]
   onChange: (patch: Partial<TaskFilters>) => void
-  viewMode: 'table' | 'cards'
-  onViewModeChange: (mode: 'table' | 'cards') => void
+  viewMode: 'table' | 'cards' | 'board'
+  onViewModeChange: (mode: 'table' | 'cards' | 'board') => void
   onCreate?: () => void
   canCreate?: boolean
   secondaryActions?: ReactNode
@@ -53,18 +53,27 @@ export const TaskFiltersBar = ({
     () => [
       {
         label: (
-          <Space size={6}>
+          <Space size={6} style={{ color: 'inherit' }}>
             <TableOutlined />
-            {t('viewSwitcher.table')}
+            <span>{t('viewSwitcher.table')}</span>
           </Space>
         ),
         value: 'table'
       },
       {
         label: (
-          <Space size={6}>
+          <Space size={6} style={{ color: 'inherit' }}>
+            <ColumnWidthOutlined />
+            <span>{t('viewSwitcher.board')}</span>
+          </Space>
+        ),
+        value: 'board'
+      },
+      {
+        label: (
+          <Space size={6} style={{ color: 'inherit' }}>
             <AppstoreOutlined />
-            {t('viewSwitcher.cards')}
+            <span>{t('viewSwitcher.cards')}</span>
           </Space>
         ),
         value: 'cards'
@@ -153,7 +162,7 @@ export const TaskFiltersBar = ({
           <Segmented
             size="large"
             value={viewMode}
-            onChange={(next) => onViewModeChange(next as 'table' | 'cards')}
+            onChange={(next) => onViewModeChange(next as 'table' | 'cards' | 'board')}
             options={viewSegmentedOptions}
           />
           <Space size="small" wrap>

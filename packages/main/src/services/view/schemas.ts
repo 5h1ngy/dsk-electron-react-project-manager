@@ -1,6 +1,7 @@
 import { z } from 'zod'
 
-export const TASK_STATUS_VALUES = ['todo', 'in_progress', 'blocked', 'done'] as const
+import { taskStatusSchema } from '@main/services/task/schemas'
+
 export const TASK_PRIORITY_VALUES = ['low', 'medium', 'high', 'critical'] as const
 export const VIEW_COLUMN_VALUES = [
   'key',
@@ -38,7 +39,7 @@ const uniqueArray = <T>(value: T[], ctx: z.RefinementCtx) => {
 
 export const viewFilterSchema = z.object({
   searchQuery: z.string().trim().max(160),
-  status: z.union([z.literal('all'), z.enum(TASK_STATUS_VALUES)]),
+  status: z.union([z.literal('all'), taskStatusSchema]),
   priority: z.union([z.literal('all'), z.enum(TASK_PRIORITY_VALUES)]),
   assignee: z.union([z.literal('all'), z.literal('unassigned'), z.string().trim().max(64)]),
   dueDateRange: z

@@ -64,27 +64,27 @@ export const buildDarkComponents = (
   Tabs: {
     itemColor: palette.textSecondary,
     itemHoverColor: palette.textPrimary,
-    itemActiveColor: brand.onPrimary,
     inkBarColor: brand.primary,
     horizontalItemPadding: `${spacing.sm}px ${spacing.md}px`
   },
   Pagination: {
     itemBg: palette.surfaceElevated,
     itemActiveBg: brand.primary,
-    itemActiveColor: brand.onPrimary,
-    itemInputBg: palette.surfaceContainer,
+itemInputBg: palette.surfaceContainer,
     itemSize: shape.controlHeightSM
   },
   Segmented: {
     itemColor: palette.textSecondary,
     itemHoverColor: palette.textPrimary,
-    itemHoverBg: darken(brand.primary, 0.55),
-    itemSelectedBg: darken(brand.primary, 0.5),
+    itemHoverBg: darken(brand.primary, 0.45),
+    itemSelectedBg: darken(brand.primary, 0.4),
     itemSelectedColor: brand.onPrimary,
     trackBg: palette.surfaceElevated,
     trackPadding: 2
   },
   Switch: {
+    colorPrimary: brand.primary,
+    colorPrimaryHover: lighten(brand.primary, 0.1),
     handleBg: palette.surfaceElevated,
     handleShadow: '0 4px 10px rgba(2, 6, 23, 0.45)',
     handleSize: 20,
@@ -101,9 +101,10 @@ export const buildDarkComponents = (
     itemMarginBlock: spacing.xs,
     itemColor: palette.textSecondary,
     itemHoverColor: palette.textPrimary,
-    itemSelectedBg: darken(brand.primary, 0.5),
+    itemHoverBg: darken(brand.primary, 0.45),
+    itemSelectedBg: darken(brand.primary, 0.4),
     itemSelectedColor: brand.onPrimary,
-    itemActiveBg: darken(brand.primary, 0.45)
+    itemActiveBg: darken(brand.primary, 0.35)
   },
   Typography: {
     titleMarginBottom: spacing.md,
@@ -111,3 +112,5 @@ export const buildDarkComponents = (
     colorTextDescription: palette.textSecondary
   }
 })
+
+

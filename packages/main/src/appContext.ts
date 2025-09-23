@@ -8,6 +8,7 @@ import { AuditService } from '@main/services/audit'
 import { AuthService } from '@main/services/auth'
 import { ProjectService } from '@main/services/project'
 import { TaskService } from '@main/services/task'
+import { TaskStatusService } from '@main/services/taskStatus'
 import { NoteService } from '@main/services/note'
 import { ViewService } from '@main/services/view'
 
@@ -185,12 +186,14 @@ class AppContext {
   sequelize?: Sequelize
   projectService?: ProjectService
   taskService?: TaskService
+  taskStatusService?: TaskStatusService
   noteService?: NoteService
   viewService?: ViewService
 
   setDatabase(sequelize: Sequelize): void {
     this.sequelize = sequelize
     this.projectService = new ProjectService(sequelize, this.auditService)
+    this.taskStatusService = new TaskStatusService(sequelize, this.auditService)
     this.taskService = new TaskService(sequelize, this.auditService)
     this.noteService = new NoteService(sequelize, this.auditService)
     this.viewService = new ViewService(sequelize, this.auditService)

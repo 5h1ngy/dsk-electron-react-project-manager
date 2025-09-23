@@ -1,11 +1,10 @@
-import { ReloadOutlined, SearchOutlined } from '@ant-design/icons'
+import { ReloadOutlined } from '@ant-design/icons'
 import { Breadcrumb, Button, Skeleton, Space, Tabs, Typography } from 'antd'
-import { useEffect, useMemo, useState, type JSX } from 'react'
+import { useEffect, useMemo, type JSX } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Outlet, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 
 import { EmptyState } from '@renderer/components/DataStates'
-import TaskSearchDrawer from '@renderer/components/TaskSearch/TaskSearchDrawer'
 import { useDelayedLoading } from '@renderer/hooks/useDelayedLoading'
 import { useProjectDetails } from '@renderer/pages/Projects/hooks/useProjectDetails'
 import { useTaskModals } from '@renderer/pages/Projects/hooks/useTaskModals'
@@ -23,7 +22,6 @@ import type {
 } from '@renderer/pages/ProjectLayout/ProjectLayout.types'
 import { usePrimaryBreadcrumb } from '@renderer/layout/Shell/hooks/usePrimaryBreadcrumb'
 import { ShellHeaderPortal } from '@renderer/layout/Shell/ShellHeader.context'
-import type { TaskDetails } from '@renderer/store/slices/tasks'
 
 const ProjectLayout = (): JSX.Element => {
   const { projectId } = useParams<{ projectId: string }>()
@@ -36,8 +34,11 @@ const ProjectLayout = (): JSX.Element => {
     project,
     tasks,
     tasksStatus,
+    taskStatuses,
+    taskStatusesStatus,
     projectLoading,
     refresh,
+    refreshTaskStatuses,
     canManageTasks,
     notes,
     notesStatus,
@@ -46,12 +47,11 @@ const ProjectLayout = (): JSX.Element => {
     messageContext
   } = useProjectDetails(projectId)
 
-  const [isSearchOpen, setIsSearchOpen] = useState(false)
-
   const taskModals = useTaskModals({
     project: project ?? null,
     tasks,
     projectId: projectId ?? null,
+    statuses: taskStatuses,
     canManageTasks
   })
 
@@ -131,8 +131,11 @@ const ProjectLayout = (): JSX.Element => {
     project: project ?? null,
     tasks,
     tasksStatus,
+    taskStatuses,
+    taskStatusesStatus,
     projectLoading,
     refresh,
+    refreshTaskStatuses,
     canManageTasks,
     openTaskDetails: taskModals.openDetail,
     openTaskCreate: (options) => taskModals.openCreate(options),
@@ -151,9 +154,6 @@ const ProjectLayout = (): JSX.Element => {
       case 'tasks':
         navigate(`${basePath}/tasks`)
         break
-      case 'board':
-        navigate(`${basePath}/board`)
-        break
       case 'notes':
         navigate(`${basePath}/notes`)
         break
@@ -161,17 +161,6 @@ const ProjectLayout = (): JSX.Element => {
         navigate(`${basePath}`)
         break
     }
-  }
-
-  const handleSearchSelect = (task: TaskDetails) => {
-    setIsSearchOpen(false)
-    if (task.projectId !== projectId) {
-      const params = new URLSearchParams()
-      params.set('task', task.id)
-      navigate(`/projects/${task.projectId}?${params.toString()}`)
-      return
-    }
-    taskModals.openDetail(task.id)
   }
 
   return (
@@ -220,9 +209,6 @@ const ProjectLayout = (): JSX.Element => {
             >
               {t('details.refresh')}
             </Button>
-            <Button icon={<SearchOutlined />} onClick={() => setIsSearchOpen(true)}>
-              {t('search.button')}
-            </Button>
           </Space>
         </Space>
         <Tabs
@@ -244,6 +230,7 @@ const ProjectLayout = (): JSX.Element => {
           taskModals.deletingTaskId === taskModals.detailTask?.id
         }
         assigneeOptions={taskModals.assigneeOptions}
+        statusOptions={taskModals.statusOptions}
       />
       <TaskFormModal
         open={taskModals.isEditorOpen}
@@ -253,12 +240,8 @@ const ProjectLayout = (): JSX.Element => {
         form={taskModals.editorForm}
         submitting={taskModals.submitting}
         assigneeOptions={taskModals.assigneeOptions}
+        statusOptions={taskModals.statusOptions}
         taskTitle={taskModals.editorTask?.title}
-      />
-      <TaskSearchDrawer
-        open={isSearchOpen}
-        onClose={() => setIsSearchOpen(false)}
-        onSelect={handleSearchSelect}
       />
     </>
   )
@@ -268,3 +251,5 @@ ProjectLayout.displayName = 'ProjectLayout'
 
 export { ProjectLayout }
 export default ProjectLayout
+
+

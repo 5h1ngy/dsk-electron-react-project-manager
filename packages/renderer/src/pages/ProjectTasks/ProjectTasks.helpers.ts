@@ -1,14 +1,15 @@
 import type { TFunction } from 'i18next'
 
 import type { TaskDetails } from '@renderer/store/slices/tasks/types'
+import type { TaskStatusItem } from '@renderer/store/slices/taskStatuses'
 import type { SelectOption, TaskFilters } from '@renderer/pages/ProjectTasks/ProjectTasks.types'
 
-export const buildStatusOptions = (t: TFunction<'projects'>): SelectOption[] => [
+export const buildStatusOptions = (
+  t: TFunction<'projects'>,
+  statuses: TaskStatusItem[]
+): SelectOption[] => [
   { value: 'all', label: t('details.filters.statusOptions.all') },
-  { value: 'todo', label: t('details.status.todo') },
-  { value: 'in_progress', label: t('details.status.in_progress') },
-  { value: 'blocked', label: t('details.status.blocked') },
-  { value: 'done', label: t('details.status.done') }
+  ...statuses.map((status) => ({ value: status.key, label: status.label }))
 ]
 
 export const buildPriorityOptions = (t: TFunction<'projects'>): SelectOption[] => [
@@ -82,3 +83,5 @@ export const filterTasks = (tasks: TaskDetails[], filters: TaskFilters): TaskDet
     return matchesStatus && matchesPriority && matchesAssignee && matchesDueDate
   })
 }
+
+

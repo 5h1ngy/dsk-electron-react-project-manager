@@ -2,7 +2,8 @@
   "title": "Progetti",
   "viewSwitcher": {
     "table": "Vista tabella",
-    "cards": "Vista card"
+    "cards": "Vista card",
+    "board": "Vista kanban"
   },
   "actions": {
     "refresh": "Aggiorna",
@@ -232,8 +233,37 @@
       "actions": "Azioni"
     },
     "optionalColumns": {
-      "label": "Campi opzionali"
-    },
+        "label": "Campi opzionali"
+      },
+      "statusManager": {
+        "manageButton": "Gestisci stati",
+        "title": "Stati dei task",
+        "add": "Aggiungi stato",
+        "empty": "Nessuno stato configurato",
+        "messages": {
+          "created": "Stato creato",
+          "updated": "Stato aggiornato",
+          "deleted": "Stato eliminato",
+          "reordered": "Ordine aggiornato",
+          "error": "Operazione non riuscita"
+        },
+        "deleteTitle": "Rimuovi stato",
+        "deleteDescription": "Vuoi davvero rimuovere \"{{status}}\"?",
+        "deletePrompt": "La rimozione di \"{{status}}\" sposterà i task nello stato di fallback.",
+        "confirm": "Conferma",
+        "cancel": "Annulla",
+        "createTitle": "Crea stato",
+        "editTitle": "Modifica stato",
+        "fields": {
+          "label": "Etichetta",
+          "fallback": "Stato di fallback"
+        },
+        "validation": {
+          "labelRequired": "Inserisci un'etichetta",
+          "labelMax": "Massimo 80 caratteri",
+          "fallbackRequired": "Seleziona uno stato di fallback"
+        }
+      },
     "savedViews": {
       "placeholder": "Viste salvate",
       "saveButton": "Salva vista",

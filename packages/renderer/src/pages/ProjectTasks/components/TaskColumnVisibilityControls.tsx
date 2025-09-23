@@ -1,6 +1,5 @@
 import type { JSX } from 'react'
 import { Checkbox, Space, Typography } from 'antd'
-import type { CheckboxValueType } from 'antd/es/checkbox'
 import { useTranslation } from 'react-i18next'
 
 export const OPTIONAL_TASK_COLUMNS = ['commentCount'] as const
@@ -30,8 +29,8 @@ const TaskColumnVisibilityControls = ({
     return null
   }
 
-  const handleChange = (values: CheckboxValueType[]) => {
-    const selectedSet = new Set(values)
+  const handleChange = (values: Array<string | number>) => {
+    const selectedSet = new Set(values as OptionalTaskColumn[])
     const next = availableColumns.filter((column) => selectedSet.has(column))
     onChange(next)
   }
@@ -45,7 +44,7 @@ const TaskColumnVisibilityControls = ({
           label: t(LABEL_KEY_BY_COLUMN[column]),
           value: column
         }))}
-        value={selectedColumns}
+        value={selectedColumns as OptionalTaskColumn[]}
         onChange={handleChange}
       />
     </Space>

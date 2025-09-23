@@ -12,6 +12,7 @@ import { appContext, mainWindowManager, MainWindowManager } from '@main/appConte
 import { AuthIpcRegistrar } from '@main/ipc/auth'
 import { ProjectIpcRegistrar } from '@main/ipc/project'
 import { TaskIpcRegistrar } from '@main/ipc/task'
+import { TaskStatusIpcRegistrar } from '@main/ipc/taskStatus'
 import { NoteIpcRegistrar } from '@main/ipc/note'
 import { ViewIpcRegistrar } from '@main/ipc/view'
 import { HealthIpcRegistrar } from '@main/ipc/health'
@@ -212,10 +213,10 @@ class MainProcessApplication {
       registrar: this.deps.ipcRegistrar
     }).register()
 
-    const { projectService, taskService, noteService, viewService } = this.deps.context
-    if (!projectService || !taskService || !noteService || !viewService) {
+    const { projectService, taskService, taskStatusService, noteService, viewService } = this.deps.context
+    if (!projectService || !taskService || !taskStatusService || !noteService || !viewService) {
       throw new Error(
-        'Project, Task, Note and View services must be initialized before registering IPC'
+        'Project, Task, TaskStatus, Note and View services must be initialized before registering IPC'
       )
     }
 
@@ -231,6 +232,12 @@ class MainProcessApplication {
       registrar: this.deps.ipcRegistrar
     }).register()
 
+    new TaskStatusIpcRegistrar({
+      authService: this.deps.context.authService,
+      taskStatusService,
+      registrar: this.deps.ipcRegistrar
+    }).register()
+
     new NoteIpcRegistrar({
       authService: this.deps.context.authService,
       noteService,
@@ -241,7 +248,7 @@ class MainProcessApplication {
       viewService,
       registrar: this.deps.ipcRegistrar
     }).register()
-    this.deps.logger.debug('Auth, Project, Task, Note and View IPC channels registered', 'IPC')
+    this.deps.logger.debug('Auth, Project, Task, TaskStatus, Note and View IPC channels registered', 'IPC')
   }
 }
 

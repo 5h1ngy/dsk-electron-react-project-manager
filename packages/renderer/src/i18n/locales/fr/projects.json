@@ -2,7 +2,8 @@
   "title": "Projets",
   "viewSwitcher": {
     "table": "Vue tableau",
-    "cards": "Vue cartes"
+    "cards": "Vue cartes",
+    "board": "Vue kanban"
   },
   "actions": {
     "refresh": "Actualiser",
@@ -232,8 +233,37 @@
       "actions": "Actions"
     },
     "optionalColumns": {
-      "label": "Champs optionnels"
-    },
+        "label": "Champs optionnels"
+      },
+      "statusManager": {
+        "manageButton": "Gérer les statuts",
+        "title": "Statuts des tâches",
+        "add": "Ajouter un statut",
+        "empty": "Aucun statut défini",
+        "messages": {
+          "created": "Statut créé",
+          "updated": "Statut mis à jour",
+          "deleted": "Statut supprimé",
+          "reordered": "Ordre mis à jour",
+          "error": "Opération échouée"
+        },
+        "deleteTitle": "Supprimer le statut",
+        "deleteDescription": "Voulez-vous supprimer « {{status}} » ?",
+        "deletePrompt": "La suppression de « {{status}} » déplacera les tâches vers le statut de secours.",
+        "confirm": "Confirmer",
+        "cancel": "Annuler",
+        "createTitle": "Créer un statut",
+        "editTitle": "Modifier le statut",
+        "fields": {
+          "label": "Libellé",
+          "fallback": "Statut de secours"
+        },
+        "validation": {
+          "labelRequired": "Saisissez un libellé",
+          "labelMax": "80 caractères maximum",
+          "fallbackRequired": "Sélectionnez un statut de secours"
+        }
+      },
     "savedViews": {
       "placeholder": "Vues enregistrÃƒÂ©es",
       "saveButton": "Enregistrer la vue",

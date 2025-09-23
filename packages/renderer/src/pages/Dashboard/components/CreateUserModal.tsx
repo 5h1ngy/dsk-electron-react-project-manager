@@ -1,12 +1,14 @@
-import { useMemo, type JSX } from 'react'
+import { useCallback, useMemo, type JSX } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Form, Input, Modal, Select, Switch } from 'antd'
+import { Form, Input, Modal, Select, Switch, Tag, theme } from 'antd'
 import type { UseFormReturn } from 'react-hook-form'
 import { Controller } from 'react-hook-form'
+import type { SelectProps } from 'antd'
 
 import { ROLE_NAMES, type RoleName } from '@main/services/auth/constants'
 
 import type { CreateUserValues } from '@renderer/pages/Dashboard/schemas/userSchemas'
+import { useSemanticBadges, buildBadgeStyle } from '@renderer/theme/hooks/useSemanticBadges'
 
 interface CreateUserModalProps {
   open: boolean
@@ -27,6 +29,8 @@ export const CreateUserModal = ({
     register,
     formState: { errors, isSubmitting }
   } = form
+  const { token } = theme.useToken()
+  const badgeTokens = useSemanticBadges()
   const roleOptions = useMemo(
     () =>
       ROLE_NAMES.map((role): { label: string; value: RoleName } => ({
@@ -34,6 +38,33 @@ export const CreateUserModal = ({
         value: role
       })),
     [t]
+  )
+  const roleTagRender = useCallback<
+    NonNullable<SelectProps<RoleName>['tagRender']>
+  >(
+    ({ label, value, closable, onClose }) => {
+      const role = value as RoleName
+      const badge = badgeTokens.userRole[role] ?? badgeTokens.userRole.Viewer
+      return (
+        <Tag
+          closable={closable}
+          onClose={onClose}
+          onMouseDown={(event) => {
+            event.preventDefault()
+            event.stopPropagation()
+          }}
+          style={{
+            ...buildBadgeStyle(badge),
+            display: 'inline-flex',
+            alignItems: 'center',
+            marginInlineEnd: token.marginXXS
+          }}
+        >
+          {label}
+        </Tag>
+      )
+    },
+    [badgeTokens, token.marginXXS]
   )
 
   return (
@@ -45,6 +76,11 @@ export const CreateUserModal = ({
       onOk={onSubmit}
       confirmLoading={isSubmitting}
       destroyOnHidden
+      styles={{
+        body: {
+          paddingTop: token.paddingLG
+        }
+      }}
     >
       <Form layout="vertical" onFinish={() => void onSubmit()}>
         <Form.Item
@@ -88,6 +124,7 @@ export const CreateUserModal = ({
                 mode="multiple"
                 options={roleOptions}
                 placeholder={t('dashboard:modals.create.fields.rolesPlaceholder')}
+                tagRender={roleTagRender}
               />
             )}
           />

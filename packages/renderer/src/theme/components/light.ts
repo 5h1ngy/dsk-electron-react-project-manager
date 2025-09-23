@@ -38,22 +38,22 @@ export const buildLightComponents = (
     paddingInlineLG: spacing.lg
   },
   Select: {
-    optionSelectedBg: lighten(brand.primary, 0.82),
-    optionActiveBg: lighten(brand.primary, 0.9),
-    optionSelectedColor: brand.primary,
+    optionSelectedBg: lighten(brand.primary, 0.55),
+    optionActiveBg: lighten(brand.primary, 0.65),
+    optionSelectedColor: darken(brand.primary, 0.35),
     optionSelectedFontWeight: 600,
     optionPadding: `${spacing.sm}px ${spacing.md}px`
   },
   Tag: {
-    defaultBg: lighten(brand.primary, 0.6),
-    defaultColor: darken(brand.primary, 0.35)
+    defaultBg: lighten(brand.primary, 0.45),
+    defaultColor: darken(brand.primary, 0.25)
   },
   Table: {
     headerBg: lighten(palette.surfaceBase, 0.02),
     headerColor: palette.textPrimary,
-    headerSortActiveBg: lighten(brand.primary, 0.85),
-    rowHoverBg: lighten(brand.primary, 0.92),
-    rowSelectedBg: lighten(brand.primary, 0.85),
+    headerSortActiveBg: lighten(brand.primary, 0.55),
+    rowHoverBg: lighten(brand.primary, 0.65),
+    rowSelectedBg: lighten(brand.primary, 0.55),
     borderColor: palette.borderStrong,
     cellPaddingBlock: spacing.md,
     cellPaddingInline: spacing.lg
@@ -61,7 +61,6 @@ export const buildLightComponents = (
   Tabs: {
     itemColor: palette.textSecondary,
     itemHoverColor: palette.textPrimary,
-    itemActiveColor: palette.textPrimary,
     inkBarColor: brand.primary,
     horizontalItemPadding: `${spacing.sm}px ${spacing.md}px`
   },
@@ -75,13 +74,15 @@ export const buildLightComponents = (
   Segmented: {
     itemColor: palette.textSecondary,
     itemHoverColor: palette.textPrimary,
-    itemHoverBg: lighten(brand.primary, 0.85),
-    itemSelectedBg: brand.primarySubtle,
-    itemSelectedColor: palette.textPrimary,
-    trackBg: lighten(palette.surfaceBase, 0.03),
+    itemHoverBg: lighten(brand.primary, 0.6),
+    itemSelectedBg: brand.primary,
+    itemSelectedColor: brand.onPrimary,
+    trackBg: lighten(palette.surfaceBase, 0.06),
     trackPadding: 2
   },
   Switch: {
+    colorPrimary: brand.primary,
+    colorPrimaryHover: brand.primaryHover,
     handleBg: palette.surfaceContainer,
     handleShadow: '0 4px 8px rgba(15, 23, 42, 0.12)',
     handleSize: 20,
@@ -98,11 +99,15 @@ export const buildLightComponents = (
     itemMarginBlock: spacing.xs,
     itemColor: palette.textSecondary,
     itemHoverColor: palette.textPrimary,
-    itemSelectedBg: brand.primarySurface,
-    itemSelectedColor: palette.textPrimary,
-    itemActiveBg: brand.primarySubtle
+    itemHoverBg: lighten(brand.primary, 0.7),
+    itemSelectedBg: brand.primary,
+    itemSelectedColor: brand.onPrimary,
+    itemActiveBg: lighten(brand.primary, 0.6)
   },
   Typography: {
     titleMarginBottom: spacing.md
   }
 })
+
+
+

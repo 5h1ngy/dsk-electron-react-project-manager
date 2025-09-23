@@ -37,7 +37,12 @@ export const createTaskSchema = z.object({
 
 export type CreateTaskValues = z.infer<typeof createTaskSchema>
 
-const taskStatusSchema = z.enum(['todo', 'in_progress', 'blocked', 'done'])
+const taskStatusSchema = z
+  .string()
+  .trim()
+  .min(1, 'Lo stato  obbligatorio')
+  .max(48, 'Stato troppo lungo')
+  .regex(/^[a-z0-9_-]+$/, 'Stato non valido')
 const taskPrioritySchema = z.enum(['low', 'medium', 'high', 'critical'])
 
 const normalizeDescription = z
@@ -97,3 +102,5 @@ export const taskFormSchema = z.object({
 })
 
 export type TaskFormValues = z.infer<typeof taskFormSchema>
+
+

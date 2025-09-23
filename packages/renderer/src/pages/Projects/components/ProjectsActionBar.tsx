@@ -7,7 +7,7 @@ import {
   TeamOutlined,
   UserOutlined
 } from '@ant-design/icons'
-import { Button, DatePicker, Input, Segmented, Select, Space, Typography } from 'antd'
+import { Button, DatePicker, Input, Segmented, Select, Space } from 'antd'
 import type { ChangeEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import dayjs, { type Dayjs } from 'dayjs'
@@ -136,22 +136,18 @@ export const ProjectsActionBar = ({
               options={[
                 {
                   label: (
-                    <Space size={6}>
+                    <Space size={6} style={{ color: 'inherit' }}>
                       <TeamOutlined />
-                      <Typography.Text type="secondary">
-                        {t('filters.ownedOptions.all')}
-                      </Typography.Text>
+                      <span>{t('filters.ownedOptions.all')}</span>
                     </Space>
                   ),
                   value: 'all'
                 },
                 {
                   label: (
-                    <Space size={6}>
+                    <Space size={6} style={{ color: 'inherit' }}>
                       <UserOutlined />
-                      <Typography.Text type="secondary">
-                        {t('filters.ownedOptions.mine')}
-                      </Typography.Text>
+                      <span>{t('filters.ownedOptions.mine')}</span>
                     </Space>
                   ),
                   value: 'owned'
@@ -170,22 +166,18 @@ export const ProjectsActionBar = ({
             options={[
               {
                 label: (
-                  <Space size={6}>
+                  <Space size={6} style={{ color: 'inherit' }}>
                     <TableOutlined />
-                    <Typography.Text type="secondary">
-                      {t('viewSwitcher.table')}
-                    </Typography.Text>
+                    <span>{t('viewSwitcher.table')}</span>
                   </Space>
                 ),
                 value: 'table'
               },
               {
                 label: (
-                  <Space size={6}>
+                  <Space size={6} style={{ color: 'inherit' }}>
                     <AppstoreOutlined />
-                    <Typography.Text type="secondary">
-                      {t('viewSwitcher.cards')}
-                    </Typography.Text>
+                    <span>{t('viewSwitcher.cards')}</span>
                   </Space>
                 ),
                 value: 'cards'
