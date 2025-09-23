@@ -124,8 +124,7 @@
       "dueDateRange": {
         "start": "Due from",
         "end": "Due to"
-      },
-      "showComments": "Show comment counter"
+      }
     },
     "noAssignee": "Unassigned",
     "noDueDate": "No due date",
@@ -232,6 +231,9 @@
     "columns": {
       "actions": "Actions"
     },
+    "optionalColumns": {
+      "label": "Optional fields"
+    },
     "savedViews": {
       "placeholder": "Saved views",
       "saveButton": "Save view",
@@ -300,6 +302,10 @@
     "title": "Project notes",
     "filters": {
       "includePrivate": "Include private notes",
+      "includePrivateOptions": {
+        "public": "Public only",
+        "private": "Include private notes"
+      },
       "notebook": "Notebook",
       "tag": "Tag"
     },

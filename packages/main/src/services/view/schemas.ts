@@ -56,8 +56,7 @@ export const viewFilterSchema = z.object({
         return new Date(start).getTime() <= new Date(end).getTime()
       },
       { message: 'Intervallo date non valido' }
-    ),
-  showCommentColumn: z.boolean()
+    )
 })
 
 export const viewSortSchema = z

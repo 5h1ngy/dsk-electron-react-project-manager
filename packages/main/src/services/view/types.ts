@@ -7,7 +7,6 @@ export type ViewFilterState = {
   priority: 'all' | TaskPriority
   assignee: 'all' | 'unassigned' | string
   dueDateRange: [string | null, string | null] | null
-  showCommentColumn: boolean
 }
 
 export type ViewSortState = {

@@ -1,6 +1,6 @@
 import { useMemo, type JSX } from 'react'
 import { AppstoreOutlined, PlusOutlined, TableOutlined } from '@ant-design/icons'
-import { Button, DatePicker, Input, Segmented, Select, Space, Switch, Typography } from 'antd'
+import { Button, DatePicker, Input, Segmented, Select, Space } from 'antd'
 import type { SelectProps } from 'antd'
 import type { ReactNode } from 'react'
 import { SearchOutlined } from '@ant-design/icons'
@@ -140,13 +140,6 @@ export const TaskFiltersBar = ({
                 t('details.filters.dueDateRange.end')
               ]}
             />
-            <Space size={6} align="center">
-              <Switch
-                checked={filters.showCommentColumn}
-                onChange={(checked) => onChange({ showCommentColumn: checked })}
-              />
-              <Typography.Text type="secondary">{t('details.filters.showComments')}</Typography.Text>
-            </Space>
           </Space>
         </Space>
       </BorderedPanel>

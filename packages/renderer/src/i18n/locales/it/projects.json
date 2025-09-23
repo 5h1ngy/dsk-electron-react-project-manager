@@ -124,8 +124,7 @@
       "dueDateRange": {
         "start": "Scadenza da",
         "end": "Scadenza a"
-      },
-      "showComments": "Mostra contatore commenti"
+      }
     },
     "noAssignee": "Non assegnato",
     "noDueDate": "Nessuna scadenza",
@@ -232,6 +231,9 @@
     "columns": {
       "actions": "Azioni"
     },
+    "optionalColumns": {
+      "label": "Campi opzionali"
+    },
     "savedViews": {
       "placeholder": "Viste salvate",
       "saveButton": "Salva vista",
@@ -300,6 +302,10 @@
     "title": "Note del progetto",
     "filters": {
       "includePrivate": "Includi note private",
+      "includePrivateOptions": {
+        "public": "Solo note pubbliche",
+        "private": "Includi note private"
+      },
       "notebook": "Taccuino",
       "tag": "Tag"
     },

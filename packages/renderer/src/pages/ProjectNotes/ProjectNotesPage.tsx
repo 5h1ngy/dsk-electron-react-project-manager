@@ -12,7 +12,7 @@ import {
   Select,
   Skeleton,
   Space,
-  Switch,
+  Segmented,
   Tag,
   Typography,
   message
@@ -326,6 +326,33 @@ const ProjectNotesPage = (): ReactElement => {
   const notebooks = useMemo(() => buildNotebookOptions(notes), [notes])
   const tags = useMemo(() => buildTagOptions(notes), [notes])
   const noteLoading = notesStatus === 'loading'
+  const includePrivateOptions = useMemo(
+    () => [
+      {
+        label: (
+          <Space size={6}>
+            <UnlockOutlined />
+            <Typography.Text type="secondary">
+              {t('notes.filters.includePrivateOptions.public')}
+            </Typography.Text>
+          </Space>
+        ),
+        value: 'public'
+      },
+      {
+        label: (
+          <Space size={6}>
+            <LockOutlined />
+            <Typography.Text type="secondary">
+              {t('notes.filters.includePrivateOptions.private')}
+            </Typography.Text>
+          </Space>
+        ),
+        value: 'private'
+      }
+    ],
+    [t]
+  )
 
   return (
     <Space direction="vertical" size={24} style={{ width: '100%' }}>
@@ -336,11 +363,12 @@ const ProjectNotesPage = (): ReactElement => {
       <BorderedPanel padding="lg" style={{ width: '100%' }}>
         <Space direction="vertical" size="middle" style={{ width: '100%' }}>
           {canManageNotes ? (
-            <Switch
-              checked={includePrivate}
-              onChange={setIncludePrivate}
-              checkedChildren={t('notes.filters.includePrivate')}
-              unCheckedChildren={t('notes.filters.includePrivate')}
+            <Segmented
+              size="large"
+              value={includePrivate ? 'private' : 'public'}
+              onChange={(value) => setIncludePrivate(value === 'private')}
+              options={includePrivateOptions}
+              style={{ alignSelf: 'flex-start' }}
             />
           ) : null}
           <Space wrap align="center" size="middle">

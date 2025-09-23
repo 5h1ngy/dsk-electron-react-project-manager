@@ -74,8 +74,7 @@ const baseFilters = () => ({
   status: 'all' as const,
   priority: 'all' as const,
   assignee: 'all' as const,
-  dueDateRange: null as [string | null, string | null] | null,
-  showCommentColumn: false
+  dueDateRange: null as [string | null, string | null] | null
 })
 
 describe('ViewService', () => {
@@ -104,14 +103,13 @@ describe('ViewService', () => {
         filters: {
           ...baseFilters(),
           status: 'in_progress',
-          priority: 'high',
-          showCommentColumn: true
+          priority: 'high'
         },
         sort: {
           field: 'dueDate',
           direction: 'asc'
         },
-        columns: ['key', 'title', 'status', 'priority', 'dueDate']
+        columns: ['key', 'title', 'status', 'priority', 'dueDate', 'commentCount']
       })
 
       expect(created.id).toBeDefined()

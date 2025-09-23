@@ -18,6 +18,10 @@ import { TaskFiltersBar } from '@renderer/pages/ProjectTasks/components/TaskFilt
 import { ProjectTasksCardGrid } from '@renderer/pages/ProjectTasks/components/ProjectTasksCardGrid'
 
 import TaskSavedViewsControls from '@renderer/pages/ProjectTasks/components/TaskSavedViewsControls'
+import TaskColumnVisibilityControls, {
+  OPTIONAL_TASK_COLUMNS,
+  type OptionalTaskColumn
+} from '@renderer/pages/ProjectTasks/components/TaskColumnVisibilityControls'
 import { useAppDispatch, useAppSelector } from '@renderer/store/hooks'
 import {
   fetchViews,
@@ -32,6 +36,14 @@ import {
 import type { SavedView } from '@renderer/store/slices/views/types'
 import type { LoadStatus } from '@renderer/store/slices/tasks/types'
 import { VIEW_COLUMN_VALUES } from '@main/services/view/schemas'
+
+const getColumnsForView = (selected: ReadonlyArray<OptionalTaskColumn>) =>
+  VIEW_COLUMN_VALUES.filter((column) =>
+    column === 'commentCount' ? selected.includes('commentCount') : true
+  )
+
+const extractOptionalColumns = (columns: ReadonlyArray<string>): OptionalTaskColumn[] =>
+  OPTIONAL_TASK_COLUMNS.filter((column) => columns.includes(column))
 
 const ProjectTasksPage = (): JSX.Element => {
   const {
@@ -53,9 +65,9 @@ const ProjectTasksPage = (): JSX.Element => {
     status: 'all',
     priority: 'all',
     assignee: 'all',
-    dueDateRange: null,
-    showCommentColumn: false
+    dueDateRange: null
   })
+  const [visibleColumns, setVisibleColumns] = useState<OptionalTaskColumn[]>([])
   const [viewMode, setViewMode] = useState<'table' | 'cards'>('table')
   const [tablePage, setTablePage] = useState(1)
   const [cardPage, setCardPage] = useState(1)
@@ -96,16 +108,21 @@ const ProjectTasksPage = (): JSX.Element => {
   const assigneeOptions = useMemo(() => buildAssigneeOptions(tasks, t), [tasks, t])
 
   const filteredTasks = useMemo(() => filterTasks(tasks, filters), [tasks, filters])
+  const tableColumns = useMemo(
+    () => getColumnsForView(visibleColumns),
+    [visibleColumns]
+  )
 
-  const applyFiltersFromView = useCallback(
-    (view: SavedView) => {
-      isApplyingViewRef.current = true
-      setFilters(view.filters)
-      setTablePage(1)
-      setCardPage(1)
-      if (projectId) {
-        dispatch(selectSavedView({ projectId, viewId: view.id }))
-      }
+const applyFiltersFromView = useCallback(
+  (view: SavedView) => {
+    isApplyingViewRef.current = true
+    setFilters(view.filters)
+    setVisibleColumns(extractOptionalColumns(view.columns))
+    setTablePage(1)
+    setCardPage(1)
+    if (projectId) {
+      dispatch(selectSavedView({ projectId, viewId: view.id }))
+    }
       lastAppliedViewId.current = view.id
       isApplyingViewRef.current = false
     },
@@ -120,6 +137,7 @@ const ProjectTasksPage = (): JSX.Element => {
       if (!viewId) {
         dispatch(selectSavedView({ projectId, viewId: null }))
         lastAppliedViewId.current = null
+        setVisibleColumns([])
         return
       }
       const view = savedViews.find((candidate) => candidate.id === viewId)
@@ -146,7 +164,7 @@ const ProjectTasksPage = (): JSX.Element => {
         name: name.trim(),
         filters,
         sort: null,
-        columns: Array.from(VIEW_COLUMN_VALUES)
+        columns: getColumnsForView(visibleColumns)
       }
       const created = await dispatch(createView(payload)).unwrap()
       applyFiltersFromView(created)
@@ -157,7 +175,7 @@ const ProjectTasksPage = (): JSX.Element => {
         return
       }
     }
-  }, [projectId, viewForm, filters, dispatch, applyFiltersFromView])
+  }, [projectId, viewForm, filters, dispatch, applyFiltersFromView, visibleColumns])
 
   const handleDeleteView = useCallback(
     async (viewId: string) => {
@@ -176,6 +194,17 @@ const ProjectTasksPage = (): JSX.Element => {
       setFilters((prev) => ({ ...prev, ...patch }))
       setTablePage(1)
       setCardPage(1)
+      if (!isApplyingViewRef.current && projectId && selectedViewId) {
+        dispatch(selectSavedView({ projectId, viewId: null }))
+        lastAppliedViewId.current = null
+      }
+    },
+    [dispatch, projectId, selectedViewId]
+  )
+
+  const handleVisibleColumnsChange = useCallback(
+    (columns: OptionalTaskColumn[]) => {
+      setVisibleColumns(columns)
       if (!isApplyingViewRef.current && projectId && selectedViewId) {
         dispatch(selectSavedView({ projectId, viewId: null }))
         lastAppliedViewId.current = null
@@ -251,17 +280,25 @@ const ProjectTasksPage = (): JSX.Element => {
         onCreate={canManageTasks ? () => openTaskCreate() : undefined}
         canCreate={canManageTasks}
         secondaryActions={
-          projectId ? (
-            <TaskSavedViewsControls
-              views={savedViews}
-              selectedViewId={selectedViewId}
-              onSelect={handleViewSelect}
-              onCreate={handleOpenSaveModal}
-              onDelete={handleDeleteView}
-              loadingStatus={viewsStatus}
-              mutationStatus={mutationStatus}
+          <>
+            <TaskColumnVisibilityControls
+              columns={OPTIONAL_TASK_COLUMNS}
+              selectedColumns={visibleColumns}
+              disabled={viewMode !== 'table'}
+              onChange={handleVisibleColumnsChange}
             />
-          ) : null
+            {projectId ? (
+              <TaskSavedViewsControls
+                views={savedViews}
+                selectedViewId={selectedViewId}
+                onSelect={handleViewSelect}
+                onCreate={handleOpenSaveModal}
+                onDelete={handleDeleteView}
+                loadingStatus={viewsStatus}
+                mutationStatus={mutationStatus}
+              />
+            ) : null}
+          </>
         }
       />
       {viewMode === 'table' ? (
@@ -273,7 +310,7 @@ const ProjectTasksPage = (): JSX.Element => {
           onDelete={(task) => handleTaskDelete(task.id)}
           canManage={canManageTasks}
           deletingTaskId={deletingTaskId}
-          showCommentColumn={filters.showCommentColumn}
+          columns={tableColumns}
           pagination={{
             current: tablePage,
             pageSize: TABLE_PAGE_SIZE,
@@ -324,3 +361,4 @@ ProjectTasksPage.displayName = 'ProjectTasksPage'
 
 export { ProjectTasksPage }
 export default ProjectTasksPage
+

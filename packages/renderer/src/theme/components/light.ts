@@ -68,6 +68,7 @@ export const buildLightComponents = (
   Pagination: {
     itemBg: palette.surfaceContainer,
     itemActiveBg: brand.primary,
+    itemActiveColor: brand.onPrimary,
     itemInputBg: palette.surfaceContainer,
     itemSize: shape.controlHeightSM
   },
