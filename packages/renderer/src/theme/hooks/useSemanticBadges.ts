@@ -12,7 +12,8 @@ export interface BadgeSpec {
 }
 
 export interface SemanticBadgeTokens {
-  status: Record<TaskDetails['status'], BadgeSpec>
+  status: Record<string, BadgeSpec>
+  statusFallback: BadgeSpec
   priority: Record<TaskDetails['priority'], BadgeSpec>
   projectRole: Record<ProjectSummary['role'], BadgeSpec>
   userRole: Record<RoleName, BadgeSpec>
@@ -103,6 +104,7 @@ export const useSemanticBadges = (): SemanticBadgeTokens => {
         blocked: { background: token.colorWarningBg, color: token.colorWarningText },
         done: { background: token.colorSuccessBg, color: token.colorSuccessText }
       },
+      statusFallback: { background: neutralBackground, color: neutralColor },
       priority: {
         low: { background: token.colorSuccessBg, color: token.colorSuccessText },
         medium: infoBadge,
@@ -142,3 +144,5 @@ export const buildBadgeStyle = (spec: BadgeSpec) => ({
   borderColor: spec.border ?? 'transparent',
   fontWeight: 600
 })
+
+

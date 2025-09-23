@@ -8,6 +8,7 @@ import {
   Input,
   List,
   Modal,
+  Switch,
   Popconfirm,
   Select,
   Skeleton,
@@ -1070,4 +1071,5 @@ const HighlightSnippet = ({ highlight }: { highlight: string | null | undefined 
 
 export { ProjectNotesPage }
 export default ProjectNotesPage
+
 

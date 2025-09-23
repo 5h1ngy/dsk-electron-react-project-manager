@@ -22,6 +22,7 @@ export interface ProjectTasksTableProps {
   deletingTaskId?: string | null
   pagination?: TablePaginationConfig | false
   columns?: ReadonlyArray<TaskTableColumn>
+  statusLabels?: Record<string, string>
 }
 
 export const ProjectTasksTable = ({
@@ -33,7 +34,8 @@ export const ProjectTasksTable = ({
   canManage,
   deletingTaskId,
   pagination,
-  columns = VIEW_COLUMN_VALUES
+  columns = VIEW_COLUMN_VALUES,
+  statusLabels = {}
 }: ProjectTasksTableProps) => {
   const { t, i18n } = useTranslation('projects')
   const showSkeleton = useDelayedLoading(loading)
@@ -77,8 +79,8 @@ export const ProjectTasksTable = ({
       key: 'status',
       width: 140,
       render: (value: TaskDetails['status']) => (
-        <Tag bordered={false} style={buildBadgeStyle(badgeTokens.status[value])}>
-          {t(`details.status.${value}`)}
+        <Tag bordered={false} style={buildBadgeStyle(badgeTokens.status[value] ?? badgeTokens.statusFallback)}>
+          {statusLabels[value] ?? t(`details.status.${value}`)}
         </Tag>
       )
     },
@@ -200,3 +202,4 @@ export const ProjectTasksTable = ({
     />
   )
 }
+

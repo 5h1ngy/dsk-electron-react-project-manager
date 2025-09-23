@@ -15,7 +15,7 @@ import { Comment } from '@main/models/Comment'
 import { Note } from '@main/models/Note'
 import { NoteTaskLink } from '@main/models/NoteTaskLink'
 
-export type TaskStatus = 'todo' | 'in_progress' | 'blocked' | 'done'
+export type TaskStatus = string
 export type TaskPriority = 'low' | 'medium' | 'high' | 'critical'
 
 @DefaultScope(() => ({
@@ -66,7 +66,7 @@ export class Task extends Model {
   declare description: string | null
 
   @Column({
-    type: DataType.STRING(24),
+    type: DataType.STRING(48),
     allowNull: false,
     defaultValue: 'todo'
   })

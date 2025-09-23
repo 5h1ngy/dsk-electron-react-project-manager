@@ -64,15 +64,13 @@ export const buildDarkComponents = (
   Tabs: {
     itemColor: palette.textSecondary,
     itemHoverColor: palette.textPrimary,
-    itemActiveColor: brand.onPrimary,
     inkBarColor: brand.primary,
     horizontalItemPadding: `${spacing.sm}px ${spacing.md}px`
   },
   Pagination: {
     itemBg: palette.surfaceElevated,
     itemActiveBg: brand.primary,
-    itemActiveColor: brand.onPrimary,
-    itemInputBg: palette.surfaceContainer,
+itemInputBg: palette.surfaceContainer,
     itemSize: shape.controlHeightSM
   },
   Segmented: {
@@ -111,3 +109,5 @@ export const buildDarkComponents = (
     colorTextDescription: palette.textSecondary
   }
 })
+
+

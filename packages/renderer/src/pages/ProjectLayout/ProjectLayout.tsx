@@ -36,8 +36,11 @@ const ProjectLayout = (): JSX.Element => {
     project,
     tasks,
     tasksStatus,
+    taskStatuses,
+    taskStatusesStatus,
     projectLoading,
     refresh,
+    refreshTaskStatuses,
     canManageTasks,
     notes,
     notesStatus,
@@ -52,6 +55,7 @@ const ProjectLayout = (): JSX.Element => {
     project: project ?? null,
     tasks,
     projectId: projectId ?? null,
+    statuses: taskStatuses,
     canManageTasks
   })
 
@@ -131,8 +135,11 @@ const ProjectLayout = (): JSX.Element => {
     project: project ?? null,
     tasks,
     tasksStatus,
+    taskStatuses,
+    taskStatusesStatus,
     projectLoading,
     refresh,
+    refreshTaskStatuses,
     canManageTasks,
     openTaskDetails: taskModals.openDetail,
     openTaskCreate: (options) => taskModals.openCreate(options),
@@ -241,6 +248,7 @@ const ProjectLayout = (): JSX.Element => {
           taskModals.deletingTaskId === taskModals.detailTask?.id
         }
         assigneeOptions={taskModals.assigneeOptions}
+        statusOptions={taskModals.statusOptions}
       />
       <TaskFormModal
         open={taskModals.isEditorOpen}
@@ -250,6 +258,7 @@ const ProjectLayout = (): JSX.Element => {
         form={taskModals.editorForm}
         submitting={taskModals.submitting}
         assigneeOptions={taskModals.assigneeOptions}
+        statusOptions={taskModals.statusOptions}
         taskTitle={taskModals.editorTask?.title}
       />
       <TaskSearchDrawer
@@ -265,3 +274,5 @@ ProjectLayout.displayName = 'ProjectLayout'
 
 export { ProjectLayout }
 export default ProjectLayout
+
+

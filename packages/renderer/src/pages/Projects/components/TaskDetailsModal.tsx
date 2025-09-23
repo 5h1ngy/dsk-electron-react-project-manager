@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type JSX } from 'react'
+import { useCallback, useEffect, useMemo, useState, type JSX } from 'react'
 import {
   Button,
   DatePicker,
@@ -57,15 +57,15 @@ export interface TaskDetailsModalProps {
   onDelete: (task: TaskDetails) => Promise<void> | void
   deleting?: boolean
   assigneeOptions?: Array<{ label: string; value: string }>
+  statusOptions?: Array<{ label: string; value: string }>
 }
 
-const STATUS_ORDER: TaskDetails['status'][] = ['todo', 'in_progress', 'blocked', 'done']
 const PRIORITY_ORDER: TaskDetails['priority'][] = ['low', 'medium', 'high', 'critical']
 
-const buildEditValues = (task: TaskDetails | null): TaskFormValues => ({
+const buildEditValues = (task: TaskDetails | null, fallbackStatus: string): TaskFormValues => ({
   title: task?.title ?? '',
   description: task?.description ?? null,
-  status: task?.status ?? 'todo',
+  status: task?.status ?? fallbackStatus,
   priority: task?.priority ?? 'medium',
   dueDate: task?.dueDate ?? null,
   assigneeId: task?.assignee?.id ?? null
@@ -79,10 +79,22 @@ export const TaskDetailsModal = ({
   onClose,
   onDelete,
   deleting = false,
-  assigneeOptions = []
+  assigneeOptions = [],
+  statusOptions = []
 }: TaskDetailsModalProps): JSX.Element => {
   const { t, i18n } = useTranslation('projects')
   const { token } = theme.useToken()
+  const statusLabelMap = useMemo(() => {
+    const labels: Record<string, string> = {}
+    statusOptions.forEach((option) => {
+      labels[option.value] = option.label
+    })
+    return labels
+  }, [statusOptions])
+  const defaultStatusKey = useMemo(
+    () => statusOptions[0]?.value ?? 'todo',
+    [statusOptions]
+  )
   const dispatch = useAppDispatch()
   const badgeTokens = useSemanticBadges()
   const navigate = useNavigate()
@@ -93,7 +105,7 @@ export const TaskDetailsModal = ({
   const mutationStatus = useAppSelector(selectTaskMutationStatus)
   const updating = isEditing && mutationStatus === 'loading'
 
-  const defaultEditValues = useMemo(() => buildEditValues(task), [task])
+  const defaultEditValues = useMemo(() => buildEditValues(task, defaultStatusKey), [task, defaultStatusKey])
 
   const editForm = useForm<TaskFormValues>({
     resolver: zodResolver(taskFormSchema) as unknown as Resolver<TaskFormValues>,
@@ -124,7 +136,7 @@ export const TaskDetailsModal = ({
       commentForm.resetFields()
       setSubmitting(false)
       setIsEditing(false)
-      editForm.reset(buildEditValues(null))
+      editForm.reset(buildEditValues(null, defaultStatusKey))
     }
   }, [open, commentForm, editForm])
 
@@ -292,12 +304,25 @@ export const TaskDetailsModal = ({
     </Space>
   )
 
+  const translateTag = useCallback(
+    (key: string) => {
+      if (key.startsWith('details.status.')) {
+        const statusKey = key.replace('details.status.', '')
+        return statusLabelMap[statusKey] ?? t(key)
+      }
+      return t(key)
+    },
+    [statusLabelMap, t]
+  )
+
   const decoratedTags = useMemo(() => {
-    return buildTags(task, (key) => t(key)).map((tag) => {
+    return buildTags(task, translateTag).map((tag) => {
       if (tag.variant === 'status') {
         return {
           label: tag.label,
-          badge: badgeTokens.status[tag.key as TaskDetails['status']]
+          badge:
+            badgeTokens.status[tag.key as TaskDetails['status']] ??
+            badgeTokens.statusFallback
         }
       }
       return {
@@ -305,7 +330,7 @@ export const TaskDetailsModal = ({
         badge: badgeTokens.priority[tag.key as TaskDetails['priority']]
       }
     })
-  }, [badgeTokens, t, task])
+  }, [badgeTokens, translateTag, task])
 
   const openLinkedNote = (noteId: string) => {
     if (!task) {
@@ -443,18 +468,17 @@ export const TaskDetailsModal = ({
                   <Controller
                     control={editControl}
                     name="status"
-                    render={({ field }) => (
-                      <Select
-                        {...field}
-                        value={field.value}
-                        options={STATUS_ORDER.map((status) => ({
-                          value: status,
-                          label: t(`details.status.${status}`)
-                        }))}
-                        disabled={updating}
-                      />
-                    )}
-                  />
+                  render={({ field }) => (
+                    <Select
+                      {...field}
+                      value={field.value}
+                      options={statusOptions}
+                      showSearch
+                      optionFilterProp="label"
+                      disabled={statusOptions.length === 0 || updating}
+                    />
+                  )}
+                />
                 </Form.Item>
 
                 <Form.Item
@@ -639,3 +663,11 @@ const EmptyState = (): JSX.Element => {
 TaskDetailsModal.displayName = 'TaskDetailsModal'
 
 export default TaskDetailsModal
+
+
+
+
+
+
+
+

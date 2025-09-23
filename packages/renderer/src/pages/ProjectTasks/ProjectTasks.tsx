@@ -23,6 +23,7 @@ import TaskColumnVisibilityControls, {
   OPTIONAL_TASK_COLUMNS,
   type OptionalTaskColumn
 } from '@renderer/pages/ProjectTasks/components/TaskColumnVisibilityControls'
+import TaskStatusManager from '@renderer/pages/ProjectTasks/components/TaskStatusManager'
 import { useAppDispatch, useAppSelector } from '@renderer/store/hooks'
 import {
   fetchViews,
@@ -53,6 +54,9 @@ const ProjectTasksPage = (): JSX.Element => {
     projectLoading,
     tasks,
     tasksStatus,
+    taskStatuses,
+    taskStatusesStatus,
+    refresh,
     canManageTasks,
     openTaskDetails,
     openTaskCreate,
@@ -69,7 +73,7 @@ const ProjectTasksPage = (): JSX.Element => {
     dueDateRange: null
   })
   const [visibleColumns, setVisibleColumns] = useState<OptionalTaskColumn[]>([])
-  const [viewMode, setViewMode] = useState<'table' | 'cards' | 'board'>('table')
+  const [viewMode, setViewMode] = useState<'table' | 'cards' | 'board'>('board')
   const [tablePage, setTablePage] = useState(1)
   const [cardPage, setCardPage] = useState(1)
   const dispatch = useAppDispatch()
@@ -103,7 +107,14 @@ const ProjectTasksPage = (): JSX.Element => {
 
   const effectiveTitle = useMemo(() => resolveEffectiveTitle(project?.name, t), [project?.name, t])
 
-  const statusOptions = useMemo(() => buildStatusOptions(t), [t])
+  const statusOptions = useMemo(() => buildStatusOptions(t, taskStatuses), [t, taskStatuses])
+  const statusLabelMap = useMemo(() => {
+    const labels: Record<string, string> = {}
+    taskStatuses.forEach((status) => {
+      labels[status.key] = status.label
+    })
+    return labels
+  }, [taskStatuses])
 
   const priorityOptions = useMemo(() => buildPriorityOptions(t), [t])
   const assigneeOptions = useMemo(() => buildAssigneeOptions(tasks, t), [tasks, t])
@@ -235,6 +246,18 @@ const ProjectTasksPage = (): JSX.Element => {
   }, [projectId, selectedViewId, savedViews, applyFiltersFromView])
 
   useEffect(() => {
+    if (filters.status === 'all') {
+      return
+    }
+    if (taskStatusesStatus !== 'succeeded') {
+      return
+    }
+    if (!taskStatuses.some((status) => status.key === filters.status)) {
+      setFilters((prev) => ({ ...prev, status: 'all' }))
+    }
+  }, [filters.status, taskStatuses, taskStatusesStatus])
+
+  useEffect(() => {
     const maxPage = Math.max(1, Math.ceil(filteredTasks.length / CARD_PAGE_SIZE))
     if (cardPage > maxPage) {
       setCardPage(maxPage)
@@ -288,6 +311,14 @@ const ProjectTasksPage = (): JSX.Element => {
                 disabled={viewMode !== 'table'}
                 onChange={handleVisibleColumnsChange}
               />
+              {projectId && canManageTasks ? (
+                <TaskStatusManager
+                  projectId={projectId}
+                  statuses={taskStatuses}
+                  onRefreshTasks={refresh}
+                  disabled={taskStatusesStatus === 'loading'}
+                />
+              ) : null}
               {projectId ? (
                 <TaskSavedViewsControls
                   views={savedViews}
@@ -311,6 +342,7 @@ const ProjectTasksPage = (): JSX.Element => {
             onDelete={(task) => handleTaskDelete(task.id)}
             canManage={canManageTasks}
             deletingTaskId={deletingTaskId}
+            statusLabels={statusLabelMap}
             columns={tableColumns}
             pagination={{
               current: tablePage,
@@ -331,11 +363,13 @@ const ProjectTasksPage = (): JSX.Element => {
             onDelete={(task) => handleTaskDelete(task.id)}
             canManage={canManageTasks}
             deletingTaskId={deletingTaskId}
+            statusLabels={statusLabelMap}
           />
         ) : null}
         {viewMode === 'board' ? (
           <ProjectBoard
             projectId={projectId}
+            statuses={taskStatuses}
             tasks={filteredTasks}
             isLoading={loading || projectLoading}
             canManageTasks={canManageTasks}
@@ -375,4 +409,12 @@ ProjectTasksPage.displayName = 'ProjectTasksPage'
 
 export { ProjectTasksPage }
 export default ProjectTasksPage
+
+
+
+
+
+
+
+
 

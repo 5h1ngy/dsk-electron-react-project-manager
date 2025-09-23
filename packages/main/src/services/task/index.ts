@@ -4,6 +4,7 @@ import { AuditService } from '@main/services/audit'
 import { Project } from '@main/models/Project'
 import { ProjectMember, type ProjectMembershipRole } from '@main/models/ProjectMember'
 import { Task } from '@main/models/Task'
+import { TaskStatus } from '@main/models/TaskStatus'
 import { Comment } from '@main/models/Comment'
 import { User } from '@main/models/User'
 import { Note } from '@main/models/Note'
@@ -171,6 +172,35 @@ export class TaskService {
     return `${prefix}${max + 1}`
   }
 
+  private async resolveStatusKey(
+    projectId: string,
+    requestedStatus: string | null | undefined,
+    transaction?: Transaction
+  ): Promise<string> {
+    if (requestedStatus) {
+      const existing = await TaskStatus.findOne({
+        where: { projectId, key: requestedStatus },
+        transaction
+      })
+      if (!existing) {
+        throw new AppError('ERR_VALIDATION', 'Stato selezionato non valido')
+      }
+      return existing.key
+    }
+
+    const firstStatus = await TaskStatus.findOne({
+      where: { projectId },
+      order: [['position', 'ASC']],
+      transaction
+    })
+
+    if (!firstStatus) {
+      throw new AppError('ERR_VALIDATION', 'Nessuno stato configurato per il progetto')
+    }
+
+    return firstStatus.key
+  }
+
   async listByProject(actor: ServiceActor, projectId: string): Promise<TaskDetailsDTO[]> {
     try {
       const { project, role } = await this.resolveProjectAccess(actor, projectId, 'view')
@@ -255,6 +285,11 @@ export class TaskService {
         await this.ensureParentTask(project.id, input.parentId ?? null, transaction)
 
         const key = await this.generateTaskKey(project, transaction)
+        const statusKey = await this.resolveStatusKey(
+          project.id,
+          input.status ?? null,
+          transaction
+        )
 
         return await Task.create(
           {
@@ -264,7 +299,7 @@ export class TaskService {
             parentId: input.parentId ?? null,
             title: input.title,
             description: input.description ?? null,
-            status: input.status ?? 'todo',
+            status: statusKey,
             priority: input.priority ?? 'medium',
             dueDate: input.dueDate ?? null,
             assigneeId: input.assigneeId ?? null,
@@ -322,10 +357,36 @@ export class TaskService {
       const { role } = await this.resolveProjectAccess(actor, task.projectId, 'edit')
 
       await this.withTransaction(async (transaction) => {
-        await this.ensureAssignee(task.projectId, input.assigneeId ?? null, transaction)
-        await this.ensureParentTask(task.projectId, input.parentId ?? null, transaction)
+        if (input.assigneeId !== undefined) {
+          await this.ensureAssignee(task.projectId, input.assigneeId ?? null, transaction)
+          task.assigneeId = input.assigneeId ?? null
+        }
 
-        Object.assign(task, input)
+        if (input.parentId !== undefined) {
+          await this.ensureParentTask(task.projectId, input.parentId ?? null, transaction)
+          task.parentId = input.parentId ?? null
+        }
+
+        if (input.title !== undefined) {
+          task.title = input.title
+        }
+
+        if (input.description !== undefined) {
+          task.description = input.description ?? null
+        }
+
+        if (input.status !== undefined) {
+          task.status = await this.resolveStatusKey(task.projectId, input.status, transaction)
+        }
+
+        if (input.priority !== undefined) {
+          task.priority = input.priority
+        }
+
+        if (input.dueDate !== undefined) {
+          task.dueDate = input.dueDate ?? null
+        }
+
         await task.save({ transaction })
       })
 

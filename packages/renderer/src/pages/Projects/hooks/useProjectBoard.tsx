@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 
 import { useAppDispatch } from '@renderer/store/hooks'
 import { moveTask, type TaskDetails, type TaskStatus } from '@renderer/store/slices/tasks'
+import type { TaskStatusItem } from '@renderer/store/slices/taskStatuses'
 
 export interface KanbanColumn {
   status: TaskStatus
@@ -20,6 +21,7 @@ export interface UseProjectBoardResult {
 export const useProjectBoard = (
   projectId: string | null,
   tasks: TaskDetails[],
+  statuses: TaskStatusItem[],
   canManageTasks: boolean
 ): UseProjectBoardResult => {
   const dispatch = useAppDispatch()
@@ -27,12 +29,20 @@ export const useProjectBoard = (
   const [messageApi, messageContext] = message.useMessage()
 
   const columns = useMemo<KanbanColumn[]>(() => {
-    const definitions: Array<{ status: TaskStatus; label: string }> = [
+    const fallback: Array<{ status: TaskStatus; label: string }> = [
       { status: 'todo', label: t('board.columns.todo') },
       { status: 'in_progress', label: t('board.columns.inProgress') },
       { status: 'blocked', label: t('board.columns.blocked') },
       { status: 'done', label: t('board.columns.done') }
     ]
+
+    const definitions =
+      statuses.length > 0
+        ? statuses.map((status) => ({
+            status: status.key as TaskStatus,
+            label: status.label
+          }))
+        : fallback
 
     const source = projectId ? tasks : []
 
@@ -41,7 +51,7 @@ export const useProjectBoard = (
       label,
       tasks: source.filter((task) => task.status === status)
     }))
-  }, [projectId, tasks, t])
+  }, [projectId, tasks, statuses, t])
 
   const handleMoveTask = useCallback(
     async (taskId: string, nextStatus: TaskStatus) => {
@@ -71,3 +81,5 @@ export const useProjectBoard = (
     handleMoveTask
   }
 }
+
+

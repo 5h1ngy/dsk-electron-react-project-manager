@@ -61,15 +61,12 @@ export const buildLightComponents = (
   Tabs: {
     itemColor: palette.textSecondary,
     itemHoverColor: palette.textPrimary,
-    itemActiveColor: palette.textPrimary,
     inkBarColor: brand.primary,
     horizontalItemPadding: `${spacing.sm}px ${spacing.md}px`
   },
   Pagination: {
     itemBg: palette.surfaceContainer,
-    itemActiveBg: brand.primary,
-    itemActiveColor: brand.onPrimary,
-    itemInputBg: palette.surfaceContainer,
+    itemActiveBg: brand.primary,itemInputBg: palette.surfaceContainer,
     itemSize: shape.controlHeightSM
   },
   Segmented: {
@@ -106,3 +103,6 @@ export const buildLightComponents = (
     titleMarginBottom: spacing.md
   }
 })
+
+
+

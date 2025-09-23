@@ -7,10 +7,12 @@ import { useDelayedLoading } from '@renderer/hooks/useDelayedLoading'
 import { KanbanColumn } from '@renderer/pages/Projects/components/KanbanColumn'
 import { useProjectBoard } from '@renderer/pages/Projects/hooks/useProjectBoard'
 import type { TaskDetails } from '@renderer/store/slices/tasks'
+import type { TaskStatusItem } from '@renderer/store/slices/taskStatuses'
 
 export interface ProjectBoardProps {
   projectId: string | null
   tasks: TaskDetails[]
+  statuses: TaskStatusItem[]
   isLoading: boolean
   canManageTasks: boolean
   onTaskSelect: (task: TaskDetails) => void
@@ -22,6 +24,7 @@ export interface ProjectBoardProps {
 export const ProjectBoard = ({
   projectId,
   tasks,
+  statuses,
   isLoading,
   canManageTasks,
   onTaskSelect,
@@ -33,6 +36,7 @@ export const ProjectBoard = ({
   const { messageContext, columns, handleMoveTask } = useProjectBoard(
     projectId,
     tasks,
+    statuses,
     canManageTasks
   )
   const showSkeleton = useDelayedLoading(isLoading)
@@ -84,3 +88,7 @@ export const ProjectBoard = ({
 ProjectBoard.displayName = 'ProjectBoard'
 
 export default ProjectBoard
+
+
+
+

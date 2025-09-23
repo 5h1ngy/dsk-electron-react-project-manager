@@ -6,6 +6,7 @@ import { AuditService } from '@main/services/audit'
 import { Project } from '@main/models/Project'
 import { ProjectMember, type ProjectMembershipRole } from '@main/models/ProjectMember'
 import { ProjectTag } from '@main/models/ProjectTag'
+import { TaskStatus } from '@main/models/TaskStatus'
 import { User } from '@main/models/User'
 import { AppError, wrapError } from '@main/config/appError'
 import {
@@ -23,6 +24,7 @@ import {
   requireSystemRole
 } from '@main/services/project/roles'
 import { mapProjectDetails, mapProjectSummary } from '@main/services/project/helpers'
+import { DEFAULT_TASK_STATUSES } from '@main/services/taskStatus/defaults'
 
 const userIdSchema = z
   .string()
@@ -257,6 +259,20 @@ export class ProjectService {
         )
 
         await this.syncProjectTags(created.id, input.tags ?? [], transaction)
+
+        const timestamp = new Date()
+        await TaskStatus.bulkCreate(
+          DEFAULT_TASK_STATUSES.map((status, index) => ({
+            id: randomUUID(),
+            projectId: created.id,
+            key: status.key,
+            label: status.label,
+            position: index + 1,
+            createdAt: timestamp,
+            updatedAt: timestamp
+          })),
+          { transaction }
+        )
 
         return created
       })

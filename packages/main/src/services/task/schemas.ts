@@ -1,6 +1,11 @@
 import { z } from 'zod'
 
-export const taskStatusSchema = z.enum(['todo', 'in_progress', 'blocked', 'done'])
+export const taskStatusSchema = z
+  .string()
+  .trim()
+  .min(1, 'Status is required')
+  .max(48, 'Status must be at most 48 characters')
+  .regex(/^[a-z0-9_-]+$/, 'Status can contain lowercase letters, numbers, underscores or hyphens')
 export type TaskStatusInput = z.infer<typeof taskStatusSchema>
 
 export const taskPrioritySchema = z.enum(['low', 'medium', 'high', 'critical'])
@@ -53,7 +58,7 @@ export const createTaskSchema = z.object({
     .min(1, 'Title is required')
     .max(160, 'Title must be at most 160 characters'),
   description: descriptionSchema,
-  status: taskStatusSchema.default('todo'),
+  status: taskStatusSchema.optional(),
   priority: taskPrioritySchema.default('medium'),
   dueDate: optionalDueDateSchema,
   assigneeId: nullableIdentifierSchema.optional()

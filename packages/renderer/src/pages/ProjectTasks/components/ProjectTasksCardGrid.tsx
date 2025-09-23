@@ -44,6 +44,7 @@ export interface ProjectTasksCardGridProps {
   onDelete: (task: TaskDetails) => Promise<void> | void
   canManage: boolean
   deletingTaskId?: string | null
+  statusLabels?: Record<string, string>
 }
 
 export const ProjectTasksCardGrid = ({
@@ -56,7 +57,8 @@ export const ProjectTasksCardGrid = ({
   onEdit,
   onDelete,
   canManage,
-  deletingTaskId
+  deletingTaskId,
+  statusLabels = {}
 }: ProjectTasksCardGridProps): JSX.Element => {
   const { t, i18n } = useTranslation('projects')
   const showSkeleton = useDelayedLoading(loading)
@@ -136,8 +138,8 @@ export const ProjectTasksCardGrid = ({
             >
               <Space direction="vertical" size="small" style={{ width: '100%' }}>
                 <Space size={6} wrap>
-                  <Tag bordered={false} style={buildBadgeStyle(badgeTokens.status[task.status])}>
-                    {t(`details.status.${task.status}`)}
+                  <Tag bordered={false} style={buildBadgeStyle(badgeTokens.status[task.status] ?? badgeTokens.statusFallback)}>
+                    {statusLabels[task.status] ?? t(`details.status.${task.status}`)}
                   </Tag>
                   <Tag
                     bordered={false}
@@ -200,3 +202,7 @@ export const ProjectTasksCardGrid = ({
 ProjectTasksCardGrid.displayName = 'ProjectTasksCardGrid'
 
 export default ProjectTasksCardGrid
+
+
+
+

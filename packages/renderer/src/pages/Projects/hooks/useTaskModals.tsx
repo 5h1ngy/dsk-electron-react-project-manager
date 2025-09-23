@@ -16,6 +16,7 @@ import {
   taskFormSchema,
   type TaskFormValues
 } from '@renderer/pages/Projects/schemas/taskSchemas'
+import type { TaskStatusItem } from '@renderer/store/slices/taskStatuses'
 
 export interface TaskModalsState {
   detailTask: TaskDetails | null
@@ -34,6 +35,7 @@ export interface TaskModalsState {
   deletingTaskId: string | null
   deleteTask: (taskId: string) => Promise<void>
   assigneeOptions: Array<{ label: string; value: string }>
+  statusOptions: Array<{ label: string; value: string }>
   taskMessageContext: React.ReactNode
 }
 
@@ -41,6 +43,7 @@ export interface UseTaskModalsOptions {
   project: ProjectDetails | null
   tasks: TaskDetails[]
   projectId: string | null
+  statuses: TaskStatusItem[]
   canManageTasks: boolean
 }
 
@@ -48,6 +51,7 @@ export const useTaskModals = ({
   project,
   tasks,
   projectId,
+  statuses,
   canManageTasks
 }: UseTaskModalsOptions): TaskModalsState => {
   const dispatch = useAppDispatch()
@@ -55,9 +59,28 @@ export const useTaskModals = ({
   const [messageApi, taskMessageContext] = message.useMessage()
 
   const [detailTaskId, setDetailTaskId] = useState<string | null>(null)
-  const [editorState, setEditorState] = useState<{ mode: 'create' | 'edit'; taskId?: string } | null>(null)
+  const [editorState, setEditorState] = useState<{ mode: 'create' | 'edit'; taskId?: string } | null>(
+    null
+  )
   const [deletingTaskId, setDeletingTaskId] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
+
+  const statusMap = useMemo(
+    () => new Map(statuses.map((status) => [status.key, status])),
+    [statuses]
+  )
+  const statusOptions = useMemo(
+    () =>
+      statuses.map((status) => ({
+        value: status.key,
+        label: status.label
+      })),
+    [statuses]
+  )
+  const defaultStatusKey = useMemo(
+    () => statusOptions[0]?.value ?? 'todo',
+    [statusOptions]
+  )
 
   const editorForm = useForm<TaskFormValues>({
     resolver: (zodResolver(taskFormSchema) as unknown as Resolver<TaskFormValues>),
@@ -65,7 +88,7 @@ export const useTaskModals = ({
     defaultValues: {
       title: '',
       description: null,
-      status: 'todo',
+      status: defaultStatusKey,
       priority: 'medium',
       dueDate: null,
       assigneeId: null
@@ -78,7 +101,10 @@ export const useTaskModals = ({
   )
 
   const editorTask = useMemo(
-    () => (editorState?.mode === 'edit' && editorState.taskId ? tasks.find((task) => task.id === editorState.taskId) ?? null : null),
+    () =>
+      editorState?.mode === 'edit' && editorState.taskId
+        ? tasks.find((task) => task.id === editorState.taskId) ?? null
+        : null,
     [editorState, tasks]
   )
 
@@ -109,16 +135,18 @@ export const useTaskModals = ({
         return
       }
       setEditorState({ mode: 'create' })
+      const resolvedStatus =
+        defaults?.status && statusMap.has(defaults.status) ? defaults.status : defaultStatusKey
       editorForm.reset({
         title: '',
         description: null,
-        status: defaults?.status ?? 'todo',
+        status: resolvedStatus,
         priority: defaults?.priority ?? 'medium',
         dueDate: null,
         assigneeId: null
       })
     },
-    [canManageTasks, editorForm, messageApi, t]
+    [canManageTasks, defaultStatusKey, editorForm, messageApi, statusMap, t]
   )
 
   const openEdit = useCallback(
@@ -133,16 +161,17 @@ export const useTaskModals = ({
         return
       }
       setEditorState({ mode: 'edit', taskId })
+      const resolvedStatus = statusMap.has(task.status) ? task.status : defaultStatusKey
       editorForm.reset({
         title: task.title,
         description: task.description ?? null,
-        status: task.status,
+        status: resolvedStatus,
         priority: task.priority,
         dueDate: task.dueDate ? task.dueDate.slice(0, 10) : null,
         assigneeId: task.assignee?.id ?? null
       })
     },
-    [canManageTasks, editorForm, messageApi, t, tasks]
+    [canManageTasks, defaultStatusKey, editorForm, messageApi, statusMap, t, tasks]
   )
 
   const closeEditor = useCallback(() => {
@@ -150,18 +179,15 @@ export const useTaskModals = ({
     editorForm.reset({
       title: '',
       description: null,
-      status: 'todo',
+      status: defaultStatusKey,
       priority: 'medium',
       dueDate: null,
       assigneeId: null
     })
-  }, [editorForm])
+  }, [defaultStatusKey, editorForm])
 
   const handleEditorSubmit = editorForm.handleSubmit(async (values) => {
-    if (!projectId) {
-      return
-    }
-    if (!editorState) {
+    if (!projectId || !editorState) {
       return
     }
     setSubmitting(true)
@@ -210,38 +236,41 @@ export const useTaskModals = ({
     }
   })
 
-  const deleteTaskById = useCallback(async (taskId: string) => {
-    if (!projectId) {
-      return
-    }
-    if (!canManageTasks) {
-      messageApi.warning(t('permissions.tasksUpdateDenied'))
-      return
-    }
-    const task = tasks.find((item) => item.id === taskId)
-    if (!task) {
-      messageApi.error(t('tasks.messages.notFound', { defaultValue: 'Task non trovato' }))
-      return
-    }
-    setDeletingTaskId(taskId)
-    try {
-      await dispatch(deleteTask({ projectId, taskId })).unwrap()
-      messageApi.success(t('tasks.messages.deleteSuccess'))
-      if (detailTaskId === taskId) {
-        setDetailTaskId(null)
+  const deleteTaskById = useCallback(
+    async (taskId: string) => {
+      if (!projectId) {
+        return
       }
-    } catch (error) {
-      const messageText =
-        typeof error === 'string'
-          ? error
-          : error instanceof Error
-            ? error.message
-            : t('errors.generic', { defaultValue: 'Operazione non riuscita' })
-      messageApi.error(messageText)
-    } finally {
-      setDeletingTaskId(null)
-    }
-  }, [canManageTasks, detailTaskId, dispatch, messageApi, projectId, t, tasks])
+      if (!canManageTasks) {
+        messageApi.warning(t('permissions.tasksUpdateDenied'))
+        return
+      }
+      const task = tasks.find((item) => item.id === taskId)
+      if (!task) {
+        messageApi.error(t('tasks.messages.notFound', { defaultValue: 'Task non trovato' }))
+        return
+      }
+      setDeletingTaskId(taskId)
+      try {
+        await dispatch(deleteTask({ projectId, taskId })).unwrap()
+        messageApi.success(t('tasks.messages.deleteSuccess'))
+        if (detailTaskId === taskId) {
+          setDetailTaskId(null)
+        }
+      } catch (error) {
+        const messageText =
+          typeof error === 'string'
+            ? error
+            : error instanceof Error
+              ? error.message
+              : t('errors.generic', { defaultValue: 'Operazione non riuscita' })
+        messageApi.error(messageText)
+      } finally {
+        setDeletingTaskId(null)
+      }
+    },
+    [canManageTasks, detailTaskId, dispatch, messageApi, projectId, t, tasks]
+  )
 
   const submitEditor = useCallback(() => {
     void handleEditorSubmit()
@@ -264,6 +293,8 @@ export const useTaskModals = ({
     deletingTaskId,
     deleteTask: deleteTaskById,
     assigneeOptions,
-    taskMessageContext,
+    statusOptions,
+    taskMessageContext
   }
 }
+

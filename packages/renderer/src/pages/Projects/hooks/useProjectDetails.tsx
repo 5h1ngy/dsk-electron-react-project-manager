@@ -17,13 +17,22 @@ import {
   selectProjectNotesStatus
 } from '@renderer/store/slices/notes'
 import type { NoteSummary } from '@renderer/store/slices/notes/types'
+import {
+  fetchTaskStatuses,
+  selectProjectTaskStatuses,
+  selectProjectTaskStatusesStatus
+} from '@renderer/store/slices/taskStatuses'
+import type { TaskStatusItem } from '@renderer/store/slices/taskStatuses'
 
 export interface UseProjectDetailsResult {
   project: ReturnType<ReturnType<typeof selectProjectById>> | null
   tasks: TaskDetails[]
   tasksStatus: ReturnType<ReturnType<typeof selectProjectTasksStatus>>
+  taskStatuses: TaskStatusItem[]
+  taskStatusesStatus: ReturnType<ReturnType<typeof selectProjectTaskStatusesStatus>>
   projectLoading: boolean
   refresh: () => void
+  refreshTaskStatuses: () => void
   canManageTasks: boolean
   notes: NoteSummary[]
   notesStatus: ReturnType<ReturnType<typeof selectProjectNotesStatus>>
@@ -56,6 +65,19 @@ export const useProjectDetails = (projectId?: string): UseProjectDetailsResult =
   const project = useAppSelector(projectSelector)
   const tasks = useAppSelector(tasksSelector)
   const tasksStatus = useAppSelector(tasksStatusSelector)
+  const taskStatusesSelector = useMemo(
+    () => (projectId ? selectProjectTaskStatuses(projectId) : () => []),
+    [projectId]
+  )
+  const taskStatusesStatusSelector = useMemo(
+    () =>
+      projectId
+        ? selectProjectTaskStatusesStatus(projectId)
+        : (() => 'idle' as LoadStatus),
+    [projectId]
+  )
+  const taskStatuses = useAppSelector(taskStatusesSelector)
+  const taskStatusesStatus = useAppSelector(taskStatusesStatusSelector)
   const notesStatusSelector = useMemo(
     () =>
       projectId
@@ -90,6 +112,7 @@ export const useProjectDetails = (projectId?: string): UseProjectDetailsResult =
     }
     void dispatch(fetchProjectById(projectId))
     void dispatch(fetchTasks(projectId))
+    void dispatch(fetchTaskStatuses(projectId))
     void dispatch(fetchNotes({ projectId }))
   }, [dispatch, projectId])
 
@@ -105,7 +128,15 @@ export const useProjectDetails = (projectId?: string): UseProjectDetailsResult =
     }
     void dispatch(fetchProjectById(projectId))
     void dispatch(fetchTasks(projectId))
+    void dispatch(fetchTaskStatuses(projectId))
     void dispatch(fetchNotes({ projectId }))
+  }, [dispatch, projectId])
+
+  const refreshTaskStatuses = useCallback(() => {
+    if (!projectId) {
+      return
+    }
+    void dispatch(fetchTaskStatuses(projectId))
   }, [dispatch, projectId])
 
   const refreshNotes = useCallback(() => {
@@ -121,8 +152,11 @@ export const useProjectDetails = (projectId?: string): UseProjectDetailsResult =
     project,
     tasks,
     tasksStatus,
+    taskStatuses,
+    taskStatusesStatus,
     projectLoading,
     refresh,
+    refreshTaskStatuses,
     canManageTasks,
     notes,
     notesStatus,

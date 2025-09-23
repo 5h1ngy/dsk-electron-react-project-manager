@@ -8,7 +8,6 @@ import type { TaskFormValues } from '@renderer/pages/Projects/schemas/taskSchema
 import type { TaskDetails } from '@renderer/store/slices/tasks'
 import MarkdownEditor from '@renderer/components/Markdown/MarkdownEditor'
 
-const STATUS_ORDER: TaskDetails['status'][] = ['todo', 'in_progress', 'blocked', 'done']
 const PRIORITY_ORDER: TaskDetails['priority'][] = ['low', 'medium', 'high', 'critical']
 
 export interface TaskFormModalProps {
@@ -19,6 +18,7 @@ export interface TaskFormModalProps {
   form: UseFormReturn<TaskFormValues>
   submitting: boolean
   assigneeOptions: Array<{ label: string; value: string }>
+  statusOptions: Array<{ label: string; value: string }>
   taskTitle?: string
 }
 
@@ -30,6 +30,7 @@ export const TaskFormModal = ({
   form,
   submitting,
   assigneeOptions,
+  statusOptions,
   taskTitle
 }: TaskFormModalProps): JSX.Element => {
   const { t } = useTranslation('projects')
@@ -112,21 +113,21 @@ export const TaskFormModal = ({
             help={form.formState.errors.status?.message}
             required
           >
-            <Controller
-              control={form.control}
-              name="status"
-              render={({ field }) => (
-                <Select
-                  {...field}
-                  value={field.value}
-                  options={STATUS_ORDER.map((status) => ({
-                    value: status,
-                    label: t(`details.status.${status}`)
-                  }))}
-                />
-              )}
-            />
-          </Form.Item>
+          <Controller
+            control={form.control}
+            name="status"
+            render={({ field }) => (
+              <Select
+                {...field}
+                value={field.value}
+                options={statusOptions}
+                showSearch
+                optionFilterProp="label"
+                disabled={statusOptions.length === 0}
+              />
+            )}
+          />
+        </Form.Item>
 
           <Form.Item
             label={t('tasks.form.fields.priority')}
@@ -205,3 +206,7 @@ export const TaskFormModal = ({
 TaskFormModal.displayName = 'TaskFormModal'
 
 export default TaskFormModal
+
+
+
+
