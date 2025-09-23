@@ -102,8 +102,38 @@
         "title": "Vue d'ensemble",
         "total": "Taches totales",
         "active": "En cours",
-        "done": "Terminees"
-      }
+        "done": "Terminees",
+        "overdue": "En retard",
+        "dueSoon": "A venir",
+        "unassigned": "Non assignes"
+      },
+      "statusCard": {
+        "title": "Repartition des statuts"
+      },
+      "priorityCard": {
+        "title": "Repartition des priorites"
+      },
+      "assigneeCard": {
+        "title": "Charge par assigne",
+        "unassigned": "Non assigne"
+      },
+      "trendCard": {
+        "title": "Tendance des completions",
+        "empty": "Aucune tache terminee sur la periode"
+      },
+      "upcoming": {
+        "title": "Echeances imminentes",
+        "empty": "Aucune echeance imminente"
+      },
+      "overdue": {
+        "title": "Taches en retard",
+        "empty": "Aucune tache en retard"
+      },
+      "taskItem": {
+        "due": "Echeance {{date}}",
+        "priority": "Priorite : {{priority}}"
+      },
+      "empty": "Aucune donnee disponible"
     },
     "tasksTitle": "Taches du projet",
     "kanbanTitle": "Tableau Kanban",

@@ -102,8 +102,38 @@
         "title": "Stato del lavoro",
         "total": "Task totali",
         "active": "In corso",
-        "done": "Completati"
-      }
+        "done": "Completati",
+        "overdue": "In ritardo",
+        "dueSoon": "In scadenza",
+        "unassigned": "Non assegnati"
+      },
+      "statusCard": {
+        "title": "Distribuzione stati"
+      },
+      "priorityCard": {
+        "title": "Distribuzione priorita"
+      },
+      "assigneeCard": {
+        "title": "Carico per assegnatario",
+        "unassigned": "Non assegnato"
+      },
+      "trendCard": {
+        "title": "Trend completamenti",
+        "empty": "Nessun task completato nel periodo"
+      },
+      "upcoming": {
+        "title": "Scadenze imminenti",
+        "empty": "Nessuna scadenza imminente"
+      },
+      "overdue": {
+        "title": "Task in ritardo",
+        "empty": "Nessun task in ritardo"
+      },
+      "taskItem": {
+        "due": "Scadenza {{date}}",
+        "priority": "Priorita: {{priority}}"
+      },
+      "empty": "Nessun dato disponibile"
     },
     "tasksTitle": "Task del progetto",
     "kanbanTitle": "Board Kanban",

@@ -102,8 +102,38 @@
         "title": "Arbeitsstatus",
         "total": "Gesamtaufgaben",
         "active": "In Arbeit",
-        "done": "Abgeschlossen"
-      }
+        "done": "Abgeschlossen",
+        "overdue": "Ueberfaellig",
+        "dueSoon": "Kurz vor Faelligkeit",
+        "unassigned": "Nicht zugewiesen"
+      },
+      "statusCard": {
+        "title": "Statusverteilung"
+      },
+      "priorityCard": {
+        "title": "Prioritaetsverteilung"
+      },
+      "assigneeCard": {
+        "title": "Auslastung nach Verantwortlichem",
+        "unassigned": "Nicht zugewiesen"
+      },
+      "trendCard": {
+        "title": "Fertigstellungsverlauf",
+        "empty": "Keine Aufgaben im Zeitraum abgeschlossen"
+      },
+      "upcoming": {
+        "title": "Bevorstehende Faelligkeiten",
+        "empty": "Keine bevorstehenden Faelligkeiten"
+      },
+      "overdue": {
+        "title": "Ueberfaellige Aufgaben",
+        "empty": "Keine ueberfaelligen Aufgaben"
+      },
+      "taskItem": {
+        "due": "Faellig am {{date}}",
+        "priority": "Prioritaet: {{priority}}"
+      },
+      "empty": "Keine Daten verfuegbar"
     },
     "tasksTitle": "Projektaufgaben",
     "kanbanTitle": "Kanban-Board",

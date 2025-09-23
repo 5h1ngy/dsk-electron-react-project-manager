@@ -102,8 +102,38 @@
         "title": "Workload snapshot",
         "total": "Total tasks",
         "active": "In progress",
-        "done": "Completed"
-      }
+        "done": "Completed",
+        "overdue": "Overdue",
+        "dueSoon": "Due soon",
+        "unassigned": "Unassigned"
+      },
+      "statusCard": {
+        "title": "Status distribution"
+      },
+      "priorityCard": {
+        "title": "Priority distribution"
+      },
+      "assigneeCard": {
+        "title": "Workload by assignee",
+        "unassigned": "Unassigned"
+      },
+      "trendCard": {
+        "title": "Completion trend",
+        "empty": "No tasks completed in the selected period"
+      },
+      "upcoming": {
+        "title": "Upcoming deadlines",
+        "empty": "No upcoming deadlines"
+      },
+      "overdue": {
+        "title": "Overdue tasks",
+        "empty": "No overdue tasks"
+      },
+      "taskItem": {
+        "due": "Due {{date}}",
+        "priority": "Priority: {{priority}}"
+      },
+      "empty": "No data available"
     },
     "tasksTitle": "Project tasks",
     "kanbanTitle": "Kanban board",
