@@ -31,13 +31,7 @@ export const buildNavigationItems = (t: TFunction): MenuProps['items'] =>
   NAVIGATION.map((item) => ({
     key: item.path,
     icon: item.icon,
-    label: t(item.labelKey),
-    style: {
-      borderRadius: 10,
-      marginBlock: 2,
-      paddingInline: 12,
-      paddingBlock: 6
-    }
+    label: t(item.labelKey)
   }))
 
 export const resolveSelectedKey = (pathname: string): string | undefined => {

@@ -35,10 +35,7 @@ export const BorderedPanel = ({
   padding = 'md'
 }: PropsWithChildren<BorderedPanelProps>) => {
   const { token } = theme.useToken()
-  const brandAwareToken = token as typeof token & {
-    brandSecondaryBorder?: string
-  }
-  const borderColor = brandAwareToken.brandSecondaryBorder ?? token.colorBorderSecondary
+  const borderColor = token.colorBorderSecondary ?? token.colorBorder
 
   return (
     <Card

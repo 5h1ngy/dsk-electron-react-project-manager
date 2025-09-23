@@ -1,4 +1,6 @@
 import { Avatar, Flex, Layout, Menu, Typography, theme } from 'antd'
+import type { MenuProps } from 'antd'
+import { useMemo } from 'react'
 import type { JSX } from 'react'
 
 import { useSiderStyles } from './Sider.style'
@@ -27,8 +29,86 @@ const Sider = ({
   const headerHeight = token.controlHeightLG
   const emblemSize = collapsed ? token.controlHeightSM : token.controlHeightLG
   const footerPadding = collapsed ? token.paddingSM : token.paddingLG
-  const menuIndent = collapsed ? token.marginLG : token.marginXL
+  const menuIndent = collapsed ? 0 : token.marginXL
   const titleGap = collapsed ? 0 : token.marginXXS
+  const menuItemStyle = useMemo(() => {
+    const basePadding = collapsed ? token.paddingSM : token.paddingLG
+    return {
+      borderRadius: token.borderRadius,
+      marginBlock: token.marginXXS,
+      paddingInline: basePadding,
+      paddingBlock: token.paddingXS,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: collapsed ? 'center' : 'flex-start',
+      gap: collapsed ? 0 : token.marginSM
+    }
+  }, [
+    collapsed,
+    token.borderRadius,
+    token.marginSM,
+    token.marginXXS,
+    token.paddingLG,
+    token.paddingSM,
+    token.paddingXS
+  ])
+  const menuItems = useMemo<MenuProps['items']>(() => {
+    const decorate = (source?: MenuProps['items']): MenuProps['items'] | undefined => {
+      if (!source) {
+        return source
+      }
+      return source.map((item) => {
+        if (!item || typeof item !== 'object' || Array.isArray(item)) {
+          return item
+        }
+        if ('type' in item && item.type === 'divider') {
+          return item
+        }
+        const children = 'children' in item ? decorate(item.children) : undefined
+        const iconNode = 'icon' in item ? item.icon : null
+        const labelNode = 'label' in item ? item.label : null
+        const ariaLabel =
+          typeof labelNode === 'string' ? labelNode : undefined
+
+        return {
+          ...item,
+          icon: null,
+          title: null,
+          style: {
+            ...(item.style ?? {}),
+            ...menuItemStyle
+          },
+          children,
+          label: (
+            <Flex
+              align="center"
+              justify={collapsed ? 'center' : 'flex-start'}
+              gap={collapsed ? 0 : token.marginSM}
+              style={{ width: '100%', color: 'inherit' }}
+              aria-label={ariaLabel}
+            >
+              {iconNode ? (
+                <span
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}
+                >
+                  {iconNode}
+                </span>
+              ) : null}
+              {!collapsed && labelNode ? (
+                <span style={{ flex: 1, whiteSpace: 'nowrap' }}>{labelNode}</span>
+              ) : null}
+            </Flex>
+          )
+        }
+      })
+    }
+
+    return decorate(items)
+  }, [collapsed, items, menuItemStyle, token.marginSM])
 
   return (
     <AntSider
@@ -51,7 +131,12 @@ const Sider = ({
       }}
     >
       <Flex vertical gap={sectionGap} style={{ height: '100%' }}>
-        <Flex align="center" gap={collapsed ? 0 : token.marginSM} style={{ minHeight: headerHeight }}>
+        <Flex
+          align="center"
+          justify={collapsed ? 'center' : 'flex-start'}
+          gap={collapsed ? 0 : token.marginSM}
+          style={{ minHeight: headerHeight }}
+        >
           <Avatar
             shape="square"
             size={emblemSize}
@@ -82,7 +167,7 @@ const Sider = ({
           <Menu
             mode="inline"
             theme={themeMode}
-            items={items}
+            items={menuItems}
             selectedKeys={selectedKeys}
             onClick={onSelect}
             style={{
@@ -93,7 +178,7 @@ const Sider = ({
               flex: 1,
               overflowY: 'auto'
             }}
-            inlineCollapsed={collapsed}
+            inlineCollapsed={false}
             inlineIndent={menuIndent}
           />
         </Flex>

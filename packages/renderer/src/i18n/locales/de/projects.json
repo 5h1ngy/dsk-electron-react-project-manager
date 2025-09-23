@@ -235,8 +235,37 @@
       "actions": "Aktionen"
     },
     "optionalColumns": {
-      "label": "Optionale Felder"
-    },
+        "label": "Optionale Felder"
+      },
+      "statusManager": {
+        "manageButton": "Status verwalten",
+        "title": "Aufgabenstatus",
+        "add": "Status hinzufügen",
+        "empty": "Keine Status definiert",
+        "messages": {
+          "created": "Status erstellt",
+          "updated": "Status aktualisiert",
+          "deleted": "Status entfernt",
+          "reordered": "Reihenfolge aktualisiert",
+          "error": "Vorgang fehlgeschlagen"
+        },
+        "deleteTitle": "Status entfernen",
+        "deleteDescription": "\"{{status}}\" wirklich entfernen?",
+        "deletePrompt": "Durch das Entfernen von \"{{status}}\" werden vorhandene Aufgaben dem Ersatzstatus zugewiesen.",
+        "confirm": "Bestätigen",
+        "cancel": "Abbrechen",
+        "createTitle": "Status erstellen",
+        "editTitle": "Status bearbeiten",
+        "fields": {
+          "label": "Bezeichnung",
+          "fallback": "Ersatzstatus"
+        },
+        "validation": {
+          "labelRequired": "Bezeichnung angeben",
+          "labelMax": "Maximal 80 Zeichen",
+          "fallbackRequired": "Ersatzstatus auswählen"
+        }
+      },
     "savedViews": {
       "placeholder": "Gespeicherte Ansichten",
       "saveButton": "Ansicht speichern",

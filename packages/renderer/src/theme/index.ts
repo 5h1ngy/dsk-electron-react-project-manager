@@ -51,7 +51,7 @@ export const createThemeConfig = (mode: ThemeMode, accentColor: string): ThemeCo
     colorTextSecondary: palette.textSecondary,
     colorTextHeading: palette.textPrimary,
     colorBorder: palette.borderSubtle,
-    colorBorderSecondary: brand.secondaryBorder,
+    colorBorderSecondary: palette.borderStrong,
     colorSplit: palette.borderStrong,
     colorBgMask: palette.surfaceBackdrop,
     motionDurationMid: '0.22s',
@@ -62,7 +62,6 @@ export const createThemeConfig = (mode: ThemeMode, accentColor: string): ThemeCo
     brandSecondaryHover: brand.secondaryHover,
     brandSecondaryActive: brand.secondaryActive,
     brandSecondarySurface: brand.secondarySurface,
-    brandSecondaryBorder: brand.secondaryBorder,
     brandOnSecondary: brand.onSecondary
   }
 
