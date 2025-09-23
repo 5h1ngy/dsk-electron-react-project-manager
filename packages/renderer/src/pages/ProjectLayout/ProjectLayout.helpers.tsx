@@ -18,9 +18,6 @@ export const resolveActiveTab = (pathname: string, basePath: string): ProjectTab
   if (pathname.startsWith(`${basePath}/notes`)) {
     return 'notes'
   }
-  if (pathname.startsWith(`${basePath}/board`)) {
-    return 'board'
-  }
   if (pathname.startsWith(`${basePath}/tasks`)) {
     return 'tasks'
   }
@@ -30,15 +27,13 @@ export const resolveActiveTab = (pathname: string, basePath: string): ProjectTab
 export const buildTabItems = (t: TFunction<'projects'>): TabsProps['items'] => [
   { key: 'overview', label: t('details.tabs.overview') },
   { key: 'tasks', label: t('details.tabs.tasks') },
-  { key: 'notes', label: t('details.tabs.notes') },
-  { key: 'board', label: t('details.tabs.board') }
+  { key: 'notes', label: t('details.tabs.notes') }
 ]
 
 export const buildTabLabelMap = (t: TFunction<'projects'>): Record<ProjectTabKey, string> => ({
   overview: t('breadcrumbs.overview'),
   tasks: t('breadcrumbs.tasks'),
-  notes: t('breadcrumbs.notes'),
-  board: t('breadcrumbs.board')
+  notes: t('breadcrumbs.notes')
 })
 
 const renderBreadcrumbLink = (label: string, handler?: () => void) =>

@@ -2,7 +2,7 @@ import type { ProjectDetails } from '@renderer/store/slices/projects/types'
 import type { TaskDetails } from '@renderer/store/slices/tasks/types'
 import type { NoteSummary } from '@renderer/store/slices/notes/types'
 
-export type ProjectTabKey = 'overview' | 'tasks' | 'board' | 'notes'
+export type ProjectTabKey = 'overview' | 'tasks' | 'notes'
 
 export interface ProjectRouteContext {
   projectId: string

@@ -1,17 +1,17 @@
 import { Alert, Col, Row, Space } from 'antd'
-import { useTranslation } from 'react-i18next'
 import type { JSX } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { EmptyState, LoadingSkeleton } from '@renderer/components/DataStates'
 import { useDelayedLoading } from '@renderer/hooks/useDelayedLoading'
-import type { ProjectDetails } from '@renderer/store/slices/projects'
-import type { TaskDetails } from '@renderer/store/slices/tasks'
 import { KanbanColumn } from '@renderer/pages/Projects/components/KanbanColumn'
-import { TaskComposer } from '@renderer/pages/Projects/components/TaskComposer'
 import { useProjectBoard } from '@renderer/pages/Projects/hooks/useProjectBoard'
+import type { TaskDetails } from '@renderer/store/slices/tasks'
 
 export interface ProjectBoardProps {
-  project: ProjectDetails | null
+  projectId: string | null
+  tasks: TaskDetails[]
+  isLoading: boolean
   canManageTasks: boolean
   onTaskSelect: (task: TaskDetails) => void
   onTaskEdit: (task: TaskDetails) => void
@@ -20,7 +20,9 @@ export interface ProjectBoardProps {
 }
 
 export const ProjectBoard = ({
-  project,
+  projectId,
+  tasks,
+  isLoading,
   canManageTasks,
   onTaskSelect,
   onTaskEdit,
@@ -28,22 +30,16 @@ export const ProjectBoard = ({
   deletingTaskId
 }: ProjectBoardProps): JSX.Element => {
   const { t } = useTranslation('projects')
-  const { messageContext, columns, boardStatus, createTaskForm, handleCreateTask, handleMoveTask } =
-    useProjectBoard(project, canManageTasks)
-
-  if (!project) {
-    return (
-      <Space direction="vertical" align="center" style={{ marginTop: 32, width: '100%' }}>
-        <EmptyState title={t('board.empty')} />
-      </Space>
-    )
-  }
-
-  const isLoading = boardStatus === 'loading'
+  const { messageContext, columns, handleMoveTask } = useProjectBoard(
+    projectId,
+    tasks,
+    canManageTasks
+  )
   const showSkeleton = useDelayedLoading(isLoading)
+  const hasTasks = columns.some((column) => column.tasks.length > 0)
 
   return (
-    <>
+    <Space direction="vertical" size={16} style={{ width: '100%' }}>
       {messageContext}
       {!canManageTasks ? (
         <Alert
@@ -51,15 +47,14 @@ export const ProjectBoard = ({
           showIcon
           message={t('board.permissions.title')}
           description={t('board.permissions.description')}
-          style={{ marginBottom: 16 }}
         />
       ) : null}
       {showSkeleton ? (
-        <LoadingSkeleton variant="cards" items={4} />
-      ) : (
-        <Row gutter={16}>
+        <LoadingSkeleton variant="cards" items={Math.max(columns.length, 4)} />
+      ) : hasTasks ? (
+        <Row gutter={16} wrap>
           {columns.map((column) => (
-            <Col span={6} key={column.status}>
+            <Col key={column.status} xs={24} sm={12} lg={6}>
               <KanbanColumn
                 status={column.status}
                 label={column.label}
@@ -70,22 +65,22 @@ export const ProjectBoard = ({
                 onTaskDelete={onTaskDelete}
                 deletingTaskId={deletingTaskId}
                 canManage={canManageTasks}
-                renderComposer={
-                  canManageTasks && column.status === 'todo'
-                    ? () => (
-                        <TaskComposer
-                          form={createTaskForm}
-                          onSubmit={handleCreateTask}
-                          disabled={!canManageTasks || isLoading}
-                        />
-                      )
-                    : undefined
-                }
               />
             </Col>
           ))}
         </Row>
+      ) : (
+        <Space
+          align="center"
+          style={{ width: '100%', justifyContent: 'center', padding: '48px 0' }}
+        >
+          <EmptyState title={t('details.tasksEmpty')} />
+        </Space>
       )}
-    </>
+    </Space>
   )
 }
+
+ProjectBoard.displayName = 'ProjectBoard'
+
+export default ProjectBoard

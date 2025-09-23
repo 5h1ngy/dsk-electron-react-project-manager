@@ -1,5 +1,5 @@
 import { useMemo, type JSX } from 'react'
-import { AppstoreOutlined, PlusOutlined, TableOutlined } from '@ant-design/icons'
+import { AppstoreOutlined, ColumnWidthOutlined, PlusOutlined, TableOutlined } from '@ant-design/icons'
 import { Button, DatePicker, Input, Segmented, Select, Space } from 'antd'
 import type { SelectProps } from 'antd'
 import type { ReactNode } from 'react'
@@ -20,8 +20,8 @@ export interface TaskFiltersBarProps {
   priorityOptions: SelectOption[]
   assigneeOptions: SelectOption[]
   onChange: (patch: Partial<TaskFilters>) => void
-  viewMode: 'table' | 'cards'
-  onViewModeChange: (mode: 'table' | 'cards') => void
+  viewMode: 'table' | 'cards' | 'board'
+  onViewModeChange: (mode: 'table' | 'cards' | 'board') => void
   onCreate?: () => void
   canCreate?: boolean
   secondaryActions?: ReactNode
@@ -59,6 +59,15 @@ export const TaskFiltersBar = ({
           </Space>
         ),
         value: 'table'
+      },
+      {
+        label: (
+          <Space size={6}>
+            <ColumnWidthOutlined />
+            {t('viewSwitcher.board')}
+          </Space>
+        ),
+        value: 'board'
       },
       {
         label: (
@@ -153,7 +162,7 @@ export const TaskFiltersBar = ({
           <Segmented
             size="large"
             value={viewMode}
-            onChange={(next) => onViewModeChange(next as 'table' | 'cards')}
+            onChange={(next) => onViewModeChange(next as 'table' | 'cards' | 'board')}
             options={viewSegmentedOptions}
           />
           <Space size="small" wrap>

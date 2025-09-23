@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next'
 
 import { EmptyState } from '@renderer/components/DataStates'
 import { ProjectTasksTable } from '@renderer/pages/Projects/components/ProjectTasksTable'
+import { ProjectBoard } from '@renderer/pages/Projects/components/ProjectBoard'
 import { useProjectRouteContext } from '@renderer/pages/ProjectLayout'
 import {
   buildPriorityOptions,
@@ -68,7 +69,7 @@ const ProjectTasksPage = (): JSX.Element => {
     dueDateRange: null
   })
   const [visibleColumns, setVisibleColumns] = useState<OptionalTaskColumn[]>([])
-  const [viewMode, setViewMode] = useState<'table' | 'cards'>('table')
+  const [viewMode, setViewMode] = useState<'table' | 'cards' | 'board'>('table')
   const [tablePage, setTablePage] = useState(1)
   const [cardPage, setCardPage] = useState(1)
   const dispatch = useAppDispatch()
@@ -113,16 +114,16 @@ const ProjectTasksPage = (): JSX.Element => {
     [visibleColumns]
   )
 
-const applyFiltersFromView = useCallback(
-  (view: SavedView) => {
-    isApplyingViewRef.current = true
-    setFilters(view.filters)
-    setVisibleColumns(extractOptionalColumns(view.columns))
-    setTablePage(1)
-    setCardPage(1)
-    if (projectId) {
-      dispatch(selectSavedView({ projectId, viewId: view.id }))
-    }
+  const applyFiltersFromView = useCallback(
+    (view: SavedView) => {
+      isApplyingViewRef.current = true
+      setFilters(view.filters)
+      setVisibleColumns(extractOptionalColumns(view.columns))
+      setTablePage(1)
+      setCardPage(1)
+      if (projectId) {
+        dispatch(selectSavedView({ projectId, viewId: view.id }))
+      }
       lastAppliedViewId.current = view.id
       isApplyingViewRef.current = false
     },
@@ -270,67 +271,80 @@ const applyFiltersFromView = useCallback(
           {effectiveTitle}
         </Typography.Title>
         <TaskFiltersBar
-        filters={filters}
-        statusOptions={statusOptions}
-        priorityOptions={priorityOptions}
-        assigneeOptions={assigneeOptions}
-        onChange={handleFiltersChange}
-        viewMode={viewMode}
-        onViewModeChange={setViewMode}
-        onCreate={canManageTasks ? () => openTaskCreate() : undefined}
-        canCreate={canManageTasks}
-        secondaryActions={
-          <>
-            <TaskColumnVisibilityControls
-              columns={OPTIONAL_TASK_COLUMNS}
-              selectedColumns={visibleColumns}
-              disabled={viewMode !== 'table'}
-              onChange={handleVisibleColumnsChange}
-            />
-            {projectId ? (
-              <TaskSavedViewsControls
-                views={savedViews}
-                selectedViewId={selectedViewId}
-                onSelect={handleViewSelect}
-                onCreate={handleOpenSaveModal}
-                onDelete={handleDeleteView}
-                loadingStatus={viewsStatus}
-                mutationStatus={mutationStatus}
+          filters={filters}
+          statusOptions={statusOptions}
+          priorityOptions={priorityOptions}
+          assigneeOptions={assigneeOptions}
+          onChange={handleFiltersChange}
+          viewMode={viewMode}
+          onViewModeChange={setViewMode}
+          onCreate={canManageTasks ? () => openTaskCreate() : undefined}
+          canCreate={canManageTasks}
+          secondaryActions={
+            <>
+              <TaskColumnVisibilityControls
+                columns={OPTIONAL_TASK_COLUMNS}
+                selectedColumns={visibleColumns}
+                disabled={viewMode !== 'table'}
+                onChange={handleVisibleColumnsChange}
               />
-            ) : null}
-          </>
-        }
-      />
-      {viewMode === 'table' ? (
-        <ProjectTasksTable
-          tasks={filteredTasks}
-          loading={loading || projectLoading}
-          onSelect={(task) => handleTaskSelect(task.id)}
-          onEdit={(task) => handleTaskEdit(task.id)}
-          onDelete={(task) => handleTaskDelete(task.id)}
-          canManage={canManageTasks}
-          deletingTaskId={deletingTaskId}
-          columns={tableColumns}
-          pagination={{
-            current: tablePage,
-            pageSize: TABLE_PAGE_SIZE,
-            onChange: (page) => setTablePage(page)
-          }}
+              {projectId ? (
+                <TaskSavedViewsControls
+                  views={savedViews}
+                  selectedViewId={selectedViewId}
+                  onSelect={handleViewSelect}
+                  onCreate={handleOpenSaveModal}
+                  onDelete={handleDeleteView}
+                  loadingStatus={viewsStatus}
+                  mutationStatus={mutationStatus}
+                />
+              ) : null}
+            </>
+          }
         />
-      ) : (
-        <ProjectTasksCardGrid
-          tasks={filteredTasks}
-          loading={loading || projectLoading}
-          page={cardPage}
-          pageSize={CARD_PAGE_SIZE}
-          onPageChange={setCardPage}
-          onSelect={(task) => handleTaskSelect(task.id)}
-          onEdit={(task) => handleTaskEdit(task.id)}
-          onDelete={(task) => handleTaskDelete(task.id)}
-          canManage={canManageTasks}
-          deletingTaskId={deletingTaskId}
-        />
-      )}
+        {viewMode === 'table' ? (
+          <ProjectTasksTable
+            tasks={filteredTasks}
+            loading={loading || projectLoading}
+            onSelect={(task) => handleTaskSelect(task.id)}
+            onEdit={(task) => handleTaskEdit(task.id)}
+            onDelete={(task) => handleTaskDelete(task.id)}
+            canManage={canManageTasks}
+            deletingTaskId={deletingTaskId}
+            columns={tableColumns}
+            pagination={{
+              current: tablePage,
+              pageSize: TABLE_PAGE_SIZE,
+              onChange: (page) => setTablePage(page)
+            }}
+          />
+        ) : null}
+        {viewMode === 'cards' ? (
+          <ProjectTasksCardGrid
+            tasks={filteredTasks}
+            loading={loading || projectLoading}
+            page={cardPage}
+            pageSize={CARD_PAGE_SIZE}
+            onPageChange={setCardPage}
+            onSelect={(task) => handleTaskSelect(task.id)}
+            onEdit={(task) => handleTaskEdit(task.id)}
+            onDelete={(task) => handleTaskDelete(task.id)}
+            canManage={canManageTasks}
+            deletingTaskId={deletingTaskId}
+          />
+        ) : null}
+        {viewMode === 'board' ? (
+          <ProjectBoard
+            projectId={projectId}
+            tasks={filteredTasks}
+            isLoading={loading || projectLoading}
+            canManageTasks={canManageTasks}
+            onTaskSelect={(task) => handleTaskSelect(task.id)}
+            onTaskEdit={(task) => handleTaskEdit(task.id)}
+            onTaskDelete={(task) => handleTaskDelete(task.id)}
+            deletingTaskId={deletingTaskId}
+          />
+        ) : null}
     </Space>
       <Modal
         open={isSaveModalOpen}

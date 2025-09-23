@@ -2,7 +2,8 @@
   "title": "Progetti",
   "viewSwitcher": {
     "table": "Vista tabella",
-    "cards": "Vista card"
+    "cards": "Vista card",
+    "board": "Vista kanban"
   },
   "actions": {
     "refresh": "Aggiorna",

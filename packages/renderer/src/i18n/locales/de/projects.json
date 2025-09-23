@@ -2,7 +2,8 @@
   "title": "Projekte",
   "viewSwitcher": {
     "table": "Tabellenansicht",
-    "cards": "Kartenansicht"
+    "cards": "Kartenansicht",
+    "board": "Kanban Ansicht"
   },
   "actions": {
     "refresh": "Aktualisieren",

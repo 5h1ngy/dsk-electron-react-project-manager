@@ -151,9 +151,6 @@ const ProjectLayout = (): JSX.Element => {
       case 'tasks':
         navigate(`${basePath}/tasks`)
         break
-      case 'board':
-        navigate(`${basePath}/board`)
-        break
       case 'notes':
         navigate(`${basePath}/notes`)
         break
