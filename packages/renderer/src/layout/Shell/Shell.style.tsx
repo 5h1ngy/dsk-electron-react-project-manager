@@ -75,7 +75,8 @@ export const useShellStyles = ({ menuTheme, collapsed, displayName }: UseShellSt
   }
 
   const contentStyle: CSSProperties = {
-    paddingInline: token.paddingXL,
+    paddingInlineStart: token.paddingXL,
+    paddingInlineEnd: token.paddingXL * 1.75,
     paddingBlock: token.paddingLG,
     display: 'flex',
     flexDirection: 'column',

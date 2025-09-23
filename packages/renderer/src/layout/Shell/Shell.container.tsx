@@ -1,5 +1,5 @@
 import { Avatar, Button, Dropdown, Flex, Typography } from 'antd'
-import { useCallback, useMemo, useState, type JSX, type ReactNode } from 'react'
+import { useCallback, useEffect, useMemo, useState, type JSX, type ReactNode } from 'react'
 
 import { AccountMenu } from '@renderer/layout/Shell/components/AccountMenu'
 import { getInitials } from '@renderer/layout/Shell/utils/userIdentity'
@@ -28,6 +28,20 @@ const ShellContainer = ({ currentUser, onLogout, children }: ShellProps): JSX.El
     displayName: currentUser.displayName
   })
   const { accountButtonStyle, accountAvatarStyle, dropdownWidth, token } = styles
+
+  useEffect(() => {
+    const styleId = 'app-pagination-active-style'
+    let styleTag = document.getElementById(styleId) as HTMLStyleElement | null
+    if (!styleTag) {
+      styleTag = document.createElement('style')
+      styleTag.id = styleId
+      document.head.appendChild(styleTag)
+    }
+    styleTag.textContent = `.ant-pagination .ant-pagination-item-active a {
+  color: ${token.colorTextLightSolid} !important;
+  font-weight: ${token.fontWeightStrong};
+}`
+  }, [token.colorTextLightSolid, token.fontWeightStrong])
 
   const [headerContent, setHeaderContent] = useState<ReactNode>(null)
   const handleHeaderChange = useCallback((content: ReactNode) => {

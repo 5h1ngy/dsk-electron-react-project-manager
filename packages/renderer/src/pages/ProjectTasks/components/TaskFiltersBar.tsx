@@ -53,27 +53,27 @@ export const TaskFiltersBar = ({
     () => [
       {
         label: (
-          <Space size={6}>
+          <Space size={6} style={{ color: 'inherit' }}>
             <TableOutlined />
-            {t('viewSwitcher.table')}
+            <span>{t('viewSwitcher.table')}</span>
           </Space>
         ),
         value: 'table'
       },
       {
         label: (
-          <Space size={6}>
+          <Space size={6} style={{ color: 'inherit' }}>
             <ColumnWidthOutlined />
-            {t('viewSwitcher.board')}
+            <span>{t('viewSwitcher.board')}</span>
           </Space>
         ),
         value: 'board'
       },
       {
         label: (
-          <Space size={6}>
+          <Space size={6} style={{ color: 'inherit' }}>
             <AppstoreOutlined />
-            {t('viewSwitcher.cards')}
+            <span>{t('viewSwitcher.cards')}</span>
           </Space>
         ),
         value: 'cards'

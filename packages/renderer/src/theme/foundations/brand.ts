@@ -37,23 +37,23 @@ export const buildBrandTokens = (
   const primaryActive = darken(accentColor, 0.18)
 
   const primarySurface =
-    mode === 'dark' ? darken(accentColor, 0.6) : lighten(accentColor, 0.82)
+    mode === 'dark' ? darken(accentColor, 0.6) : lighten(accentColor, 0.58)
   const secondaryBase =
-    mode === 'dark' ? lighten(accentColor, 0.32) : darken(accentColor, 0.18)
+    mode === 'dark' ? lighten(accentColor, 0.32) : darken(accentColor, 0.15)
   const secondaryHover =
-    mode === 'dark' ? lighten(secondaryBase, 0.12) : darken(secondaryBase, 0.12)
+    mode === 'dark' ? lighten(secondaryBase, 0.08) : darken(secondaryBase, 0.08)
   const secondaryActive =
-    mode === 'dark' ? darken(secondaryBase, 0.08) : lighten(secondaryBase, 0.08)
+    mode === 'dark' ? darken(secondaryBase, 0.08) : darken(secondaryBase, 0.16)
   const secondarySurface =
-    mode === 'dark' ? darken(accentColor, 0.5) : lighten(accentColor, 0.74)
+    mode === 'dark' ? darken(accentColor, 0.45) : lighten(accentColor, 0.45)
   const secondaryBorder =
-    mode === 'dark' ? darken(accentColor, 0.35) : lighten(accentColor, 0.48)
+    mode === 'dark' ? darken(accentColor, 0.3) : lighten(accentColor, 0.28)
 
   return {
     primary,
     primaryHover,
     primaryActive,
-    primarySubtle: mode === 'dark' ? darken(accentColor, 0.3) : lighten(accentColor, 0.32),
+    primarySubtle: mode === 'dark' ? darken(accentColor, 0.3) : lighten(accentColor, 0.2),
     primarySurface,
     onPrimary: resolveAccentForeground(accentColor, palette, mode),
     secondary: secondaryBase,

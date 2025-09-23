@@ -37,6 +37,7 @@ const CARD_BODY_STYLE = {
 export interface UserCardsGridProps {
   users: UserDTO[]
   loading: boolean
+  hasLoaded: boolean
   page: number
   pageSize: number
   onPageChange: (page: number) => void
@@ -47,6 +48,7 @@ export interface UserCardsGridProps {
 export const UserCardsGrid = ({
   users,
   loading,
+  hasLoaded,
   page,
   pageSize,
   onPageChange,
@@ -54,7 +56,7 @@ export const UserCardsGrid = ({
   onDelete
 }: UserCardsGridProps): JSX.Element => {
   const { t } = useTranslation('dashboard')
-  const showSkeleton = useDelayedLoading(loading)
+  const showSkeleton = useDelayedLoading(loading && !hasLoaded)
   const badgeTokens = useSemanticBadges()
   const { token } = theme.useToken()
 

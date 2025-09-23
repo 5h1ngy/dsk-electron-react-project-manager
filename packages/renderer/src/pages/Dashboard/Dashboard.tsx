@@ -239,6 +239,7 @@ const Dashboard = (): JSX.Element => {
           <UserCardsGrid
             users={filteredUsers}
             loading={loading}
+            hasLoaded={hasLoaded}
             page={userCardPage}
             pageSize={USER_CARD_PAGE_SIZE}
             onPageChange={setUserCardPage}

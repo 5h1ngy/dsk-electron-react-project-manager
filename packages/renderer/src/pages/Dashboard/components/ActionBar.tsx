@@ -1,7 +1,7 @@
 import type { JSX } from 'react'
 import { useTranslation } from 'react-i18next'
 import { AppstoreOutlined, TableOutlined } from '@ant-design/icons'
-import { Button, Segmented, Space, Typography } from 'antd'
+import { Button, Segmented, Space } from 'antd'
 
 import { BorderedPanel } from '@renderer/components/Surface/BorderedPanel'
 
@@ -40,18 +40,18 @@ export const ActionBar = ({
           options={[
             {
               label: (
-                <Space size={6}>
+                <Space size={6} style={{ color: 'inherit' }}>
                   <TableOutlined />
-                  <Typography.Text>{t('filters.users.view.table')}</Typography.Text>
+                  <span>{t('filters.users.view.table')}</span>
                 </Space>
               ),
               value: 'table'
             },
             {
               label: (
-                <Space size={6}>
+                <Space size={6} style={{ color: 'inherit' }}>
                   <AppstoreOutlined />
-                  <Typography.Text>{t('filters.users.view.cards')}</Typography.Text>
+                  <span>{t('filters.users.view.cards')}</span>
                 </Space>
               ),
               value: 'cards'
