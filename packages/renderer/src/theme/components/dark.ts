@@ -71,6 +71,7 @@ export const buildDarkComponents = (
   Pagination: {
     itemBg: palette.surfaceElevated,
     itemActiveBg: brand.primary,
+    itemActiveColor: brand.onPrimary,
     itemInputBg: palette.surfaceContainer,
     itemSize: shape.controlHeightSM
   },

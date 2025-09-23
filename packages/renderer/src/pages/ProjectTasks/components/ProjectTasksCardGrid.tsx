@@ -190,7 +190,7 @@ export const ProjectTasksCardGrid = ({
           pageSize={pageSize}
           onChange={onPageChange}
           showSizeChanger={false}
-          style={{ alignSelf: 'center' }}
+          style={{ alignSelf: 'flex-end' }}
         />
       ) : null}
     </Space>
