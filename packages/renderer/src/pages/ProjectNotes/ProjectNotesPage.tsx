@@ -2,18 +2,20 @@ import { useCallback, useEffect, useMemo, useState, type ReactElement } from 're
 import {
   Badge,
   Button,
+  Collapse,
   Divider,
   Drawer,
+  Flex,
   Form,
   Input,
   List,
   Modal,
-  Switch,
   Popconfirm,
   Select,
   Skeleton,
   Space,
   Segmented,
+  Switch,
   Tag,
   Typography,
   message
@@ -21,12 +23,14 @@ import {
 import {
   DeleteOutlined,
   EditOutlined,
+  FilterOutlined,
   FileMarkdownOutlined,
   LinkOutlined,
   LockOutlined,
   PlusOutlined,
   ReloadOutlined,
   SearchOutlined,
+  SettingOutlined,
   UnlockOutlined
 } from '@ant-design/icons'
 import { Controller, useForm } from 'react-hook-form'
@@ -59,6 +63,7 @@ import MarkdownEditor, {
 } from '@renderer/components/Markdown/MarkdownEditor'
 import MarkdownViewer from '@renderer/components/Markdown/MarkdownViewer'
 import { BorderedPanel } from '@renderer/components/Surface/BorderedPanel'
+import usePersistentCollapse from '@renderer/hooks/usePersistentCollapse'
 
 type NoteEditorMode = 'create' | 'edit'
 
@@ -185,6 +190,7 @@ const ProjectNotesPage = (): ReactElement => {
   const mutationStatus = useAppSelector(selectNotesMutationStatus)
   const searchState = useAppSelector(selectNotesSearchState)
   const [searchParams, setSearchParams] = useSearchParams()
+  const [activePanels, handlePanelsChange] = usePersistentCollapse('projectNotes.panels')
 
   const fetchCurrentNotes = useCallback(() => {
     if (!projectId) {
@@ -358,54 +364,79 @@ const ProjectNotesPage = (): ReactElement => {
         {project?.name ?? t('notes.title')}
       </Typography.Title>
       <BorderedPanel padding="lg" style={{ width: '100%' }}>
-        <Space direction="vertical" size="middle" style={{ width: '100%' }}>
-          {canManageNotes ? (
-            <Segmented
-              size="large"
-              value={includePrivate ? 'private' : 'public'}
-              onChange={(value) => setIncludePrivate(value === 'private')}
-              options={includePrivateOptions}
-              style={{ alignSelf: 'flex-start' }}
-            />
-          ) : null}
-          <Space wrap align="center" size="middle">
-            <Input.Search
-              placeholder={t('notes.actions.searchPlaceholder')}
-              onSearch={handleSearch}
-              allowClear
-              style={{ width: 220 }}
-              enterButton={<SearchOutlined />}
-            />
-            <Select
-              allowClear
-              placeholder={t('notes.filters.notebook')}
-              style={{ width: 180 }}
-              options={notebooks}
-              value={selectedNotebook ?? undefined}
-              onChange={(value) => setSelectedNotebook(value ?? null)}
-            />
-            <Select
-              allowClear
-              placeholder={t('notes.filters.tag')}
-              style={{ width: 180 }}
-              options={tags}
-              value={selectedTag ?? undefined}
-              onChange={(value) => setSelectedTag(value ?? null)}
-            />
-          </Space>
-        </Space>
-      </BorderedPanel>
-      <BorderedPanel padding="md" style={{ width: '100%' }}>
-        <Space wrap align="center" size="small">
-          <Button icon={<ReloadOutlined />} onClick={handleRefresh} disabled={noteLoading}>
-            {t('details.refresh')}
-          </Button>
-          {canManageNotes ? (
-            <Button type="primary" icon={<PlusOutlined />} onClick={handleCreateNote}>
-              {t('notes.actions.create')}
-            </Button>
-          ) : null}
-        </Space>
+        <Flex vertical gap={16}>
+          <Flex vertical gap={12}>
+            <Space size={6} align="center">
+              <SettingOutlined />
+              <span>{t('notes.actionsPanel', { defaultValue: 'Azioni' })}</span>
+            </Space>
+            <Flex align="center" gap={12} wrap>
+              <Button icon={<ReloadOutlined />} onClick={handleRefresh} disabled={noteLoading}>
+                {t('details.refresh')}
+              </Button>
+              {canManageNotes ? (
+                <Button type="primary" icon={<PlusOutlined />} onClick={handleCreateNote}>
+                  {t('notes.actions.create')}
+                </Button>
+              ) : null}
+            </Flex>
+          </Flex>
+          <Collapse
+            bordered={false}
+            activeKey={activePanels}
+            onChange={handlePanelsChange}
+            defaultActiveKey={[]}
+            items={[
+              {
+                key: 'filters',
+                label: (
+                  <Space size={6} align="center">
+                    <FilterOutlined />
+                    <span>{t('notes.filterPanel', { defaultValue: 'Filtri' })}</span>
+                  </Space>
+                ),
+                children: (
+                  <Flex vertical gap={12}>
+                    {canManageNotes ? (
+                      <Segmented
+                        size="large"
+                        value={includePrivate ? 'private' : 'public'}
+                        onChange={(value) => setIncludePrivate(value === 'private')}
+                        options={includePrivateOptions}
+                        style={{ alignSelf: 'flex-start' }}
+                      />
+                    ) : null}
+                    <Flex wrap gap={12} style={{ width: '100%' }}>
+                      <Input.Search
+                        placeholder={t('notes.actions.searchPlaceholder')}
+                        onSearch={handleSearch}
+                        allowClear
+                        style={{ minWidth: 180, flex: '1 1 200px', maxWidth: 220 }}
+                        enterButton={<SearchOutlined />}
+                      />
+                      <Select
+                        allowClear
+                        placeholder={t('notes.filters.notebook')}
+                        style={{ minWidth: 160, flex: '1 1 180px' }}
+                        options={notebooks}
+                        value={selectedNotebook ?? undefined}
+                        onChange={(value) => setSelectedNotebook(value ?? null)}
+                      />
+                      <Select
+                        allowClear
+                        placeholder={t('notes.filters.tag')}
+                        style={{ minWidth: 160, flex: '1 1 180px' }}
+                        options={tags}
+                        value={selectedTag ?? undefined}
+                        onChange={(value) => setSelectedTag(value ?? null)}
+                      />
+                    </Flex>
+                  </Flex>
+                )
+              }
+            ]}
+          />
+        </Flex>
       </BorderedPanel>
       <List
         loading={noteLoading}

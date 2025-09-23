@@ -12,7 +12,8 @@
     "deleteTitle": "Projekt entfernen",
     "deleteDescription": "Moechten Sie {{name}} wirklich entfernen?",
     "deleteConfirm": "Entfernen",
-    "cancel": "Abbrechen"
+    "cancel": "Abbrechen",
+    "panelTitle": "Aktionen"
   },
   "filters": {
     "searchPlaceholder": "Nach Name, Key oder Tag suchen",
@@ -30,7 +31,8 @@
     "ownedOptions": {
       "all": "Alle Projekte",
       "mine": "Von mir erstellt"
-    }
+    },
+    "panelTitle": "Filter"
   },
   "permissions": {
     "createDenied": "Nur Administratoren oder Maintainer koennen Projekte erstellen.",
@@ -235,37 +237,37 @@
       "actions": "Aktionen"
     },
     "optionalColumns": {
-        "label": "Optionale Felder"
+      "label": "Optionale Felder"
+    },
+    "statusManager": {
+      "manageButton": "Status verwalten",
+      "title": "Aufgabenstatus",
+      "add": "Status hinzufügen",
+      "empty": "Keine Status definiert",
+      "messages": {
+        "created": "Status erstellt",
+        "updated": "Status aktualisiert",
+        "deleted": "Status entfernt",
+        "reordered": "Reihenfolge aktualisiert",
+        "error": "Vorgang fehlgeschlagen"
       },
-      "statusManager": {
-        "manageButton": "Status verwalten",
-        "title": "Aufgabenstatus",
-        "add": "Status hinzufügen",
-        "empty": "Keine Status definiert",
-        "messages": {
-          "created": "Status erstellt",
-          "updated": "Status aktualisiert",
-          "deleted": "Status entfernt",
-          "reordered": "Reihenfolge aktualisiert",
-          "error": "Vorgang fehlgeschlagen"
-        },
-        "deleteTitle": "Status entfernen",
-        "deleteDescription": "\"{{status}}\" wirklich entfernen?",
-        "deletePrompt": "Durch das Entfernen von \"{{status}}\" werden vorhandene Aufgaben dem Ersatzstatus zugewiesen.",
-        "confirm": "Bestätigen",
-        "cancel": "Abbrechen",
-        "createTitle": "Status erstellen",
-        "editTitle": "Status bearbeiten",
-        "fields": {
-          "label": "Bezeichnung",
-          "fallback": "Ersatzstatus"
-        },
-        "validation": {
-          "labelRequired": "Bezeichnung angeben",
-          "labelMax": "Maximal 80 Zeichen",
-          "fallbackRequired": "Ersatzstatus auswählen"
-        }
+      "deleteTitle": "Status entfernen",
+      "deleteDescription": "\"{{status}}\" wirklich entfernen?",
+      "deletePrompt": "Durch das Entfernen von \"{{status}}\" werden vorhandene Aufgaben dem Ersatzstatus zugewiesen.",
+      "confirm": "Bestätigen",
+      "cancel": "Abbrechen",
+      "createTitle": "Status erstellen",
+      "editTitle": "Status bearbeiten",
+      "fields": {
+        "label": "Bezeichnung",
+        "fallback": "Ersatzstatus"
       },
+      "validation": {
+        "labelRequired": "Bezeichnung angeben",
+        "labelMax": "Maximal 80 Zeichen",
+        "fallbackRequired": "Ersatzstatus auswählen"
+      }
+    },
     "savedViews": {
       "placeholder": "Gespeicherte Ansichten",
       "saveButton": "Ansicht speichern",
@@ -328,7 +330,9 @@
         "validation": "Bitte einen Kommentar eingeben",
         "submit": "Kommentar senden"
       }
-    }
+    },
+    "filterPanel": "Filter",
+    "actionsPanel": "Aktionen"
   },
   "notes": {
     "title": "Projektnotizen",
@@ -339,7 +343,8 @@
         "private": "Private Notizen einschliessen"
       },
       "notebook": "Notizbuch",
-      "tag": "Tag"
+      "tag": "Tag",
+      "panelTitle": "Filter"
     },
     "actions": {
       "create": "Neue Note",
@@ -350,7 +355,8 @@
       "edit": "Bearbeiten",
       "deleteTitle": "Notiz loeschen",
       "deleteConfirmText": "Moechten Sie diese Notiz wirklich loeschen?",
-      "delete": "Loeschen"
+      "delete": "Loeschen",
+      "panelTitle": "Aktionen"
     },
     "labels": {
       "private": "Privat",
@@ -417,5 +423,20 @@
     "submit": "Suchen",
     "empty": "Keine Aufgaben gefunden",
     "openTask": "Oeffnen"
+  },
+  "views": {
+    "placeholder": "Gespeicherte Ansichten",
+    "saveButton": "Ansicht speichern",
+    "deleteButton": "Löschen",
+    "saveSuccess": "Ansicht gespeichert",
+    "saveError": "Ansicht konnte nicht gespeichert werden",
+    "deleteSuccess": "Ansicht gelöscht",
+    "modal": {
+      "title": "Projektansicht speichern",
+      "save": "Speichern",
+      "cancel": "Abbrechen",
+      "nameLabel": "Name",
+      "nameRequired": "Bitte einen Namen eingeben"
+    }
   }
 }

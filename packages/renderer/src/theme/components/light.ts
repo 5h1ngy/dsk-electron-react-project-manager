@@ -66,8 +66,7 @@ export const buildLightComponents = (
   },
   Pagination: {
     itemBg: palette.surfaceContainer,
-    itemActiveBg: brand.primary,
-    itemActiveColor: brand.onPrimary,
+    itemActiveBg: lighten(brand.primary, 0.45),
     itemInputBg: palette.surfaceContainer,
     itemSize: shape.controlHeightSM
   },

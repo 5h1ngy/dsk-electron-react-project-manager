@@ -12,7 +12,8 @@
     "deleteTitle": "Supprimer le projet",
     "deleteDescription": "Voulez-vous vraiment supprimer {{name}} ?",
     "deleteConfirm": "Supprimer",
-    "cancel": "Annuler"
+    "cancel": "Annuler",
+    "panelTitle": "Actions"
   },
   "filters": {
     "searchPlaceholder": "Rechercher par nom, cle ou tag",
@@ -30,7 +31,8 @@
     "ownedOptions": {
       "all": "Tous les projets",
       "mine": "CrÃ©Ã©s par moi"
-    }
+    },
+    "panelTitle": "Filtres"
   },
   "permissions": {
     "createDenied": "Seuls les administrateurs ou mainteneurs peuvent creer des projets.",
@@ -233,37 +235,37 @@
       "actions": "Actions"
     },
     "optionalColumns": {
-        "label": "Champs optionnels"
+      "label": "Champs optionnels"
+    },
+    "statusManager": {
+      "manageButton": "Gérer les statuts",
+      "title": "Statuts des tâches",
+      "add": "Ajouter un statut",
+      "empty": "Aucun statut défini",
+      "messages": {
+        "created": "Statut créé",
+        "updated": "Statut mis à jour",
+        "deleted": "Statut supprimé",
+        "reordered": "Ordre mis à jour",
+        "error": "Opération échouée"
       },
-      "statusManager": {
-        "manageButton": "Gérer les statuts",
-        "title": "Statuts des tâches",
-        "add": "Ajouter un statut",
-        "empty": "Aucun statut défini",
-        "messages": {
-          "created": "Statut créé",
-          "updated": "Statut mis à jour",
-          "deleted": "Statut supprimé",
-          "reordered": "Ordre mis à jour",
-          "error": "Opération échouée"
-        },
-        "deleteTitle": "Supprimer le statut",
-        "deleteDescription": "Voulez-vous supprimer « {{status}} » ?",
-        "deletePrompt": "La suppression de « {{status}} » déplacera les tâches vers le statut de secours.",
-        "confirm": "Confirmer",
-        "cancel": "Annuler",
-        "createTitle": "Créer un statut",
-        "editTitle": "Modifier le statut",
-        "fields": {
-          "label": "Libellé",
-          "fallback": "Statut de secours"
-        },
-        "validation": {
-          "labelRequired": "Saisissez un libellé",
-          "labelMax": "80 caractères maximum",
-          "fallbackRequired": "Sélectionnez un statut de secours"
-        }
+      "deleteTitle": "Supprimer le statut",
+      "deleteDescription": "Voulez-vous supprimer « {{status}} » ?",
+      "deletePrompt": "La suppression de « {{status}} » déplacera les tâches vers le statut de secours.",
+      "confirm": "Confirmer",
+      "cancel": "Annuler",
+      "createTitle": "Créer un statut",
+      "editTitle": "Modifier le statut",
+      "fields": {
+        "label": "Libellé",
+        "fallback": "Statut de secours"
       },
+      "validation": {
+        "labelRequired": "Saisissez un libellé",
+        "labelMax": "80 caractères maximum",
+        "fallbackRequired": "Sélectionnez un statut de secours"
+      }
+    },
     "savedViews": {
       "placeholder": "Vues enregistrÃƒÂ©es",
       "saveButton": "Enregistrer la vue",
@@ -326,7 +328,9 @@
         "validation": "Saisissez un commentaire",
         "submit": "Publier"
       }
-    }
+    },
+    "filterPanel": "Filtres",
+    "actionsPanel": "Actions"
   },
   "notes": {
     "title": "Notes du projet",
@@ -337,7 +341,8 @@
         "private": "Inclure les notes privees"
       },
       "notebook": "Carnet",
-      "tag": "Tag"
+      "tag": "Tag",
+      "panelTitle": "Filtres"
     },
     "actions": {
       "create": "Nouvelle note",
@@ -348,7 +353,8 @@
       "edit": "Modifier",
       "deleteTitle": "Supprimer la note",
       "deleteConfirmText": "Voulez-vous vraiment supprimer cette note ?",
-      "delete": "Supprimer"
+      "delete": "Supprimer",
+      "panelTitle": "Actions"
     },
     "labels": {
       "private": "Privee",
@@ -415,6 +421,20 @@
     "submit": "Rechercher",
     "empty": "Aucune tache trouvee",
     "openTask": "Ouvrir"
+  },
+  "views": {
+    "placeholder": "Vues enregistrées",
+    "saveButton": "Enregistrer la vue",
+    "deleteButton": "Supprimer",
+    "saveSuccess": "Vue enregistrée",
+    "saveError": "Impossible d'enregistrer la vue",
+    "deleteSuccess": "Vue supprimée",
+    "modal": {
+      "title": "Enregistrer une vue projet",
+      "save": "Enregistrer",
+      "cancel": "Annuler",
+      "nameLabel": "Nom",
+      "nameRequired": "Saisissez un nom"
+    }
   }
 }
-

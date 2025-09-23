@@ -16,7 +16,6 @@ import {
 import { CreateUserModal } from '@renderer/pages/Dashboard/components/CreateUserModal'
 import { EditUserModal } from '@renderer/pages/Dashboard/components/EditUserModal'
 import { UserTable } from '@renderer/pages/Dashboard/components/UserTable'
-import { ActionBar } from '@renderer/pages/Dashboard/components/ActionBar'
 import { ShellHeaderPortal } from '@renderer/layout/Shell/ShellHeader.context'
 import { usePrimaryBreadcrumb } from '@renderer/layout/Shell/hooks/usePrimaryBreadcrumb'
 import {
@@ -211,11 +210,10 @@ const Dashboard = (): JSX.Element => {
           onChange={handleUserFiltersChange}
           roleOptions={availableRoles}
           aria-label={t('filters.users.ariaLabel')}
-        />
-        <ActionBar
           onCreate={openCreateModal}
           onRefresh={refreshUsers}
           isRefreshing={loading}
+          canCreate={isAdmin}
           viewMode={userViewMode}
           onViewModeChange={(mode) => setUserViewMode(mode)}
         />
