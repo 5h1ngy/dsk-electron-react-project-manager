@@ -302,6 +302,7 @@
     },
     "savedViews": {
       "placeholder": "Gespeicherte Ansichten",
+      "panelTitle": "Gespeicherte Ansichten",
       "saveButton": "Ansicht speichern",
       "deleteButton": "Löschen",
       "modalTitle": "Aktuelle Ansicht speichern",
@@ -459,6 +460,7 @@
   },
   "views": {
     "placeholder": "Gespeicherte Ansichten",
+      "panelTitle": "Gespeicherte Ansichten",
     "saveButton": "Ansicht speichern",
     "deleteButton": "Löschen",
     "saveSuccess": "Ansicht gespeichert",

@@ -4,7 +4,7 @@ import {
   FilterOutlined,
   PlusOutlined,
   ReloadOutlined,
-  SettingOutlined,
+  SaveOutlined,
   TableOutlined,
   TeamOutlined,
   UserOutlined
@@ -39,6 +39,7 @@ export interface ProjectsActionBarProps {
   createdBetween: CreatedRange
   onCreatedBetweenChange: (range: CreatedRange) => void
   secondaryActions?: ReactNode
+  savedViewsControls?: ReactNode
 }
 
 export const ProjectsActionBar = ({
@@ -60,7 +61,8 @@ export const ProjectsActionBar = ({
   onOwnedOnlyChange,
   createdBetween,
   onCreatedBetweenChange,
-  secondaryActions
+  secondaryActions,
+  savedViewsControls
 }: ProjectsActionBarProps): JSX.Element => {
   const { t } = useTranslation('projects')
   const [filtersOpen, setFiltersOpen] = useState(false)
@@ -73,6 +75,30 @@ export const ProjectsActionBar = ({
     const [start, end] = createdBetween
     return [start ? dayjs(start) : null, end ? dayjs(end) : null]
   }, [createdBetween])
+
+  const viewSegmentedOptions = useMemo(
+    () => [
+      {
+        label: (
+          <Space size={6} style={{ color: 'inherit' }}>
+            <TableOutlined />
+            <span>{t('viewSwitcher.table')}</span>
+          </Space>
+        ),
+        value: 'table'
+      },
+      {
+        label: (
+          <Space size={6} style={{ color: 'inherit' }}>
+            <AppstoreOutlined />
+            <span>{t('viewSwitcher.cards')}</span>
+          </Space>
+        ),
+        value: 'cards'
+      }
+    ],
+    [t]
+  )
 
   const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
     onSearchChange(event.target.value)
@@ -96,6 +122,29 @@ export const ProjectsActionBar = ({
 
   const filterContent = (
     <Flex vertical gap={16} style={{ width: '100%' }}>
+      {savedViewsControls ? (
+        <BorderedPanel
+          padding="md"
+          bodyStyle={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: token.paddingSM
+          }}
+          title={
+            <Space size={6} align="center">
+              <SaveOutlined />
+              <span>
+                {t('views.panelTitle', {
+                  defaultValue: t('views.placeholder')
+                })}
+              </span>
+            </Space>
+          }
+          style={{ width: '100%' }}
+        >
+          {savedViewsControls}
+        </BorderedPanel>
+      ) : null}
       <Input
         placeholder={t('filters.searchPlaceholder')}
         allowClear
@@ -104,6 +153,32 @@ export const ProjectsActionBar = ({
         size="large"
       />
       <Flex vertical gap={12}>
+        <Segmented
+          size="large"
+          value={ownedOnly ? 'owned' : 'all'}
+          onChange={(next) => onOwnedOnlyChange(next === 'owned')}
+          options={[
+            {
+              label: (
+                <Space size={6} style={{ color: 'inherit' }}>
+                  <TeamOutlined />
+                  <span>{t('filters.ownedOptions.all')}</span>
+                </Space>
+              ),
+              value: 'all'
+            },
+            {
+              label: (
+                <Space size={6} style={{ color: 'inherit' }}>
+                  <UserOutlined />
+                  <span>{t('filters.ownedOptions.mine')}</span>
+                </Space>
+              ),
+              value: 'owned'
+            }
+          ]}
+          style={{ alignSelf: 'flex-start' }}
+        />
         <RangePicker
           allowClear
           value={rangeValue}
@@ -138,66 +213,13 @@ export const ProjectsActionBar = ({
   )
 
   const actionsContent = (
-    <Flex align="center" wrap gap={12}>
-      <Button
-        icon={<FilterOutlined />}
-        onClick={() => setFiltersOpen(true)}
-        size="large"
-      >
-        {t('filters.openButton')}
-      </Button>
-      <Segmented
-        size="large"
-        value={ownedOnly ? 'owned' : 'all'}
-        onChange={(next) => onOwnedOnlyChange(next === 'owned')}
-        options={[
-          {
-            label: (
-              <Space size={6} style={{ color: 'inherit' }}>
-                <TeamOutlined />
-                <span>{t('filters.ownedOptions.all')}</span>
-              </Space>
-            ),
-            value: 'all'
-          },
-          {
-            label: (
-              <Space size={6} style={{ color: 'inherit' }}>
-                <UserOutlined />
-                <span>{t('filters.ownedOptions.mine')}</span>
-              </Space>
-            ),
-            value: 'owned'
-          }
-        ]}
-      />
-      <Segmented
-        size="large"
-        value={viewMode}
-        onChange={(next) => onViewModeChange(next as ViewMode)}
-        options={[
-          {
-            label: (
-              <Space size={6} style={{ color: 'inherit' }}>
-                <TableOutlined />
-                <span>{t('viewSwitcher.table')}</span>
-              </Space>
-            ),
-            value: 'table'
-          },
-          {
-            label: (
-              <Space size={6} style={{ color: 'inherit' }}>
-                <AppstoreOutlined />
-                <span>{t('viewSwitcher.cards')}</span>
-              </Space>
-            ),
-            value: 'cards'
-          }
-        ]}
-      />
-      <Space size="small" wrap>
-        {secondaryActions}
+    <Flex align="center" wrap gap={12} style={{ width: '100%' }}>
+      <Flex align="center" gap={12} wrap style={{ flex: '1 1 auto' }}>
+        {secondaryActions ? (
+          <Space size="small" wrap>
+            {secondaryActions}
+          </Space>
+        ) : null}
         <Button icon={<ReloadOutlined />} onClick={onRefresh} loading={isRefreshing}>
           {t('actions.refresh')}
         </Button>
@@ -210,20 +232,25 @@ export const ProjectsActionBar = ({
         >
           {t('actions.create')}
         </Button>
-      </Space>
+      </Flex>
+      <Flex align="center" gap={12} wrap style={{ justifyContent: 'flex-end', flexShrink: 0 }}>
+        <Segmented
+          size="large"
+          value={viewMode}
+          onChange={(next) => onViewModeChange(next as ViewMode)}
+          options={viewSegmentedOptions}
+        />
+        <Button icon={<FilterOutlined />} onClick={() => setFiltersOpen(true)} size="large">
+          {t('filters.openButton')}
+        </Button>
+      </Flex>
     </Flex>
   )
 
   return (
     <>
       <BorderedPanel padding="lg" style={{ width: '100%' }}>
-        <Flex vertical gap={12}>
-          <Space size={6} align="center">
-            <SettingOutlined />
-            <span>{t('actions.panelTitle', { defaultValue: 'Azioni' })}</span>
-          </Space>
-          {actionsContent}
-        </Flex>
+        {actionsContent}
       </BorderedPanel>
       <Drawer
         title={
@@ -247,10 +274,14 @@ export const ProjectsActionBar = ({
         }}
         styles={{
           header: { padding: token.paddingLG, marginBottom: 0 },
-          body: { padding: token.paddingLG, display: 'flex', flexDirection: 'column', gap: 16 }
+          body: { padding: token.paddingLG, display: 'flex', flexDirection: 'column', gap: 16 },
+          footer: {
+            padding: token.paddingLG,
+            borderTop: `${token.lineWidth}px solid ${token.colorBorderSecondary}`
+          }
         }}
         footer={
-          <Flex justify="space-between" align="center">
+          <Flex justify="space-between" align="center" style={{ width: '100%' }}>
             <Button
               onClick={() => {
                 onSearchChange('')

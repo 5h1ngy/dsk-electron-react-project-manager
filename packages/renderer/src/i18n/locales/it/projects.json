@@ -299,13 +299,14 @@
       }
     },
     "savedViews": {
-      "placeholder": "Viste salvate",
-      "saveButton": "Salva vista",
-      "deleteButton": "Elimina",
-      "modalTitle": "Salva vista corrente",
-      "nameLabel": "Nome",
-      "nameRequired": "Inserisci un nome"
-    },
+        "placeholder": "Viste salvate",
+        "panelTitle": "Viste salvate",
+        "saveButton": "Salva vista",
+        "deleteButton": "Elimina",
+        "modalTitle": "Salva vista corrente",
+        "nameLabel": "Nome",
+        "nameRequired": "Inserisci un nome"
+      },
     "actions": {
       "create": "Nuovo task",
       "edit": "Modifica",
@@ -457,6 +458,7 @@
   },
   "views": {
     "placeholder": "Viste salvate",
+    "panelTitle": "Viste salvate",
     "saveButton": "Salva vista",
     "deleteButton": "Elimina",
     "saveSuccess": "Vista salvata",

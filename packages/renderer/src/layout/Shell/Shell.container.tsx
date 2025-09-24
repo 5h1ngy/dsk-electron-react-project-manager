@@ -27,7 +27,7 @@ const ShellContainer = ({ currentUser, onLogout, children }: ShellProps): JSX.El
     collapsed,
     displayName: currentUser.displayName
   })
-  const { accountButtonStyle, accountAvatarStyle, dropdownWidth, token } = styles
+  const { accountButtonStyle, accountAvatarStyle, accountAvatarSizes, dropdownWidth, token } = styles
 
   useEffect(() => {
     const styleId = 'app-pagination-active-style'
@@ -72,7 +72,7 @@ const ShellContainer = ({ currentUser, onLogout, children }: ShellProps): JSX.El
         >
           <Avatar
             style={accountAvatarStyle}
-            size={collapsed ? token.controlHeightSM : token.controlHeightLG}
+            size={collapsed ? accountAvatarSizes.collapsed : accountAvatarSizes.expanded}
           >
             {getInitials(currentUser.displayName)}
           </Avatar>
@@ -89,7 +89,18 @@ const ShellContainer = ({ currentUser, onLogout, children }: ShellProps): JSX.El
         </Button>
       </Dropdown>
     ),
-    [accountAvatarStyle, accountButtonStyle, accountMenu, collapsed, currentUser.displayName, currentUser.username, labels.logout, token.controlHeightLG, token.controlHeightSM, token.fontSizeSM]
+    [
+      accountAvatarStyle,
+      accountAvatarSizes.collapsed,
+      accountAvatarSizes.expanded,
+      accountButtonStyle,
+      accountMenu,
+      collapsed,
+      currentUser.displayName,
+      currentUser.username,
+      labels.logout,
+      token.fontSizeSM
+    ]
   )
 
   return (

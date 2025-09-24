@@ -1,8 +1,7 @@
-import type { TFunction } from 'i18next'
-
 import type { TaskDetails } from '@renderer/store/slices/tasks/types'
 import type { TaskStatusItem } from '@renderer/store/slices/taskStatuses'
 import type { SelectOption, TaskFilters } from '@renderer/pages/ProjectTasks/ProjectTasks.types'
+import type { TFunction } from 'i18next'
 
 export const buildStatusOptions = (
   t: TFunction<'projects'>,
@@ -35,9 +34,6 @@ export const buildAssigneeOptions = (tasks: TaskDetails[], t: TFunction<'project
       .map(([id, label]) => ({ value: id, label }))
   ]
 }
-
-export const resolveEffectiveTitle = (projectName: string | undefined, t: TFunction<'projects'>): string =>
-  projectName ?? t('details.tasksTitle')
 
 export const filterTasks = (tasks: TaskDetails[], filters: TaskFilters): TaskDetails[] => {
   const needle = filters.searchQuery.trim().toLowerCase()

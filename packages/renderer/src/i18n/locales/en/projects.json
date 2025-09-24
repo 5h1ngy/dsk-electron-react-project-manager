@@ -299,13 +299,14 @@
       }
     },
     "savedViews": {
-      "placeholder": "Saved views",
-      "saveButton": "Save view",
-      "deleteButton": "Delete",
-      "modalTitle": "Save current view",
-      "nameLabel": "Name",
-      "nameRequired": "Please enter a name"
-    },
+        "placeholder": "Saved views",
+        "panelTitle": "Saved views",
+        "saveButton": "Save view",
+        "deleteButton": "Delete",
+        "modalTitle": "Save current view",
+        "nameLabel": "Name",
+        "nameRequired": "Please enter a name"
+      },
     "actions": {
       "create": "New task",
       "edit": "Edit",
@@ -457,6 +458,7 @@
   },
   "views": {
     "placeholder": "Saved views",
+    "panelTitle": "Saved views",
     "saveButton": "Save view",
     "deleteButton": "Delete",
     "saveSuccess": "View saved",

@@ -31,7 +31,6 @@ import {
   PlusOutlined,
   ReloadOutlined,
   SearchOutlined,
-  SettingOutlined,
   UnlockOutlined
 } from '@ant-design/icons'
 import { Controller, useForm } from 'react-hook-form'
@@ -401,33 +400,25 @@ const ProjectNotesPage = (): ReactElement => {
   return (
     <Space direction="vertical" size={24} style={{ width: '100%' }}>
       {contextHolder}
-      <Typography.Title level={4} style={{ marginBottom: 0 }}>
-        {project?.name ?? t('notes.title')}
-      </Typography.Title>
       <BorderedPanel padding="lg" style={{ width: '100%' }}>
-        <Flex vertical gap={12}>
-          <Flex vertical gap={12}>
-            <Space size={6} align="center">
-              <SettingOutlined />
-              <span>{t('notes.actionsPanel', { defaultValue: 'Azioni' })}</span>
-            </Space>
-            <Flex align="center" gap={12} wrap>
-              <Button
-                icon={<FilterOutlined />}
-                onClick={() => setFiltersDrawerOpen(true)}
-              >
-                {t('notes.openFilters')}
+        <Flex align="center" justify="space-between" gap={12} wrap>
+          <Flex align="center" gap={12} wrap style={{ flex: '1 1 auto' }}>
+            <Button icon={<ReloadOutlined />} onClick={handleRefresh} disabled={noteLoading}>
+              {t('details.refresh')}
+            </Button>
+            {canManageNotes ? (
+              <Button type="primary" icon={<PlusOutlined />} onClick={handleCreateNote}>
+                {t('notes.actions.create')}
               </Button>
-              <Button icon={<ReloadOutlined />} onClick={handleRefresh} disabled={noteLoading}>
-                {t('details.refresh')}
-              </Button>
-              {canManageNotes ? (
-                <Button type="primary" icon={<PlusOutlined />} onClick={handleCreateNote}>
-                  {t('notes.actions.create')}
-                </Button>
-              ) : null}
-            </Flex>
+            ) : null}
           </Flex>
+          <Button
+            icon={<FilterOutlined />}
+            onClick={() => setFiltersDrawerOpen(true)}
+            style={{ flexShrink: 0 }}
+          >
+            {t('notes.openFilters')}
+          </Button>
         </Flex>
       </BorderedPanel>
       <Drawer

@@ -1,13 +1,6 @@
 import { useMemo, useState, type JSX } from 'react'
 import { Button, Drawer, Flex, Grid, Input, Segmented, Select, Space, Typography, theme } from 'antd'
-import {
-  AppstoreOutlined,
-  FilterOutlined,
-  SearchOutlined,
-  SettingOutlined,
-  TableOutlined,
-  UserSwitchOutlined
-} from '@ant-design/icons'
+import { AppstoreOutlined, FilterOutlined, SearchOutlined, TableOutlined, UserSwitchOutlined } from '@ant-design/icons'
 import type { SegmentedValue } from 'antd/es/segmented'
 import { useTranslation } from 'react-i18next'
 
@@ -93,15 +86,33 @@ export const UserFilters = ({
     </Flex>
   )
 
+  const viewSegmentedOptions = useMemo(
+    () => [
+      {
+        label: (
+          <Space size={6} style={{ color: 'inherit' }}>
+            <TableOutlined />
+            <span>{t('filters.users.view.table')}</span>
+          </Space>
+        ),
+        value: 'table'
+      },
+      {
+        label: (
+          <Space size={6} style={{ color: 'inherit' }}>
+            <AppstoreOutlined />
+            <span>{t('filters.users.view.cards')}</span>
+          </Space>
+        ),
+        value: 'cards'
+      }
+    ],
+    [t]
+  )
+
   const actionsContent = (
-    <Flex align="center" wrap gap={12} justify="flex-end">
-      <Button
-        icon={<FilterOutlined />}
-        onClick={() => setFiltersOpen(true)}
-      >
-        {t('filters.openButton')}
-      </Button>
-      <Space size="small" wrap>
+    <Flex align="center" wrap gap={12} style={{ width: '100%' }}>
+      <Space size="small" wrap style={{ flex: '1 1 auto' }}>
         <Button type="primary" onClick={onCreate} disabled={!canCreate}>
           {t('dashboard:actionBar.create')}
         </Button>
@@ -109,44 +120,24 @@ export const UserFilters = ({
           {t('dashboard:actionBar.refresh')}
         </Button>
       </Space>
-      <Segmented
-        size="large"
-        value={viewMode}
-        onChange={(next) => onViewModeChange(next as 'table' | 'cards')}
-        options={[
-          {
-            label: (
-              <Space size={6} style={{ color: 'inherit' }}>
-                <TableOutlined />
-                <span>{t('filters.users.view.table')}</span>
-              </Space>
-            ),
-            value: 'table'
-          },
-          {
-            label: (
-              <Space size={6} style={{ color: 'inherit' }}>
-                <AppstoreOutlined />
-                <span>{t('filters.users.view.cards')}</span>
-              </Space>
-            ),
-            value: 'cards'
-          }
-        ]}
-      />
+      <Flex align="center" gap={12} wrap style={{ justifyContent: 'flex-end', flexShrink: 0 }}>
+        <Segmented
+          size="large"
+          value={viewMode}
+          onChange={(next) => onViewModeChange(next as 'table' | 'cards')}
+          options={viewSegmentedOptions}
+        />
+        <Button icon={<FilterOutlined />} onClick={() => setFiltersOpen(true)}>
+          {t('filters.openButton')}
+        </Button>
+      </Flex>
     </Flex>
   )
 
   return (
     <>
       <BorderedPanel padding="lg" style={{ width: '100%' }}>
-        <Flex vertical gap={12}>
-          <Space size={6} align="center">
-            <SettingOutlined />
-            <span>{t('dashboard:actions.panelTitle', { defaultValue: 'Azioni' })}</span>
-          </Space>
-          {actionsContent}
-        </Flex>
+        {actionsContent}
       </BorderedPanel>
       <Drawer
         placement="right"

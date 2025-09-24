@@ -36,6 +36,8 @@ export const BorderedPanel = ({
 }: PropsWithChildren<BorderedPanelProps>) => {
   const { token } = theme.useToken()
   const borderColor = token.colorBorderSecondary ?? token.colorBorder
+  const resolvedPadding = mapPadding(padding, token)
+  const headerVerticalPadding = Math.max(4, Math.round(resolvedPadding / 2))
 
   return (
     <Card
@@ -52,12 +54,14 @@ export const BorderedPanel = ({
       styles={{
         header: {
           borderBottom: 'none',
-          padding: 0,
+          padding: `${headerVerticalPadding}px ${resolvedPadding}px 0`,
           marginBottom: token.marginSM,
+          display: 'flex',
+          alignItems: 'center',
           ...headerStyle
         },
         body: {
-          padding: mapPadding(padding, token),
+          padding: resolvedPadding,
           ...bodyStyle
         }
       }}

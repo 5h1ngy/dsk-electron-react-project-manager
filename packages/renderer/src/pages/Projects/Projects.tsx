@@ -150,7 +150,7 @@ const ProjectsPage = ({}: ProjectsPageProps): JSX.Element => {
           onOwnedOnlyChange={setOwnedOnly}
           createdBetween={createdBetween}
           onCreatedBetweenChange={setCreatedBetween}
-          secondaryActions={savedViewControls}
+          savedViewsControls={savedViewControls}
         />
       </div>
       {viewMode === 'table' ? (

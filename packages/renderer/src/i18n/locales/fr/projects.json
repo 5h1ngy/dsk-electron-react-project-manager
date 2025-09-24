@@ -300,6 +300,7 @@
     },
     "savedViews": {
       "placeholder": "Vues enregistrÃƒÂ©es",
+      "panelTitle": "Vues enregistrÃƒÂ©es",
       "saveButton": "Enregistrer la vue",
       "deleteButton": "Supprimer",
       "modalTitle": "Enregistrer la vue actuelle",
@@ -457,6 +458,7 @@
   },
   "views": {
     "placeholder": "Vues enregistrées",
+      "panelTitle": "Vues enregistrées",
     "saveButton": "Enregistrer la vue",
     "deleteButton": "Supprimer",
     "saveSuccess": "Vue enregistrée",

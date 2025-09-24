@@ -94,7 +94,6 @@ const Dashboard = (): JSX.Element => {
   const [userViewMode, setUserViewMode] = useState<'table' | 'cards'>('table')
   const [userCardPage, setUserCardPage] = useState(1)
   const USER_CARD_PAGE_SIZE = 8
-
   const availableRoles = useMemo<RoleName[]>(() => {
     const set = new Set<RoleName>()
     users.forEach((user) => {
@@ -215,7 +214,10 @@ const Dashboard = (): JSX.Element => {
           isRefreshing={loading}
           canCreate={isAdmin}
           viewMode={userViewMode}
-          onViewModeChange={(mode) => setUserViewMode(mode)}
+          onViewModeChange={(mode) => {
+            setUserViewMode(mode)
+            setUserCardPage(1)
+          }}
         />
         {error ? (
           <Alert
