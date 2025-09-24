@@ -12,11 +12,13 @@
     "deleteTitle": "Remove project",
     "deleteDescription": "Are you sure you want to remove {{name}}?",
     "deleteConfirm": "Remove",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "panelTitle": "Actions"
   },
   "filters": {
     "searchPlaceholder": "Search by name, key or tag",
     "tagsPlaceholder": "Filter by tags",
+    "openButton": "Filters",
     "createdRange": {
       "start": "Created from",
       "end": "Created to"
@@ -30,7 +32,8 @@
     "ownedOptions": {
       "all": "All projects",
       "mine": "Created by me"
-    }
+    },
+    "panelTitle": "Filters"
   },
   "permissions": {
     "createDenied": "Only administrators or maintainers can create projects.",
@@ -100,8 +103,38 @@
         "title": "Workload snapshot",
         "total": "Total tasks",
         "active": "In progress",
-        "done": "Completed"
-      }
+        "done": "Completed",
+        "overdue": "Overdue",
+        "dueSoon": "Due soon",
+        "unassigned": "Unassigned"
+      },
+      "statusCard": {
+        "title": "Status distribution"
+      },
+      "priorityCard": {
+        "title": "Priority distribution"
+      },
+      "assigneeCard": {
+        "title": "Workload by assignee",
+        "unassigned": "Unassigned"
+      },
+      "trendCard": {
+        "title": "Completion trend",
+        "empty": "No tasks completed in the selected period"
+      },
+      "upcoming": {
+        "title": "Upcoming deadlines",
+        "empty": "No upcoming deadlines"
+      },
+      "overdue": {
+        "title": "Overdue tasks",
+        "empty": "No overdue tasks"
+      },
+      "taskItem": {
+        "due": "Due {{date}}",
+        "priority": "Priority: {{priority}}"
+      },
+      "empty": "No data available"
     },
     "tasksTitle": "Project tasks",
     "kanbanTitle": "Kanban board",
@@ -228,47 +261,48 @@
   "delete": {
     "success": "Project removed"
   },
-    "tasks": {
-      "columns": {
-        "actions": "Actions"
+  "tasks": {
+    "openFilters": "Filters",
+    "columns": {
+      "actions": "Actions"
+    },
+    "optionalColumns": {
+      "label": "Optional fields"
+    },
+    "statusManager": {
+      "manageButton": "Manage statuses",
+      "title": "Task statuses",
+      "add": "Add status",
+      "empty": "No statuses defined yet",
+      "messages": {
+        "created": "Status created",
+        "updated": "Status updated",
+        "deleted": "Status removed",
+        "reordered": "Order updated",
+        "error": "Operation failed"
       },
-      "optionalColumns": {
-        "label": "Optional fields"
+      "deleteTitle": "Remove status",
+      "deleteDescription": "Do you want to remove \"{{status}}\"?",
+      "deletePrompt": "Removing \"{{status}}\" will move existing tasks to the fallback status.",
+      "confirm": "Confirm",
+      "cancel": "Cancel",
+      "createTitle": "Create status",
+      "editTitle": "Edit status",
+      "fields": {
+        "label": "Label",
+        "fallback": "Fallback status"
       },
-      "statusManager": {
-        "manageButton": "Manage statuses",
-        "title": "Task statuses",
-        "add": "Add status",
-        "empty": "No statuses defined yet",
-        "messages": {
-          "created": "Status created",
-          "updated": "Status updated",
-          "deleted": "Status removed",
-          "reordered": "Order updated",
-          "error": "Operation failed"
-        },
-        "deleteTitle": "Remove status",
-        "deleteDescription": "Do you want to remove \"{{status}}\"?",
-        "deletePrompt": "Removing \"{{status}}\" will move existing tasks to the fallback status.",
-        "confirm": "Confirm",
-        "cancel": "Cancel",
-        "createTitle": "Create status",
-        "editTitle": "Edit status",
-        "fields": {
-          "label": "Label",
-          "fallback": "Fallback status"
-        },
-        "validation": {
-          "labelRequired": "Enter a label",
-          "labelMax": "Maximum 80 characters",
-          "fallbackRequired": "Select a fallback status"
-        }
-      },
-      "savedViews": {
-        "placeholder": "Saved views",
-        "saveButton": "Save view",
-        "deleteButton": "Delete",
-        "modalTitle": "Save current view",
+      "validation": {
+        "labelRequired": "Enter a label",
+        "labelMax": "Maximum 80 characters",
+        "fallbackRequired": "Select a fallback status"
+      }
+    },
+    "savedViews": {
+      "placeholder": "Saved views",
+      "saveButton": "Save view",
+      "deleteButton": "Delete",
+      "modalTitle": "Save current view",
       "nameLabel": "Name",
       "nameRequired": "Please enter a name"
     },
@@ -326,7 +360,9 @@
         "validation": "Please enter a comment",
         "submit": "Post comment"
       }
-    }
+    },
+    "filterPanel": "Filters",
+    "actionsPanel": "Actions"
   },
   "notes": {
     "title": "Project notes",
@@ -337,7 +373,8 @@
         "private": "Include private notes"
       },
       "notebook": "Notebook",
-      "tag": "Tag"
+      "tag": "Tag",
+      "panelTitle": "Filters"
     },
     "actions": {
       "create": "New note",
@@ -348,7 +385,9 @@
       "edit": "Edit",
       "deleteTitle": "Delete note",
       "deleteConfirmText": "Are you sure you want to delete this note?",
-      "delete": "Delete"
+      "delete": "Delete",
+      "panelTitle": "Actions",
+      "openFilters": "Filters"
     },
     "labels": {
       "private": "Private",
@@ -415,5 +454,20 @@
     "submit": "Search",
     "empty": "No tasks found",
     "openTask": "Open"
+  },
+  "views": {
+    "placeholder": "Saved views",
+    "saveButton": "Save view",
+    "deleteButton": "Delete",
+    "saveSuccess": "View saved",
+    "saveError": "Unable to save the view",
+    "deleteSuccess": "View removed",
+    "modal": {
+      "title": "Save project view",
+      "save": "Save",
+      "cancel": "Cancel",
+      "nameLabel": "Name",
+      "nameRequired": "Please enter a name"
+    }
   }
 }

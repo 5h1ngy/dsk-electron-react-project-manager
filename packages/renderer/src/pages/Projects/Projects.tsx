@@ -1,5 +1,5 @@
 import type { JSX } from 'react'
-import { Breadcrumb, Typography } from 'antd'
+import { Breadcrumb, Form, Input, Modal, Typography } from 'antd'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { useEffect, useMemo, useState } from 'react'
@@ -9,6 +9,7 @@ import { ProjectList } from '@renderer/pages/Projects/components/ProjectList'
 import { ProjectCardsGrid } from '@renderer/pages/Projects/components/ProjectCardsGrid'
 import { CreateProjectModal } from '@renderer/pages/Projects/components/CreateProjectModal'
 import { EditProjectModal } from '@renderer/pages/Projects/components/EditProjectModal'
+import ProjectSavedViewsControls from '@renderer/pages/Projects/components/ProjectSavedViewsControls'
 import { useProjectsPage } from '@renderer/pages/Projects/hooks/useProjectsPage'
 import { PROJECTS_CONTAINER_STYLE, createProjectsBreadcrumb } from '@renderer/pages/Projects/Projects.helpers'
 import type { ProjectsPageProps } from '@renderer/pages/Projects/Projects.types'
@@ -51,12 +52,19 @@ const ProjectsPage = ({}: ProjectsPageProps): JSX.Element => {
     deletingProjectId,
     canManageProjects,
     refreshProjects,
-    isLoading
+    isLoading,
+    savedViews,
+    selectedSavedViewId,
+    saveCurrentView,
+    deleteSavedView,
+    selectSavedView
   } = useProjectsPage({
     onProjectCreated: (projectId) => navigate(`/projects/${projectId}`)
   })
   const [cardPage, setCardPage] = useState(1)
   const CARD_PAGE_SIZE = 8
+  const [saveViewForm] = Form.useForm<{ name: string }>()
+  const [isSaveViewModalOpen, setSaveViewModalOpen] = useState(false)
 
   const handleOpenProject = (projectId: string) => {
     navigate(`/projects/${projectId}`)
@@ -77,6 +85,36 @@ const ProjectsPage = ({}: ProjectsPageProps): JSX.Element => {
       setCardPage(maxPage)
     }
   }, [filteredProjects.length, cardPage])
+
+  const handleOpenSaveViewModal = () => {
+    saveViewForm.resetFields()
+    setSaveViewModalOpen(true)
+  }
+
+  const handleSaveView = async () => {
+    try {
+      const { name } = await saveViewForm.validateFields()
+      const created = saveCurrentView(name)
+      if (created) {
+        setSaveViewModalOpen(false)
+        saveViewForm.resetFields()
+      }
+    } catch (error: any) {
+      if (error?.errorFields) {
+        return
+      }
+    }
+  }
+
+  const savedViewControls = (
+    <ProjectSavedViewsControls
+      views={savedViews}
+      selectedViewId={selectedSavedViewId}
+      onSelect={selectSavedView}
+      onCreate={handleOpenSaveViewModal}
+      onDelete={deleteSavedView}
+    />
+  )
 
   return (
     <div style={PROJECTS_CONTAINER_STYLE}>
@@ -112,6 +150,7 @@ const ProjectsPage = ({}: ProjectsPageProps): JSX.Element => {
           onOwnedOnlyChange={setOwnedOnly}
           createdBetween={createdBetween}
           onCreatedBetweenChange={setCreatedBetween}
+          secondaryActions={savedViewControls}
         />
       </div>
       {viewMode === 'table' ? (
@@ -152,6 +191,30 @@ const ProjectsPage = ({}: ProjectsPageProps): JSX.Element => {
         projectName={editingProject?.name}
         projectKey={editingProject?.key}
       />
+      <Modal
+        open={isSaveViewModalOpen}
+        title={t('views.modal.title')}
+        onCancel={() => setSaveViewModalOpen(false)}
+        okText={t('views.modal.save')}
+        cancelText={t('views.modal.cancel')}
+        onOk={handleSaveView}
+        destroyOnClose
+      >
+        <Form form={saveViewForm} layout="vertical">
+          <Form.Item
+            name="name"
+            label={t('views.modal.nameLabel')}
+            rules={[
+              {
+                required: true,
+                message: t('views.modal.nameRequired')
+              }
+            ]}
+          >
+            <Input maxLength={80} />
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   )
 }

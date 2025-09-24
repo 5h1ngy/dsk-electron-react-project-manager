@@ -12,11 +12,13 @@
     "deleteTitle": "Rimuovi progetto",
     "deleteDescription": "Vuoi davvero rimuovere {{name}}?",
     "deleteConfirm": "Rimuovi",
-    "cancel": "Annulla"
+    "cancel": "Annulla",
+    "panelTitle": "Azioni"
   },
   "filters": {
     "searchPlaceholder": "Cerca per nome, key o tag",
     "tagsPlaceholder": "Filtra per tag",
+    "openButton": "Filtri",
     "createdRange": {
       "start": "Creato da",
       "end": "Creato fino a"
@@ -30,7 +32,8 @@
     "ownedOptions": {
       "all": "Tutti i progetti",
       "mine": "Creati da me"
-    }
+    },
+    "panelTitle": "Filtri"
   },
   "permissions": {
     "createDenied": "Solo amministratori o maintainer possono creare progetti.",
@@ -100,8 +103,38 @@
         "title": "Stato del lavoro",
         "total": "Task totali",
         "active": "In corso",
-        "done": "Completati"
-      }
+        "done": "Completati",
+        "overdue": "In ritardo",
+        "dueSoon": "In scadenza",
+        "unassigned": "Non assegnati"
+      },
+      "statusCard": {
+        "title": "Distribuzione stati"
+      },
+      "priorityCard": {
+        "title": "Distribuzione priorita"
+      },
+      "assigneeCard": {
+        "title": "Carico per assegnatario",
+        "unassigned": "Non assegnato"
+      },
+      "trendCard": {
+        "title": "Trend completamenti",
+        "empty": "Nessun task completato nel periodo"
+      },
+      "upcoming": {
+        "title": "Scadenze imminenti",
+        "empty": "Nessuna scadenza imminente"
+      },
+      "overdue": {
+        "title": "Task in ritardo",
+        "empty": "Nessun task in ritardo"
+      },
+      "taskItem": {
+        "due": "Scadenza {{date}}",
+        "priority": "Priorita: {{priority}}"
+      },
+      "empty": "Nessun dato disponibile"
     },
     "tasksTitle": "Task del progetto",
     "kanbanTitle": "Board Kanban",
@@ -229,41 +262,42 @@
     "success": "Progetto eliminato"
   },
   "tasks": {
+    "openFilters": "Filtri",
     "columns": {
       "actions": "Azioni"
     },
     "optionalColumns": {
-        "label": "Campi opzionali"
+      "label": "Campi opzionali"
+    },
+    "statusManager": {
+      "manageButton": "Gestisci stati",
+      "title": "Stati dei task",
+      "add": "Aggiungi stato",
+      "empty": "Nessuno stato configurato",
+      "messages": {
+        "created": "Stato creato",
+        "updated": "Stato aggiornato",
+        "deleted": "Stato eliminato",
+        "reordered": "Ordine aggiornato",
+        "error": "Operazione non riuscita"
       },
-      "statusManager": {
-        "manageButton": "Gestisci stati",
-        "title": "Stati dei task",
-        "add": "Aggiungi stato",
-        "empty": "Nessuno stato configurato",
-        "messages": {
-          "created": "Stato creato",
-          "updated": "Stato aggiornato",
-          "deleted": "Stato eliminato",
-          "reordered": "Ordine aggiornato",
-          "error": "Operazione non riuscita"
-        },
-        "deleteTitle": "Rimuovi stato",
-        "deleteDescription": "Vuoi davvero rimuovere \"{{status}}\"?",
-        "deletePrompt": "La rimozione di \"{{status}}\" sposterà i task nello stato di fallback.",
-        "confirm": "Conferma",
-        "cancel": "Annulla",
-        "createTitle": "Crea stato",
-        "editTitle": "Modifica stato",
-        "fields": {
-          "label": "Etichetta",
-          "fallback": "Stato di fallback"
-        },
-        "validation": {
-          "labelRequired": "Inserisci un'etichetta",
-          "labelMax": "Massimo 80 caratteri",
-          "fallbackRequired": "Seleziona uno stato di fallback"
-        }
+      "deleteTitle": "Rimuovi stato",
+      "deleteDescription": "Vuoi davvero rimuovere \"{{status}}\"?",
+      "deletePrompt": "La rimozione di \"{{status}}\" sposterà i task nello stato di fallback.",
+      "confirm": "Conferma",
+      "cancel": "Annulla",
+      "createTitle": "Crea stato",
+      "editTitle": "Modifica stato",
+      "fields": {
+        "label": "Etichetta",
+        "fallback": "Stato di fallback"
       },
+      "validation": {
+        "labelRequired": "Inserisci un'etichetta",
+        "labelMax": "Massimo 80 caratteri",
+        "fallbackRequired": "Seleziona uno stato di fallback"
+      }
+    },
     "savedViews": {
       "placeholder": "Viste salvate",
       "saveButton": "Salva vista",
@@ -326,7 +360,9 @@
         "validation": "Inserisci un commento",
         "submit": "Invia commento"
       }
-    }
+    },
+    "filterPanel": "Filtri",
+    "actionsPanel": "Azioni"
   },
   "notes": {
     "title": "Note del progetto",
@@ -337,7 +373,8 @@
         "private": "Includi note private"
       },
       "notebook": "Taccuino",
-      "tag": "Tag"
+      "tag": "Tag",
+      "panelTitle": "Filtri"
     },
     "actions": {
       "create": "Nuova nota",
@@ -348,7 +385,9 @@
       "edit": "Modifica",
       "deleteTitle": "Elimina nota",
       "deleteConfirmText": "Vuoi davvero eliminare questa nota?",
-      "delete": "Elimina"
+      "delete": "Elimina",
+      "panelTitle": "Azioni",
+      "openFilters": "Filtri"
     },
     "labels": {
       "private": "Privata",
@@ -415,6 +454,20 @@
     "submit": "Cerca",
     "empty": "Nessun task trovato",
     "openTask": "Apri"
+  },
+  "views": {
+    "placeholder": "Viste salvate",
+    "saveButton": "Salva vista",
+    "deleteButton": "Elimina",
+    "saveSuccess": "Vista salvata",
+    "saveError": "Impossibile salvare la vista",
+    "deleteSuccess": "Vista eliminata",
+    "modal": {
+      "title": "Salva vista progetto",
+      "save": "Salva",
+      "cancel": "Annulla",
+      "nameLabel": "Nome",
+      "nameRequired": "Inserisci un nome"
+    }
   }
 }
-

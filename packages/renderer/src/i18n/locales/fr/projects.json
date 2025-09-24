@@ -12,11 +12,13 @@
     "deleteTitle": "Supprimer le projet",
     "deleteDescription": "Voulez-vous vraiment supprimer {{name}} ?",
     "deleteConfirm": "Supprimer",
-    "cancel": "Annuler"
+    "cancel": "Annuler",
+    "panelTitle": "Actions"
   },
   "filters": {
     "searchPlaceholder": "Rechercher par nom, cle ou tag",
     "tagsPlaceholder": "Filtrer par tags",
+    "openButton": "Filtres",
     "createdRange": {
       "start": "Cree a partir du",
       "end": "Cree jusqu'au"
@@ -30,7 +32,8 @@
     "ownedOptions": {
       "all": "Tous les projets",
       "mine": "CrÃ©Ã©s par moi"
-    }
+    },
+    "panelTitle": "Filtres"
   },
   "permissions": {
     "createDenied": "Seuls les administrateurs ou mainteneurs peuvent creer des projets.",
@@ -100,8 +103,38 @@
         "title": "Vue d'ensemble",
         "total": "Taches totales",
         "active": "En cours",
-        "done": "Terminees"
-      }
+        "done": "Terminees",
+        "overdue": "En retard",
+        "dueSoon": "A venir",
+        "unassigned": "Non assignes"
+      },
+      "statusCard": {
+        "title": "Repartition des statuts"
+      },
+      "priorityCard": {
+        "title": "Repartition des priorites"
+      },
+      "assigneeCard": {
+        "title": "Charge par assigne",
+        "unassigned": "Non assigne"
+      },
+      "trendCard": {
+        "title": "Tendance des completions",
+        "empty": "Aucune tache terminee sur la periode"
+      },
+      "upcoming": {
+        "title": "Echeances imminentes",
+        "empty": "Aucune echeance imminente"
+      },
+      "overdue": {
+        "title": "Taches en retard",
+        "empty": "Aucune tache en retard"
+      },
+      "taskItem": {
+        "due": "Echeance {{date}}",
+        "priority": "Priorite : {{priority}}"
+      },
+      "empty": "Aucune donnee disponible"
     },
     "tasksTitle": "Taches du projet",
     "kanbanTitle": "Tableau Kanban",
@@ -229,41 +262,42 @@
     "success": "Projet supprime"
   },
   "tasks": {
+    "openFilters": "Filtres",
     "columns": {
       "actions": "Actions"
     },
     "optionalColumns": {
-        "label": "Champs optionnels"
+      "label": "Champs optionnels"
+    },
+    "statusManager": {
+      "manageButton": "Gérer les statuts",
+      "title": "Statuts des tâches",
+      "add": "Ajouter un statut",
+      "empty": "Aucun statut défini",
+      "messages": {
+        "created": "Statut créé",
+        "updated": "Statut mis à jour",
+        "deleted": "Statut supprimé",
+        "reordered": "Ordre mis à jour",
+        "error": "Opération échouée"
       },
-      "statusManager": {
-        "manageButton": "Gérer les statuts",
-        "title": "Statuts des tâches",
-        "add": "Ajouter un statut",
-        "empty": "Aucun statut défini",
-        "messages": {
-          "created": "Statut créé",
-          "updated": "Statut mis à jour",
-          "deleted": "Statut supprimé",
-          "reordered": "Ordre mis à jour",
-          "error": "Opération échouée"
-        },
-        "deleteTitle": "Supprimer le statut",
-        "deleteDescription": "Voulez-vous supprimer « {{status}} » ?",
-        "deletePrompt": "La suppression de « {{status}} » déplacera les tâches vers le statut de secours.",
-        "confirm": "Confirmer",
-        "cancel": "Annuler",
-        "createTitle": "Créer un statut",
-        "editTitle": "Modifier le statut",
-        "fields": {
-          "label": "Libellé",
-          "fallback": "Statut de secours"
-        },
-        "validation": {
-          "labelRequired": "Saisissez un libellé",
-          "labelMax": "80 caractères maximum",
-          "fallbackRequired": "Sélectionnez un statut de secours"
-        }
+      "deleteTitle": "Supprimer le statut",
+      "deleteDescription": "Voulez-vous supprimer « {{status}} » ?",
+      "deletePrompt": "La suppression de « {{status}} » déplacera les tâches vers le statut de secours.",
+      "confirm": "Confirmer",
+      "cancel": "Annuler",
+      "createTitle": "Créer un statut",
+      "editTitle": "Modifier le statut",
+      "fields": {
+        "label": "Libellé",
+        "fallback": "Statut de secours"
       },
+      "validation": {
+        "labelRequired": "Saisissez un libellé",
+        "labelMax": "80 caractères maximum",
+        "fallbackRequired": "Sélectionnez un statut de secours"
+      }
+    },
     "savedViews": {
       "placeholder": "Vues enregistrÃƒÂ©es",
       "saveButton": "Enregistrer la vue",
@@ -326,7 +360,9 @@
         "validation": "Saisissez un commentaire",
         "submit": "Publier"
       }
-    }
+    },
+    "filterPanel": "Filtres",
+    "actionsPanel": "Actions"
   },
   "notes": {
     "title": "Notes du projet",
@@ -337,7 +373,8 @@
         "private": "Inclure les notes privees"
       },
       "notebook": "Carnet",
-      "tag": "Tag"
+      "tag": "Tag",
+      "panelTitle": "Filtres"
     },
     "actions": {
       "create": "Nouvelle note",
@@ -348,7 +385,9 @@
       "edit": "Modifier",
       "deleteTitle": "Supprimer la note",
       "deleteConfirmText": "Voulez-vous vraiment supprimer cette note ?",
-      "delete": "Supprimer"
+      "delete": "Supprimer",
+      "panelTitle": "Actions",
+      "openFilters": "Filtres"
     },
     "labels": {
       "private": "Privee",
@@ -415,6 +454,20 @@
     "submit": "Rechercher",
     "empty": "Aucune tache trouvee",
     "openTask": "Ouvrir"
+  },
+  "views": {
+    "placeholder": "Vues enregistrées",
+    "saveButton": "Enregistrer la vue",
+    "deleteButton": "Supprimer",
+    "saveSuccess": "Vue enregistrée",
+    "saveError": "Impossible d'enregistrer la vue",
+    "deleteSuccess": "Vue supprimée",
+    "modal": {
+      "title": "Enregistrer une vue projet",
+      "save": "Enregistrer",
+      "cancel": "Annuler",
+      "nameLabel": "Nom",
+      "nameRequired": "Saisissez un nom"
+    }
   }
 }
-

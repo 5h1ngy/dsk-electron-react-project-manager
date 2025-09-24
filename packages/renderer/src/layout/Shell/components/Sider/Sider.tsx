@@ -64,7 +64,10 @@ const Sider = ({
         if ('type' in item && item.type === 'divider') {
           return item
         }
-        const children = 'children' in item ? decorate(item.children) : undefined
+        const childItems =
+          'children' in item && Array.isArray(item.children)
+            ? ((decorate(item.children) ?? []) as any)
+            : undefined
         const iconNode = 'icon' in item ? item.icon : null
         const labelNode = 'label' in item ? item.label : null
         const ariaLabel =
@@ -72,20 +75,20 @@ const Sider = ({
 
         return {
           ...item,
-          icon: null,
-          title: null,
+          icon: undefined,
+          title: collapsed ? null : undefined,
           style: {
             ...(item.style ?? {}),
             ...menuItemStyle
           },
-          children,
+          ...(childItems && childItems.length > 0 ? { children: childItems } : {}),
           label: (
             <Flex
               align="center"
               justify={collapsed ? 'center' : 'flex-start'}
               gap={collapsed ? 0 : token.marginSM}
               style={{ width: '100%', color: 'inherit' }}
-              aria-label={ariaLabel}
+              aria-label={collapsed ? undefined : ariaLabel}
             >
               {iconNode ? (
                 <span
@@ -103,8 +106,8 @@ const Sider = ({
               ) : null}
             </Flex>
           )
-        }
-      })
+        } as any
+      }) as MenuProps['items']
     }
 
     return decorate(items)

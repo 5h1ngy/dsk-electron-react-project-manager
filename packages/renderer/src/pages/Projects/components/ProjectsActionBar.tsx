@@ -1,22 +1,21 @@
-import { useMemo, type JSX } from 'react'
+import { useMemo, useState, type JSX, type ReactNode } from 'react'
 import {
   AppstoreOutlined,
+  FilterOutlined,
   PlusOutlined,
   ReloadOutlined,
+  SettingOutlined,
   TableOutlined,
   TeamOutlined,
   UserOutlined
 } from '@ant-design/icons'
-import { Button, DatePicker, Input, Segmented, Select, Space } from 'antd'
+import { Button, DatePicker, Drawer, Flex, Grid, Input, Segmented, Select, Space, theme } from 'antd'
 import type { ChangeEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import dayjs, { type Dayjs } from 'dayjs'
 
 import { BorderedPanel } from '@renderer/components/Surface/BorderedPanel'
-
-type ViewMode = 'table' | 'cards'
-type RoleFilter = 'all' | 'admin' | 'edit' | 'view'
-type CreatedRange = [string | null, string | null] | null
+import type { CreatedRange, RoleFilter, ViewMode } from '@renderer/pages/Projects/hooks/useProjectsPage'
 
 const { RangePicker } = DatePicker
 
@@ -39,6 +38,7 @@ export interface ProjectsActionBarProps {
   onOwnedOnlyChange: (value: boolean) => void
   createdBetween: CreatedRange
   onCreatedBetweenChange: (range: CreatedRange) => void
+  secondaryActions?: ReactNode
 }
 
 export const ProjectsActionBar = ({
@@ -59,9 +59,13 @@ export const ProjectsActionBar = ({
   ownedOnly,
   onOwnedOnlyChange,
   createdBetween,
-  onCreatedBetweenChange
+  onCreatedBetweenChange,
+  secondaryActions
 }: ProjectsActionBarProps): JSX.Element => {
   const { t } = useTranslation('projects')
+  const [filtersOpen, setFiltersOpen] = useState(false)
+  const screens = Grid.useBreakpoint()
+  const { token } = theme.useToken()
   const rangeValue = useMemo<[Dayjs | null, Dayjs | null] | null>(() => {
     if (!createdBetween) {
       return null
@@ -90,116 +94,182 @@ export const ProjectsActionBar = ({
     ])
   }
 
+  const filterContent = (
+    <Flex vertical gap={16} style={{ width: '100%' }}>
+      <Input
+        placeholder={t('filters.searchPlaceholder')}
+        allowClear
+        value={searchValue}
+        onChange={handleSearchChange}
+        size="large"
+      />
+      <Flex vertical gap={12}>
+        <RangePicker
+          allowClear
+          value={rangeValue}
+          onChange={(dates) => handleRangeChange(dates as [Dayjs | null, Dayjs | null] | null)}
+          placeholder={[t('filters.createdRange.start'), t('filters.createdRange.end')]}
+          style={{ width: '100%' }}
+        />
+        <Select
+          mode="multiple"
+          size="large"
+          placeholder={t('filters.tagsPlaceholder')}
+          value={selectedTags}
+          onChange={onTagsChange}
+          options={availableTags.map((tag) => ({ label: tag, value: tag }))}
+          allowClear
+          style={{ width: '100%' }}
+        />
+        <Select
+          size="large"
+          value={roleFilter}
+          onChange={(value) => onRoleFilterChange(value as RoleFilter)}
+          options={[
+            { value: 'all', label: t('filters.roleOptions.all') },
+            { value: 'admin', label: t('filters.roleOptions.admin') },
+            { value: 'edit', label: t('filters.roleOptions.edit') },
+            { value: 'view', label: t('filters.roleOptions.view') }
+          ]}
+          style={{ width: '100%' }}
+        />
+      </Flex>
+    </Flex>
+  )
+
+  const actionsContent = (
+    <Flex align="center" wrap gap={12}>
+      <Button
+        icon={<FilterOutlined />}
+        onClick={() => setFiltersOpen(true)}
+        size="large"
+      >
+        {t('filters.openButton')}
+      </Button>
+      <Segmented
+        size="large"
+        value={ownedOnly ? 'owned' : 'all'}
+        onChange={(next) => onOwnedOnlyChange(next === 'owned')}
+        options={[
+          {
+            label: (
+              <Space size={6} style={{ color: 'inherit' }}>
+                <TeamOutlined />
+                <span>{t('filters.ownedOptions.all')}</span>
+              </Space>
+            ),
+            value: 'all'
+          },
+          {
+            label: (
+              <Space size={6} style={{ color: 'inherit' }}>
+                <UserOutlined />
+                <span>{t('filters.ownedOptions.mine')}</span>
+              </Space>
+            ),
+            value: 'owned'
+          }
+        ]}
+      />
+      <Segmented
+        size="large"
+        value={viewMode}
+        onChange={(next) => onViewModeChange(next as ViewMode)}
+        options={[
+          {
+            label: (
+              <Space size={6} style={{ color: 'inherit' }}>
+                <TableOutlined />
+                <span>{t('viewSwitcher.table')}</span>
+              </Space>
+            ),
+            value: 'table'
+          },
+          {
+            label: (
+              <Space size={6} style={{ color: 'inherit' }}>
+                <AppstoreOutlined />
+                <span>{t('viewSwitcher.cards')}</span>
+              </Space>
+            ),
+            value: 'cards'
+          }
+        ]}
+      />
+      <Space size="small" wrap>
+        {secondaryActions}
+        <Button icon={<ReloadOutlined />} onClick={onRefresh} loading={isRefreshing}>
+          {t('actions.refresh')}
+        </Button>
+        <Button
+          type="primary"
+          icon={<PlusOutlined />}
+          onClick={onCreate}
+          loading={isCreating}
+          disabled={!canCreate}
+        >
+          {t('actions.create')}
+        </Button>
+      </Space>
+    </Flex>
+  )
+
   return (
-    <Space direction="vertical" size="small" style={{ width: '100%' }}>
+    <>
       <BorderedPanel padding="lg" style={{ width: '100%' }}>
-        <Space direction="vertical" size="middle" style={{ width: '100%' }}>
-          <Input
-            placeholder={t('filters.searchPlaceholder')}
-            allowClear
-            value={searchValue}
-            onChange={handleSearchChange}
-            style={{ maxWidth: 360 }}
-          />
-          <Space size="middle" wrap align="center">
-            <RangePicker
-              allowClear
-              value={rangeValue}
-              onChange={(dates) => handleRangeChange(dates as [Dayjs | null, Dayjs | null] | null)}
-              style={{ minWidth: 260 }}
-              placeholder={[t('filters.createdRange.start'), t('filters.createdRange.end')]}
-            />
-            <Select
-              mode="multiple"
-              style={{ minWidth: 220 }}
-              placeholder={t('filters.tagsPlaceholder')}
-              value={selectedTags}
-              onChange={onTagsChange}
-              options={availableTags.map((tag) => ({ label: tag, value: tag }))}
-              allowClear
-            />
-            <Select
-              value={roleFilter}
-              onChange={(value) => onRoleFilterChange(value as RoleFilter)}
-              style={{ width: 200 }}
-              options={[
-                { value: 'all', label: t('filters.roleOptions.all') },
-                { value: 'admin', label: t('filters.roleOptions.admin') },
-                { value: 'edit', label: t('filters.roleOptions.edit') },
-                { value: 'view', label: t('filters.roleOptions.view') }
-              ]}
-            />
-            <Segmented
-              size="large"
-              value={ownedOnly ? 'owned' : 'all'}
-              onChange={(next) => onOwnedOnlyChange(next === 'owned')}
-              options={[
-                {
-                  label: (
-                    <Space size={6} style={{ color: 'inherit' }}>
-                      <TeamOutlined />
-                      <span>{t('filters.ownedOptions.all')}</span>
-                    </Space>
-                  ),
-                  value: 'all'
-                },
-                {
-                  label: (
-                    <Space size={6} style={{ color: 'inherit' }}>
-                      <UserOutlined />
-                      <span>{t('filters.ownedOptions.mine')}</span>
-                    </Space>
-                  ),
-                  value: 'owned'
-                }
-              ]}
-            />
+        <Flex vertical gap={12}>
+          <Space size={6} align="center">
+            <SettingOutlined />
+            <span>{t('actions.panelTitle', { defaultValue: 'Azioni' })}</span>
           </Space>
-        </Space>
+          {actionsContent}
+        </Flex>
       </BorderedPanel>
-      <BorderedPanel padding="md" style={{ width: '100%' }}>
-        <Space align="center" style={{ width: '100%', justifyContent: 'space-between' }} wrap>
-          <Segmented
-            size="large"
-            value={viewMode}
-            onChange={(next) => onViewModeChange(next as ViewMode)}
-            options={[
-              {
-                label: (
-                  <Space size={6} style={{ color: 'inherit' }}>
-                    <TableOutlined />
-                    <span>{t('viewSwitcher.table')}</span>
-                  </Space>
-                ),
-                value: 'table'
-              },
-              {
-                label: (
-                  <Space size={6} style={{ color: 'inherit' }}>
-                    <AppstoreOutlined />
-                    <span>{t('viewSwitcher.cards')}</span>
-                  </Space>
-                ),
-                value: 'cards'
-              }
-            ]}
-          />
-          <Space size="small" wrap>
-            <Button icon={<ReloadOutlined />} onClick={onRefresh} loading={isRefreshing}>
-              {t('actions.refresh')}
-            </Button>
+      <Drawer
+        title={
+          <Space size={6} align="center">
+            <FilterOutlined />
+            <span>{t('filters.panelTitle', { defaultValue: 'Filtri' })}</span>
+          </Space>
+        }
+        placement="right"
+        width={screens.lg ? 420 : '100%'}
+        open={filtersOpen}
+        onClose={() => setFiltersOpen(false)}
+        destroyOnClose={false}
+        maskClosable
+        contentWrapperStyle={{
+          borderRadius: `${token.borderRadiusLG}px`,
+          margin: screens.lg ? token.marginLG : 0,
+          border: `${token.lineWidth}px solid ${token.colorBorderSecondary}`,
+          boxShadow: token.boxShadowSecondary,
+          overflow: 'hidden'
+        }}
+        styles={{
+          header: { padding: token.paddingLG, marginBottom: 0 },
+          body: { padding: token.paddingLG, display: 'flex', flexDirection: 'column', gap: 16 }
+        }}
+        footer={
+          <Flex justify="space-between" align="center">
             <Button
-              type="primary"
-              icon={<PlusOutlined />}
-              onClick={onCreate}
-              loading={isCreating}
-              disabled={!canCreate}
+              onClick={() => {
+                onSearchChange('')
+                onTagsChange([])
+                onRoleFilterChange('all')
+                onOwnedOnlyChange(false)
+                onCreatedBetweenChange(null)
+              }}
             >
-              {t('actions.create')}
+              {t('filters.reset', { defaultValue: 'Reimposta filtri' })}
             </Button>
-          </Space>
-        </Space>
-      </BorderedPanel>
-    </Space>
+            <Button type="primary" onClick={() => setFiltersOpen(false)}>
+              {t('filters.close', { defaultValue: 'Chiudi' })}
+            </Button>
+          </Flex>
+        }
+      >
+        {filterContent}
+      </Drawer>
+    </>
   )
 }

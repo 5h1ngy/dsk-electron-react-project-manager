@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { message } from 'antd'
 import { useTranslation } from 'react-i18next'
 
@@ -18,10 +18,14 @@ import type { ProjectSummary } from '@renderer/store/slices/projects'
 import { selectCurrentUser } from '@renderer/store/slices/auth/selectors'
 import { useProjectForms } from '@renderer/pages/Projects/hooks/useProjectForms'
 import type { CreateProjectValues, UpdateProjectValues } from '@renderer/pages/Projects/schemas/projectSchemas'
+import useProjectSavedViews, {
+  type ProjectSavedView,
+  type ProjectViewFilters
+} from '@renderer/pages/Projects/hooks/useProjectSavedViews'
 
-type ViewMode = 'table' | 'cards'
-type RoleFilter = 'all' | 'admin' | 'edit' | 'view'
-type CreatedRange = [string | null, string | null] | null
+export type ViewMode = 'table' | 'cards'
+export type RoleFilter = 'all' | 'admin' | 'edit' | 'view'
+export type CreatedRange = [string | null, string | null] | null
 
 export interface UseProjectsPageOptions {
   onProjectCreated?: (projectId: string) => void
@@ -63,6 +67,11 @@ export interface UseProjectsPageResult {
   canManageProjects: boolean
   refreshProjects: () => void
   isLoading: boolean
+  savedViews: ProjectSavedView[]
+  selectedSavedViewId: string | null
+  saveCurrentView: (name: string) => ProjectSavedView | null
+  deleteSavedView: (id: string) => void
+  selectSavedView: (id: string | null) => void
 }
 
 const matchesSearch = (project: ProjectSummary, needle: string): boolean => {
@@ -79,16 +88,88 @@ export const useProjectsPage = (options?: UseProjectsPageOptions): UseProjectsPa
   const error = useAppSelector(selectProjectsError)
   const currentUser = useAppSelector(selectCurrentUser)
 
-  const [search, setSearch] = useState('')
-  const [selectedTags, setSelectedTags] = useState<string[]>([])
-  const [roleFilter, setRoleFilter] = useState<RoleFilter>('all')
-  const [ownedOnly, setOwnedOnly] = useState(false)
-  const [createdBetween, setCreatedBetween] = useState<CreatedRange>(null)
+  const [search, setSearchState] = useState('')
+  const [selectedTags, setSelectedTagsState] = useState<string[]>([])
+  const [roleFilter, setRoleFilterState] = useState<RoleFilter>('all')
+  const [ownedOnly, setOwnedOnlyState] = useState(false)
+  const [createdBetween, setCreatedBetweenState] = useState<CreatedRange>(null)
   const [viewMode, setViewMode] = useState<ViewMode>('table')
   const [isCreateModalOpen, setCreateModalOpen] = useState(false)
   const [messageApi, messageContext] = message.useMessage()
 
   const { createForm, updateForm } = useProjectForms()
+  const {
+    views: savedViews,
+    selectedId: selectedSavedViewId,
+    saveView,
+    deleteView,
+    selectView,
+    getViewById
+  } = useProjectSavedViews(currentUser?.id ?? null)
+  const isApplyingViewRef = useRef(false)
+
+  const clearSelectedViewIfNeeded = useCallback(() => {
+    if (isApplyingViewRef.current) {
+      return
+    }
+    if (selectedSavedViewId) {
+      selectView(null)
+    }
+  }, [selectedSavedViewId, selectView])
+
+  const setSearch = useCallback(
+    (value: string) => {
+      setSearchState(value)
+      clearSelectedViewIfNeeded()
+    },
+    [clearSelectedViewIfNeeded]
+  )
+
+  const setSelectedTags = useCallback(
+    (tags: string[]) => {
+      setSelectedTagsState(tags)
+      clearSelectedViewIfNeeded()
+    },
+    [clearSelectedViewIfNeeded]
+  )
+
+  const setRoleFilter = useCallback(
+    (role: RoleFilter) => {
+      setRoleFilterState(role)
+      clearSelectedViewIfNeeded()
+    },
+    [clearSelectedViewIfNeeded]
+  )
+
+  const setOwnedOnly = useCallback(
+    (value: boolean) => {
+      setOwnedOnlyState(value)
+      clearSelectedViewIfNeeded()
+    },
+    [clearSelectedViewIfNeeded]
+  )
+
+  const setCreatedBetween = useCallback(
+    (range: CreatedRange) => {
+      setCreatedBetweenState(range)
+      clearSelectedViewIfNeeded()
+    },
+    [clearSelectedViewIfNeeded]
+  )
+
+  const currentFilters = useMemo<ProjectViewFilters>(() => {
+    const range: CreatedRange =
+      createdBetween && Array.isArray(createdBetween)
+        ? [createdBetween[0], createdBetween[1]]
+        : null
+    return {
+      search,
+      tags: [...selectedTags],
+      role: roleFilter,
+      ownedOnly,
+      createdRange: range
+    }
+  }, [search, selectedTags, roleFilter, ownedOnly, createdBetween])
 
   const canManageProjects = useMemo(
     () => (currentUser?.roles ?? []).some((role) => role === 'Admin' || role === 'Maintainer'),
@@ -115,6 +196,25 @@ export const useProjectsPage = (options?: UseProjectsPageOptions): UseProjectsPa
       void dispatch(fetchProjects())
     }
   }, [dispatch, listStatus])
+
+  useEffect(() => {
+    if (!selectedSavedViewId) {
+      return
+    }
+    const view = getViewById(selectedSavedViewId)
+    if (!view) {
+      selectView(null)
+      return
+    }
+    const { filters } = view
+    isApplyingViewRef.current = true
+    setSearchState(filters.search ?? '')
+    setSelectedTagsState(filters.tags ?? [])
+    setRoleFilterState(filters.role ?? 'all')
+    setOwnedOnlyState(filters.ownedOnly ?? false)
+    setCreatedBetweenState(filters.createdRange ?? null)
+    isApplyingViewRef.current = false
+  }, [selectedSavedViewId, getViewById, selectView])
 
   useEffect(() => {
     if (error) {
@@ -166,6 +266,35 @@ export const useProjectsPage = (options?: UseProjectsPageOptions): UseProjectsPa
       return true
     })
   }, [projects, search, selectedTags, roleFilter, ownedOnly, createdBetween, currentUser?.id])
+
+  const saveCurrentView = useCallback(
+    (name: string) => {
+      try {
+        const created = saveView(name, currentFilters)
+        messageApi.success(t('views.saveSuccess', { defaultValue: 'Vista salvata' }))
+        return created
+      } catch {
+        messageApi.error(t('views.saveError', { defaultValue: 'Impossibile salvare la vista' }))
+        return null
+      }
+    },
+    [currentFilters, messageApi, saveView, t]
+  )
+
+  const deleteSavedView = useCallback(
+    (id: string) => {
+      deleteView(id)
+      messageApi.success(t('views.deleteSuccess', { defaultValue: 'Vista eliminata' }))
+    },
+    [deleteView, messageApi, t]
+  )
+
+  const selectSavedView = useCallback(
+    (id: string | null) => {
+      selectView(id)
+    },
+    [selectView]
+  )
 
   const openCreateModal = useCallback(() => {
     if (!canManageProjects) {
@@ -343,6 +472,11 @@ export const useProjectsPage = (options?: UseProjectsPageOptions): UseProjectsPa
     deletingProjectId,
     canManageProjects,
     refreshProjects,
-    isLoading
+    isLoading,
+    savedViews,
+    selectedSavedViewId,
+    saveCurrentView,
+    deleteSavedView,
+    selectSavedView
   }
 }
