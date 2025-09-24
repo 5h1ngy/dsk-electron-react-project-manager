@@ -3,7 +3,7 @@ import {
   Badge, Button, Card, Divider, Drawer, Flex, Form, Grid, Input, List, Modal, Popconfirm, Select, Skeleton, Space, Segmented, Spin, Switch, Tag, Typography, message, theme
 } from 'antd'
 import {
-  AppstoreOutlined, DeleteOutlined, EditOutlined, FilterOutlined, FileMarkdownOutlined, LinkOutlined, LockOutlined, PlusOutlined, ReloadOutlined, SearchOutlined, TableOutlined, UnlockOutlined
+  AppstoreOutlined, DeleteOutlined, EditOutlined, FilterOutlined, FileMarkdownOutlined, LinkOutlined, LockOutlined, PlusOutlined, SearchOutlined, TableOutlined, UnlockOutlined
 } from '@ant-design/icons'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -183,10 +183,6 @@ const ProjectNotesPage = (): ReactElement => {
   useEffect(() => {
     fetchCurrentNotes()
   }, [fetchCurrentNotes])
-
-  const handleRefresh = () => {
-    fetchCurrentNotes()
-  }
 
   const handleCreateNote = () => {
     setEditorMode('create')
@@ -436,14 +432,6 @@ const ProjectNotesPage = (): ReactElement => {
       <BorderedPanel padding="lg" style={{ width: '100%' }}>
         <Flex align="center" gap={12} wrap style={{ width: '100%' }}>
           <Flex align="center" gap={12} wrap style={{ flex: '1 1 auto' }}>
-            <Button
-              icon={<ReloadOutlined />}
-              onClick={handleRefresh}
-              loading={noteLoading}
-              disabled={noteLoading}
-            >
-              {t('details.refresh')}
-            </Button>
             {canManageNotes ? (
               <Button type="primary" icon={<PlusOutlined />} onClick={handleCreateNote}>
                 {t('notes.actions.create')}
