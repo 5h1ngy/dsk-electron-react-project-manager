@@ -18,6 +18,7 @@
   "filters": {
     "searchPlaceholder": "Rechercher par nom, cle ou tag",
     "tagsPlaceholder": "Filtrer par tags",
+    "openButton": "Filtres",
     "createdRange": {
       "start": "Cree a partir du",
       "end": "Cree jusqu'au"
@@ -261,6 +262,7 @@
     "success": "Projet supprime"
   },
   "tasks": {
+    "openFilters": "Filtres",
     "columns": {
       "actions": "Actions"
     },
@@ -384,7 +386,8 @@
       "deleteTitle": "Supprimer la note",
       "deleteConfirmText": "Voulez-vous vraiment supprimer cette note ?",
       "delete": "Supprimer",
-      "panelTitle": "Actions"
+      "panelTitle": "Actions",
+      "openFilters": "Filtres"
     },
     "labels": {
       "private": "Privee",

@@ -18,6 +18,7 @@
   "filters": {
     "searchPlaceholder": "Nach Name, Key oder Tag suchen",
     "tagsPlaceholder": "Nach Tags filtern",
+    "openButton": "Filter",
     "createdRange": {
       "start": "Erstellt ab",
       "end": "Erstellt bis"
@@ -263,6 +264,7 @@
     "success": "Projekt erfolgreich entfernt"
   },
   "tasks": {
+    "openFilters": "Filter",
     "columns": {
       "actions": "Aktionen"
     },
@@ -386,7 +388,8 @@
       "deleteTitle": "Notiz loeschen",
       "deleteConfirmText": "Moechten Sie diese Notiz wirklich loeschen?",
       "delete": "Loeschen",
-      "panelTitle": "Aktionen"
+      "panelTitle": "Aktionen",
+      "openFilters": "Filter"
     },
     "labels": {
       "private": "Privat",

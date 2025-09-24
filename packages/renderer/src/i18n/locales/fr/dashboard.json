@@ -7,6 +7,7 @@
     "users": {
       "ariaLabel": "Filtrer les utilisateurs",
       "searchPlaceholder": "Rechercher des utilisateurs...",
+      "openButton": "Filtres",
       "status": {
         "all": "Tous",
         "active": "Actifs",

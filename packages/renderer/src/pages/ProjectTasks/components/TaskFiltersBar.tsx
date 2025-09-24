@@ -1,6 +1,6 @@
-import { useMemo, type JSX } from 'react'
+import { useMemo, useState, type JSX } from 'react'
 import { AppstoreOutlined, ColumnWidthOutlined, PlusOutlined, TableOutlined } from '@ant-design/icons'
-import { Button, Collapse, DatePicker, Flex, Input, Segmented, Select, Space } from 'antd'
+import { Button, DatePicker, Drawer, Flex, Grid, Input, Segmented, Select, Space } from 'antd'
 import type { SelectProps } from 'antd'
 import type { ReactNode } from 'react'
 import { SearchOutlined } from '@ant-design/icons'
@@ -10,7 +10,6 @@ import { FilterOutlined, SettingOutlined } from '@ant-design/icons'
 
 import type { SelectOption, TaskFilters } from '@renderer/pages/ProjectTasks/ProjectTasks.types'
 import { BorderedPanel } from '@renderer/components/Surface/BorderedPanel'
-import usePersistentCollapse from '@renderer/hooks/usePersistentCollapse'
 
 const { RangePicker } = DatePicker
 
@@ -42,7 +41,8 @@ export const TaskFiltersBar = ({
   secondaryActions
 }: TaskFiltersBarProps): JSX.Element => {
   const { t } = useTranslation('projects')
-  const [activePanels, handlePanelsChange] = usePersistentCollapse('projectTasks.panels')
+  const [filtersOpen, setFiltersOpen] = useState(false)
+  const screens = Grid.useBreakpoint()
 
   const dueRangeValue = useMemo<[Dayjs | null, Dayjs | null] | null>(() => {
     if (!filters.dueDateRange) {
@@ -107,7 +107,7 @@ export const TaskFiltersBar = ({
   }
 
   const filterContent = (
-    <Flex vertical gap={12}>
+    <Flex vertical gap={16}>
       <Input
         allowClear
         prefix={<SearchOutlined />}
@@ -115,40 +115,39 @@ export const TaskFiltersBar = ({
         onChange={(event) => onChange({ searchQuery: event.target.value })}
         placeholder={t('details.tasksSearchPlaceholder')}
         size="large"
-        style={{ minWidth: 200 }}
       />
-      <Flex wrap gap={12} style={{ width: '100%' }}>
+      <Flex vertical gap={12}>
         <Select
           size="large"
-          style={{ minWidth: 200, flex: '1 1 200px' }}
           value={filters.status}
           onChange={(value) => onChange({ status: value as TaskFilters['status'] })}
           options={selectOption(statusOptions)}
+          style={{ width: '100%' }}
         />
         <Select
           size="large"
-          style={{ minWidth: 200, flex: '1 1 200px' }}
           value={filters.priority}
           onChange={(value) => onChange({ priority: value as TaskFilters['priority'] })}
           options={selectOption(priorityOptions)}
+          style={{ width: '100%' }}
         />
         <Select
           size="large"
-          style={{ minWidth: 220, flex: '1 1 220px' }}
           value={filters.assignee}
           onChange={(value) => onChange({ assignee: value as TaskFilters['assignee'] })}
           options={selectOption(assigneeOptions)}
+          style={{ width: '100%' }}
         />
         <RangePicker
           size="large"
           value={dueRangeValue}
           onChange={(dates) => handleRangeChange(dates as [Dayjs | null, Dayjs | null] | null)}
-          style={{ minWidth: 260, flex: '1 1 260px' }}
           allowClear
           placeholder={[
             t('details.filters.dueDateRange.start'),
             t('details.filters.dueDateRange.end')
           ]}
+          style={{ width: '100%' }}
         />
       </Flex>
     </Flex>
@@ -156,6 +155,13 @@ export const TaskFiltersBar = ({
 
   const actionsContent = (
     <Flex align="center" gap={12} wrap>
+      <Button
+        icon={<FilterOutlined />}
+        size="large"
+        onClick={() => setFiltersOpen(true)}
+      >
+        {t('tasks.openFilters')}
+      </Button>
       <Segmented
         size="large"
         value={viewMode}
@@ -181,8 +187,8 @@ export const TaskFiltersBar = ({
   )
 
   return (
-    <BorderedPanel padding="lg" style={{ width: '100%' }}>
-      <Flex vertical gap={16}>
+    <>
+      <BorderedPanel padding="lg" style={{ width: '100%' }}>
         <Flex vertical gap={12}>
           <Space size={6} align="center">
             <SettingOutlined />
@@ -190,26 +196,22 @@ export const TaskFiltersBar = ({
           </Space>
           {actionsContent}
         </Flex>
-        <Collapse
-          bordered={false}
-          activeKey={activePanels}
-          onChange={handlePanelsChange}
-          defaultActiveKey={[]}
-          items={[
-            {
-              key: 'filters',
-              label: (
-                <Space size={6} align="center">
-                  <FilterOutlined />
-                  <span>{t('tasks.filterPanel', { defaultValue: 'Filtri' })}</span>
-                </Space>
-              ),
-              children: filterContent
-            }
-          ]}
-        />
-      </Flex>
-    </BorderedPanel>
+      </BorderedPanel>
+      <Drawer
+        placement="right"
+        open={filtersOpen}
+        onClose={() => setFiltersOpen(false)}
+        width={screens.lg ? 420 : '100%'}
+        title={
+          <Space size={6} align="center">
+            <FilterOutlined />
+            <span>{t('tasks.filterPanel', { defaultValue: 'Filtri' })}</span>
+          </Space>
+        }
+      >
+        {filterContent}
+      </Drawer>
+    </>
   )
 }
 

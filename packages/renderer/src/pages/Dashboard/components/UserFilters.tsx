@@ -1,5 +1,5 @@
-import { useMemo, type JSX } from 'react'
-import { Button, Collapse, Flex, Input, Segmented, Select, Space, Typography } from 'antd'
+import { useMemo, useState, type JSX } from 'react'
+import { Button, Drawer, Flex, Grid, Input, Segmented, Select, Space, Typography } from 'antd'
 import {
   AppstoreOutlined,
   FilterOutlined,
@@ -13,7 +13,6 @@ import { useTranslation } from 'react-i18next'
 
 import type { RoleName } from '@main/services/auth/constants'
 import { BorderedPanel } from '@renderer/components/Surface/BorderedPanel'
-import usePersistentCollapse from '@renderer/hooks/usePersistentCollapse'
 
 export interface UserFiltersValue {
   search: string
@@ -46,20 +45,21 @@ export const UserFilters = ({
 }: UserFiltersProps): JSX.Element => {
   const { t } = useTranslation('dashboard')
   const segmentedValue = useMemo<SegmentedValue>(() => value.status, [value.status])
-  const [activePanels, handlePanelsChange] = usePersistentCollapse('dashboard.users.panels')
+  const [filtersOpen, setFiltersOpen] = useState(false)
+  const screens = Grid.useBreakpoint()
 
   const filtersContent = (
-    <Flex vertical gap={12}>
+    <Flex vertical gap={16}>
       <Input
         allowClear
         prefix={<SearchOutlined />}
         placeholder={t('filters.users.searchPlaceholder')}
         value={value.search}
         onChange={(event) => onChange({ search: event.target.value })}
-        style={{ minWidth: 240 }}
+        style={{ width: '100%' }}
         size="large"
       />
-      <Flex align="center" wrap gap={12}>
+      <Flex vertical gap={12}>
         <Space direction="vertical" size={4}>
           <Typography.Text type="secondary">{t('filters.users.statusLabel')}</Typography.Text>
           <Segmented
@@ -76,7 +76,7 @@ export const UserFilters = ({
         <Select<RoleName | 'all'>
           allowClear={false}
           size="large"
-          style={{ minWidth: 220, flex: '1 1 220px' }}
+          style={{ width: '100%' }}
           value={value.role}
           onChange={(next) => onChange({ role: next })}
           options={[
@@ -94,6 +94,12 @@ export const UserFilters = ({
 
   const actionsContent = (
     <Flex align="center" wrap gap={12} justify="flex-end">
+      <Button
+        icon={<FilterOutlined />}
+        onClick={() => setFiltersOpen(true)}
+      >
+        {t('filters.openButton')}
+      </Button>
       <Space size="small" wrap>
         <Button type="primary" onClick={onCreate} disabled={!canCreate}>
           {t('dashboard:actionBar.create')}
@@ -131,8 +137,8 @@ export const UserFilters = ({
   )
 
   return (
-    <BorderedPanel padding="lg" style={{ width: '100%' }}>
-      <Flex vertical gap={16}>
+    <>
+      <BorderedPanel padding="lg" style={{ width: '100%' }}>
         <Flex vertical gap={12}>
           <Space size={6} align="center">
             <SettingOutlined />
@@ -140,26 +146,22 @@ export const UserFilters = ({
           </Space>
           {actionsContent}
         </Flex>
-        <Collapse
-          bordered={false}
-          activeKey={activePanels}
-          onChange={handlePanelsChange}
-          defaultActiveKey={[]}
-          items={[
-            {
-              key: 'filters',
-              label: (
-                <Space size={6} align="center">
-                  <FilterOutlined />
-                  <span>{t('dashboard:filters.panelTitle', { defaultValue: 'Filtri' })}</span>
-                </Space>
-              ),
-              children: filtersContent
-            }
-          ]}
-        />
-      </Flex>
-    </BorderedPanel>
+      </BorderedPanel>
+      <Drawer
+        placement="right"
+        open={filtersOpen}
+        onClose={() => setFiltersOpen(false)}
+        width={screens.lg ? 420 : '100%'}
+        title={
+          <Space size={6} align="center">
+            <FilterOutlined />
+            <span>{t('dashboard:filters.panelTitle', { defaultValue: 'Filtri' })}</span>
+          </Space>
+        }
+      >
+        {filtersContent}
+      </Drawer>
+    </>
   )
 }
 

@@ -18,6 +18,7 @@
   "filters": {
     "searchPlaceholder": "Search by name, key or tag",
     "tagsPlaceholder": "Filter by tags",
+    "openButton": "Filters",
     "createdRange": {
       "start": "Created from",
       "end": "Created to"
@@ -261,6 +262,7 @@
     "success": "Project removed"
   },
   "tasks": {
+    "openFilters": "Filters",
     "columns": {
       "actions": "Actions"
     },
@@ -384,7 +386,8 @@
       "deleteTitle": "Delete note",
       "deleteConfirmText": "Are you sure you want to delete this note?",
       "delete": "Delete",
-      "panelTitle": "Actions"
+      "panelTitle": "Actions",
+      "openFilters": "Filters"
     },
     "labels": {
       "private": "Private",

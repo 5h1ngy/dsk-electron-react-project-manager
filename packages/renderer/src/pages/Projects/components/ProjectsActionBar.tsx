@@ -1,4 +1,4 @@
-import { useMemo, type JSX, type ReactNode } from 'react'
+import { useMemo, useState, type JSX, type ReactNode } from 'react'
 import {
   AppstoreOutlined,
   FilterOutlined,
@@ -9,13 +9,12 @@ import {
   TeamOutlined,
   UserOutlined
 } from '@ant-design/icons'
-import { Button, Collapse, DatePicker, Flex, Input, Segmented, Select, Space } from 'antd'
+import { Button, DatePicker, Drawer, Flex, Grid, Input, Segmented, Select, Space } from 'antd'
 import type { ChangeEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import dayjs, { type Dayjs } from 'dayjs'
 
 import { BorderedPanel } from '@renderer/components/Surface/BorderedPanel'
-import usePersistentCollapse from '@renderer/hooks/usePersistentCollapse'
 import type { CreatedRange, RoleFilter, ViewMode } from '@renderer/pages/Projects/hooks/useProjectsPage'
 
 const { RangePicker } = DatePicker
@@ -64,7 +63,8 @@ export const ProjectsActionBar = ({
   secondaryActions
 }: ProjectsActionBarProps): JSX.Element => {
   const { t } = useTranslation('projects')
-  const [activePanels, handlePanelsChange] = usePersistentCollapse('projects.panels')
+  const [filtersOpen, setFiltersOpen] = useState(false)
+  const screens = Grid.useBreakpoint()
   const rangeValue = useMemo<[Dayjs | null, Dayjs | null] | null>(() => {
     if (!createdBetween) {
       return null
@@ -94,49 +94,57 @@ export const ProjectsActionBar = ({
   }
 
   const filterContent = (
-    <Flex wrap gap={12} style={{ width: '100%' }}>
+    <Flex vertical gap={16} style={{ width: '100%' }}>
       <Input
         placeholder={t('filters.searchPlaceholder')}
         allowClear
         value={searchValue}
         onChange={handleSearchChange}
         size="large"
-        style={{ flex: '2 1 280px', minWidth: 260 }}
       />
-      <RangePicker
-        allowClear
-        value={rangeValue}
-        onChange={(dates) => handleRangeChange(dates as [Dayjs | null, Dayjs | null] | null)}
-        style={{ minWidth: 220, flex: '1 1 260px' }}
-        placeholder={[t('filters.createdRange.start'), t('filters.createdRange.end')]}
-      />
-      <Select
-        mode="multiple"
-        size="large"
-        style={{ minWidth: 220, flex: '1 1 220px' }}
-        placeholder={t('filters.tagsPlaceholder')}
-        value={selectedTags}
-        onChange={onTagsChange}
-        options={availableTags.map((tag) => ({ label: tag, value: tag }))}
-        allowClear
-      />
-      <Select
-        size="large"
-        value={roleFilter}
-        onChange={(value) => onRoleFilterChange(value as RoleFilter)}
-        style={{ minWidth: 200, flex: '1 1 200px' }}
-        options={[
-          { value: 'all', label: t('filters.roleOptions.all') },
-          { value: 'admin', label: t('filters.roleOptions.admin') },
-          { value: 'edit', label: t('filters.roleOptions.edit') },
-          { value: 'view', label: t('filters.roleOptions.view') }
-        ]}
-      />
+      <Flex vertical gap={12}>
+        <RangePicker
+          allowClear
+          value={rangeValue}
+          onChange={(dates) => handleRangeChange(dates as [Dayjs | null, Dayjs | null] | null)}
+          placeholder={[t('filters.createdRange.start'), t('filters.createdRange.end')]}
+          style={{ width: '100%' }}
+        />
+        <Select
+          mode="multiple"
+          size="large"
+          placeholder={t('filters.tagsPlaceholder')}
+          value={selectedTags}
+          onChange={onTagsChange}
+          options={availableTags.map((tag) => ({ label: tag, value: tag }))}
+          allowClear
+          style={{ width: '100%' }}
+        />
+        <Select
+          size="large"
+          value={roleFilter}
+          onChange={(value) => onRoleFilterChange(value as RoleFilter)}
+          options={[
+            { value: 'all', label: t('filters.roleOptions.all') },
+            { value: 'admin', label: t('filters.roleOptions.admin') },
+            { value: 'edit', label: t('filters.roleOptions.edit') },
+            { value: 'view', label: t('filters.roleOptions.view') }
+          ]}
+          style={{ width: '100%' }}
+        />
+      </Flex>
     </Flex>
   )
 
   const actionsContent = (
     <Flex align="center" wrap gap={12}>
+      <Button
+        icon={<FilterOutlined />}
+        onClick={() => setFiltersOpen(true)}
+        size="large"
+      >
+        {t('filters.openButton')}
+      </Button>
       <Segmented
         size="large"
         value={ownedOnly ? 'owned' : 'all'}
@@ -206,8 +214,8 @@ export const ProjectsActionBar = ({
   )
 
   return (
-    <BorderedPanel padding="lg" style={{ width: '100%' }}>
-      <Flex vertical gap={16}>
+    <>
+      <BorderedPanel padding="lg" style={{ width: '100%' }}>
         <Flex vertical gap={12}>
           <Space size={6} align="center">
             <SettingOutlined />
@@ -215,25 +223,23 @@ export const ProjectsActionBar = ({
           </Space>
           {actionsContent}
         </Flex>
-        <Collapse
-          bordered={false}
-          activeKey={activePanels}
-          onChange={handlePanelsChange}
-          defaultActiveKey={[]}
-          items={[
-            {
-              key: 'filters',
-              label: (
-                <Space size={6} align="center">
-                  <FilterOutlined />
-                  <span>{t('filters.panelTitle', { defaultValue: 'Filtri' })}</span>
-                </Space>
-              ),
-              children: filterContent
-            }
-          ]}
-        />
-      </Flex>
-    </BorderedPanel>
+      </BorderedPanel>
+      <Drawer
+        title={
+          <Space size={6} align="center">
+            <FilterOutlined />
+            <span>{t('filters.panelTitle', { defaultValue: 'Filtri' })}</span>
+          </Space>
+        }
+        placement="right"
+        width={screens.lg ? 420 : '100%'}
+        open={filtersOpen}
+        onClose={() => setFiltersOpen(false)}
+        destroyOnClose={false}
+        maskClosable
+      >
+        {filterContent}
+      </Drawer>
+    </>
   )
 }
