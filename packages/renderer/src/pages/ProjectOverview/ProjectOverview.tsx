@@ -193,192 +193,194 @@ const ProjectOverviewPage = ({}: ProjectOverviewPageProps): JSX.Element => {
   }
 
   return (
-    <Space direction="vertical" size={24} style={{ width: '100%' }}>
-      <ProjectDetailsCard project={project ?? null} loading={projectLoading} />
-      <Card title={t('details.overview.metrics.title')}>
-        {showSkeleton ? (
-          <Skeleton active paragraph={{ rows: 3 }} title={false} />
-        ) : (
-          <Row gutter={[16, 16]}>
-            {metricCards.map((metric) => (
-              <Col xs={12} md={8} xl={4} key={metric.key}>
-                <Card bordered={false}>
-                  <Statistic
-                    title={metric.title}
-                    value={metric.value}
-                    valueStyle={{ fontSize: 28, color: metric.color }}
-                  />
-                </Card>
-              </Col>
-            ))}
-          </Row>
-        )}
-      </Card>
-      <Row gutter={[16, 16]}>
-        <Col xs={24} xl={12}>
-          <Card title={t('details.overview.statusCard.title')}>
-            {showSkeleton ? (
-              <Skeleton active paragraph={{ rows: 4 }} title={false} />
-            ) : (
-              renderDistribution(
-                orderedStatusDistribution,
-                insights.totals.total,
-                (status) =>
-                  statusLabelMap.get(status) ??
-                  t(`details.status.${status}`, { defaultValue: status })
-              )
-            )}
-          </Card>
-        </Col>
-        <Col xs={24} xl={12}>
-          <Card title={t('details.overview.priorityCard.title')}>
-            {showSkeleton ? (
-              <Skeleton active paragraph={{ rows: 4 }} title={false} />
-            ) : (
-              renderDistribution(
-                orderedPriorityDistribution,
-                insights.totals.total,
-                (priority) =>
-                  t(`details.priority.${priority}`, { defaultValue: priority })
-              )
-            )}
-          </Card>
-        </Col>
-      </Row>
-      <Row gutter={[16, 16]}>
-        <Col xs={24} xl={8}>
-          <Card title={t('details.overview.assigneeCard.title')}>
-            {showSkeleton ? (
-              <Skeleton active paragraph={{ rows: 4 }} title={false} />
-            ) : insights.assigneeWorkload.length === 0 ? (
-              <Typography.Text type="secondary">
-                {t('details.overview.empty')}
-              </Typography.Text>
-            ) : (
-              <Space direction="vertical" size={12} style={{ width: '100%' }}>
-                {insights.assigneeWorkload.map((entry) => {
-                  const percent =
-                    insights.totals.total === 0
-                      ? 0
-                      : Number(((entry.count / insights.totals.total) * 100).toFixed(1))
-                  const label = entry.isUnassigned
-                    ? t('details.overview.assigneeCard.unassigned')
-                    : entry.name
-                  return (
-                    <Flex key={entry.id} align="center" gap={12}>
-                      <Typography.Text style={{ width: 160 }}>{label}</Typography.Text>
-                      <Progress
-                        percent={percent}
-                        showInfo
-                        format={() => String(entry.count)}
-                        style={{ flex: 1 }}
-                      />
+    <Row gutter={[16, 32]} style={{ width: '100%' }}>
+      <Col xs={24} lg={12} xl={6}>
+        <ProjectDetailsCard
+          project={project ?? null}
+          loading={projectLoading}
+          style={{ height: '100%' }}
+        />
+      </Col>
+      <Col xs={24} lg={12} xl={18}>
+        <Card title={t('details.overview.metrics.title')} style={{ height: '100%' }}>
+          {showSkeleton ? (
+            <Skeleton active paragraph={{ rows: 3 }} title={false} />
+          ) : (
+            <Row gutter={[16, 16]}>
+              {metricCards.map((metric) => (
+                <Col xs={12} md={8} xl={8} key={metric.key}>
+                  <Card bordered={false} style={{ height: '100%' }}>
+                    <Statistic
+                      title={metric.title}
+                      value={metric.value}
+                      valueStyle={{ fontSize: 28, color: metric.color }}
+                    />
+                  </Card>
+                </Col>
+              ))}
+            </Row>
+          )}
+        </Card>
+      </Col>
+      <Col xs={24} md={12} xl={8}>
+        <Card title={t('details.overview.statusCard.title')} style={{ height: '100%' }}>
+          {showSkeleton ? (
+            <Skeleton active paragraph={{ rows: 4 }} title={false} />
+          ) : (
+            renderDistribution(
+              orderedStatusDistribution,
+              insights.totals.total,
+              (status) =>
+                statusLabelMap.get(status) ??
+                t(`details.status.${status}`, { defaultValue: status })
+            )
+          )}
+        </Card>
+      </Col>
+      <Col xs={24} md={12} xl={8}>
+        <Card title={t('details.overview.priorityCard.title')} style={{ height: '100%' }}>
+          {showSkeleton ? (
+            <Skeleton active paragraph={{ rows: 4 }} title={false} />
+          ) : (
+            renderDistribution(
+              orderedPriorityDistribution,
+              insights.totals.total,
+              (priority) =>
+                t(`details.priority.${priority}`, { defaultValue: priority })
+            )
+          )}
+        </Card>
+      </Col>
+      <Col xs={24} md={12} xl={8}>
+        <Card title={t('details.overview.assigneeCard.title')} style={{ height: '100%' }}>
+          {showSkeleton ? (
+            <Skeleton active paragraph={{ rows: 4 }} title={false} />
+          ) : insights.assigneeWorkload.length === 0 ? (
+            <Typography.Text type="secondary">
+              {t('details.overview.empty')}
+            </Typography.Text>
+          ) : (
+            <Space direction="vertical" size={12} style={{ width: '100%' }}>
+              {insights.assigneeWorkload.map((entry) => {
+                const percent =
+                  insights.totals.total === 0
+                    ? 0
+                    : Number(((entry.count / insights.totals.total) * 100).toFixed(1))
+                const label = entry.isUnassigned
+                  ? t('details.overview.assigneeCard.unassigned')
+                  : entry.name
+                return (
+                  <Flex key={entry.id} align="center" gap={12}>
+                    <Typography.Text style={{ width: 160 }}>{label}</Typography.Text>
+                    <Progress
+                      percent={percent}
+                      showInfo
+                      format={() => String(entry.count)}
+                      style={{ flex: 1 }}
+                    />
+                  </Flex>
+                )
+              })}
+            </Space>
+          )}
+        </Card>
+      </Col>
+      <Col xs={24} lg={16} xl={16}>
+        <Card title={t('details.overview.trendCard.title')} style={{ height: '100%' }}>
+          {showSkeleton ? (
+            <Skeleton active paragraph={{ rows: 4 }} title={false} />
+          ) : (
+            renderTrend()
+          )}
+        </Card>
+      </Col>
+      <Col xs={24} lg={8} xl={8}>
+        <Card title={t('details.overview.upcoming.title')} style={{ height: '100%' }}>
+          {showSkeleton ? (
+            <Skeleton active paragraph={{ rows: 4 }} title={false} />
+          ) : insights.upcomingTasks.length === 0 ? (
+            <Typography.Text type="secondary">
+              {t('details.overview.upcoming.empty')}
+            </Typography.Text>
+          ) : (
+            <List
+              split={false}
+              dataSource={insights.upcomingTasks}
+              renderItem={(task) => (
+                <List.Item key={task.id} style={{ paddingInline: 0 }}>
+                  <Flex justify="space-between" align="center" wrap gap={8} style={{ width: '100%' }}>
+                    <div style={{ flex: '1 1 60%' }}>
+                      <Typography.Text strong>{task.title}</Typography.Text>
+                      <Typography.Paragraph
+                        type="secondary"
+                        style={{ marginBottom: 0 }}
+                      >
+                        {task.key}
+                      </Typography.Paragraph>
+                    </div>
+                    <Flex vertical align="flex-end" gap={4}>
+                      <Typography.Text style={{ color: token.colorWarning }}>
+                        {t('details.overview.taskItem.due', { date: dateLabel(task.dueDate) })}
+                      </Typography.Text>
+                      <Typography.Text type="secondary">
+                        {t('details.overview.taskItem.priority', {
+                          priority: t(`details.priority.${task.priority}`, {
+                            defaultValue: task.priority
+                          })
+                        })}
+                      </Typography.Text>
                     </Flex>
-                  )
-                })}
-              </Space>
-            )}
-          </Card>
-        </Col>
-        <Col xs={24} xl={16}>
-          <Card title={t('details.overview.trendCard.title')}>
-            {showSkeleton ? (
-              <Skeleton active paragraph={{ rows: 4 }} title={false} />
-            ) : (
-              renderTrend()
-            )}
-          </Card>
-        </Col>
-      </Row>
-      <Row gutter={[16, 16]}>
-        <Col xs={24} xl={12}>
-          <Card title={t('details.overview.upcoming.title')}>
-            {showSkeleton ? (
-              <Skeleton active paragraph={{ rows: 4 }} title={false} />
-            ) : insights.upcomingTasks.length === 0 ? (
-              <Typography.Text type="secondary">
-                {t('details.overview.upcoming.empty')}
-              </Typography.Text>
-            ) : (
-              <List
-                split={false}
-                dataSource={insights.upcomingTasks}
-                renderItem={(task) => (
-                  <List.Item key={task.id} style={{ paddingInline: 0 }}>
-                    <Flex justify="space-between" align="center" wrap gap={8} style={{ width: '100%' }}>
-                      <div style={{ flex: '1 1 60%' }}>
-                        <Typography.Text strong>{task.title}</Typography.Text>
-                        <Typography.Paragraph
-                          type="secondary"
-                          style={{ marginBottom: 0 }}
-                        >
-                          {task.key}
-                        </Typography.Paragraph>
-                      </div>
-                      <Flex vertical align="flex-end" gap={4}>
-                        <Typography.Text style={{ color: token.colorWarning }}>
-                          {t('details.overview.taskItem.due', { date: dateLabel(task.dueDate) })}
-                        </Typography.Text>
-                        <Typography.Text type="secondary">
-                          {t('details.overview.taskItem.priority', {
-                            priority: t(`details.priority.${task.priority}`, {
-                              defaultValue: task.priority
-                            })
-                          })}
-                        </Typography.Text>
-                      </Flex>
+                  </Flex>
+                </List.Item>
+              )}
+            />
+          )}
+        </Card>
+      </Col>
+      <Col xs={24} lg={12} xl={12}>
+        <Card title={t('details.overview.overdue.title')} style={{ height: '100%' }}>
+          {showSkeleton ? (
+            <Skeleton active paragraph={{ rows: 4 }} title={false} />
+          ) : insights.overdueTasks.length === 0 ? (
+            <Typography.Text type="secondary">
+              {t('details.overview.overdue.empty')}
+            </Typography.Text>
+          ) : (
+            <List
+              split={false}
+              dataSource={insights.overdueTasks}
+              renderItem={(task) => (
+                <List.Item key={task.id} style={{ paddingInline: 0 }}>
+                  <Flex justify="space-between" align="center" wrap gap={8} style={{ width: '100%' }}>
+                    <div style={{ flex: '1 1 60%' }}>
+                      <Typography.Text strong>{task.title}</Typography.Text>
+                      <Typography.Paragraph
+                        type="secondary"
+                        style={{ marginBottom: 0 }}
+                      >
+                        {task.key}
+                      </Typography.Paragraph>
+                    </div>
+                    <Flex vertical align="flex-end" gap={4}>
+                      <Typography.Text style={{ color: token.colorError }}>
+                        {t('details.overview.taskItem.due', { date: dateLabel(task.dueDate) })}
+                      </Typography.Text>
+                      <Typography.Text type="secondary">
+                        {t('details.overview.taskItem.priority', {
+                          priority: t(`details.priority.${task.priority}`, {
+                            defaultValue: task.priority
+                          })
+                        })}
+                      </Typography.Text>
                     </Flex>
-                  </List.Item>
-                )}
-              />
-            )}
-          </Card>
-        </Col>
-        <Col xs={24} xl={12}>
-          <Card title={t('details.overview.overdue.title')}>
-            {showSkeleton ? (
-              <Skeleton active paragraph={{ rows: 4 }} title={false} />
-            ) : insights.overdueTasks.length === 0 ? (
-              <Typography.Text type="secondary">
-                {t('details.overview.overdue.empty')}
-              </Typography.Text>
-            ) : (
-              <List
-                split={false}
-                dataSource={insights.overdueTasks}
-                renderItem={(task) => (
-                  <List.Item key={task.id} style={{ paddingInline: 0 }}>
-                    <Flex justify="space-between" align="center" wrap gap={8} style={{ width: '100%' }}>
-                      <div style={{ flex: '1 1 60%' }}>
-                        <Typography.Text strong>{task.title}</Typography.Text>
-                        <Typography.Paragraph
-                          type="secondary"
-                          style={{ marginBottom: 0 }}
-                        >
-                          {task.key}
-                        </Typography.Paragraph>
-                      </div>
-                      <Flex vertical align="flex-end" gap={4}>
-                        <Typography.Text style={{ color: token.colorError }}>
-                          {t('details.overview.taskItem.due', { date: dateLabel(task.dueDate) })}
-                        </Typography.Text>
-                        <Typography.Text type="secondary">
-                          {t('details.overview.taskItem.priority', {
-                            priority: t(`details.priority.${task.priority}`, {
-                              defaultValue: task.priority
-                            })
-                          })}
-                        </Typography.Text>
-                      </Flex>
-                    </Flex>
-                  </List.Item>
-                )}
-              />
-            )}
-          </Card>
-        </Col>
-      </Row>
-    </Space>
+                  </Flex>
+                </List.Item>
+              )}
+            />
+          )}
+        </Card>
+      </Col>
+    </Row>
   )
 }
 

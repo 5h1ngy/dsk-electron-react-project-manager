@@ -9,7 +9,7 @@ import {
   TeamOutlined,
   UserOutlined
 } from '@ant-design/icons'
-import { Button, DatePicker, Drawer, Flex, Grid, Input, Segmented, Select, Space } from 'antd'
+import { Button, DatePicker, Drawer, Flex, Grid, Input, Segmented, Select, Space, theme } from 'antd'
 import type { ChangeEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import dayjs, { type Dayjs } from 'dayjs'
@@ -65,6 +65,7 @@ export const ProjectsActionBar = ({
   const { t } = useTranslation('projects')
   const [filtersOpen, setFiltersOpen] = useState(false)
   const screens = Grid.useBreakpoint()
+  const { token } = theme.useToken()
   const rangeValue = useMemo<[Dayjs | null, Dayjs | null] | null>(() => {
     if (!createdBetween) {
       return null
@@ -237,6 +238,35 @@ export const ProjectsActionBar = ({
         onClose={() => setFiltersOpen(false)}
         destroyOnClose={false}
         maskClosable
+        contentWrapperStyle={{
+          borderRadius: `${token.borderRadiusLG}px`,
+          margin: screens.lg ? token.marginLG : 0,
+          border: `${token.lineWidth}px solid ${token.colorBorderSecondary}`,
+          boxShadow: token.boxShadowSecondary,
+          overflow: 'hidden'
+        }}
+        styles={{
+          header: { padding: token.paddingLG, marginBottom: 0 },
+          body: { padding: token.paddingLG, display: 'flex', flexDirection: 'column', gap: 16 }
+        }}
+        footer={
+          <Flex justify="space-between" align="center">
+            <Button
+              onClick={() => {
+                onSearchChange('')
+                onTagsChange([])
+                onRoleFilterChange('all')
+                onOwnedOnlyChange(false)
+                onCreatedBetweenChange(null)
+              }}
+            >
+              {t('filters.reset', { defaultValue: 'Reimposta filtri' })}
+            </Button>
+            <Button type="primary" onClick={() => setFiltersOpen(false)}>
+              {t('filters.close', { defaultValue: 'Chiudi' })}
+            </Button>
+          </Flex>
+        }
       >
         {filterContent}
       </Drawer>

@@ -1,6 +1,6 @@
 import { useMemo, useState, type JSX } from 'react'
 import { AppstoreOutlined, ColumnWidthOutlined, PlusOutlined, TableOutlined } from '@ant-design/icons'
-import { Button, DatePicker, Drawer, Flex, Grid, Input, Segmented, Select, Space } from 'antd'
+import { Button, DatePicker, Drawer, Flex, Grid, Input, Segmented, Select, Space, theme } from 'antd'
 import type { SelectProps } from 'antd'
 import type { ReactNode } from 'react'
 import { SearchOutlined } from '@ant-design/icons'
@@ -43,6 +43,7 @@ export const TaskFiltersBar = ({
   const { t } = useTranslation('projects')
   const [filtersOpen, setFiltersOpen] = useState(false)
   const screens = Grid.useBreakpoint()
+  const { token } = theme.useToken()
 
   const dueRangeValue = useMemo<[Dayjs | null, Dayjs | null] | null>(() => {
     if (!filters.dueDateRange) {
@@ -202,11 +203,42 @@ export const TaskFiltersBar = ({
         open={filtersOpen}
         onClose={() => setFiltersOpen(false)}
         width={screens.lg ? 420 : '100%'}
+        contentWrapperStyle={{
+          borderRadius: `${token.borderRadiusLG}px`,
+          margin: screens.lg ? token.marginLG : 0,
+          border: `${token.lineWidth}px solid ${token.colorBorderSecondary}`,
+          boxShadow: token.boxShadowSecondary,
+          overflow: 'hidden'
+        }}
         title={
           <Space size={6} align="center">
             <FilterOutlined />
             <span>{t('tasks.filterPanel', { defaultValue: 'Filtri' })}</span>
           </Space>
+        }
+        styles={{
+          header: { padding: token.paddingLG, marginBottom: 0 },
+          body: { padding: token.paddingLG, display: 'flex', flexDirection: 'column', gap: 16 }
+        }}
+        footer={
+          <Flex justify="space-between" align="center">
+            <Button
+              onClick={() => {
+                onChange({
+                  searchQuery: '',
+                  status: 'all',
+                  priority: 'all',
+                  assignee: 'all',
+                  dueDateRange: null
+                })
+              }}
+            >
+              {t('tasks.resetFilters', { defaultValue: 'Reimposta filtri' })}
+            </Button>
+            <Button type="primary" onClick={() => setFiltersOpen(false)}>
+              {t('tasks.closeFilters', { defaultValue: 'Chiudi' })}
+            </Button>
+          </Flex>
         }
       >
         {filterContent}

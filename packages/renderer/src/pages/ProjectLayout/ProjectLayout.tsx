@@ -191,25 +191,25 @@ const ProjectLayout = (): JSX.Element => {
               <Skeleton.Input active size="small" style={{ width: 120 }} />
             </Space>
           ) : (
-            <div>
-              <Typography.Title level={3} style={{ marginBottom: 0 }}>
-                {project?.name}
-              </Typography.Title>
-              {project?.key ? (
-                <Typography.Text type="secondary">{project.key}</Typography.Text>
-              ) : null}
-            </div>
+            <Space align="center" size={12} wrap>
+              <Button
+                icon={<ReloadOutlined />}
+                onClick={refresh}
+                loading={projectLoading}
+                disabled={projectLoading}
+              >
+                {t('details.refresh')}
+              </Button>
+              <div>
+                <Typography.Title level={3} style={{ marginBottom: 0 }}>
+                  {project?.name}
+                </Typography.Title>
+                {project?.key ? (
+                  <Typography.Text type="secondary">{project.key}</Typography.Text>
+                ) : null}
+              </div>
+            </Space>
           )}
-          <Space size={12}>
-            <Button
-              icon={<ReloadOutlined />}
-              onClick={refresh}
-              loading={projectLoading}
-              disabled={projectLoading}
-            >
-              {t('details.refresh')}
-            </Button>
-          </Space>
         </Space>
         <Tabs
           activeKey={activeKey}

@@ -76,7 +76,7 @@ const Sider = ({
         return {
           ...item,
           icon: undefined,
-          title: undefined,
+          title: collapsed ? null : undefined,
           style: {
             ...(item.style ?? {}),
             ...menuItemStyle
@@ -88,7 +88,7 @@ const Sider = ({
               justify={collapsed ? 'center' : 'flex-start'}
               gap={collapsed ? 0 : token.marginSM}
               style={{ width: '100%', color: 'inherit' }}
-              aria-label={ariaLabel}
+              aria-label={collapsed ? undefined : ariaLabel}
             >
               {iconNode ? (
                 <span

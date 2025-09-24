@@ -18,7 +18,8 @@ import {
   Switch,
   Tag,
   Typography,
-  message
+  message,
+  theme
 } from 'antd'
 import {
   DeleteOutlined,
@@ -177,6 +178,7 @@ const ProjectNotesPage = (): ReactElement => {
   const { t } = useTranslation('projects')
   const [messageApi, contextHolder] = message.useMessage()
   const screens = Grid.useBreakpoint()
+  const { token } = theme.useToken()
 
   const [includePrivate, setIncludePrivate] = useState(false)
   const [selectedNotebook, setSelectedNotebook] = useState<string | null>(null)
@@ -433,11 +435,38 @@ const ProjectNotesPage = (): ReactElement => {
         open={filtersDrawerOpen}
         onClose={() => setFiltersDrawerOpen(false)}
         width={screens.lg ? 420 : '100%'}
+        contentWrapperStyle={{
+          borderRadius: `${token.borderRadiusLG}px`,
+          margin: screens.lg ? token.marginLG : 0,
+          border: `${token.lineWidth}px solid ${token.colorBorderSecondary}`,
+          boxShadow: token.boxShadowSecondary,
+          overflow: 'hidden'
+        }}
         title={
           <Space size={6} align="center">
             <FilterOutlined />
             <span>{t('notes.filterPanel', { defaultValue: 'Filtri' })}</span>
           </Space>
+        }
+        styles={{
+          header: { padding: token.paddingLG, marginBottom: 0 },
+          body: { padding: token.paddingLG, display: 'flex', flexDirection: 'column', gap: 16 }
+        }}
+        footer={
+          <Flex justify="space-between" align="center">
+            <Button
+              onClick={() => {
+                setSelectedNotebook(null)
+                setSelectedTag(null)
+                setIncludePrivate(false)
+              }}
+            >
+              {t('notes.resetFilters', { defaultValue: 'Reimposta filtri' })}
+            </Button>
+            <Button type="primary" onClick={() => setFiltersDrawerOpen(false)}>
+              {t('notes.closeFilters', { defaultValue: 'Chiudi' })}
+            </Button>
+          </Flex>
         }
       >
         {filtersContent}
