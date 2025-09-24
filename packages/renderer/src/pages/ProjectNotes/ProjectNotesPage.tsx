@@ -1,37 +1,9 @@
 import { useCallback, useEffect, useMemo, useState, type ReactElement } from 'react'
 import {
-  Badge,
-  Button,
-  Divider,
-  Drawer,
-  Flex,
-  Form,
-  Grid,
-  Input,
-  List,
-  Modal,
-  Popconfirm,
-  Select,
-  Skeleton,
-  Space,
-  Segmented,
-  Switch,
-  Tag,
-  Typography,
-  message,
-  theme
+  Badge, Button, Card, Divider, Drawer, Flex, Form, Grid, Input, List, Modal, Popconfirm, Select, Skeleton, Space, Segmented, Spin, Switch, Tag, Typography, message, theme
 } from 'antd'
 import {
-  DeleteOutlined,
-  EditOutlined,
-  FilterOutlined,
-  FileMarkdownOutlined,
-  LinkOutlined,
-  LockOutlined,
-  PlusOutlined,
-  ReloadOutlined,
-  SearchOutlined,
-  UnlockOutlined
+  AppstoreOutlined, DeleteOutlined, EditOutlined, FilterOutlined, FileMarkdownOutlined, LinkOutlined, LockOutlined, PlusOutlined, ReloadOutlined, SearchOutlined, TableOutlined, UnlockOutlined
 } from '@ant-design/icons'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -192,6 +164,7 @@ const ProjectNotesPage = (): ReactElement => {
   const searchState = useAppSelector(selectNotesSearchState)
   const [searchParams, setSearchParams] = useSearchParams()
   const [filtersDrawerOpen, setFiltersDrawerOpen] = useState(false)
+  const [viewMode, setViewMode] = useState<'list' | 'cards'>('list')
 
   const fetchCurrentNotes = useCallback(() => {
     if (!projectId) {
@@ -334,6 +307,29 @@ const ProjectNotesPage = (): ReactElement => {
   const notebooks = useMemo(() => buildNotebookOptions(notes), [notes])
   const tags = useMemo(() => buildTagOptions(notes), [notes])
   const noteLoading = notesStatus === 'loading'
+  const viewSegmentedOptions = useMemo(
+    () => [
+      {
+        label: (
+          <Space size={6} style={{ color: 'inherit' }}>
+            <TableOutlined />
+            <span>{t('notes.view.list')}</span>
+          </Space>
+        ),
+        value: 'list'
+      },
+      {
+        label: (
+          <Space size={6} style={{ color: 'inherit' }}>
+            <AppstoreOutlined />
+            <span>{t('notes.view.cards')}</span>
+          </Space>
+        ),
+        value: 'cards'
+      }
+    ],
+    [t]
+  )
   const includePrivateOptions = useMemo(
       () => [
         {
@@ -357,6 +353,43 @@ const ProjectNotesPage = (): ReactElement => {
     ],
     [t]
   )
+
+  const renderVisibilityTag = (note: NoteSummary) =>
+    note.isPrivate ? (
+      <Tag icon={<LockOutlined />} color="orange">
+        {t('notes.labels.private')}
+      </Tag>
+    ) : (
+      <Tag icon={<UnlockOutlined />} color="success">
+        {t('notes.labels.public')}
+      </Tag>
+    )
+
+  const buildNoteActions = (note: NoteSummary, variant: 'list' | 'card'): ReactElement[] =>
+    [
+      (
+        <Button
+          key="view"
+          type={variant === 'card' ? 'link' : 'text'}
+          icon={<FileMarkdownOutlined />}
+          onClick={() => handleViewerOpen(note.id)}
+        >
+          {t('notes.actions.view')}
+        </Button>
+      ),
+      canManageNotes
+        ? (
+            <Button
+              key="edit"
+              type={variant === 'card' ? 'link' : 'text'}
+              icon={<EditOutlined />}
+              onClick={() => handleEditNote(note)}
+            >
+              {t('notes.actions.edit')}
+            </Button>
+          )
+        : null
+    ].filter(Boolean) as ReactElement[]
 
   const filtersContent = (
     <Flex vertical gap={16}>
@@ -401,9 +434,14 @@ const ProjectNotesPage = (): ReactElement => {
     <Space direction="vertical" size={24} style={{ width: '100%' }}>
       {contextHolder}
       <BorderedPanel padding="lg" style={{ width: '100%' }}>
-        <Flex align="center" justify="space-between" gap={12} wrap>
+        <Flex align="center" gap={12} wrap style={{ width: '100%' }}>
           <Flex align="center" gap={12} wrap style={{ flex: '1 1 auto' }}>
-            <Button icon={<ReloadOutlined />} onClick={handleRefresh} disabled={noteLoading}>
+            <Button
+              icon={<ReloadOutlined />}
+              onClick={handleRefresh}
+              loading={noteLoading}
+              disabled={noteLoading}
+            >
               {t('details.refresh')}
             </Button>
             {canManageNotes ? (
@@ -412,13 +450,17 @@ const ProjectNotesPage = (): ReactElement => {
               </Button>
             ) : null}
           </Flex>
-          <Button
-            icon={<FilterOutlined />}
-            onClick={() => setFiltersDrawerOpen(true)}
-            style={{ flexShrink: 0 }}
-          >
-            {t('notes.openFilters')}
-          </Button>
+          <Flex align="center" gap={12} wrap style={{ justifyContent: 'flex-end', flexShrink: 0 }}>
+            <Segmented
+              size="large"
+              value={viewMode}
+              onChange={(mode) => setViewMode(mode as 'list' | 'cards')}
+              options={viewSegmentedOptions}
+            />
+            <Button icon={<FilterOutlined />} onClick={() => setFiltersDrawerOpen(true)}>
+              {t('notes.actions.openFilters')}
+            </Button>
+          </Flex>
         </Flex>
       </BorderedPanel>
       <Drawer
@@ -452,60 +494,33 @@ const ProjectNotesPage = (): ReactElement => {
                 setIncludePrivate(false)
               }}
             >
-              {t('notes.resetFilters', { defaultValue: 'Reimposta filtri' })}
+              {t('notes.actions.resetFilters')}
             </Button>
             <Button type="primary" onClick={() => setFiltersDrawerOpen(false)}>
-              {t('notes.closeFilters', { defaultValue: 'Chiudi' })}
+              {t('notes.actions.closeFilters')}
             </Button>
           </Flex>
         }
       >
         {filtersContent}
       </Drawer>
-      <List
-        loading={noteLoading}
-        dataSource={notes}
-        renderItem={(note) => (
-          <List.Item
-            key={note.id}
-            actions={[
-              <Button
-                key="view"
-                type="text"
-                icon={<FileMarkdownOutlined />}
-                onClick={() => handleViewerOpen(note.id)}
-              >
-                {t('notes.actions.view')}
-              </Button>,
-              canManageNotes ? (
-                <Button
-                  key="edit"
-                  type="text"
-                  icon={<EditOutlined />}
-                  onClick={() => handleEditNote(note)}
+      {viewMode === 'cards' ? (
+        <Spin spinning={noteLoading} style={{ width: '100%' }}>
+          {notes.length ? (
+            <Flex gap={16} wrap style={{ width: '100%' }}>
+              {notes.map((note) => (
+                <Card
+                  key={note.id}
+                  actions={buildNoteActions(note, 'card')}
+                  style={{ flex: '1 1 320px', minWidth: 280, maxWidth: 420 }}
+                  bodyStyle={{ display: 'flex', flexDirection: 'column', gap: 8 }}
+                  title={
+                    <Flex align="center" justify="space-between" wrap>
+                      <Typography.Text strong>{note.title}</Typography.Text>
+                      {renderVisibilityTag(note)}
+                    </Flex>
+                  }
                 >
-                  {t('notes.actions.edit')}
-                </Button>
-              ) : null
-            ].filter(Boolean)}
-          >
-            <List.Item.Meta
-              title={
-                <Space size={8}>
-                  <Typography.Link onClick={() => handleViewerOpen(note.id)}>{note.title}</Typography.Link>
-                  {note.isPrivate ? (
-                    <Tag icon={<LockOutlined />} color="orange">
-                      {t('notes.labels.private')}
-                    </Tag>
-                  ) : (
-                    <Tag icon={<UnlockOutlined />} color="success">
-                      {t('notes.labels.public')}
-                    </Tag>
-                  )}
-                </Space>
-              }
-              description={
-                <Space direction="vertical" size={8} style={{ width: '100%' }}>
                   <Typography.Text type="secondary">
                     {t('notes.list.updatedBy', {
                       user: note.owner.displayName,
@@ -518,12 +533,48 @@ const ProjectNotesPage = (): ReactElement => {
                       <Tag key={tag}>{tag}</Tag>
                     ))}
                   </Space>
-                </Space>
-              }
-            />
-          </List.Item>
-        )}
-      />
+                </Card>
+              ))}
+            </Flex>
+          ) : (
+            <Typography.Text type="secondary">{t('notes.list.empty')}</Typography.Text>
+          )}
+        </Spin>
+      ) : (
+        <List
+          loading={noteLoading}
+          dataSource={notes}
+          locale={{ emptyText: t('notes.list.empty') }}
+          renderItem={(note) => (
+            <List.Item key={note.id} actions={buildNoteActions(note, 'list')}>
+              <List.Item.Meta
+                title={
+                  <Space size={8}>
+                    <Typography.Link onClick={() => handleViewerOpen(note.id)}>{note.title}</Typography.Link>
+                    {renderVisibilityTag(note)}
+                  </Space>
+                }
+                description={
+                  <Space direction="vertical" size={8} style={{ width: '100%' }}>
+                    <Typography.Text type="secondary">
+                      {t('notes.list.updatedBy', {
+                        user: note.owner.displayName,
+                        date: dayjs(note.updatedAt).format('LLL')
+                      })}
+                    </Typography.Text>
+                    <Space size={4} wrap>
+                      {note.notebook ? <Tag color="geekblue">{note.notebook}</Tag> : null}
+                      {note.tags.map((tag) => (
+                        <Tag key={tag}>{tag}</Tag>
+                      ))}
+                    </Space>
+                  </Space>
+                }
+              />
+            </List.Item>
+          )}
+        />
+      )}
 
       <NoteEditorModal
         open={isEditorOpen}
@@ -1122,5 +1173,6 @@ const HighlightSnippet = ({ highlight }: { highlight: string | null | undefined 
 
 export { ProjectNotesPage }
 export default ProjectNotesPage
+
 
 

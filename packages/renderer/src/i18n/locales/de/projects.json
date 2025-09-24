@@ -265,6 +265,8 @@
   },
   "tasks": {
     "openFilters": "Filter",
+    "resetFilters": "Filter zurcksetzen",
+    "closeFilters": "Schlieen",
     "columns": {
       "actions": "Aktionen"
     },
@@ -390,14 +392,21 @@
       "deleteConfirmText": "Moechten Sie diese Notiz wirklich loeschen?",
       "delete": "Loeschen",
       "panelTitle": "Aktionen",
-      "openFilters": "Filter"
+      "openFilters": "Filter",
+    "resetFilters": "Filter zurcksetzen",
+    "closeFilters": "Schlieen"
+    },
+    "view": {
+      "list": "Listenansicht",
+      "cards": "Kartenansicht"
     },
     "labels": {
       "private": "Privat",
       "public": "Oeffentlich"
     },
     "list": {
-      "updatedBy": "Zuletzt aktualisiert {{date}} von {{user}}"
+      "updatedBy": "Zuletzt aktualisiert {{date}} von {{user}}",
+      "empty": "Keine Notizen verfuegbar"
     },
     "editor": {
       "createTitle": "Notiz erstellen",
@@ -426,7 +435,8 @@
       "linkedTasks": "Verknuepfte Aufgaben",
       "noLinks": "Keine verknuepften Aufgaben.",
       "empty": "Waehl eine Notiz aus, um Details zu sehen",
-      "updatedBy": "Zuletzt aktualisiert {{date}} von {{user}}"
+      "updatedBy": "Zuletzt aktualisiert {{date}} von {{user}}",
+      "empty": "Keine Notizen verfuegbar"
     },
     "feedback": {
       "created": "Notiz erstellt",

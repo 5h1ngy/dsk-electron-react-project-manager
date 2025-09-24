@@ -263,6 +263,8 @@
   },
   "tasks": {
     "openFilters": "Filtres",
+    "resetFilters": "Rinitialiser les filtres",
+    "closeFilters": "Fermer",
     "columns": {
       "actions": "Actions"
     },
@@ -388,14 +390,21 @@
       "deleteConfirmText": "Voulez-vous vraiment supprimer cette note ?",
       "delete": "Supprimer",
       "panelTitle": "Actions",
-      "openFilters": "Filtres"
+      "openFilters": "Filtres",
+    "resetFilters": "Rinitialiser les filtres",
+    "closeFilters": "Fermer"
+    },
+    "view": {
+      "list": "Vue liste",
+      "cards": "Vue cartes"
     },
     "labels": {
       "private": "Privee",
       "public": "Publique"
     },
     "list": {
-      "updatedBy": "Derniere mise a jour {{date}} par {{user}}"
+      "updatedBy": "Derniere mise a jour {{date}} par {{user}}",
+      "empty": "Aucune note disponible"
     },
     "editor": {
       "createTitle": "Creer une note",

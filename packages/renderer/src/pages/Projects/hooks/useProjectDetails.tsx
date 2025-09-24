@@ -14,6 +14,7 @@ import { selectCurrentUser } from '@renderer/store/slices/auth/selectors'
 import {
   fetchNotes,
   selectProjectNotes,
+  selectProjectNotesFilters,
   selectProjectNotesStatus
 } from '@renderer/store/slices/notes'
 import type { NoteSummary } from '@renderer/store/slices/notes/types'
@@ -24,6 +25,8 @@ import {
 } from '@renderer/store/slices/taskStatuses'
 import type { TaskStatusItem } from '@renderer/store/slices/taskStatuses'
 
+const defaultNoteFilters = { notebook: null, tag: null, includePrivate: false }
+
 export interface UseProjectDetailsResult {
   project: ReturnType<ReturnType<typeof selectProjectById>> | null
   tasks: TaskDetails[]
@@ -32,6 +35,7 @@ export interface UseProjectDetailsResult {
   taskStatusesStatus: ReturnType<ReturnType<typeof selectProjectTaskStatusesStatus>>
   projectLoading: boolean
   refresh: () => void
+  refreshTasks: () => void
   refreshTaskStatuses: () => void
   canManageTasks: boolean
   notes: NoteSummary[]
@@ -87,6 +91,14 @@ export const useProjectDetails = (projectId?: string): UseProjectDetailsResult =
   )
   const notes = useAppSelector(notesSelector)
   const notesStatus = useAppSelector(notesStatusSelector)
+  const notesFiltersSelector = useMemo(
+    () =>
+      projectId
+        ? selectProjectNotesFilters(projectId)
+        : (() => defaultNoteFilters),
+    [projectId]
+  )
+  const notesFilters = useAppSelector(notesFiltersSelector)
   const projectsStatus = useAppSelector(selectProjectsStatus)
   const error = useAppSelector(selectProjectsError)
   const currentUser = useAppSelector(selectCurrentUser)
@@ -132,6 +144,14 @@ export const useProjectDetails = (projectId?: string): UseProjectDetailsResult =
     void dispatch(fetchNotes({ projectId }))
   }, [dispatch, projectId])
 
+  const refreshTasks = useCallback(() => {
+    if (!projectId) {
+      return
+    }
+    void dispatch(fetchTasks(projectId))
+    void dispatch(fetchTaskStatuses(projectId))
+  }, [dispatch, projectId])
+
   const refreshTaskStatuses = useCallback(() => {
     if (!projectId) {
       return
@@ -143,8 +163,15 @@ export const useProjectDetails = (projectId?: string): UseProjectDetailsResult =
     if (!projectId) {
       return
     }
-    void dispatch(fetchNotes({ projectId }))
-  }, [dispatch, projectId])
+    void dispatch(
+      fetchNotes({
+        projectId,
+        includePrivate: notesFilters.includePrivate,
+        notebook: notesFilters.notebook ?? undefined,
+        tag: notesFilters.tag ?? undefined
+      })
+    )
+  }, [dispatch, notesFilters.includePrivate, notesFilters.notebook, notesFilters.tag, projectId])
 
   const projectLoading = !project && projectsStatus === 'loading'
 
@@ -156,6 +183,7 @@ export const useProjectDetails = (projectId?: string): UseProjectDetailsResult =
     taskStatusesStatus,
     projectLoading,
     refresh,
+    refreshTasks,
     refreshTaskStatuses,
     canManageTasks,
     notes,

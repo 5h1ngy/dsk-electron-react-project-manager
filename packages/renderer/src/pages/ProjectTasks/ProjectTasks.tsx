@@ -55,7 +55,7 @@ const ProjectTasksPage = (): JSX.Element => {
     tasksStatus,
     taskStatuses,
     taskStatusesStatus,
-    refresh,
+    refreshTasks,
     canManageTasks,
     openTaskDetails,
     openTaskCreate,
@@ -290,7 +290,7 @@ const ProjectTasksPage = (): JSX.Element => {
         <TaskStatusManager
           projectId={projectId}
           statuses={taskStatuses}
-          onRefreshTasks={refresh}
+          onRefreshTasks={refreshTasks}
           disabled={taskStatusesStatus === 'loading'}
         />
       ) : null}
@@ -385,7 +385,7 @@ const ProjectTasksPage = (): JSX.Element => {
             deletingTaskId={deletingTaskId}
           />
         ) : null}
-    </Space>
+      </Space>
       <Modal
         open={isSaveModalOpen}
         title={t('tasks.savedViews.modalTitle')}
@@ -415,6 +415,7 @@ ProjectTasksPage.displayName = 'ProjectTasksPage'
 
 export { ProjectTasksPage }
 export default ProjectTasksPage
+
 
 
 

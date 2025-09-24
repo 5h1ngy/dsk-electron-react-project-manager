@@ -263,6 +263,8 @@
   },
   "tasks": {
     "openFilters": "Filtri",
+    "resetFilters": "Reimposta filtri",
+    "closeFilters": "Chiudi",
     "columns": {
       "actions": "Azioni"
     },
@@ -388,14 +390,21 @@
       "deleteConfirmText": "Vuoi davvero eliminare questa nota?",
       "delete": "Elimina",
       "panelTitle": "Azioni",
-      "openFilters": "Filtri"
+      "openFilters": "Filtri",
+      "resetFilters": "Reimposta filtri",
+      "closeFilters": "Chiudi"
+    },
+    "view": {
+      "list": "Vista elenco",
+      "cards": "Vista card"
     },
     "labels": {
       "private": "Privata",
       "public": "Pubblica"
     },
     "list": {
-      "updatedBy": "Ultimo aggiornamento {{date}} da {{user}}"
+      "updatedBy": "Ultimo aggiornamento {{date}} da {{user}}",
+      "empty": "Nessuna nota disponibile"
     },
     "editor": {
       "createTitle": "Crea nota",
