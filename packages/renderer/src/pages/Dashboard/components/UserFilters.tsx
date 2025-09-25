@@ -121,7 +121,7 @@ export const UserFilters = ({
           options={viewSegmentedOptions}
         />
         <Button icon={<FilterOutlined />} onClick={() => setFiltersOpen(true)}>
-          {t('filters.openButton')}
+          {t('filters.users.openButton')}
         </Button>
       </Flex>
     </Flex>
