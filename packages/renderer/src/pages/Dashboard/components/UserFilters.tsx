@@ -18,8 +18,6 @@ export interface UserFiltersProps {
   roleOptions: RoleName[]
   onChange: (value: Partial<UserFiltersValue>) => void
   onCreate: () => void
-  onRefresh: () => void
-  isRefreshing?: boolean
   canCreate?: boolean
   viewMode: 'table' | 'cards'
   onViewModeChange: (mode: 'table' | 'cards') => void
@@ -30,8 +28,6 @@ export const UserFilters = ({
   roleOptions,
   onChange,
   onCreate,
-  onRefresh,
-  isRefreshing = false,
   canCreate = true,
   viewMode,
   onViewModeChange
@@ -116,9 +112,6 @@ export const UserFilters = ({
         <Button type="primary" onClick={onCreate} disabled={!canCreate}>
           {t('dashboard:actionBar.create')}
         </Button>
-        <Button onClick={onRefresh} loading={isRefreshing} disabled={isRefreshing}>
-          {t('dashboard:actionBar.refresh')}
-        </Button>
       </Space>
       <Flex align="center" gap={12} wrap style={{ justifyContent: 'flex-end', flexShrink: 0 }}>
         <Segmented
@@ -128,7 +121,7 @@ export const UserFilters = ({
           options={viewSegmentedOptions}
         />
         <Button icon={<FilterOutlined />} onClick={() => setFiltersOpen(true)}>
-          {t('filters.openButton')}
+          {t('filters.users.openButton')}
         </Button>
       </Flex>
     </Flex>
