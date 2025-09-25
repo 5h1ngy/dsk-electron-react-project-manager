@@ -10,6 +10,7 @@ export interface ProjectRouteContext {
   project: ProjectDetails | null
   projectLoading: boolean
   refresh: () => void
+  refreshTasks: () => void
   refreshTaskStatuses: () => void
   tasks: TaskDetails[]
   tasksStatus: string

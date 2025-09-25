@@ -1,5 +1,5 @@
 import type { JSX } from 'react'
-import { Form, Input, Modal, Space, Typography } from 'antd'
+import { Form, Input, Modal, Space } from 'antd'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -11,8 +11,7 @@ import {
   buildPriorityOptions,
   buildStatusOptions,
   buildAssigneeOptions,
-  filterTasks,
-  resolveEffectiveTitle
+  filterTasks
 } from '@renderer/pages/ProjectTasks/ProjectTasks.helpers'
 import type { TaskFilters } from '@renderer/pages/ProjectTasks/ProjectTasks.types'
 import { TaskFiltersBar } from '@renderer/pages/ProjectTasks/components/TaskFiltersBar'
@@ -56,7 +55,7 @@ const ProjectTasksPage = (): JSX.Element => {
     tasksStatus,
     taskStatuses,
     taskStatusesStatus,
-    refresh,
+    refreshTasks,
     canManageTasks,
     openTaskDetails,
     openTaskCreate,
@@ -104,8 +103,6 @@ const ProjectTasksPage = (): JSX.Element => {
   const mutationStatus = useAppSelector(selectViewsMutationStatus)
   const TABLE_PAGE_SIZE = 10
   const CARD_PAGE_SIZE = 8
-
-  const effectiveTitle = useMemo(() => resolveEffectiveTitle(project?.name, t), [project?.name, t])
 
   const statusOptions = useMemo(() => buildStatusOptions(t, taskStatuses), [t, taskStatuses])
   const statusLabelMap = useMemo(() => {
@@ -269,6 +266,37 @@ const ProjectTasksPage = (): JSX.Element => {
     setCardPage(1)
   }, [viewMode])
 
+  const savedViewsControls = projectId ? (
+    <TaskSavedViewsControls
+      views={savedViews}
+      selectedViewId={selectedViewId}
+      onSelect={handleViewSelect}
+      onCreate={handleOpenSaveModal}
+      onDelete={handleDeleteView}
+      loadingStatus={viewsStatus}
+      mutationStatus={mutationStatus}
+    />
+  ) : null
+
+  const secondaryActionsContent = (
+    <>
+      <TaskColumnVisibilityControls
+        columns={OPTIONAL_TASK_COLUMNS}
+        selectedColumns={visibleColumns}
+        disabled={viewMode !== 'table'}
+        onChange={handleVisibleColumnsChange}
+      />
+      {projectId && canManageTasks ? (
+        <TaskStatusManager
+          projectId={projectId}
+          statuses={taskStatuses}
+          onRefreshTasks={refreshTasks}
+          disabled={taskStatusesStatus === 'loading'}
+        />
+      ) : null}
+    </>
+  )
+
   const handleTaskSelect = (taskId: string) => {
     openTaskDetails(taskId)
   }
@@ -290,9 +318,6 @@ const ProjectTasksPage = (): JSX.Element => {
   return (
     <>
       <Space direction="vertical" size={24} style={{ width: '100%' }}>
-        <Typography.Title level={4} style={{ marginBottom: 0 }}>
-          {effectiveTitle}
-        </Typography.Title>
         <TaskFiltersBar
           filters={filters}
           statusOptions={statusOptions}
@@ -300,38 +325,19 @@ const ProjectTasksPage = (): JSX.Element => {
           assigneeOptions={assigneeOptions}
           onChange={handleFiltersChange}
           viewMode={viewMode}
-          onViewModeChange={setViewMode}
+          onViewModeChange={(mode) => {
+            setViewMode(mode)
+            if (mode === 'cards') {
+              setCardPage(1)
+            }
+            if (mode === 'table') {
+              setTablePage(1)
+            }
+          }}
           onCreate={canManageTasks ? () => openTaskCreate() : undefined}
           canCreate={canManageTasks}
-          secondaryActions={
-            <>
-              <TaskColumnVisibilityControls
-                columns={OPTIONAL_TASK_COLUMNS}
-                selectedColumns={visibleColumns}
-                disabled={viewMode !== 'table'}
-                onChange={handleVisibleColumnsChange}
-              />
-              {projectId && canManageTasks ? (
-                <TaskStatusManager
-                  projectId={projectId}
-                  statuses={taskStatuses}
-                  onRefreshTasks={refresh}
-                  disabled={taskStatusesStatus === 'loading'}
-                />
-              ) : null}
-              {projectId ? (
-                <TaskSavedViewsControls
-                  views={savedViews}
-                  selectedViewId={selectedViewId}
-                  onSelect={handleViewSelect}
-                  onCreate={handleOpenSaveModal}
-                  onDelete={handleDeleteView}
-                  loadingStatus={viewsStatus}
-                  mutationStatus={mutationStatus}
-                />
-              ) : null}
-            </>
-          }
+          secondaryActions={secondaryActionsContent}
+          savedViewsControls={savedViewsControls}
         />
         {viewMode === 'table' ? (
           <ProjectTasksTable
@@ -379,7 +385,7 @@ const ProjectTasksPage = (): JSX.Element => {
             deletingTaskId={deletingTaskId}
           />
         ) : null}
-    </Space>
+      </Space>
       <Modal
         open={isSaveModalOpen}
         title={t('tasks.savedViews.modalTitle')}
@@ -409,6 +415,7 @@ ProjectTasksPage.displayName = 'ProjectTasksPage'
 
 export { ProjectTasksPage }
 export default ProjectTasksPage
+
 
 
 

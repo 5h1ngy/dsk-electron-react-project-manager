@@ -263,6 +263,8 @@
   },
   "tasks": {
     "openFilters": "Filters",
+    "resetFilters": "Reset filters",
+    "closeFilters": "Close",
     "columns": {
       "actions": "Actions"
     },
@@ -299,13 +301,14 @@
       }
     },
     "savedViews": {
-      "placeholder": "Saved views",
-      "saveButton": "Save view",
-      "deleteButton": "Delete",
-      "modalTitle": "Save current view",
-      "nameLabel": "Name",
-      "nameRequired": "Please enter a name"
-    },
+        "placeholder": "Saved views",
+        "panelTitle": "Saved views",
+        "saveButton": "Save view",
+        "deleteButton": "Delete",
+        "modalTitle": "Save current view",
+        "nameLabel": "Name",
+        "nameRequired": "Please enter a name"
+      },
     "actions": {
       "create": "New task",
       "edit": "Edit",
@@ -387,14 +390,21 @@
       "deleteConfirmText": "Are you sure you want to delete this note?",
       "delete": "Delete",
       "panelTitle": "Actions",
-      "openFilters": "Filters"
+      "openFilters": "Filters",
+      "resetFilters": "Reset filters",
+      "closeFilters": "Close"
+    },
+    "view": {
+      "list": "List view",
+      "cards": "Card view"
     },
     "labels": {
       "private": "Private",
       "public": "Public"
     },
     "list": {
-      "updatedBy": "Last updated {{date}} by {{user}}"
+      "updatedBy": "Last updated {{date}} by {{user}}",
+      "empty": "No notes available"
     },
     "editor": {
       "createTitle": "Create note",
@@ -457,6 +467,7 @@
   },
   "views": {
     "placeholder": "Saved views",
+    "panelTitle": "Saved views",
     "saveButton": "Save view",
     "deleteButton": "Delete",
     "saveSuccess": "View saved",

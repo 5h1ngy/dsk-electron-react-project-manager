@@ -6,7 +6,7 @@ import type { ReactNode } from 'react'
 import { SearchOutlined } from '@ant-design/icons'
 import dayjs, { type Dayjs } from 'dayjs'
 import { useTranslation } from 'react-i18next'
-import { FilterOutlined, SettingOutlined } from '@ant-design/icons'
+import { FilterOutlined, SaveOutlined } from '@ant-design/icons'
 
 import type { SelectOption, TaskFilters } from '@renderer/pages/ProjectTasks/ProjectTasks.types'
 import { BorderedPanel } from '@renderer/components/Surface/BorderedPanel'
@@ -26,6 +26,7 @@ export interface TaskFiltersBarProps {
   onCreate?: () => void
   canCreate?: boolean
   secondaryActions?: ReactNode
+  savedViewsControls?: ReactNode
 }
 
 export const TaskFiltersBar = ({
@@ -38,7 +39,8 @@ export const TaskFiltersBar = ({
   onViewModeChange,
   onCreate,
   canCreate = true,
-  secondaryActions
+  secondaryActions,
+  savedViewsControls
 }: TaskFiltersBarProps): JSX.Element => {
   const { t } = useTranslation('projects')
   const [filtersOpen, setFiltersOpen] = useState(false)
@@ -109,6 +111,29 @@ export const TaskFiltersBar = ({
 
   const filterContent = (
     <Flex vertical gap={16}>
+      {savedViewsControls ? (
+        <BorderedPanel
+          padding="md"
+          bodyStyle={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: token.paddingSM
+          }}
+          title={
+            <Space size={6} align="center">
+              <SaveOutlined />
+              <span>
+                {t('tasks.savedViews.panelTitle', {
+                  defaultValue: t('tasks.savedViews.placeholder')
+                })}
+              </span>
+            </Space>
+          }
+          style={{ width: '100%' }}
+        >
+          {savedViewsControls}
+        </BorderedPanel>
+      ) : null}
       <Input
         allowClear
         prefix={<SearchOutlined />}
@@ -155,48 +180,42 @@ export const TaskFiltersBar = ({
   )
 
   const actionsContent = (
-    <Flex align="center" gap={12} wrap>
-      <Button
-        icon={<FilterOutlined />}
-        size="large"
-        onClick={() => setFiltersOpen(true)}
-      >
-        {t('tasks.openFilters')}
-      </Button>
-      <Segmented
-        size="large"
-        value={viewMode}
-        onChange={(next) => onViewModeChange(next as 'table' | 'cards' | 'board')}
-        options={viewSegmentedOptions}
-      />
-      {secondaryActions ? (
-        <Space size="small" wrap>
-          {secondaryActions}
-        </Space>
-      ) : null}
-      {onCreate ? (
-        <Button
-          type="primary"
-          icon={<PlusOutlined />}
-          onClick={onCreate}
-          disabled={!canCreate}
-        >
-          {t('tasks.actions.create')}
+    <Flex align="center" wrap gap={12} style={{ width: '100%' }}>
+      <Flex align="center" gap={12} wrap style={{ flex: '1 1 auto' }}>
+        {secondaryActions ? (
+          <Space size="small" wrap>
+            {secondaryActions}
+          </Space>
+        ) : null}
+        {onCreate ? (
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            onClick={onCreate}
+            disabled={!canCreate}
+          >
+            {t('tasks.actions.create')}
+          </Button>
+        ) : null}
+      </Flex>
+      <Flex align="center" gap={12} wrap style={{ justifyContent: 'flex-end', flexShrink: 0 }}>
+        <Segmented
+          size="large"
+          value={viewMode}
+          onChange={(next) => onViewModeChange(next as 'table' | 'cards' | 'board')}
+          options={viewSegmentedOptions}
+        />
+        <Button icon={<FilterOutlined />} size="large" onClick={() => setFiltersOpen(true)}>
+          {t('tasks.openFilters')}
         </Button>
-      ) : null}
+      </Flex>
     </Flex>
   )
 
   return (
     <>
       <BorderedPanel padding="lg" style={{ width: '100%' }}>
-        <Flex vertical gap={12}>
-          <Space size={6} align="center">
-            <SettingOutlined />
-            <span>{t('tasks.actionsPanel', { defaultValue: 'Azioni' })}</span>
-          </Space>
-          {actionsContent}
-        </Flex>
+        {actionsContent}
       </BorderedPanel>
       <Drawer
         placement="right"
@@ -218,10 +237,14 @@ export const TaskFiltersBar = ({
         }
         styles={{
           header: { padding: token.paddingLG, marginBottom: 0 },
-          body: { padding: token.paddingLG, display: 'flex', flexDirection: 'column', gap: 16 }
+          body: { padding: token.paddingLG, display: 'flex', flexDirection: 'column', gap: 16 },
+          footer: {
+            padding: token.paddingLG,
+            borderTop: `${token.lineWidth}px solid ${token.colorBorderSecondary}`
+          }
         }}
         footer={
-          <Flex justify="space-between" align="center">
+          <Flex justify="space-between" align="center" style={{ width: '100%' }}>
             <Button
               onClick={() => {
                 onChange({

@@ -1,5 +1,5 @@
 import { DeleteOutlined, SaveOutlined } from '@ant-design/icons'
-import { Button, Select, Space } from 'antd'
+import { Button, Flex, Select, Space } from 'antd'
 import { useTranslation } from 'react-i18next'
 import type { JSX } from 'react'
 
@@ -24,28 +24,32 @@ export const ProjectSavedViewsControls = ({
   const options = views.map((view) => ({ label: view.name, value: view.id }))
 
   return (
-    <Space size="small" wrap>
+    <Flex vertical gap={12} style={{ width: '100%' }}>
       <Select
         allowClear
         showSearch
         placeholder={t('views.placeholder', { defaultValue: 'Seleziona vista' })}
-        style={{ minWidth: 220 }}
+        size="large"
+        style={{ width: '100%' }}
         value={selectedViewId ?? undefined}
         options={options}
         onChange={(value) => onSelect((value as string | undefined) ?? null)}
       />
-      <Button icon={<SaveOutlined />} onClick={onCreate}>
-        {t('views.saveButton', { defaultValue: 'Salva vista' })}
-      </Button>
-      <Button
-        danger
-        icon={<DeleteOutlined />}
-        disabled={!selectedViewId}
-        onClick={() => selectedViewId && onDelete(selectedViewId)}
-      >
-        {t('views.deleteButton', { defaultValue: 'Elimina' })}
-      </Button>
-    </Space>
+      <Space.Compact block>
+        <Button icon={<SaveOutlined />} onClick={onCreate} style={{ flex: 1 }}>
+          {t('views.saveButton', { defaultValue: 'Salva vista' })}
+        </Button>
+        <Button
+          danger
+          icon={<DeleteOutlined />}
+          disabled={!selectedViewId}
+          onClick={() => selectedViewId && onDelete(selectedViewId)}
+          style={{ flex: 1 }}
+        >
+          {t('views.deleteButton', { defaultValue: 'Elimina' })}
+        </Button>
+      </Space.Compact>
+    </Flex>
   )
 }
 

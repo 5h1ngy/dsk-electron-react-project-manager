@@ -1,11 +1,10 @@
 import { ReloadOutlined } from '@ant-design/icons'
-import { Breadcrumb, Button, Skeleton, Space, Tabs, Typography } from 'antd'
-import { useEffect, useMemo, type JSX } from 'react'
+import { Breadcrumb, Button, Space, Tabs } from 'antd'
+import { useCallback, useEffect, useMemo, type JSX } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Outlet, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 
 import { EmptyState } from '@renderer/components/DataStates'
-import { useDelayedLoading } from '@renderer/hooks/useDelayedLoading'
 import { useProjectDetails } from '@renderer/pages/Projects/hooks/useProjectDetails'
 import { useTaskModals } from '@renderer/pages/Projects/hooks/useTaskModals'
 import { TaskFormModal } from '@renderer/pages/Projects/components/TaskFormModal'
@@ -38,6 +37,7 @@ const ProjectLayout = (): JSX.Element => {
     taskStatusesStatus,
     projectLoading,
     refresh,
+    refreshTasks,
     refreshTaskStatuses,
     canManageTasks,
     notes,
@@ -81,8 +81,6 @@ const ProjectLayout = (): JSX.Element => {
     }
   }, [projectId, searchParams, setSearchParams, taskModals, tasks, tasksStatus])
 
-  const showSkeleton = useDelayedLoading(projectLoading)
-
   const basePath = `/projects/${projectId ?? ''}`
   const activeKey = projectId ? resolveActiveTab(location.pathname, basePath) : 'overview'
 
@@ -102,6 +100,34 @@ const ProjectLayout = (): JSX.Element => {
   )
 
   const emphasizedBreadcrumbItems = usePrimaryBreadcrumb(breadcrumbItems)
+
+  const refreshLoading = useMemo(() => {
+    switch (activeKey) {
+      case 'tasks':
+        return tasksStatus === 'loading' || taskStatusesStatus === 'loading'
+      case 'notes':
+        return notesStatus === 'loading'
+      default:
+        return projectLoading
+    }
+  }, [activeKey, projectLoading, tasksStatus, taskStatusesStatus, notesStatus])
+
+  const handleRefreshClick = useCallback(() => {
+    if (!projectId) {
+      return
+    }
+    switch (activeKey) {
+      case 'tasks':
+        refreshTasks()
+        break
+      case 'notes':
+        refreshNotes()
+        break
+      default:
+        refresh()
+        break
+    }
+  }, [activeKey, projectId, refresh, refreshNotes, refreshTasks])
 
   if (!projectId) {
     return (
@@ -135,6 +161,7 @@ const ProjectLayout = (): JSX.Element => {
     taskStatusesStatus,
     projectLoading,
     refresh,
+    refreshTasks,
     refreshTaskStatuses,
     canManageTasks,
     openTaskDetails: taskModals.openDetail,
@@ -166,7 +193,17 @@ const ProjectLayout = (): JSX.Element => {
   return (
     <>
       <ShellHeaderPortal>
-        <Breadcrumb items={emphasizedBreadcrumbItems} />
+        <Space align="center" size={12} wrap style={{ width: '100%' }}>
+          <Button
+            icon={<ReloadOutlined />}
+            onClick={handleRefreshClick}
+            loading={refreshLoading}
+            disabled={refreshLoading || !projectId}
+          >
+            {t('details.refresh')}
+          </Button>
+          <Breadcrumb items={emphasizedBreadcrumbItems} />
+        </Space>
       </ShellHeaderPortal>
       <Space direction="vertical" size={24} style={{ width: '100%' }}>
         {messageContext}
@@ -175,42 +212,6 @@ const ProjectLayout = (): JSX.Element => {
             {taskModals.taskMessageContext}
           </div>
         ) : null}
-        <Space
-          align="center"
-          style={{
-            width: '100%',
-            display: 'flex',
-            justifyContent: 'space-between',
-            gap: 16,
-            flexWrap: 'wrap'
-          }}
-        >
-          {showSkeleton ? (
-            <Space direction="vertical" size={4}>
-              <Skeleton.Input active size="large" style={{ width: 240 }} />
-              <Skeleton.Input active size="small" style={{ width: 120 }} />
-            </Space>
-          ) : (
-            <Space align="center" size={12} wrap>
-              <Button
-                icon={<ReloadOutlined />}
-                onClick={refresh}
-                loading={projectLoading}
-                disabled={projectLoading}
-              >
-                {t('details.refresh')}
-              </Button>
-              <div>
-                <Typography.Title level={3} style={{ marginBottom: 0 }}>
-                  {project?.name}
-                </Typography.Title>
-                {project?.key ? (
-                  <Typography.Text type="secondary">{project.key}</Typography.Text>
-                ) : null}
-              </div>
-            </Space>
-          )}
-        </Space>
         <Tabs
           activeKey={activeKey}
           items={tabItems}

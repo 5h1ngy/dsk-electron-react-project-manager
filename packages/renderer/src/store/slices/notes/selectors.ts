@@ -26,6 +26,11 @@ export const selectProjectNotesStatus = (projectId: string) =>
 export const selectProjectNotesError = (projectId: string) =>
   createSelector(buildProjectSelector(projectId), (projectState) => projectState?.error)
 
+export const selectProjectNotesFilters = (projectId: string) =>
+  createSelector(buildProjectSelector(projectId), (projectState) =>
+    projectState?.filters ?? { notebook: null, tag: null, includePrivate: false }
+  )
+
 export const selectNoteDetailsState = (noteId: string) =>
   createSelector(selectNotesState, (state) => state.detailsById[noteId] ?? null)
 

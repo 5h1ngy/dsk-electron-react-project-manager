@@ -22,6 +22,10 @@ export interface ShellStyleResult {
   collapseButtonStyle: CSSProperties
   accountButtonStyle: CSSProperties
   accountAvatarStyle: CSSProperties
+  accountAvatarSizes: {
+    collapsed: number
+    expanded: number
+  }
   headerContainerStyle: CSSProperties
   dropdownWidth: number
   toolbarGap: number
@@ -114,6 +118,11 @@ export const useShellStyles = ({ menuTheme, collapsed, displayName }: UseShellSt
     color: avatarForeground
   }
 
+  const accountAvatarSizes = {
+    collapsed: token.controlHeightSM,
+    expanded: Math.max(token.controlHeightSM, token.controlHeightMD)
+  }
+
   const headerContainerStyle: CSSProperties = {
     flex: 1,
     minHeight: token.controlHeightLG
@@ -128,6 +137,7 @@ export const useShellStyles = ({ menuTheme, collapsed, displayName }: UseShellSt
     collapseButtonStyle,
     accountButtonStyle,
     accountAvatarStyle,
+    accountAvatarSizes,
     headerContainerStyle,
     dropdownWidth: token.controlHeightLG * 5,
     toolbarGap: spacing.sm,
