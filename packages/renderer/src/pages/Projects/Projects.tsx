@@ -1,9 +1,10 @@
 import type { JSX } from 'react'
-import { Breadcrumb, Form, Input, Modal, Typography } from 'antd'
+import { Breadcrumb, Button, Form, Input, Modal, Space, Typography } from 'antd'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { useEffect, useMemo, useState } from 'react'
 
+import { ReloadOutlined } from '@ant-design/icons'
 import { ProjectsActionBar } from '@renderer/pages/Projects/components/ProjectsActionBar'
 import { ProjectList } from '@renderer/pages/Projects/components/ProjectList'
 import { ProjectCardsGrid } from '@renderer/pages/Projects/components/ProjectCardsGrid'
@@ -119,7 +120,17 @@ const ProjectsPage = ({}: ProjectsPageProps): JSX.Element => {
   return (
     <div style={PROJECTS_CONTAINER_STYLE}>
       <ShellHeaderPortal>
-        <Breadcrumb items={emphasizedBreadcrumbItems} />
+        <Space align="center" size={12} wrap style={{ width: '100%' }}>
+          <Button
+            icon={<ReloadOutlined />}
+            onClick={refreshProjects}
+            loading={listStatus === 'loading'}
+            disabled={listStatus === 'loading'}
+          >
+            {t('actions.refresh')}
+          </Button>
+          <Breadcrumb items={emphasizedBreadcrumbItems} />
+        </Space>
       </ShellHeaderPortal>
       {messageContext}
       <div>
@@ -128,10 +139,8 @@ const ProjectsPage = ({}: ProjectsPageProps): JSX.Element => {
         </Typography.Title>
         <ProjectsActionBar
           onCreate={openCreateModal}
-          onRefresh={refreshProjects}
           searchValue={search}
           onSearchChange={setSearch}
-          isRefreshing={listStatus === 'loading'}
           isCreating={activeMutation === 'create'}
           canCreate={canManageProjects}
           viewMode={viewMode}

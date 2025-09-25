@@ -3,7 +3,6 @@ import {
   AppstoreOutlined,
   FilterOutlined,
   PlusOutlined,
-  ReloadOutlined,
   SaveOutlined,
   TableOutlined,
   TeamOutlined,
@@ -21,10 +20,8 @@ const { RangePicker } = DatePicker
 
 export interface ProjectsActionBarProps {
   onCreate: () => void
-  onRefresh: () => void
   searchValue: string
   onSearchChange: (value: string) => void
-  isRefreshing: boolean
   isCreating: boolean
   canCreate: boolean
   viewMode: ViewMode
@@ -44,10 +41,8 @@ export interface ProjectsActionBarProps {
 
 export const ProjectsActionBar = ({
   onCreate,
-  onRefresh,
   searchValue,
   onSearchChange,
-  isRefreshing,
   isCreating,
   canCreate,
   viewMode,
@@ -220,9 +215,6 @@ export const ProjectsActionBar = ({
             {secondaryActions}
           </Space>
         ) : null}
-        <Button icon={<ReloadOutlined />} onClick={onRefresh} loading={isRefreshing}>
-          {t('actions.refresh')}
-        </Button>
         <Button
           type="primary"
           icon={<PlusOutlined />}
