@@ -106,6 +106,16 @@ const ProjectOverviewPage = ({}: ProjectOverviewPageProps): JSX.Element => {
     [insights.totals, t, token.colorError, token.colorPrimary, token.colorSuccess, token.colorText, token.colorTextSecondary, token.colorWarning]
   )
 
+  const metricsGridStyle = useMemo(() => {
+    const gap = token.marginMD ?? token.marginSM ?? 16
+    return {
+      display: 'grid',
+      gap,
+      gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
+      width: '100%'
+    }
+  }, [token.marginMD, token.marginSM])
+
   const renderDistribution = (items: DistributionItem[], total: number, labelForKey: (key: string) => string) => {
     if (items.length === 0) {
       return <Typography.Text type="secondary">{t('details.overview.empty')}</Typography.Text>
@@ -115,13 +125,15 @@ const ProjectOverviewPage = ({}: ProjectOverviewPageProps): JSX.Element => {
         {items.map((item) => {
           const percent = total === 0 ? 0 : Number(((item.count / total) * 100).toFixed(1))
           return (
-            <Flex key={item.key} align="center" gap={12}>
-              <Typography.Text style={{ width: 140 }}>{labelForKey(item.key)}</Typography.Text>
+            <Flex key={item.key} align="center" gap={12} wrap style={{ width: '100%' }}>
+              <Typography.Text style={{ flex: '1 1 160px', minWidth: 140 }}>
+                {labelForKey(item.key)}
+              </Typography.Text>
               <Progress
                 percent={percent}
                 showInfo
                 format={() => String(item.count)}
-                style={{ flex: 1, marginInlineEnd: 0 }}
+                style={{ flex: '1 1 180px', minWidth: 160, marginInlineEnd: 0 }}
               />
             </Flex>
           )
@@ -206,19 +218,17 @@ const ProjectOverviewPage = ({}: ProjectOverviewPageProps): JSX.Element => {
           {showSkeleton ? (
             <Skeleton active paragraph={{ rows: 3 }} title={false} />
           ) : (
-            <Row gutter={[16, 16]}>
+            <div style={metricsGridStyle}>
               {metricCards.map((metric) => (
-                <Col xs={12} md={8} xl={8} key={metric.key}>
-                  <Card bordered={false} style={{ height: '100%' }}>
-                    <Statistic
-                      title={metric.title}
-                      value={metric.value}
-                      valueStyle={{ fontSize: 28, color: metric.color }}
-                    />
-                  </Card>
-                </Col>
+                <Card bordered={false} key={metric.key} style={{ height: '100%' }}>
+                  <Statistic
+                    title={metric.title}
+                    value={metric.value}
+                    valueStyle={{ fontSize: 28, color: metric.color }}
+                  />
+                </Card>
               ))}
-            </Row>
+            </div>
           )}
         </Card>
       </Col>
@@ -270,13 +280,15 @@ const ProjectOverviewPage = ({}: ProjectOverviewPageProps): JSX.Element => {
                   ? t('details.overview.assigneeCard.unassigned')
                   : entry.name
                 return (
-                  <Flex key={entry.id} align="center" gap={12}>
-                    <Typography.Text style={{ width: 160 }}>{label}</Typography.Text>
+                  <Flex key={entry.id} align="center" gap={12} wrap style={{ width: '100%' }}>
+                    <Typography.Text style={{ flex: '1 1 180px', minWidth: 140 }}>
+                      {label}
+                    </Typography.Text>
                     <Progress
                       percent={percent}
                       showInfo
                       format={() => String(entry.count)}
-                      style={{ flex: 1 }}
+                      style={{ flex: '1 1 200px', minWidth: 160 }}
                     />
                   </Flex>
                 )
