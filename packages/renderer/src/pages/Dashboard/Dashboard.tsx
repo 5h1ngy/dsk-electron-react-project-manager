@@ -1,7 +1,7 @@
 import type { JSX } from 'react'
 import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Alert, Breadcrumb, Card, Space, Tag, Typography } from 'antd'
+import { Alert, Breadcrumb, Button, Card, Space, Tag, Typography } from 'antd'
 
 import { LoadingSkeleton } from '@renderer/components/DataStates'
 import { HealthStatusCard } from '@renderer/components/HealthStatusCard'
@@ -36,6 +36,7 @@ import {
   buildBadgeStyle,
   type BadgeSpec
 } from '@renderer/theme/hooks/useSemanticBadges'
+import { ReloadOutlined } from '@ant-design/icons'
 
 const renderRoleTags = (
   tags: RoleTagDescriptor[],
@@ -199,7 +200,17 @@ const Dashboard = (): JSX.Element => {
   return (
     <>
       <ShellHeaderPortal>
-        <Breadcrumb items={breadcrumbItems} />
+        <Space align="center" size={12} wrap style={{ width: '100%' }}>
+          <Button
+            icon={<ReloadOutlined />}
+            onClick={refreshUsers}
+            loading={loading}
+            disabled={loading}
+          >
+            {t('dashboard:actionBar.refresh')}
+          </Button>
+          <Breadcrumb items={breadcrumbItems} />
+        </Space>
       </ShellHeaderPortal>
       <Space direction="vertical" size="large" style={{ width: '100%' }}>
         {messageContext}
@@ -210,8 +221,6 @@ const Dashboard = (): JSX.Element => {
           roleOptions={availableRoles}
           aria-label={t('filters.users.ariaLabel')}
           onCreate={openCreateModal}
-          onRefresh={refreshUsers}
-          isRefreshing={loading}
           canCreate={isAdmin}
           viewMode={userViewMode}
           onViewModeChange={(mode) => {
