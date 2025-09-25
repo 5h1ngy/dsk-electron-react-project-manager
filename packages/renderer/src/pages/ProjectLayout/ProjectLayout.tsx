@@ -104,13 +104,13 @@ const ProjectLayout = (): JSX.Element => {
   const refreshLoading = useMemo(() => {
     switch (activeKey) {
       case 'tasks':
-        return tasksStatus === 'loading' || taskStatusesStatus === 'loading'
+        return tasksStatus === 'loading'
       case 'notes':
         return notesStatus === 'loading'
       default:
         return projectLoading
     }
-  }, [activeKey, projectLoading, tasksStatus, taskStatusesStatus, notesStatus])
+  }, [activeKey, projectLoading, tasksStatus, notesStatus])
 
   const handleRefreshClick = useCallback(() => {
     if (!projectId) {
