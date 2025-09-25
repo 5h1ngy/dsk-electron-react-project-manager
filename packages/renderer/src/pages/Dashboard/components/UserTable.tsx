@@ -14,9 +14,9 @@ interface UserTableProps {
   hasLoaded: boolean
 }
 
-export const UserTable = ({ columns, users, loading, hasLoaded }: UserTableProps): JSX.Element => {
+export const UserTable = ({ columns, users, loading }: UserTableProps): JSX.Element => {
   const { t } = useTranslation('dashboard')
-  const showSkeleton = useDelayedLoading(loading && !hasLoaded)
+  const showSkeleton = useDelayedLoading(loading)
 
   if (showSkeleton) {
     return <LoadingSkeleton variant="table" />
