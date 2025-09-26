@@ -62,8 +62,6 @@ export const UserListView = ({
   return (
     <List
       dataSource={pagedUsers}
-      split={false}
-      itemLayout="vertical"
       style={{ width: '100%' }}
       renderItem={(user) => {
         const statusBadge = user.isActive
@@ -73,61 +71,62 @@ export const UserListView = ({
         return (
           <List.Item
             key={user.id}
-            style={{
-              background: token.colorBgContainer,
-              borderRadius: token.borderRadiusLG,
-              padding: token.paddingLG,
-              boxShadow: token.boxShadowSecondary,
-              marginBottom: token.marginMD
-            }}
+            style={{ paddingInline: token.paddingLG }}
             actions={[
               <Button
-                key="edit"
-                type="text"
+                key='edit'
+                type='text'
                 icon={<EditOutlined />}
                 onClick={() => onEdit(user)}
               >
                 {t('actions.edit')}
               </Button>,
               <Popconfirm
-                key="delete"
+                key='delete'
                 title={t('actions.deleteTitle')}
                 description={t('actions.deleteDescription', { username: user.username })}
                 okText={t('actions.confirmDelete')}
                 cancelText={t('actions.cancel')}
                 onConfirm={() => onDelete(user)}
               >
-                <Button type="text" danger icon={<DeleteOutlined />}>
+                <Button type='text' danger icon={<DeleteOutlined />}>
                   {t('actions.delete')}
                 </Button>
               </Popconfirm>
             ]}
           >
-            <Space direction="vertical" size={token.marginXS} style={{ width: '100%' }}>
-              <Space align="center" size={token.marginSM} wrap>
-                <Typography.Text strong>{user.displayName || user.username}</Typography.Text>
-                <Typography.Text type="secondary">@{user.username}</Typography.Text>
-                <Tag bordered={false} style={buildBadgeStyle(statusBadge)}>
-                  {user.isActive ? t('status.active') : t('status.inactive')}
-                </Tag>
-              </Space>
-              <Space size={token.marginXS} wrap>
-                {user.roles.map((role: RoleName) => {
-                  const badge = badgeTokens.userRole[role] ?? badgeTokens.userRole.Viewer
-                  return (
-                    <Tag key={role} bordered={false} style={buildBadgeStyle(badge)}>
-                      {t(`roles.${role}`, { defaultValue: role })}
-                    </Tag>
-                  )
-                })}
-              </Space>
-              <Space align="center" size={token.marginSM} wrap>
-                <Typography.Text type="secondary" style={{ display: 'flex', alignItems: 'center' }}>
-                  <ClockCircleOutlined style={{ marginRight: token.marginXS }} />
-                  {formatLastLogin(user.lastLoginAt ?? null)}
-                </Typography.Text>
-              </Space>
-            </Space>
+            <List.Item.Meta
+              title={
+                <Space align='center' size={token.marginSM} wrap>
+                  <Typography.Text strong>{user.displayName || user.username}</Typography.Text>
+                  <Typography.Text type='secondary'>@{user.username}</Typography.Text>
+                  <Tag bordered={false} style={buildBadgeStyle(statusBadge)}>
+                    {user.isActive ? t('status.active') : t('status.inactive')}
+                  </Tag>
+                </Space>
+              }
+              description={
+                <Space direction='vertical' size={token.marginXS} style={{ width: '100%' }}>
+                  <Space size={token.marginXS} wrap>
+                    {user.roles.map((role: RoleName) => {
+                      const badge = badgeTokens.userRole[role] ?? badgeTokens.userRole.Viewer
+                      return (
+                        <Tag key={role} bordered={false} style={buildBadgeStyle(badge)}>
+                          {t(`roles.${role}`, { defaultValue: role })}
+                        </Tag>
+                      )
+                    })}
+                  </Space>
+                  <Typography.Text
+                    type='secondary'
+                    style={{ display: 'flex', alignItems: 'center', gap: token.marginXS }}
+                  >
+                    <ClockCircleOutlined />
+                    {formatLastLogin(user.lastLoginAt ?? null)}
+                  </Typography.Text>
+                </Space>
+              }
+            />
           </List.Item>
         )
       }}
