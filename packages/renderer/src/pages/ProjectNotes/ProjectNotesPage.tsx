@@ -154,13 +154,12 @@ const ProjectNotesPage = (): ReactElement => {
     () => ({
       background: token.colorFillTertiary,
       border: `${token.lineWidth}px solid ${token.colorFillQuaternary}`,
-      boxShadow: token.boxShadowSecondary,
+      boxShadow: 'none',
       padding: token.paddingXXS,
       borderRadius: token.borderRadiusLG
     }),
     [
       token.borderRadiusLG,
-      token.boxShadowSecondary,
       token.colorFillQuaternary,
       token.colorFillTertiary,
       token.lineWidth,
