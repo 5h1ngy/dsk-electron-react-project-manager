@@ -75,6 +75,7 @@ const ProjectTasksPage = (): JSX.Element => {
   const [visibleColumns, setVisibleColumns] = useState<OptionalTaskColumn[]>([])
   const [viewMode, setViewMode] = useState<'table' | 'list' | 'cards' | 'board'>('board')
   const [tablePage, setTablePage] = useState(1)
+  const [tablePageSize, setTablePageSize] = useState(TABLE_PAGE_SIZE)
   const [cardPage, setCardPage] = useState(1)
   const [listPage, setListPage] = useState(1)
   const dispatch = useAppDispatch()
@@ -260,18 +261,18 @@ const ProjectTasksPage = (): JSX.Element => {
   }, [filters.status, taskStatuses, taskStatusesStatus])
 
   useEffect(() => {
+    const maxPage = Math.max(1, Math.ceil(filteredTasks.length / tablePageSize))
+    if (tablePage > maxPage) {
+      setTablePage(maxPage)
+    }
+  }, [filteredTasks.length, tablePage, tablePageSize])
+
+  useEffect(() => {
     const maxPage = Math.max(1, Math.ceil(filteredTasks.length / CARD_PAGE_SIZE))
     if (cardPage > maxPage) {
       setCardPage(maxPage)
     }
   }, [filteredTasks.length, cardPage])
-
-  useEffect(() => {
-    const maxPage = Math.max(1, Math.ceil(filteredTasks.length / LIST_PAGE_SIZE))
-    if (listPage > maxPage) {
-      setListPage(maxPage)
-    }
-  }, [filteredTasks.length, listPage])
 
   useEffect(() => {
     const maxPage = Math.max(1, Math.ceil(filteredTasks.length / LIST_PAGE_SIZE))
@@ -381,8 +382,15 @@ const ProjectTasksPage = (): JSX.Element => {
             columns={tableColumns}
             pagination={{
               current: tablePage,
-              pageSize: TABLE_PAGE_SIZE,
-              onChange: (page) => setTablePage(page)
+              pageSize: tablePageSize,
+              showSizeChanger: true,
+              pageSizeOptions: ['10', '20', '50', '100'],
+              onChange: (page, size) => {
+                setTablePage(page)
+                if (typeof size === 'number' && size !== tablePageSize) {
+                  setTablePageSize(size)
+                }
+              }
             }}
           />
         ) : null}

@@ -63,6 +63,8 @@ const ProjectsPage = ({}: ProjectsPageProps): JSX.Element => {
   } = useProjectsPage({
     onProjectCreated: (projectId) => navigate(`/projects/${projectId}`)
   })
+  const [tablePage, setTablePage] = useState(1)
+  const [tablePageSize, setTablePageSize] = useState(10)
   const [cardPage, setCardPage] = useState(1)
   const [listPage, setListPage] = useState(1)
   const CARD_PAGE_SIZE = 8
@@ -85,6 +87,13 @@ const ProjectsPage = ({}: ProjectsPageProps): JSX.Element => {
       setListPage(1)
     }
   }, [viewMode])
+
+  useEffect(() => {
+    const maxPage = Math.max(1, Math.ceil(filteredProjects.length / tablePageSize))
+    if (tablePage > maxPage) {
+      setTablePage(maxPage)
+    }
+  }, [filteredProjects.length, tablePage, tablePageSize])
 
   useEffect(() => {
     const maxPage = Math.max(1, Math.ceil(filteredProjects.length / CARD_PAGE_SIZE))
@@ -159,6 +168,9 @@ const ProjectsPage = ({}: ProjectsPageProps): JSX.Element => {
           viewMode={viewMode}
           onViewModeChange={(mode) => {
             setViewMode(mode)
+            if (mode === 'table') {
+              setTablePage(1)
+            }
             if (mode === 'cards') {
               setCardPage(1)
             }
@@ -186,6 +198,18 @@ const ProjectsPage = ({}: ProjectsPageProps): JSX.Element => {
           onEdit={openEditModal}
           onDelete={handleDeleteProject}
           deletingProjectId={activeMutation === 'delete' ? deletingProjectId : null}
+          pagination={{
+            current: tablePage,
+            pageSize: tablePageSize,
+            showSizeChanger: true,
+            pageSizeOptions: ['10', '20', '50', '100'],
+            onChange: (page, size) => {
+              setTablePage(page)
+              if (typeof size === 'number' && size !== tablePageSize) {
+                setTablePageSize(size)
+              }
+            }
+          }}
         />
       ) : null}
       {viewMode === 'cards' ? (
