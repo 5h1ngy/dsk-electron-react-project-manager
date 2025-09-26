@@ -1,0 +1,150 @@
+import { Button, List, Popconfirm, Space, Tag, Typography, theme } from 'antd'
+import { ClockCircleOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons'
+import { useMemo, type JSX } from 'react'
+import { useTranslation } from 'react-i18next'
+
+import { EmptyState, LoadingSkeleton } from '@renderer/components/DataStates'
+import { useDelayedLoading } from '@renderer/hooks/useDelayedLoading'
+import type { UserDTO } from '@main/services/auth'
+import type { RoleName } from '@main/services/auth/constants'
+import { useSemanticBadges, buildBadgeStyle } from '@renderer/theme/hooks/useSemanticBadges'
+
+export interface UserListViewProps {
+  users: UserDTO[]
+  loading: boolean
+  hasLoaded: boolean
+  page: number
+  pageSize: number
+  onPageChange: (page: number) => void
+  onEdit: (user: UserDTO) => void
+  onDelete: (user: UserDTO) => void
+}
+
+export const UserListView = ({
+  users,
+  loading,
+  hasLoaded,
+  page,
+  pageSize,
+  onPageChange,
+  onEdit,
+  onDelete
+}: UserListViewProps): JSX.Element => {
+  const { t, i18n } = useTranslation('dashboard')
+  const { token } = theme.useToken()
+  const badgeTokens = useSemanticBadges()
+  const showSkeleton = useDelayedLoading(loading && !hasLoaded)
+
+  const pagedUsers = useMemo(() => {
+    const start = (page - 1) * pageSize
+    return users.slice(start, start + pageSize)
+  }, [page, pageSize, users])
+
+  if (showSkeleton) {
+    return <LoadingSkeleton variant="list" />
+  }
+
+  if (users.length === 0) {
+    return <EmptyState title={t('table.empty')} />
+  }
+
+  const formatLastLogin = (value: string | null) =>
+    value
+      ? t('filters.users.lastLogin', {
+          date: new Intl.DateTimeFormat(i18n.language, {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric'
+          }).format(new Date(value))
+        })
+      : t('dashboard:status.inactive')
+
+  return (
+    <List
+      dataSource={pagedUsers}
+      split={false}
+      itemLayout="vertical"
+      style={{ width: '100%' }}
+      renderItem={(user) => {
+        const statusBadge = user.isActive
+          ? badgeTokens.userStatus.active
+          : badgeTokens.userStatus.inactive
+
+        return (
+          <List.Item
+            key={user.id}
+            style={{
+              background: token.colorBgContainer,
+              borderRadius: token.borderRadiusLG,
+              padding: token.paddingLG,
+              boxShadow: token.boxShadowSecondary,
+              marginBottom: token.marginMD
+            }}
+            actions={[
+              <Button
+                key="edit"
+                type="text"
+                icon={<EditOutlined />}
+                onClick={() => onEdit(user)}
+              >
+                {t('actions.edit')}
+              </Button>,
+              <Popconfirm
+                key="delete"
+                title={t('actions.deleteTitle')}
+                description={t('actions.deleteDescription', { username: user.username })}
+                okText={t('actions.confirmDelete')}
+                cancelText={t('actions.cancel')}
+                onConfirm={() => onDelete(user)}
+              >
+                <Button type="text" danger icon={<DeleteOutlined />}>
+                  {t('actions.delete')}
+                </Button>
+              </Popconfirm>
+            ]}
+          >
+            <Space direction="vertical" size={token.marginXS} style={{ width: '100%' }}>
+              <Space align="center" size={token.marginSM} wrap>
+                <Typography.Text strong>{user.displayName || user.username}</Typography.Text>
+                <Typography.Text type="secondary">@{user.username}</Typography.Text>
+                <Tag bordered={false} style={buildBadgeStyle(statusBadge)}>
+                  {user.isActive ? t('status.active') : t('status.inactive')}
+                </Tag>
+              </Space>
+              <Space size={token.marginXS} wrap>
+                {user.roles.map((role: RoleName) => {
+                  const badge = badgeTokens.userRole[role] ?? badgeTokens.userRole.Viewer
+                  return (
+                    <Tag key={role} bordered={false} style={buildBadgeStyle(badge)}>
+                      {t(`roles.${role}`, { defaultValue: role })}
+                    </Tag>
+                  )
+                })}
+              </Space>
+              <Space align="center" size={token.marginSM} wrap>
+                <Typography.Text type="secondary" style={{ display: 'flex', alignItems: 'center' }}>
+                  <ClockCircleOutlined style={{ marginRight: token.marginXS }} />
+                  {formatLastLogin(user.lastLoginAt ?? null)}
+                </Typography.Text>
+              </Space>
+            </Space>
+          </List.Item>
+        )
+      }}
+      pagination={{
+        current: page,
+        total: users.length,
+        pageSize,
+        onChange: onPageChange,
+        showSizeChanger: false,
+        style: { marginTop: token.marginLG, textAlign: 'center' }
+      }}
+    />
+  )
+}
+
+UserListView.displayName = 'UserListView'
+
+export default UserListView
+
+

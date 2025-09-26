@@ -18,9 +18,11 @@
       },
       "view": {
         "table": "Vue tableau",
+        "list": "Vue liste",
         "cards": "Vue cartes"
       },
       "lastLogin": "Derniere connexion : {{date}}",
+      "lastLoginNever": "Derniere connexion : jamais",
       "statusLabel": "Statut des utilisateurs"
     },
     "panelTitle": "Filtres"

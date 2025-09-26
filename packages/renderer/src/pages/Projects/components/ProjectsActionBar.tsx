@@ -1,6 +1,7 @@
 import { useMemo, useState, type JSX, type ReactNode } from 'react'
 import {
   AppstoreOutlined,
+  BarsOutlined,
   FilterOutlined,
   PlusOutlined,
   SaveOutlined,
@@ -98,6 +99,15 @@ export const ProjectsActionBar = ({
           </Space>
         ),
         value: 'table'
+      },
+      {
+        label: (
+          <Space size={6} style={{ color: 'inherit' }}>
+            <BarsOutlined />
+            <span>{t('viewSwitcher.list')}</span>
+          </Space>
+        ),
+        value: 'list'
       },
       {
         label: (

@@ -1,5 +1,5 @@
 import { useMemo, useState, type JSX } from 'react'
-import { AppstoreOutlined, ColumnWidthOutlined, PlusOutlined, TableOutlined } from '@ant-design/icons'
+import { AppstoreOutlined, BarsOutlined, ColumnWidthOutlined, PlusOutlined, TableOutlined } from '@ant-design/icons'
 import { Button, DatePicker, Drawer, Flex, Grid, Input, Segmented, Select, Space, theme } from 'antd'
 import type { SelectProps } from 'antd'
 import type { ReactNode } from 'react'
@@ -21,8 +21,8 @@ export interface TaskFiltersBarProps {
   priorityOptions: SelectOption[]
   assigneeOptions: SelectOption[]
   onChange: (patch: Partial<TaskFilters>) => void
-  viewMode: 'table' | 'cards' | 'board'
-  onViewModeChange: (mode: 'table' | 'cards' | 'board') => void
+  viewMode: 'table' | 'list' | 'cards' | 'board'
+  onViewModeChange: (mode: 'table' | 'list' | 'cards' | 'board') => void
   onCreate?: () => void
   canCreate?: boolean
   secondaryActions?: ReactNode
@@ -48,15 +48,17 @@ export const TaskFiltersBar = ({
   const { token } = theme.useToken()
   const toolbarSegmentedStyle = useMemo(
     () => ({
-      background: token.colorBgContainer,
-      border: `${token.lineWidth}px solid ${token.colorBorderSecondary}`,
+      background: token.colorFillTertiary,
+      border: `${token.lineWidth}px solid ${token.colorFillQuaternary}`,
       boxShadow: token.boxShadowSecondary,
-      padding: token.paddingXXS
+      padding: token.paddingXXS,
+      borderRadius: token.borderRadiusLG
     }),
     [
+      token.borderRadiusLG,
       token.boxShadowSecondary,
-      token.colorBgContainer,
-      token.colorBorderSecondary,
+      token.colorFillQuaternary,
+      token.colorFillTertiary,
       token.lineWidth,
       token.paddingXXS
     ]
@@ -80,6 +82,15 @@ export const TaskFiltersBar = ({
           </Space>
         ),
         value: 'table'
+      },
+      {
+        label: (
+          <Space size={6} style={{ color: 'inherit' }}>
+            <BarsOutlined />
+            <span>{t('viewSwitcher.list')}</span>
+          </Space>
+        ),
+        value: 'list'
       },
       {
         label: (
@@ -217,7 +228,7 @@ export const TaskFiltersBar = ({
         <Segmented
           size="large"
           value={viewMode}
-          onChange={(next) => onViewModeChange(next as 'table' | 'cards' | 'board')}
+          onChange={(next) => onViewModeChange(next as 'table' | 'list' | 'cards' | 'board')}
           options={viewSegmentedOptions}
           style={toolbarSegmentedStyle}
         />
@@ -289,3 +300,4 @@ export const TaskFiltersBar = ({
 TaskFiltersBar.displayName = 'TaskFiltersBar'
 
 export default TaskFiltersBar
+

@@ -8,6 +8,7 @@ import { ReloadOutlined } from '@ant-design/icons'
 import { ProjectsActionBar } from '@renderer/pages/Projects/components/ProjectsActionBar'
 import { ProjectList } from '@renderer/pages/Projects/components/ProjectList'
 import { ProjectCardsGrid } from '@renderer/pages/Projects/components/ProjectCardsGrid'
+import { ProjectSummaryList } from '@renderer/pages/Projects/components/ProjectSummaryList'
 import { CreateProjectModal } from '@renderer/pages/Projects/components/CreateProjectModal'
 import { EditProjectModal } from '@renderer/pages/Projects/components/EditProjectModal'
 import ProjectSavedViewsControls from '@renderer/pages/Projects/components/ProjectSavedViewsControls'
@@ -63,7 +64,9 @@ const ProjectsPage = ({}: ProjectsPageProps): JSX.Element => {
     onProjectCreated: (projectId) => navigate(`/projects/${projectId}`)
   })
   const [cardPage, setCardPage] = useState(1)
+  const [listPage, setListPage] = useState(1)
   const CARD_PAGE_SIZE = 8
+  const LIST_PAGE_SIZE = 12
   const [saveViewForm] = Form.useForm<{ name: string }>()
   const [isSaveViewModalOpen, setSaveViewModalOpen] = useState(false)
 
@@ -78,6 +81,9 @@ const ProjectsPage = ({}: ProjectsPageProps): JSX.Element => {
     if (viewMode === 'cards') {
       setCardPage(1)
     }
+    if (viewMode === 'list') {
+      setListPage(1)
+    }
   }, [viewMode])
 
   useEffect(() => {
@@ -86,6 +92,13 @@ const ProjectsPage = ({}: ProjectsPageProps): JSX.Element => {
       setCardPage(maxPage)
     }
   }, [filteredProjects.length, cardPage])
+
+  useEffect(() => {
+    const maxPage = Math.max(1, Math.ceil(filteredProjects.length / LIST_PAGE_SIZE))
+    if (listPage > maxPage) {
+      setListPage(maxPage)
+    }
+  }, [filteredProjects.length, listPage])
 
   const handleOpenSaveViewModal = () => {
     saveViewForm.resetFields()
@@ -149,6 +162,9 @@ const ProjectsPage = ({}: ProjectsPageProps): JSX.Element => {
             if (mode === 'cards') {
               setCardPage(1)
             }
+            if (mode === 'list') {
+              setListPage(1)
+            }
           }}
           availableTags={availableTags}
           selectedTags={selectedTags}
@@ -171,7 +187,8 @@ const ProjectsPage = ({}: ProjectsPageProps): JSX.Element => {
           onDelete={handleDeleteProject}
           deletingProjectId={activeMutation === 'delete' ? deletingProjectId : null}
         />
-      ) : (
+      ) : null}
+      {viewMode === 'cards' ? (
         <ProjectCardsGrid
           projects={filteredProjects}
           loading={isLoading}
@@ -183,7 +200,20 @@ const ProjectsPage = ({}: ProjectsPageProps): JSX.Element => {
           onDelete={handleDeleteProject}
           deletingProjectId={activeMutation === 'delete' ? deletingProjectId : null}
         />
-      )}
+      ) : null}
+      {viewMode === 'list' ? (
+        <ProjectSummaryList
+          projects={filteredProjects}
+          loading={isLoading}
+          onSelect={handleOpenProject}
+          onEdit={openEditModal}
+          onDelete={handleDeleteProject}
+          deletingProjectId={activeMutation === 'delete' ? deletingProjectId : null}
+          page={listPage}
+          pageSize={LIST_PAGE_SIZE}
+          onPageChange={setListPage}
+        />
+      ) : null}
       <CreateProjectModal
         open={isCreateModalOpen}
         onCancel={closeCreateModal}

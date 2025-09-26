@@ -1,6 +1,13 @@
 import { useMemo, useState, type JSX } from 'react'
 import { Button, Drawer, Flex, Grid, Input, Segmented, Select, Space, Typography, theme } from 'antd'
-import { AppstoreOutlined, FilterOutlined, SearchOutlined, TableOutlined, UserSwitchOutlined } from '@ant-design/icons'
+import {
+  AppstoreOutlined,
+  BarsOutlined,
+  FilterOutlined,
+  SearchOutlined,
+  TableOutlined,
+  UserSwitchOutlined
+} from '@ant-design/icons'
 import type { SegmentedValue } from 'antd/es/segmented'
 import { useTranslation } from 'react-i18next'
 
@@ -19,8 +26,8 @@ export interface UserFiltersProps {
   onChange: (value: Partial<UserFiltersValue>) => void
   onCreate: () => void
   canCreate?: boolean
-  viewMode: 'table' | 'cards'
-  onViewModeChange: (mode: 'table' | 'cards') => void
+  viewMode: 'table' | 'list' | 'cards'
+  onViewModeChange: (mode: 'table' | 'list' | 'cards') => void
 }
 
 export const UserFilters = ({
@@ -39,15 +46,17 @@ export const UserFilters = ({
   const { token } = theme.useToken()
   const toolbarSegmentedStyle = useMemo(
     () => ({
-      background: token.colorBgContainer,
-      border: `${token.lineWidth}px solid ${token.colorBorderSecondary}`,
+      background: token.colorFillTertiary,
+      border: `${token.lineWidth}px solid ${token.colorFillQuaternary}`,
       boxShadow: token.boxShadowSecondary,
-      padding: token.paddingXXS
+      padding: token.paddingXXS,
+      borderRadius: token.borderRadiusLG
     }),
     [
+      token.borderRadiusLG,
       token.boxShadowSecondary,
-      token.colorBgContainer,
-      token.colorBorderSecondary,
+      token.colorFillQuaternary,
+      token.colorFillTertiary,
       token.lineWidth,
       token.paddingXXS
     ]
@@ -111,6 +120,15 @@ export const UserFilters = ({
       {
         label: (
           <Space size={6} style={{ color: 'inherit' }}>
+            <BarsOutlined />
+            <span>{t('filters.users.view.list')}</span>
+          </Space>
+        ),
+        value: 'list'
+      },
+      {
+        label: (
+          <Space size={6} style={{ color: 'inherit' }}>
             <AppstoreOutlined />
             <span>{t('filters.users.view.cards')}</span>
           </Space>
@@ -132,7 +150,7 @@ export const UserFilters = ({
         <Segmented
           size="large"
           value={viewMode}
-          onChange={(next) => onViewModeChange(next as 'table' | 'cards')}
+          onChange={(next) => onViewModeChange(next as 'table' | 'list' | 'cards')}
           options={viewSegmentedOptions}
           style={toolbarSegmentedStyle}
         />
@@ -194,3 +212,4 @@ export const UserFilters = ({
 UserFilters.displayName = 'UserFilters'
 
 export default UserFilters
+
