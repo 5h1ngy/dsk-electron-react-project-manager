@@ -46,6 +46,21 @@ export const TaskFiltersBar = ({
   const [filtersOpen, setFiltersOpen] = useState(false)
   const screens = Grid.useBreakpoint()
   const { token } = theme.useToken()
+  const toolbarSegmentedStyle = useMemo(
+    () => ({
+      background: token.colorBgContainer,
+      border: `${token.lineWidth}px solid ${token.colorBorderSecondary}`,
+      boxShadow: token.boxShadowSecondary,
+      padding: token.paddingXXS
+    }),
+    [
+      token.boxShadowSecondary,
+      token.colorBgContainer,
+      token.colorBorderSecondary,
+      token.lineWidth,
+      token.paddingXXS
+    ]
+  )
 
   const dueRangeValue = useMemo<[Dayjs | null, Dayjs | null] | null>(() => {
     if (!filters.dueDateRange) {
@@ -204,6 +219,7 @@ export const TaskFiltersBar = ({
           value={viewMode}
           onChange={(next) => onViewModeChange(next as 'table' | 'cards' | 'board')}
           options={viewSegmentedOptions}
+          style={toolbarSegmentedStyle}
         />
         <Button icon={<FilterOutlined />} size="large" onClick={() => setFiltersOpen(true)}>
           {t('tasks.openFilters')}

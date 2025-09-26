@@ -37,6 +37,21 @@ export const UserFilters = ({
   const [filtersOpen, setFiltersOpen] = useState(false)
   const screens = Grid.useBreakpoint()
   const { token } = theme.useToken()
+  const toolbarSegmentedStyle = useMemo(
+    () => ({
+      background: token.colorBgContainer,
+      border: `${token.lineWidth}px solid ${token.colorBorderSecondary}`,
+      boxShadow: token.boxShadowSecondary,
+      padding: token.paddingXXS
+    }),
+    [
+      token.boxShadowSecondary,
+      token.colorBgContainer,
+      token.colorBorderSecondary,
+      token.lineWidth,
+      token.paddingXXS
+    ]
+  )
 
   const filtersContent = (
     <Flex vertical gap={16}>
@@ -119,6 +134,7 @@ export const UserFilters = ({
           value={viewMode}
           onChange={(next) => onViewModeChange(next as 'table' | 'cards')}
           options={viewSegmentedOptions}
+          style={toolbarSegmentedStyle}
         />
         <Button icon={<FilterOutlined />} onClick={() => setFiltersOpen(true)}>
           {t('filters.users.openButton')}

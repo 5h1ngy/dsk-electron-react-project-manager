@@ -150,6 +150,21 @@ const ProjectNotesPage = (): ReactElement => {
   const [messageApi, contextHolder] = message.useMessage()
   const screens = Grid.useBreakpoint()
   const { token } = theme.useToken()
+  const toolbarSegmentedStyle = useMemo(
+    () => ({
+      background: token.colorBgContainer,
+      border: `${token.lineWidth}px solid ${token.colorBorderSecondary}`,
+      boxShadow: token.boxShadowSecondary,
+      padding: token.paddingXXS
+    }),
+    [
+      token.boxShadowSecondary,
+      token.colorBgContainer,
+      token.colorBorderSecondary,
+      token.lineWidth,
+      token.paddingXXS
+    ]
+  )
 
   const [includePrivate, setIncludePrivate] = useState(false)
   const [selectedNotebook, setSelectedNotebook] = useState<string | null>(null)
@@ -444,6 +459,7 @@ const ProjectNotesPage = (): ReactElement => {
               value={viewMode}
               onChange={(mode) => setViewMode(mode as 'list' | 'cards')}
               options={viewSegmentedOptions}
+              style={toolbarSegmentedStyle}
             />
             <Button icon={<FilterOutlined />} onClick={() => setFiltersDrawerOpen(true)}>
               {t('notes.actions.openFilters')}
