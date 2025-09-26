@@ -2,6 +2,7 @@
   "title": "Progetti",
   "viewSwitcher": {
     "table": "Vista tabella",
+    "list": "Vista elenco",
     "cards": "Vista card",
     "board": "Vista kanban"
   },

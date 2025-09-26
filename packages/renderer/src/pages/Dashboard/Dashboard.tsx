@@ -16,6 +16,7 @@ import {
 import { CreateUserModal } from '@renderer/pages/Dashboard/components/CreateUserModal'
 import { EditUserModal } from '@renderer/pages/Dashboard/components/EditUserModal'
 import { UserTable } from '@renderer/pages/Dashboard/components/UserTable'
+import { UserListView } from '@renderer/pages/Dashboard/components/UserListView'
 import { ShellHeaderPortal } from '@renderer/layout/Shell/ShellHeader.context'
 import { usePrimaryBreadcrumb } from '@renderer/layout/Shell/hooks/usePrimaryBreadcrumb'
 import {
@@ -92,9 +93,11 @@ const Dashboard = (): JSX.Element => {
     role: 'all',
     status: 'all'
   })
-  const [userViewMode, setUserViewMode] = useState<'table' | 'cards'>('table')
+  const [userViewMode, setUserViewMode] = useState<'table' | 'list' | 'cards'>('table')
   const [userCardPage, setUserCardPage] = useState(1)
+  const [userListPage, setUserListPage] = useState(1)
   const USER_CARD_PAGE_SIZE = 8
+  const USER_LIST_PAGE_SIZE = 12
   const availableRoles = useMemo<RoleName[]>(() => {
     const set = new Set<RoleName>()
     users.forEach((user) => {
@@ -143,10 +146,16 @@ const Dashboard = (): JSX.Element => {
       ...patch
     }))
     setUserCardPage(1)
+    setUserListPage(1)
   }
 
   useEffect(() => {
-    setUserCardPage(1)
+    if (userViewMode === 'cards') {
+      setUserCardPage(1)
+    }
+    if (userViewMode === 'list') {
+      setUserListPage(1)
+    }
   }, [userViewMode])
 
   useEffect(() => {
@@ -155,6 +164,20 @@ const Dashboard = (): JSX.Element => {
       setUserCardPage(maxPage)
     }
   }, [filteredUsers.length, userCardPage])
+
+  useEffect(() => {
+    const maxPage = Math.max(1, Math.ceil(filteredUsers.length / USER_LIST_PAGE_SIZE))
+    if (userListPage > maxPage) {
+      setUserListPage(maxPage)
+    }
+  }, [filteredUsers.length, userListPage])
+
+  useEffect(() => {
+    const maxPage = Math.max(1, Math.ceil(filteredUsers.length / USER_LIST_PAGE_SIZE))
+    if (userListPage > maxPage) {
+      setUserListPage(maxPage)
+    }
+  }, [filteredUsers.length, userListPage])
 
   useEffect(() => {
     if (!isAdmin && projectsStatus === 'idle') {
@@ -225,7 +248,12 @@ const Dashboard = (): JSX.Element => {
           viewMode={userViewMode}
           onViewModeChange={(mode) => {
             setUserViewMode(mode)
-            setUserCardPage(1)
+            if (mode === 'cards') {
+              setUserCardPage(1)
+            }
+            if (mode === 'list') {
+              setUserListPage(1)
+            }
           }}
         />
         {error ? (
@@ -244,7 +272,20 @@ const Dashboard = (): JSX.Element => {
             loading={loading}
             hasLoaded={hasLoaded}
           />
-        ) : (
+        ) : null}
+        {userViewMode === 'list' ? (
+          <UserListView
+            users={filteredUsers}
+            loading={loading}
+            hasLoaded={hasLoaded}
+            page={userListPage}
+            pageSize={USER_LIST_PAGE_SIZE}
+            onPageChange={setUserListPage}
+            onEdit={openEditModal}
+            onDelete={removeUser}
+          />
+        ) : null}
+        {userViewMode === 'cards' ? (
           <UserCardsGrid
             users={filteredUsers}
             loading={loading}
@@ -255,7 +296,7 @@ const Dashboard = (): JSX.Element => {
             onEdit={openEditModal}
             onDelete={removeUser}
           />
-        )}
+        ) : null}
         <CreateUserModal
           open={isCreateOpen}
           onCancel={closeCreateModal}
@@ -278,3 +319,10 @@ Dashboard.displayName = 'Dashboard'
 
 export { Dashboard }
 export default Dashboard
+
+
+
+
+
+
+

@@ -18,9 +18,11 @@
       },
       "view": {
         "table": "Vista tabella",
+        "list": "Vista elenco",
         "cards": "Vista card"
       },
       "lastLogin": "Ultimo accesso: {{date}}",
+      "lastLoginNever": "Ultimo accesso: mai",
       "statusLabel": "Stato utenti"
     },
     "panelTitle": "Filtri"

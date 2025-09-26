@@ -23,7 +23,7 @@ import useProjectSavedViews, {
   type ProjectViewFilters
 } from '@renderer/pages/Projects/hooks/useProjectSavedViews'
 
-export type ViewMode = 'table' | 'cards'
+export type ViewMode = 'table' | 'cards' | 'list'
 export type RoleFilter = 'all' | 'admin' | 'edit' | 'view'
 export type CreatedRange = [string | null, string | null] | null
 

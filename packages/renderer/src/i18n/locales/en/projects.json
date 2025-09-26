@@ -2,6 +2,7 @@
   "title": "Projects",
   "viewSwitcher": {
     "table": "Table view",
+    "list": "List view",
     "cards": "Card view",
     "board": "Kanban board"
   },

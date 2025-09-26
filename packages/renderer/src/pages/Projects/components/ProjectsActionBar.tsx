@@ -1,6 +1,7 @@
 import { useMemo, useState, type JSX, type ReactNode } from 'react'
 import {
   AppstoreOutlined,
+  BarsOutlined,
   FilterOutlined,
   PlusOutlined,
   SaveOutlined,
@@ -63,6 +64,23 @@ export const ProjectsActionBar = ({
   const [filtersOpen, setFiltersOpen] = useState(false)
   const screens = Grid.useBreakpoint()
   const { token } = theme.useToken()
+  const toolbarSegmentedStyle = useMemo(
+    () => ({
+      background: token.colorFillTertiary,
+      border: `${token.lineWidth}px solid ${token.colorFillQuaternary}`,
+      boxShadow: token.boxShadowSecondary,
+      padding: token.paddingXXS,
+      borderRadius: token.borderRadiusLG
+    }),
+    [
+      token.borderRadiusLG,
+      token.boxShadowSecondary,
+      token.colorFillQuaternary,
+      token.colorFillTertiary,
+      token.lineWidth,
+      token.paddingXXS
+    ]
+  )
   const rangeValue = useMemo<[Dayjs | null, Dayjs | null] | null>(() => {
     if (!createdBetween) {
       return null
@@ -81,6 +99,15 @@ export const ProjectsActionBar = ({
           </Space>
         ),
         value: 'table'
+      },
+      {
+        label: (
+          <Space size={6} style={{ color: 'inherit' }}>
+            <BarsOutlined />
+            <span>{t('viewSwitcher.list')}</span>
+          </Space>
+        ),
+        value: 'list'
       },
       {
         label: (
@@ -231,6 +258,7 @@ export const ProjectsActionBar = ({
           value={viewMode}
           onChange={(next) => onViewModeChange(next as ViewMode)}
           options={viewSegmentedOptions}
+          style={toolbarSegmentedStyle}
         />
         <Button icon={<FilterOutlined />} onClick={() => setFiltersOpen(true)} size="large">
           {t('filters.openButton')}

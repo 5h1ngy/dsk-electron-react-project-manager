@@ -16,6 +16,7 @@ import {
 import type { TaskFilters } from '@renderer/pages/ProjectTasks/ProjectTasks.types'
 import { TaskFiltersBar } from '@renderer/pages/ProjectTasks/components/TaskFiltersBar'
 import { ProjectTasksCardGrid } from '@renderer/pages/ProjectTasks/components/ProjectTasksCardGrid'
+import { ProjectTasksList } from '@renderer/pages/Projects/components/ProjectTasksList'
 
 import TaskSavedViewsControls from '@renderer/pages/ProjectTasks/components/TaskSavedViewsControls'
 import TaskColumnVisibilityControls, {
@@ -72,9 +73,10 @@ const ProjectTasksPage = (): JSX.Element => {
     dueDateRange: null
   })
   const [visibleColumns, setVisibleColumns] = useState<OptionalTaskColumn[]>([])
-  const [viewMode, setViewMode] = useState<'table' | 'cards' | 'board'>('board')
+  const [viewMode, setViewMode] = useState<'table' | 'list' | 'cards' | 'board'>('board')
   const [tablePage, setTablePage] = useState(1)
   const [cardPage, setCardPage] = useState(1)
+  const [listPage, setListPage] = useState(1)
   const dispatch = useAppDispatch()
   const [isSaveModalOpen, setIsSaveModalOpen] = useState(false)
   const [viewForm] = Form.useForm<{ name: string }>()
@@ -103,6 +105,7 @@ const ProjectTasksPage = (): JSX.Element => {
   const mutationStatus = useAppSelector(selectViewsMutationStatus)
   const TABLE_PAGE_SIZE = 10
   const CARD_PAGE_SIZE = 8
+  const LIST_PAGE_SIZE = 12
 
   const statusOptions = useMemo(() => buildStatusOptions(t, taskStatuses), [t, taskStatuses])
   const statusLabelMap = useMemo(() => {
@@ -129,6 +132,7 @@ const ProjectTasksPage = (): JSX.Element => {
       setVisibleColumns(extractOptionalColumns(view.columns))
       setTablePage(1)
       setCardPage(1)
+      setListPage(1)
       if (projectId) {
         dispatch(selectSavedView({ projectId, viewId: view.id }))
       }
@@ -203,6 +207,7 @@ const ProjectTasksPage = (): JSX.Element => {
       setFilters((prev) => ({ ...prev, ...patch }))
       setTablePage(1)
       setCardPage(1)
+      setListPage(1)
       if (!isApplyingViewRef.current && projectId && selectedViewId) {
         dispatch(selectSavedView({ projectId, viewId: null }))
         lastAppliedViewId.current = null
@@ -262,8 +267,29 @@ const ProjectTasksPage = (): JSX.Element => {
   }, [filteredTasks.length, cardPage])
 
   useEffect(() => {
-    setTablePage(1)
-    setCardPage(1)
+    const maxPage = Math.max(1, Math.ceil(filteredTasks.length / LIST_PAGE_SIZE))
+    if (listPage > maxPage) {
+      setListPage(maxPage)
+    }
+  }, [filteredTasks.length, listPage])
+
+  useEffect(() => {
+    const maxPage = Math.max(1, Math.ceil(filteredTasks.length / LIST_PAGE_SIZE))
+    if (listPage > maxPage) {
+      setListPage(maxPage)
+    }
+  }, [filteredTasks.length, listPage])
+
+  useEffect(() => {
+    if (viewMode === 'table') {
+      setTablePage(1)
+    }
+    if (viewMode === 'cards') {
+      setCardPage(1)
+    }
+    if (viewMode === 'list') {
+      setListPage(1)
+    }
   }, [viewMode])
 
   const savedViewsControls = projectId ? (
@@ -333,6 +359,9 @@ const ProjectTasksPage = (): JSX.Element => {
             if (mode === 'table') {
               setTablePage(1)
             }
+            if (mode === 'list') {
+              setListPage(1)
+            }
           }}
           onCreate={canManageTasks ? () => openTaskCreate() : undefined}
           canCreate={canManageTasks}
@@ -364,6 +393,21 @@ const ProjectTasksPage = (): JSX.Element => {
             page={cardPage}
             pageSize={CARD_PAGE_SIZE}
             onPageChange={setCardPage}
+            onSelect={(task) => handleTaskSelect(task.id)}
+            onEdit={(task) => handleTaskEdit(task.id)}
+            onDelete={(task) => handleTaskDelete(task.id)}
+            canManage={canManageTasks}
+            deletingTaskId={deletingTaskId}
+            statusLabels={statusLabelMap}
+          />
+        ) : null}
+        {viewMode === 'list' ? (
+          <ProjectTasksList
+            tasks={filteredTasks}
+            loading={loading || projectLoading}
+            page={listPage}
+            pageSize={LIST_PAGE_SIZE}
+            onPageChange={setListPage}
             onSelect={(task) => handleTaskSelect(task.id)}
             onEdit={(task) => handleTaskEdit(task.id)}
             onDelete={(task) => handleTaskDelete(task.id)}
@@ -415,6 +459,11 @@ ProjectTasksPage.displayName = 'ProjectTasksPage'
 
 export { ProjectTasksPage }
 export default ProjectTasksPage
+
+
+
+
+
 
 
 

@@ -18,9 +18,11 @@
       },
       "view": {
         "table": "Table view",
+        "list": "List view",
         "cards": "Card view"
       },
       "lastLogin": "Last login: {{date}}",
+      "lastLoginNever": "Last login: never",
       "statusLabel": "User status"
     },
     "panelTitle": "Filters"
