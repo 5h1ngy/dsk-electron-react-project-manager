@@ -152,15 +152,17 @@ const ProjectNotesPage = (): ReactElement => {
   const { token } = theme.useToken()
   const toolbarSegmentedStyle = useMemo(
     () => ({
-      background: token.colorBgContainer,
-      border: `${token.lineWidth}px solid ${token.colorBorderSecondary}`,
+      background: token.colorFillTertiary,
+      border: `${token.lineWidth}px solid ${token.colorFillQuaternary}`,
       boxShadow: token.boxShadowSecondary,
-      padding: token.paddingXXS
+      padding: token.paddingXXS,
+      borderRadius: token.borderRadiusLG
     }),
     [
+      token.borderRadiusLG,
       token.boxShadowSecondary,
-      token.colorBgContainer,
-      token.colorBorderSecondary,
+      token.colorFillQuaternary,
+      token.colorFillTertiary,
       token.lineWidth,
       token.paddingXXS
     ]
