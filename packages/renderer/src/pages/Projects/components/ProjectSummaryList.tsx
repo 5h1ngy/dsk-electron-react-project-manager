@@ -59,8 +59,6 @@ export const ProjectSummaryList = ({
   return (
     <List
       dataSource={pagedData}
-      itemLayout="vertical"
-      split={false}
       style={{ width: '100%' }}
       renderItem={(project) => {
         const roleTag = (
@@ -81,20 +79,13 @@ export const ProjectSummaryList = ({
           <List.Item
             key={project.id}
             onClick={handleItemClick}
-            style={{
-              cursor: 'pointer',
-              background: token.colorBgContainer,
-              borderRadius: token.borderRadiusLG,
-              padding: token.paddingLG,
-              boxShadow: token.boxShadowSecondary,
-              marginBottom: token.marginMD
-            }}
+            style={{ cursor: 'pointer', paddingInline: token.paddingLG }}
             actions={
               project.role === 'admin' && (onEdit || onDelete)
                 ? [
                     <Button
-                      key="edit"
-                      type="text"
+                      key='edit'
+                      type='text'
                       icon={<EditOutlined />}
                       onClick={(event) => {
                         event.stopPropagation()
@@ -104,7 +95,7 @@ export const ProjectSummaryList = ({
                       {t('actions.edit')}
                     </Button>,
                     <Popconfirm
-                      key="delete"
+                      key='delete'
                       title={t('actions.deleteTitle')}
                       description={t('actions.deleteDescription', { name: project.name })}
                       okText={t('actions.deleteConfirm')}
@@ -113,7 +104,7 @@ export const ProjectSummaryList = ({
                       onConfirm={() => onDelete?.(project)}
                     >
                       <Button
-                        type="text"
+                        type='text'
                         danger
                         icon={<DeleteOutlined />}
                         onClick={(event) => event.stopPropagation()}
@@ -125,31 +116,39 @@ export const ProjectSummaryList = ({
                 : undefined
             }
           >
-            <Space direction="vertical" size={token.marginXS} style={{ width: '100%' }}>
-              <Space align="center" size={token.marginSM} wrap>
-                <Typography.Text strong>{project.name}</Typography.Text>
-                <Tag bordered={false} style={buildBadgeStyle(badgeTokens.projectKey)}>
-                  {project.key}
-                </Tag>
-                {roleTag}
-              </Space>
-              {project.description ? (
-                <Typography.Paragraph type="secondary" style={{ marginBottom: 0 }}>
-                  {project.description}
-                </Typography.Paragraph>
-              ) : null}
-              <Space size={token.marginXS} wrap>
-                {tags.length > 0 ? tags : (
-                  <Typography.Text type="secondary">{t('list.noTags')}</Typography.Text>
-                )}
-              </Space>
-              <Typography.Text type="secondary">
-                {t('list.createdOn', { date: formatDate(project.createdAt, i18n.language) })}
-              </Typography.Text>
-              <Typography.Text type="secondary">
-                {t('list.memberCount', { count: project.memberCount })}
-              </Typography.Text>
-            </Space>
+            <List.Item.Meta
+              title={
+                <Space align='center' size={token.marginSM} wrap>
+                  <Typography.Text strong>{project.name}</Typography.Text>
+                  <Tag bordered={false} style={buildBadgeStyle(badgeTokens.projectKey)}>
+                    {project.key}
+                  </Tag>
+                  {roleTag}
+                </Space>
+              }
+              description={
+                <Space direction='vertical' size={token.marginXS} style={{ width: '100%' }}>
+                  {project.description ? (
+                    <Typography.Paragraph type='secondary' style={{ marginBottom: 0 }}>
+                      {project.description}
+                    </Typography.Paragraph>
+                  ) : null}
+                  <Space size={token.marginXS} wrap>
+                    {tags.length > 0 ? (
+                      tags
+                    ) : (
+                      <Typography.Text type='secondary'>{t('list.noTags')}</Typography.Text>
+                    )}
+                  </Space>
+                  <Typography.Text type='secondary'>
+                    {t('list.createdOn', { date: formatDate(project.createdAt, i18n.language) })}
+                  </Typography.Text>
+                  <Typography.Text type='secondary'>
+                    {t('list.memberCount', { count: project.memberCount })}
+                  </Typography.Text>
+                </Space>
+              }
+            />
           </List.Item>
         )
       }}

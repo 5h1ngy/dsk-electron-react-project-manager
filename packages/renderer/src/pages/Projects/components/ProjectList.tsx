@@ -1,5 +1,5 @@
 import { Button, Popconfirm, Space, Table, Tag, Typography } from 'antd'
-import type { ColumnsType } from 'antd/es/table'
+import type { ColumnsType, TablePaginationConfig } from 'antd/es/table'
 import { useTranslation } from 'react-i18next'
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons'
 
@@ -17,6 +17,7 @@ export interface ProjectListProps {
   onEdit?: (project: ProjectSummary) => void
   onDelete?: (project: ProjectSummary) => void
   deletingProjectId?: string | null
+  pagination?: TablePaginationConfig
 }
 
 const formatDate = (value: Date | string, locale: string): string => {
@@ -34,7 +35,8 @@ export const ProjectList = ({
   onSelect,
   onEdit,
   onDelete,
-  deletingProjectId
+  deletingProjectId,
+  pagination
 }: ProjectListProps) => {
   const { t, i18n } = useTranslation('projects')
   const showSkeleton = useDelayedLoading(loading)
@@ -163,6 +165,13 @@ export const ProjectList = ({
       rowKey="id"
       columns={columns}
       dataSource={projects}
+      pagination={
+        pagination ?? {
+          pageSize: 10,
+          showSizeChanger: true,
+          pageSizeOptions: ['10', '20', '50', '100']
+        }
+      }
       size="middle"
       scroll={{ x: 1024 }}
       onRow={(record) => ({

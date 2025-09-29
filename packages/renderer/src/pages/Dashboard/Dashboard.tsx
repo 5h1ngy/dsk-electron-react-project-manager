@@ -94,6 +94,8 @@ const Dashboard = (): JSX.Element => {
     status: 'all'
   })
   const [userViewMode, setUserViewMode] = useState<'table' | 'list' | 'cards'>('table')
+  const [userTablePage, setUserTablePage] = useState(1)
+  const [userTablePageSize, setUserTablePageSize] = useState(10)
   const [userCardPage, setUserCardPage] = useState(1)
   const [userListPage, setUserListPage] = useState(1)
   const USER_CARD_PAGE_SIZE = 8
@@ -145,11 +147,15 @@ const Dashboard = (): JSX.Element => {
       ...prev,
       ...patch
     }))
+    setUserTablePage(1)
     setUserCardPage(1)
     setUserListPage(1)
   }
 
   useEffect(() => {
+    if (userViewMode === 'table') {
+      setUserTablePage(1)
+    }
     if (userViewMode === 'cards') {
       setUserCardPage(1)
     }
@@ -157,6 +163,13 @@ const Dashboard = (): JSX.Element => {
       setUserListPage(1)
     }
   }, [userViewMode])
+
+  useEffect(() => {
+    const maxPage = Math.max(1, Math.ceil(filteredUsers.length / userTablePageSize))
+    if (userTablePage > maxPage) {
+      setUserTablePage(maxPage)
+    }
+  }, [filteredUsers.length, userTablePage, userTablePageSize])
 
   useEffect(() => {
     const maxPage = Math.max(1, Math.ceil(filteredUsers.length / USER_CARD_PAGE_SIZE))
@@ -248,6 +261,9 @@ const Dashboard = (): JSX.Element => {
           viewMode={userViewMode}
           onViewModeChange={(mode) => {
             setUserViewMode(mode)
+            if (mode === 'table') {
+              setUserTablePage(1)
+            }
             if (mode === 'cards') {
               setUserCardPage(1)
             }
@@ -271,6 +287,18 @@ const Dashboard = (): JSX.Element => {
             users={filteredUsers}
             loading={loading}
             hasLoaded={hasLoaded}
+            pagination={{
+              current: userTablePage,
+              pageSize: userTablePageSize,
+              showSizeChanger: true,
+              pageSizeOptions: ['10', '20', '50', '100'],
+              onChange: (page, size) => {
+                setUserTablePage(page)
+                if (typeof size === 'number' && size !== userTablePageSize) {
+                  setUserTablePageSize(size)
+                }
+              }
+            }}
           />
         ) : null}
         {userViewMode === 'list' ? (

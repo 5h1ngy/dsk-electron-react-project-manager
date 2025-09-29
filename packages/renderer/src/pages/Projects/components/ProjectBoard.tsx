@@ -1,4 +1,4 @@
-import { Alert, Col, Row, Space } from 'antd'
+import { Alert, Col, Row, Space, theme } from 'antd'
 import type { JSX } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -33,6 +33,7 @@ export const ProjectBoard = ({
   deletingTaskId
 }: ProjectBoardProps): JSX.Element => {
   const { t } = useTranslation('projects')
+  const { token } = theme.useToken()
   const { messageContext, columns, handleMoveTask } = useProjectBoard(
     projectId,
     tasks,
@@ -56,23 +57,25 @@ export const ProjectBoard = ({
       {showSkeleton ? (
         <LoadingSkeleton variant="cards" items={Math.max(columns.length, 4)} />
       ) : hasTasks ? (
-        <Row gutter={16} wrap>
-          {columns.map((column) => (
-            <Col key={column.status} xs={24} sm={12} lg={6}>
-              <KanbanColumn
-                status={column.status}
-                label={column.label}
-                tasks={column.tasks}
-                onTaskDrop={handleMoveTask}
-                onTaskSelect={onTaskSelect}
-                onTaskEdit={onTaskEdit}
-                onTaskDelete={onTaskDelete}
-                deletingTaskId={deletingTaskId}
-                canManage={canManageTasks}
-              />
-            </Col>
-          ))}
-        </Row>
+        <div style={{ width: '100%', overflowX: 'auto', paddingBottom: token.paddingSM }}>
+          <Row gutter={16} wrap={false} style={{ flexWrap: 'nowrap' }}>
+            {columns.map((column) => (
+              <Col key={column.status} flex="0 0 320px" style={{ maxWidth: 320 }}>
+                <KanbanColumn
+                  status={column.status}
+                  label={column.label}
+                  tasks={column.tasks}
+                  onTaskDrop={handleMoveTask}
+                  onTaskSelect={onTaskSelect}
+                  onTaskEdit={onTaskEdit}
+                  onTaskDelete={onTaskDelete}
+                  deletingTaskId={deletingTaskId}
+                  canManage={canManageTasks}
+                />
+              </Col>
+            ))}
+          </Row>
+        </div>
       ) : (
         <Space
           align="center"

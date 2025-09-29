@@ -70,8 +70,6 @@ export const ProjectTasksList = ({
   return (
     <List
       dataSource={pagedTasks}
-      split={false}
-      itemLayout="vertical"
       style={{ width: '100%' }}
       renderItem={(task) => {
         const statusBadge = statusLabels[task.status] ?? t(`details.status.${task.status}`)
@@ -83,20 +81,13 @@ export const ProjectTasksList = ({
           <List.Item
             key={task.id}
             onClick={() => onSelect(task)}
-            style={{
-              cursor: 'pointer',
-              background: token.colorBgContainer,
-              borderRadius: token.borderRadiusLG,
-              padding: token.paddingLG,
-              boxShadow: token.boxShadowSecondary,
-              marginBottom: token.marginMD
-            }}
+            style={{ cursor: 'pointer', paddingInline: token.paddingLG }}
             actions={
               canManage
                 ? [
                     <Button
-                      key="edit"
-                      type="text"
+                      key='edit'
+                      type='text'
                       icon={<EditOutlined />}
                       onClick={(event) => {
                         event.stopPropagation()
@@ -106,7 +97,7 @@ export const ProjectTasksList = ({
                       {t('tasks.actions.edit')}
                     </Button>,
                     <Popconfirm
-                      key="delete"
+                      key='delete'
                       title={t('tasks.actions.deleteTitle')}
                       description={t('tasks.actions.deleteDescription', { title: task.title })}
                       okText={t('tasks.actions.deleteConfirm')}
@@ -115,7 +106,7 @@ export const ProjectTasksList = ({
                       onConfirm={() => onDelete(task)}
                     >
                       <Button
-                        type="text"
+                        type='text'
                         danger
                         icon={<DeleteOutlined />}
                         loading={deletingTaskId === task.id}
@@ -128,38 +119,44 @@ export const ProjectTasksList = ({
                 : undefined
             }
           >
-            <Space direction="vertical" size={token.marginXS} style={{ width: '100%' }}>
-              <Space align="center" size={token.marginSM} wrap>
-                <Typography.Text strong>{task.title}</Typography.Text>
-                <Typography.Text type="secondary">#{task.key}</Typography.Text>
-                <Tag bordered={false} style={buildBadgeStyle(statusToken)}>
-                  {statusBadge}
-                </Tag>
-                <Tag bordered={false} style={buildBadgeStyle(priorityBadge)}>
-                  {t(`details.priority.${task.priority}`)}
-                </Tag>
-                <Tag
-                  bordered={false}
-                  icon={<MessageOutlined />}
-                  style={buildBadgeStyle(badgeTokens.comment)}
-                >
-                  {task.commentCount ?? 0}
-                </Tag>
-              </Space>
-              {task.description ? (
-                <Typography.Paragraph type="secondary" style={{ marginBottom: 0 }}>
-                  {task.description}
-                </Typography.Paragraph>
-              ) : null}
-              <Space size={token.marginSM} wrap>
-                <Typography.Text type="secondary">
-                  {t('details.assignee')}: {assignee}
-                </Typography.Text>
-                <Typography.Text type="secondary">
-                  {t('details.tasksColumns.dueDate')}: {formatDate(task.dueDate)}
-                </Typography.Text>
-              </Space>
-            </Space>
+            <List.Item.Meta
+              title={
+                <Space align='center' size={token.marginSM} wrap>
+                  <Typography.Text strong>{task.title}</Typography.Text>
+                  <Typography.Text type='secondary'>#{task.key}</Typography.Text>
+                  <Tag bordered={false} style={buildBadgeStyle(statusToken)}>
+                    {statusBadge}
+                  </Tag>
+                  <Tag bordered={false} style={buildBadgeStyle(priorityBadge)}>
+                    {t(`details.priority.${task.priority}`)}
+                  </Tag>
+                  <Tag
+                    bordered={false}
+                    icon={<MessageOutlined />}
+                    style={buildBadgeStyle(badgeTokens.comment)}
+                  >
+                    {task.commentCount ?? 0}
+                  </Tag>
+                </Space>
+              }
+              description={
+                <Space direction='vertical' size={token.marginXS} style={{ width: '100%' }}>
+                  {task.description ? (
+                    <Typography.Paragraph type='secondary' style={{ marginBottom: 0 }}>
+                      {task.description}
+                    </Typography.Paragraph>
+                  ) : null}
+                  <Space size={token.marginSM} wrap>
+                    <Typography.Text type='secondary'>
+                      {t('details.assignee')}: {assignee}
+                    </Typography.Text>
+                    <Typography.Text type='secondary'>
+                      {t('details.tasksColumns.dueDate')}: {formatDate(task.dueDate)}
+                    </Typography.Text>
+                  </Space>
+                </Space>
+              }
+            />
           </List.Item>
         )
       }}
