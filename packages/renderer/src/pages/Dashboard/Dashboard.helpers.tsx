@@ -25,7 +25,7 @@ export const renderProjectsList = (
   <List
     dataSource={projects}
     rowKey="id"
-    locale={{ emptyText: <EmptyState title={t('personal.noProjects')} /> }}
+    locale={{ emptyText: <EmptyState title={t('recentProjects.empty')} /> }}
     renderItem={(project) => (
       <List.Item>
         <Space direction="vertical" size={4} style={{ width: '100%' }}>
@@ -46,3 +46,4 @@ export const renderProjectsList = (
     )}
   />
 )
+

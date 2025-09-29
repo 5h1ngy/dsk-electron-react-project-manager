@@ -103,5 +103,62 @@
     "noDescription": "No description available",
     "noProjects": "You are not part of any project yet.",
     "heading": "Overview"
+  },
+  "overview": {
+    "welcome": "Welcome back, {{name}}",
+    "subtitle": "Here's what is happening across your workspace."
+  },
+  "summary": {
+    "cards": {
+      "total": {
+        "title": "Projects",
+        "caption": "Across all roles"
+      },
+      "managed": {
+        "title": "Managed projects",
+        "caption": "Where you are the administrator"
+      },
+      "collaborating": {
+        "title": "Collaborating",
+        "caption": "Projects you can update"
+      },
+      "watching": {
+        "title": "Watching",
+        "caption": "Projects with read-only access"
+      }
+    },
+    "roles": {
+      "admin": "Managed",
+      "edit": "Collaborating",
+      "view": "Watching"
+    },
+    "noLastLogin": "No login recorded yet"
+  },
+  "quickLinks": {
+    "title": "Quick actions",
+    "create": "Create project",
+    "projects": "Go to my projects",
+    "projectsDescription": "Review active initiatives and assignments.",
+    "settings": "Open settings",
+    "settingsDescription": "Adjust appearance and workspace preferences.",
+    "users": "Manage users",
+    "usersDescription": "Invite, deactivate or change user permissions."
+  },
+  "insights": {
+    "title": "Workspace insights",
+    "roles": "Projects by role",
+    "tags": "Most used tags",
+    "noTags": "Tags will appear when projects include labels.",
+    "tagCountLabel": "{{count}} uses"
+  },
+  "profile": {
+    "title": "Your profile",
+    "username": "Username",
+    "lastLogin": "Last login",
+    "roles": "Roles"
+  },
+  "recentProjects": {
+    "title": "Recent projects",
+    "empty": "You haven't joined any projects yet."
   }
 }

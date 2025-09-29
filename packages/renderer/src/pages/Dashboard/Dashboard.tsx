@@ -1,343 +1,329 @@
 import type { JSX } from 'react'
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Alert, Breadcrumb, Button, Card, Space, Tag, Typography } from 'antd'
+import { useNavigate } from 'react-router-dom'
+import dayjs from 'dayjs'
+import {
+  AppstoreOutlined,
+  ArrowRightOutlined,
+  PlusOutlined,
+  SettingOutlined,
+  TeamOutlined
+} from '@ant-design/icons'
+import {
+  Breadcrumb,
+  Button,
+  Card,
+  Col,
+  Flex,
+  Progress,
+  Row,
+  Space,
+  Statistic,
+  Tag,
+  Typography
+} from 'antd'
 
 import { LoadingSkeleton } from '@renderer/components/DataStates'
 import { HealthStatusCard } from '@renderer/components/HealthStatusCard'
 import { useDelayedLoading } from '@renderer/hooks/useDelayedLoading'
-import { useAppDispatch, useAppSelector } from '@renderer/store/hooks'
-import { selectCurrentUser } from '@renderer/store/slices/auth/selectors'
-import {
-  fetchProjects,
-  selectProjects,
-  selectProjectsStatus
-} from '@renderer/store/slices/projects'
-import { CreateUserModal } from '@renderer/pages/Dashboard/components/CreateUserModal'
-import { EditUserModal } from '@renderer/pages/Dashboard/components/EditUserModal'
-import { UserTable } from '@renderer/pages/Dashboard/components/UserTable'
-import { UserListView } from '@renderer/pages/Dashboard/components/UserListView'
 import { ShellHeaderPortal } from '@renderer/layout/Shell/ShellHeader.context'
 import { usePrimaryBreadcrumb } from '@renderer/layout/Shell/hooks/usePrimaryBreadcrumb'
 import {
-  UserFilters,
-  type UserFiltersValue
-} from '@renderer/pages/Dashboard/components/UserFilters'
-import { UserCardsGrid } from '@renderer/pages/Dashboard/components/UserCardsGrid'
-import { useUserManagement } from '@renderer/pages/Dashboard/hooks/useUserManagement'
-import {
-  mapRoleTags,
-  selectRecentProjects,
-  renderProjectsList
+  renderProjectsList,
+  selectRecentProjects
 } from '@renderer/pages/Dashboard/Dashboard.helpers'
-import type { RoleTagDescriptor } from '@renderer/pages/Dashboard/Dashboard.types'
-import type { RoleName } from '@main/services/auth/constants'
-import {
-  useSemanticBadges,
-  buildBadgeStyle,
-  type BadgeSpec
-} from '@renderer/theme/hooks/useSemanticBadges'
-import { ReloadOutlined } from '@ant-design/icons'
-
-const renderRoleTags = (
-  tags: RoleTagDescriptor[],
-  roleBadges: Record<RoleName, BadgeSpec>
-): JSX.Element => (
-  <Space size={4} wrap>
-    {tags.map((tag) => {
-      const roleKey = tag.key as RoleName
-      const badge = roleBadges[roleKey] ?? roleBadges.Viewer
-      return (
-        <Tag key={tag.key} bordered={false} style={buildBadgeStyle(badge)}>
-          {tag.label}
-        </Tag>
-      )
-    })}
-  </Space>
-)
+import { useSemanticBadges } from '@renderer/theme/hooks/useSemanticBadges'
+import { useAppSelector } from '@renderer/store/hooks'
+import { selectCurrentUser } from '@renderer/store/slices/auth/selectors'
+import { selectProjects, selectProjectsStatus } from '@renderer/store/slices/projects'
 
 const Dashboard = (): JSX.Element => {
   const { t } = useTranslation('dashboard')
-  const dispatch = useAppDispatch()
+  const navigate = useNavigate()
   const currentUser = useAppSelector(selectCurrentUser)
   const projects = useAppSelector(selectProjects)
   const projectsStatus = useAppSelector(selectProjectsStatus)
   const badgeTokens = useSemanticBadges()
-  const {
-    users,
-    error,
-    loading,
-    hasLoaded,
-    messageContext,
-    columns,
-    isCreateOpen,
-    editingUser,
-    openCreateModal,
-    closeCreateModal,
-    openEditModal,
-    closeEditModal,
-    submitCreate,
-    submitUpdate,
-    createForm,
-    updateForm,
-    refreshUsers,
-    clearError,
-    isAdmin,
-    removeUser
-  } = useUserManagement()
 
-  const isFetchingProjects = projectsStatus === 'loading'
-  const projectListSkeleton = useDelayedLoading(isFetchingProjects)
-  const [userFilters, setUserFilters] = useState<UserFiltersValue>({
-    search: '',
-    role: 'all',
-    status: 'all'
-  })
-  const [userViewMode, setUserViewMode] = useState<'table' | 'list' | 'cards'>('table')
-  const [userTablePage, setUserTablePage] = useState(1)
-  const [userTablePageSize, setUserTablePageSize] = useState(10)
-  const [userCardPage, setUserCardPage] = useState(1)
-  const [userListPage, setUserListPage] = useState(1)
-  const USER_CARD_PAGE_SIZE = 8
-  const USER_LIST_PAGE_SIZE = 12
-  const availableRoles = useMemo<RoleName[]>(() => {
-    const set = new Set<RoleName>()
-    users.forEach((user) => {
-      user.roles.forEach((role) => set.add(role))
-    })
-    return Array.from(set).sort((a, b) => a.localeCompare(b))
-  }, [users])
+  const isLoadingProjects = projectsStatus === 'loading'
+  const projectsSkeleton = useDelayedLoading(isLoadingProjects)
 
-  const baseBreadcrumbItems = useMemo(
-    () => [{ title: t('appShell.navigation.dashboard', { ns: 'common' }) }],
+  const totalProjects = projects.length
+
+  const roleCounts = useMemo(() => {
+    return projects.reduce(
+      (acc, project) => {
+        acc[project.role] = (acc[project.role] ?? 0) + 1
+        return acc
+      },
+      { admin: 0, edit: 0, view: 0 } as Record<'admin' | 'edit' | 'view', number>
+    )
+  }, [projects])
+
+  const managedProjects = roleCounts.admin
+  const collaborativeProjects = roleCounts.edit
+  const watchingProjects = roleCounts.view
+
+  const roleLabels = useMemo(
+    () => ({
+      admin: t('summary.roles.admin'),
+      edit: t('summary.roles.edit'),
+      view: t('summary.roles.view')
+    }),
     [t]
   )
-  const breadcrumbItems = usePrimaryBreadcrumb(baseBreadcrumbItems)
 
-  const filteredUsers = useMemo(() => {
-    const needle = userFilters.search.trim().toLowerCase()
-    return users.filter((user) => {
-      const matchesSearch =
-        needle.length === 0 ||
-        [user.username, user.displayName]
-          .filter(Boolean)
-          .some((value) => value.toLowerCase().includes(needle))
+  const roleDistribution = useMemo(
+    () =>
+      (['admin', 'edit', 'view'] as const).map((key) => ({
+        key,
+        label: roleLabels[key],
+        count: roleCounts[key],
+        percent: totalProjects > 0 ? Math.round((roleCounts[key] / totalProjects) * 100) : 0
+      })),
+    [roleCounts, roleLabels, totalProjects]
+  )
 
-      if (!matchesSearch) {
-        return false
-      }
-
-      if (userFilters.role !== 'all' && !user.roles.includes(userFilters.role)) {
-        return false
-      }
-
-      if (userFilters.status !== 'all') {
-        const shouldBeActive = userFilters.status === 'active'
-        if (user.isActive !== shouldBeActive) {
-          return false
-        }
-      }
-
-      return true
+  const tagInsights = useMemo(() => {
+    const frequency = new Map<string, number>()
+    projects.forEach((project) => {
+      project.tags.forEach((tag) => {
+        frequency.set(tag, (frequency.get(tag) ?? 0) + 1)
+      })
     })
-  }, [userFilters.role, userFilters.search, userFilters.status, users])
 
-  const handleUserFiltersChange = (patch: Partial<UserFiltersValue>) => {
-    setUserFilters((prev) => ({
-      ...prev,
-      ...patch
+    const sorted = Array.from(frequency.entries())
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5)
+
+    const totalAssignments = Array.from(frequency.values()).reduce((sum, value) => sum + value, 0)
+
+    return sorted.map(([tag, count]) => ({
+      tag,
+      count,
+      percent: totalAssignments > 0 ? Math.round((count / totalAssignments) * 100) : 0
     }))
-    setUserTablePage(1)
-    setUserCardPage(1)
-    setUserListPage(1)
-  }
+  }, [projects])
 
-  useEffect(() => {
-    if (userViewMode === 'table') {
-      setUserTablePage(1)
-    }
-    if (userViewMode === 'cards') {
-      setUserCardPage(1)
-    }
-    if (userViewMode === 'list') {
-      setUserListPage(1)
-    }
-  }, [userViewMode])
+  const recentProjects = useMemo(() => {
+    const sorted = [...projects].sort(
+      (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+    )
+    return selectRecentProjects(sorted, 5)
+  }, [projects])
 
-  useEffect(() => {
-    const maxPage = Math.max(1, Math.ceil(filteredUsers.length / userTablePageSize))
-    if (userTablePage > maxPage) {
-      setUserTablePage(maxPage)
-    }
-  }, [filteredUsers.length, userTablePage, userTablePageSize])
+  const lastLoginText = currentUser.lastLoginAt
+    ? dayjs(currentUser.lastLoginAt).format('LLL')
+    : t('summary.noLastLogin')
 
-  useEffect(() => {
-    const maxPage = Math.max(1, Math.ceil(filteredUsers.length / USER_CARD_PAGE_SIZE))
-    if (userCardPage > maxPage) {
-      setUserCardPage(maxPage)
-    }
-  }, [filteredUsers.length, userCardPage])
+  const breadcrumbItems = usePrimaryBreadcrumb([
+    { title: t('appShell.navigation.dashboard', { ns: 'common' }) }
+  ])
 
-  useEffect(() => {
-    const maxPage = Math.max(1, Math.ceil(filteredUsers.length / USER_LIST_PAGE_SIZE))
-    if (userListPage > maxPage) {
-      setUserListPage(maxPage)
-    }
-  }, [filteredUsers.length, userListPage])
+  const quickLinks = useMemo(
+    () => {
+      const items = [
+        {
+          key: 'projects',
+          label: t('quickLinks.projects'),
+          description: t('quickLinks.projectsDescription'),
+          icon: <AppstoreOutlined />,
+          onClick: () => navigate('/projects')
+        },
+        {
+          key: 'settings',
+          label: t('quickLinks.settings'),
+          description: t('quickLinks.settingsDescription'),
+          icon: <SettingOutlined />,
+          onClick: () => navigate('/settings')
+        }
+      ]
 
-  useEffect(() => {
-    const maxPage = Math.max(1, Math.ceil(filteredUsers.length / USER_LIST_PAGE_SIZE))
-    if (userListPage > maxPage) {
-      setUserListPage(maxPage)
-    }
-  }, [filteredUsers.length, userListPage])
+      if (currentUser.roles.includes('Admin')) {
+        items.push({
+          key: 'users',
+          label: t('quickLinks.users'),
+          description: t('quickLinks.usersDescription'),
+          icon: <TeamOutlined />,
+          onClick: () => navigate('/admin/users')
+        })
+      }
 
-  useEffect(() => {
-    if (!isAdmin && projectsStatus === 'idle') {
-      void dispatch(fetchProjects())
-    }
-  }, [dispatch, isAdmin, projectsStatus])
+      return items
+    },
+    [currentUser.roles, navigate, t]
+  )
 
-  if (!isAdmin) {
-    const roleTags = mapRoleTags(currentUser?.roles, t)
-    const recentProjects = selectRecentProjects(projects)
-    const roleTagElements = renderRoleTags(roleTags, badgeTokens.userRole)
+  const summaryCards = useMemo(
+    () => [
+      {
+        key: 'total',
+        title: t('summary.cards.total.title'),
+        value: totalProjects,
+        caption: t('summary.cards.total.caption')
+      },
+      {
+        key: 'managed',
+        title: t('summary.cards.managed.title'),
+        value: managedProjects,
+        caption: t('summary.cards.managed.caption')
+      },
+      {
+        key: 'collaborating',
+        title: t('summary.cards.collaborating.title'),
+        value: collaborativeProjects,
+        caption: t('summary.cards.collaborating.caption')
+      },
+      {
+        key: 'watching',
+        title: t('summary.cards.watching.title'),
+        value: watchingProjects,
+        caption: t('summary.cards.watching.caption')
+      }
+    ],
+    [collaborativeProjects, managedProjects, totalProjects, watchingProjects, t]
+  )
 
-    return (
-      <>
-        <ShellHeaderPortal>
+  return (
+    <>
+      <ShellHeaderPortal>
+        <Space direction="vertical" style={{ width: '100%' }}>
+          <Flex justify="space-between" align="center" wrap>
+            <Space direction="vertical" size={0}>
+              <Typography.Title level={4} style={{ marginBottom: 0 }}>
+                {t('overview.welcome', { name: currentUser.displayName })}
+              </Typography.Title>
+              <Typography.Text type="secondary">{t('overview.subtitle')}</Typography.Text>
+            </Space>
+            <Button
+              type="primary"
+              size="large"
+              icon={<PlusOutlined />}
+              onClick={() => navigate('/projects')}
+            >
+              {t('quickLinks.create')}
+            </Button>
+          </Flex>
           <Breadcrumb items={breadcrumbItems} />
-        </ShellHeaderPortal>
-        <Space direction="vertical" size="large" style={{ width: '100%' }}>
-          {messageContext}
-          <Typography.Title level={3}>{t('personal.heading')}</Typography.Title>
-          <Space direction="horizontal" size="large" wrap style={{ width: '100%' }}>
-            <Card title={t('personal.profileTitle')} style={{ flex: 1, minWidth: 260 }}>
-              <Space direction="vertical" size={8}>
-                <Typography.Text>
-                  {t('personal.username', { username: currentUser?.username })}
-                </Typography.Text>
-                {roleTagElements}
+        </Space>
+      </ShellHeaderPortal>
+      <Space direction="vertical" size="large" style={{ width: '100%' }}>
+        <Row gutter={[16, 16]}>
+          <Col xs={24} xl={16}>
+            <Row gutter={[16, 16]}>
+              {summaryCards.map((card) => (
+                <Col key={card.key} xs={24} sm={12} xl={6}>
+                  <Card>
+                    <Space direction="vertical" size={8} style={{ width: '100%' }}>
+                      <Statistic title={card.title} value={card.value} />
+                      <Typography.Text type="secondary">{card.caption}</Typography.Text>
+                    </Space>
+                  </Card>
+                </Col>
+              ))}
+            </Row>
+            <Card title={t('insights.title')} style={{ marginTop: 16 }}>
+              <Space direction="vertical" size={24} style={{ width: '100%' }}>
+                <div>
+                  <Typography.Text strong>{t('insights.roles')}</Typography.Text>
+                  <Space direction="vertical" size={12} style={{ width: '100%', marginTop: 12 }}>
+                    {roleDistribution.map((role) => (
+                      <div key={role.key}>
+                        <Flex justify="space-between">
+                          <Typography.Text>{role.label}</Typography.Text>
+                          <Typography.Text strong>{role.count}</Typography.Text>
+                        </Flex>
+                        <Progress
+                          percent={role.percent}
+                          showInfo={false}
+                          
+                        />
+                      </div>
+                    ))}
+                  </Space>
+                </div>
+                <div>
+                  <Typography.Text strong>{t('insights.tags')}</Typography.Text>
+                  {tagInsights.length === 0 ? (
+                    <Typography.Text type="secondary" style={{ display: 'block', marginTop: 12 }}>
+                      {t('insights.noTags')}
+                    </Typography.Text>
+                  ) : (
+                    <Space direction="vertical" size={12} style={{ width: '100%', marginTop: 12 }}>
+                      {tagInsights.map((tag) => (
+                        <div key={tag.tag}>
+                          <Flex justify="space-between" align="center">
+                            <Space size={8}>
+                              <Tag bordered={false}>{tag.tag}</Tag>
+                              <Typography.Text type="secondary">
+                                {t('insights.tagCountLabel', { count: tag.count })}
+                              </Typography.Text>
+                            </Space>
+                            <Typography.Text strong>{`${tag.percent}%`}</Typography.Text>
+                          </Flex>
+                          <Progress percent={tag.percent} showInfo={false} />
+                        </div>
+                      ))}
+                    </Space>
+                  )}
+                </div>
               </Space>
             </Card>
-            <Card title={t('personal.projectsTitle')} style={{ flex: 2, minWidth: 320 }}>
-              {projectListSkeleton ? (
+            <Card title={t('recentProjects.title')} style={{ marginTop: 16 }}>
+              {projectsSkeleton ? (
                 <LoadingSkeleton variant="list" />
               ) : (
                 renderProjectsList(recentProjects, t, badgeTokens)
               )}
             </Card>
-          </Space>
-        </Space>
-      </>
-    )
-  }
-
-  return (
-    <>
-      <ShellHeaderPortal>
-        <Space align="center" size={12} wrap style={{ width: '100%' }}>
-          <Button
-            icon={<ReloadOutlined />}
-            onClick={refreshUsers}
-            loading={loading}
-            disabled={loading}
-          >
-            {t('dashboard:actionBar.refresh')}
-          </Button>
-          <Breadcrumb items={breadcrumbItems} />
-        </Space>
-      </ShellHeaderPortal>
-      <Space direction="vertical" size="large" style={{ width: '100%' }}>
-        {messageContext}
-        <HealthStatusCard />
-        <UserFilters
-          value={userFilters}
-          onChange={handleUserFiltersChange}
-          roleOptions={availableRoles}
-          aria-label={t('filters.users.ariaLabel')}
-          onCreate={openCreateModal}
-          canCreate={isAdmin}
-          viewMode={userViewMode}
-          onViewModeChange={(mode) => {
-            setUserViewMode(mode)
-            if (mode === 'table') {
-              setUserTablePage(1)
-            }
-            if (mode === 'cards') {
-              setUserCardPage(1)
-            }
-            if (mode === 'list') {
-              setUserListPage(1)
-            }
-          }}
-        />
-        {error ? (
-          <Alert
-            type="error"
-            message={t('dashboard:error.title')}
-            description={error}
-            onClose={clearError}
-            closable
-          />
-        ) : null}
-        {userViewMode === 'table' ? (
-          <UserTable
-            columns={columns}
-            users={filteredUsers}
-            loading={loading}
-            hasLoaded={hasLoaded}
-            pagination={{
-              current: userTablePage,
-              pageSize: userTablePageSize,
-              showSizeChanger: true,
-              pageSizeOptions: ['10', '20', '50', '100'],
-              onChange: (page, size) => {
-                setUserTablePage(page)
-                if (typeof size === 'number' && size !== userTablePageSize) {
-                  setUserTablePageSize(size)
-                }
-              }
-            }}
-          />
-        ) : null}
-        {userViewMode === 'list' ? (
-          <UserListView
-            users={filteredUsers}
-            loading={loading}
-            hasLoaded={hasLoaded}
-            page={userListPage}
-            pageSize={USER_LIST_PAGE_SIZE}
-            onPageChange={setUserListPage}
-            onEdit={openEditModal}
-            onDelete={removeUser}
-          />
-        ) : null}
-        {userViewMode === 'cards' ? (
-          <UserCardsGrid
-            users={filteredUsers}
-            loading={loading}
-            hasLoaded={hasLoaded}
-            page={userCardPage}
-            pageSize={USER_CARD_PAGE_SIZE}
-            onPageChange={setUserCardPage}
-            onEdit={openEditModal}
-            onDelete={removeUser}
-          />
-        ) : null}
-        <CreateUserModal
-          open={isCreateOpen}
-          onCancel={closeCreateModal}
-          onSubmit={submitCreate}
-          form={createForm}
-        />
-        <EditUserModal
-          user={editingUser}
-          open={Boolean(editingUser)}
-          onCancel={closeEditModal}
-          onSubmit={submitUpdate}
-          form={updateForm}
-        />
+          </Col>
+          <Col xs={24} xl={8}>
+            <Card title={t('profile.title')}>
+              <Space direction="vertical" size={12} style={{ width: '100%' }}>
+                <Typography.Text>
+                  <Typography.Text strong>{t('profile.username')}:</Typography.Text> {currentUser.username}
+                </Typography.Text>
+                <Typography.Text>
+                  <Typography.Text strong>{t('profile.lastLogin')}:</Typography.Text> {lastLoginText}
+                </Typography.Text>
+                <Space direction="vertical" size={4}>
+                  <Typography.Text strong>{t('profile.roles')}</Typography.Text>
+                  <Space wrap>
+                    {currentUser.roles.map((role) => (
+                      <Tag key={role} bordered={false}>
+                        {t(`roles.${role}`, { defaultValue: role })}
+                      </Tag>
+                    ))}
+                  </Space>
+                </Space>
+              </Space>
+            </Card>
+            <Card title={t('quickLinks.title')} style={{ marginTop: 16 }}>
+              <Flex wrap gap={16}>
+                {quickLinks.map((link) => (
+                  <Card
+                    key={link.key}
+                    hoverable
+                    onClick={link.onClick}
+                    style={{ flex: '1 1 220px', minWidth: 220, cursor: 'pointer' }}
+                    bodyStyle={{ padding: 16 }}
+                  >
+                    <Space align="start" size={12}>
+                      <Typography.Text style={{ fontSize: 20, lineHeight: 1 }}>{link.icon}</Typography.Text>
+                      <Flex vertical gap={4} style={{ flex: 1 }}>
+                        <Typography.Text strong>{link.label}</Typography.Text>
+                        <Typography.Text type="secondary">{link.description}</Typography.Text>
+                      </Flex>
+                      <ArrowRightOutlined />
+                    </Space>
+                  </Card>
+                ))}
+              </Flex>
+            </Card>
+            <div style=\{\{ marginTop: 16 \}\}>\r\n              <HealthStatusCard cardStyle=\{\{ width: '100%' \}\} />\r\n            </div>
+          </Col>
+        </Row>
       </Space>
     </>
   )
@@ -347,10 +333,4 @@ Dashboard.displayName = 'Dashboard'
 
 export { Dashboard }
 export default Dashboard
-
-
-
-
-
-
 

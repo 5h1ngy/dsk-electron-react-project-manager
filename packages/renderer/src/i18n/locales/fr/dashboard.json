@@ -103,5 +103,62 @@
     "noDescription": "Aucune description disponible",
     "noProjects": "Vous ne participez a aucun projet pour le moment.",
     "heading": "Vue personnelle"
+  },
+  "overview": {
+    "welcome": "Bon retour, {{name}}",
+    "subtitle": "Voici un aperçu de votre espace de travail."
+  },
+  "summary": {
+    "cards": {
+      "total": {
+        "title": "Projets",
+        "caption": "Tous rôles confondus"
+      },
+      "managed": {
+        "title": "Projets gérés",
+        "caption": "Là où vous êtes administrateur"
+      },
+      "collaborating": {
+        "title": "En collaboration",
+        "caption": "Projets que vous pouvez mettre à jour"
+      },
+      "watching": {
+        "title": "En observation",
+        "caption": "Accès en lecture seule"
+      }
+    },
+    "roles": {
+      "admin": "Gérés",
+      "edit": "En collaboration",
+      "view": "En observation"
+    },
+    "noLastLogin": "Aucune connexion enregistrée"
+  },
+  "quickLinks": {
+    "title": "Actions rapides",
+    "create": "Créer un projet",
+    "projects": "Accéder à mes projets",
+    "projectsDescription": "Passez en revue les initiatives actives et les tâches.",
+    "settings": "Ouvrir les paramètres",
+    "settingsDescription": "Ajustez l'apparence et les préférences.",
+    "users": "Gérer les utilisateurs",
+    "usersDescription": "Invitez, désactivez ou modifiez les permissions des utilisateurs."
+  },
+  "insights": {
+    "title": "Aperçus de l'espace",
+    "roles": "Projets par rôle",
+    "tags": "Tags les plus utilisés",
+    "noTags": "Les tags apparaîtront lorsque des projets auront des étiquettes.",
+    "tagCountLabel": "{{count}} utilisations"
+  },
+  "profile": {
+    "title": "Votre profil",
+    "username": "Identifiant",
+    "lastLogin": "Dernière connexion",
+    "roles": "Rôles"
+  },
+  "recentProjects": {
+    "title": "Projets récents",
+    "empty": "Vous ne participez à aucun projet pour le moment."
   }
 }
