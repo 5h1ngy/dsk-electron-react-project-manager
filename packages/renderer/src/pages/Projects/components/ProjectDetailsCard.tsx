@@ -40,9 +40,7 @@ export const ProjectDetailsCard = ({
   if (!project) {
     return (
       <Card title={t('details.summary.title')} style={cardStyle}>
-        <Typography.Paragraph type="secondary">
-          {t('details.summary.empty')}
-        </Typography.Paragraph>
+        <Typography.Paragraph type="secondary">{t('details.summary.empty')}</Typography.Paragraph>
       </Card>
     )
   }

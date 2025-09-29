@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { AuthService } from '@main/services/auth'
 import type { TaskStatusService } from '@main/services/taskStatus'
 import type { TaskStatusDTO } from '@main/services/taskStatus/types'
@@ -65,29 +66,32 @@ describe('TaskStatusIpcRegistrar', () => {
       registrar
     }).register()
 
-    const listResponse = await handlers
-      .get('taskStatus:list')!
-      ({}, 'token', { projectId: status.projectId })
+    const listResponse = await handlers.get('taskStatus:list')!({}, 'token', {
+      projectId: status.projectId
+    })
     expect(listResponse).toEqual({ ok: true, data: [status] })
 
-    const createResponse = await handlers
-      .get('taskStatus:create')!
-      ({}, 'token', { projectId: status.projectId, label: status.label })
+    const createResponse = await handlers.get('taskStatus:create')!({}, 'token', {
+      projectId: status.projectId,
+      label: status.label
+    })
     expect(createResponse).toEqual({ ok: true, data: status })
 
-    const updateResponse = await handlers
-      .get('taskStatus:update')!
-      ({}, 'token', status.id, { label: 'Updated' })
+    const updateResponse = await handlers.get('taskStatus:update')!({}, 'token', status.id, {
+      label: 'Updated'
+    })
     expect(updateResponse).toEqual({ ok: true, data: { ...status, label: 'Updated' } })
 
-    const reorderResponse = await handlers
-      .get('taskStatus:reorder')!
-      ({}, 'token', { projectId: status.projectId, order: [status.id] })
+    const reorderResponse = await handlers.get('taskStatus:reorder')!({}, 'token', {
+      projectId: status.projectId,
+      order: [status.id]
+    })
     expect(reorderResponse).toEqual({ ok: true, data: [status] })
 
-    const deleteResponse = await handlers
-      .get('taskStatus:delete')!
-      ({}, 'token', { statusId: status.id, fallbackStatusId: 'status-2' })
+    const deleteResponse = await handlers.get('taskStatus:delete')!({}, 'token', {
+      statusId: status.id,
+      fallbackStatusId: 'status-2'
+    })
     expect(deleteResponse).toEqual({ ok: true, data: { success: true } })
   })
 
@@ -100,9 +104,7 @@ describe('TaskStatusIpcRegistrar', () => {
       registrar
     }).register()
 
-    const response = await handlers
-      .get('taskStatus:list')!
-      ({}, 'token', { projectId: 'project-1' })
+    const response = await handlers.get('taskStatus:list')!({}, 'token', { projectId: 'project-1' })
     expect(response).toEqual({ ok: false, code: 'ERR_INTERNAL', message: 'boom' })
   })
 })

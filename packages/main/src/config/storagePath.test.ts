@@ -35,4 +35,3 @@ describe('StoragePathResolver', () => {
     expect(resolver.resolve()).toBe(join('/home/demo/.config', 'TestApp', 'storage', 'app.sqlite'))
   })
 })
-

@@ -1,6 +1,7 @@
 import type { JSX } from 'react'
 import { useEffect, useMemo, useState } from 'react'
 import { Alert, Breadcrumb, Button, Space } from 'antd'
+import { ROLE_NAMES } from '@main/services/auth/constants'
 import { ReloadOutlined } from '@ant-design/icons'
 import { Navigate, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
@@ -17,20 +18,32 @@ import {
 import { UserListView } from '@renderer/pages/Dashboard/components/UserListView'
 import { UserTable } from '@renderer/pages/Dashboard/components/UserTable'
 import { useUserManagement } from '@renderer/pages/Dashboard/hooks/useUserManagement'
-import { useAppSelector } from '@renderer/store/hooks'
-import { selectCurrentUser } from '@renderer/store/slices/auth/selectors'
+import { useAppDispatch, useAppSelector } from '@renderer/store/hooks'
+import { selectCurrentUser, selectToken } from '@renderer/store/slices/auth/selectors'
+import { forceLogout } from '@renderer/store/slices/auth'
+import { handleResponse, isSessionExpiredError } from '@renderer/store/slices/auth/helpers'
 
 const USER_CARD_PAGE_SIZE = 8
 const USER_LIST_PAGE_SIZE = 12
 
-const UserManagementPage = (): JSX.Element => {
+const UserManagementPage = (): JSX.Element | null => {
   const { t } = useTranslation('dashboard')
   const navigate = useNavigate()
   const currentUser = useAppSelector(selectCurrentUser)
-
-  if (!currentUser.roles.includes('Admin')) {
-    return <Navigate to="/" replace />
-  }
+  const dispatch = useAppDispatch()
+  const token = useAppSelector(selectToken)
+  const management = useUserManagement()
+  const [roleOptions, setRoleOptions] = useState<string[]>(ROLE_NAMES.slice())
+  const [userFilters, setUserFilters] = useState<UserFiltersValue>({
+    search: '',
+    role: 'all',
+    status: 'all'
+  })
+  const [userViewMode, setUserViewMode] = useState<'table' | 'list' | 'cards'>('table')
+  const [userTablePage, setUserTablePage] = useState(1)
+  const [userTablePageSize, setUserTablePageSize] = useState(10)
+  const [userCardPage, setUserCardPage] = useState(1)
+  const [userListPage, setUserListPage] = useState(1)
 
   const {
     users,
@@ -53,26 +66,44 @@ const UserManagementPage = (): JSX.Element => {
     clearError,
     isAdmin,
     removeUser
-  } = useUserManagement()
-
-  const [userFilters, setUserFilters] = useState<UserFiltersValue>({
-    search: '',
-    role: 'all',
-    status: 'all'
-  })
-  const [userViewMode, setUserViewMode] = useState<'table' | 'list' | 'cards'>('table')
-  const [userTablePage, setUserTablePage] = useState(1)
-  const [userTablePageSize, setUserTablePageSize] = useState(10)
-  const [userCardPage, setUserCardPage] = useState(1)
-  const [userListPage, setUserListPage] = useState(1)
+  } = management
 
   const availableRoles = useMemo(() => {
-    const set = new Set<string>()
+    const set = new Set<string>(roleOptions)
     users.forEach((user) => {
       user.roles.forEach((role) => set.add(role))
     })
     return Array.from(set).sort((a, b) => a.localeCompare(b))
-  }, [users])
+  }, [roleOptions, users])
+
+  useEffect(() => {
+    if (!isAdmin || !token) {
+      setRoleOptions(ROLE_NAMES.slice())
+      return
+    }
+    let cancelled = false
+    const loadRoles = async () => {
+      try {
+        const roleList = await handleResponse(window.api.role.list(token))
+        if (!cancelled) {
+          const names = Array.from(new Set(roleList.map((role) => role.name))).sort((a, b) =>
+            a.localeCompare(b)
+          )
+          setRoleOptions(names)
+        }
+      } catch (err) {
+        if (isSessionExpiredError(err)) {
+          dispatch(forceLogout())
+          return
+        }
+        console.warn('Failed to load roles', err)
+      }
+    }
+    void loadRoles()
+    return () => {
+      cancelled = true
+    }
+  }, [dispatch, isAdmin, token])
 
   const filteredUsers = useMemo(() => {
     const needle = userFilters.search.trim().toLowerCase()
@@ -155,10 +186,23 @@ const UserManagementPage = (): JSX.Element => {
     }
   ])
 
+  if (!currentUser) {
+    return null
+  }
+
+  if (!isAdmin) {
+    return <Navigate to="/" replace />
+  }
+
   return (
     <>
       <ShellHeaderPortal>
-        <Space align="center" size={12} wrap style={{ width: '100%', justifyContent: 'space-between' }}>
+        <Space
+          align="center"
+          size={12}
+          wrap
+          style={{ width: '100%', justifyContent: 'space-between' }}
+        >
           <Button
             icon={<ReloadOutlined />}
             onClick={refreshUsers}
@@ -242,6 +286,7 @@ const UserManagementPage = (): JSX.Element => {
           onCancel={closeCreateModal}
           onSubmit={submitCreate}
           form={createForm}
+          roleOptions={availableRoles}
         />
         <EditUserModal
           user={editingUser}
@@ -249,6 +294,7 @@ const UserManagementPage = (): JSX.Element => {
           onCancel={closeEditModal}
           onSubmit={submitUpdate}
           form={updateForm}
+          roleOptions={availableRoles}
         />
       </Space>
     </>

@@ -29,10 +29,11 @@ export class DevelopmentSeeder {
   private readonly userSeeder: UserSeeder
   private readonly projectSeeder: ProjectSeeder
 
-  constructor(private readonly sequelize: Sequelize, options: DevelopmentSeederOptions = {}) {
-    const fakerSeed =
-      options.fakerSeed ??
-      randomInt(1, 2 ** 31) // faker expects a positive 32-bit integer
+  constructor(
+    private readonly sequelize: Sequelize,
+    options: DevelopmentSeederOptions = {}
+  ) {
+    const fakerSeed = options.fakerSeed ?? randomInt(1, 2 ** 31) // faker expects a positive 32-bit integer
     const passwordSeed = options.passwordSeed ?? DEFAULT_PASSWORD_SEED
 
     this.options = {

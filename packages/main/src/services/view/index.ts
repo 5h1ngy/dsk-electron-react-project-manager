@@ -25,9 +25,7 @@ const DEFAULT_COLUMNS = Array.from(VIEW_COLUMN_VALUES)
 const mapView = (view: View): SavedViewDTO => {
   const filters = viewFilterSchema.parse(view.queryState)
   const sort = view.sortState ? viewSortSchema.parse(view.sortState) : null
-  const columns = view.columnsState
-    ? viewColumnsSchema.parse(view.columnsState)
-    : DEFAULT_COLUMNS
+  const columns = view.columnsState ? viewColumnsSchema.parse(view.columnsState) : DEFAULT_COLUMNS
 
   const createdAt =
     view.createdAt instanceof Date
@@ -236,4 +234,3 @@ export class ViewService {
     }
   }
 }
-

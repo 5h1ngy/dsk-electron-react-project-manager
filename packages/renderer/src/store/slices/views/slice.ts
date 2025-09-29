@@ -1,17 +1,9 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
 
-import {
-  fetchViews,
-  createView,
-  updateView,
-  deleteView
-} from '@renderer/store/slices/views/thunks'
+import { fetchViews, createView, updateView, deleteView } from '@renderer/store/slices/views/thunks'
 import type { ViewsState, ProjectViewsState } from '@renderer/store/slices/views/types'
 
-const ensureProjectState = (
-  state: ViewsState,
-  projectId: string
-): ProjectViewsState => {
+const ensureProjectState = (state: ViewsState, projectId: string): ProjectViewsState => {
   if (!state.byProjectId[projectId]) {
     state.byProjectId[projectId] = {
       items: [],
@@ -40,10 +32,7 @@ const viewsSlice = createSlice({
       const project = ensureProjectState(state, action.payload.projectId)
       project.selectedId = action.payload.viewId
     },
-    clearViewsError: (
-      state,
-      action: PayloadAction<{ projectId?: string } | undefined>
-    ) => {
+    clearViewsError: (state, action: PayloadAction<{ projectId?: string } | undefined>) => {
       if (action?.payload?.projectId) {
         const project = state.byProjectId[action.payload.projectId]
         if (project) {
@@ -98,9 +87,7 @@ const viewsSlice = createSlice({
       .addCase(updateView.fulfilled, (state, action) => {
         const updated = action.payload
         const project = ensureProjectState(state, updated.projectId)
-        project.items = project.items.map((view) =>
-          view.id === updated.id ? updated : view
-        )
+        project.items = project.items.map((view) => (view.id === updated.id ? updated : view))
         state.mutationStatus = 'succeeded'
       })
       .addCase(updateView.rejected, (state, action) => {
@@ -129,4 +116,3 @@ const viewsSlice = createSlice({
 
 export const { selectSavedView, clearViewsError } = viewsSlice.actions
 export const viewsReducer = viewsSlice.reducer
-

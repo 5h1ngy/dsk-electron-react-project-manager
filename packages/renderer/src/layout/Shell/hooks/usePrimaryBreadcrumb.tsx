@@ -13,27 +13,25 @@ export const usePrimaryBreadcrumb = (items: BreadcrumbProps['items']): Breadcrum
     const [first, ...rest] = items
     const title = first?.title
 
-    const enhancedTitle = isValidElement(title)
-      ? (
-          <span
-            style={{
-              fontSize: token.fontSizeLG,
-              fontWeight: token.fontWeightStrong,
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: token.marginXXS
-            }}
-          >
-            {title}
-          </span>
-        )
-      : typeof title === 'string'
-        ? (
-            <Typography.Text strong style={{ fontSize: token.fontSizeLG }}>
-              {title}
-            </Typography.Text>
-          )
-        : title
+    const enhancedTitle = isValidElement(title) ? (
+      <span
+        style={{
+          fontSize: token.fontSizeLG,
+          fontWeight: token.fontWeightStrong,
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: token.marginXXS
+        }}
+      >
+        {title}
+      </span>
+    ) : typeof title === 'string' ? (
+      <Typography.Text strong style={{ fontSize: token.fontSizeLG }}>
+        {title}
+      </Typography.Text>
+    ) : (
+      title
+    )
 
     return [{ ...first, title: enhancedTitle }, ...rest]
   }, [items, token.fontSizeLG, token.fontWeightStrong, token.marginXXS])

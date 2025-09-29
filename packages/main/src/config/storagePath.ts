@@ -4,10 +4,7 @@ import { homedir } from 'node:os'
 import packageJson from '../../../../package.json'
 import { logger } from '@main/config/logger'
 
-import type {
-  StoragePathOptions,
-  StoragePathResolverOptions
-} from '@main/config/storagePath.types'
+import type { StoragePathOptions, StoragePathResolverOptions } from '@main/config/storagePath.types'
 
 interface PackageMetadata {
   name?: string
@@ -54,14 +51,14 @@ export class StoragePathResolver {
     const home = this.homeDirectoryProvider()
     switch (this.platform) {
       case 'win32':
-        return join(this.environment.APPDATA ?? join(home, 'AppData', 'Roaming'), this.appIdentifier)
+        return join(
+          this.environment.APPDATA ?? join(home, 'AppData', 'Roaming'),
+          this.appIdentifier
+        )
       case 'darwin':
         return join(home, 'Library', 'Application Support', this.appIdentifier)
       default:
-        return join(
-          this.environment.XDG_CONFIG_HOME ?? join(home, '.config'),
-          this.appIdentifier
-        )
+        return join(this.environment.XDG_CONFIG_HOME ?? join(home, '.config'), this.appIdentifier)
     }
   }
 

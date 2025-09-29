@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ipcRenderer } from 'electron'
 import { taskApi } from '@preload/api/task'
 

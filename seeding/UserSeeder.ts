@@ -26,10 +26,9 @@ export class UserSeeder {
 
     const hashed = await hashPassword(this.passwordSeed)
     const lastLoginAt =
-      this.random.helpers.maybe(
-        () => this.random.date.recent({ days: 120 }),
-        { probability: 0.7 }
-      ) ?? null
+      this.random.helpers.maybe(() => this.random.date.recent({ days: 120 }), {
+        probability: 0.7
+      }) ?? null
 
     const user = await User.create(
       {

@@ -8,11 +8,7 @@ import {
 } from '@renderer/store/slices/auth/helpers'
 import { forceLogout } from '@renderer/store/slices/auth/slice'
 import type { RootState } from '@renderer/store/types'
-import type {
-  NoteDetails,
-  NoteSummary,
-  NoteSearchResult
-} from '@renderer/store/slices/notes/types'
+import type { NoteDetails, NoteSummary, NoteSearchResult } from '@renderer/store/slices/notes/types'
 import type { ListNotesInput, SearchNotesInput } from '@main/services/note/schemas'
 
 const ensureToken = (state: RootState): string | null => state.auth.token
@@ -114,7 +110,17 @@ export const createNote = createAsyncThunk<
 
 export const updateNote = createAsyncThunk<
   NoteDetails,
-  { noteId: string; input: { title?: string; body?: string; isPrivate?: boolean; tags?: string[]; notebook?: string | null; linkedTaskIds?: string[] } },
+  {
+    noteId: string
+    input: {
+      title?: string
+      body?: string
+      isPrivate?: boolean
+      tags?: string[]
+      notebook?: string | null
+      linkedTaskIds?: string[]
+    }
+  },
   { state: RootState; rejectValue: string }
 >('notes/update', async ({ noteId, input }, { getState, dispatch, rejectWithValue }) => {
   const token = ensureToken(getState())
@@ -137,12 +143,13 @@ export const deleteNote = createAsyncThunk<
   { success: boolean },
   { projectId: string; noteId: string },
   { state: RootState; rejectValue: string }
->('notes/delete', async ({ projectId: _projectId, noteId }, { getState, dispatch, rejectWithValue }) => {
+>('notes/delete', async ({ projectId, noteId }, { getState, dispatch, rejectWithValue }) => {
   const token = ensureToken(getState())
   if (!token) {
     return rejectWithValue('Sessione non valida')
   }
   try {
+    void projectId
     await handleResponse(window.api.note.remove(token, noteId))
     return { success: true }
   } catch (error) {

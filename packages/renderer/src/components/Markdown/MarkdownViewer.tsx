@@ -26,14 +26,15 @@ export const MarkdownViewer = ({ value, emptyFallback }: MarkdownViewerProps) =>
   return (
     <Card
       size="small"
-      bordered
       style={{
         background: token.colorBgContainer,
         borderColor: token.colorBorder,
         boxShadow: 'none'
       }}
-      bodyStyle={{
-        padding: token.paddingLG
+      styles={{
+        body: {
+          padding: token.paddingLG
+        }
       }}
     >
       <ReactMarkdown

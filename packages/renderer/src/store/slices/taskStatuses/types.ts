@@ -14,4 +14,3 @@ export interface TaskStatusesState {
   mutationStatus: LoadStatus
   error?: string
 }
-

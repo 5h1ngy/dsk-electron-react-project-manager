@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ipcRenderer } from 'electron'
 import { taskStatusApi } from '@preload/api/taskStatus'
 
@@ -30,8 +31,8 @@ describe('taskStatus preload api', () => {
 
   it('throws on invalid response payload', async () => {
     invokeMock.mockResolvedValue({ wrong: true })
-    await expect(
-      taskStatusApi.list('token', { projectId: 'proj-1' } as any)
-    ).rejects.toThrow('ERR_INVALID_IPC_RESPONSE:taskStatus:list')
+    await expect(taskStatusApi.list('token', { projectId: 'proj-1' } as any)).rejects.toThrow(
+      'ERR_INVALID_IPC_RESPONSE:taskStatus:list'
+    )
   })
 })

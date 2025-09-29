@@ -6,6 +6,8 @@ import type { JSX } from 'react'
 import { useSiderStyles } from './Sider.style'
 import type { SiderProps } from './Sider.types'
 
+type MenuItemType = Required<MenuProps>['items'][number]
+
 const { Sider: AntSider } = Layout
 
 const Sider = ({
@@ -66,12 +68,11 @@ const Sider = ({
         }
         const childItems =
           'children' in item && Array.isArray(item.children)
-            ? ((decorate(item.children) ?? []) as any)
+            ? (decorate(item.children) ?? [])
             : undefined
         const iconNode = 'icon' in item ? item.icon : null
         const labelNode = 'label' in item ? item.label : null
-        const ariaLabel =
-          typeof labelNode === 'string' ? labelNode : undefined
+        const ariaLabel = typeof labelNode === 'string' ? labelNode : undefined
 
         return {
           ...item,
@@ -106,8 +107,8 @@ const Sider = ({
               ) : null}
             </Flex>
           )
-        } as any
-      }) as MenuProps['items']
+        } as MenuItemType
+      }) as MenuItemType[]
     }
 
     return decorate(items)
@@ -206,4 +207,3 @@ Sider.displayName = 'Sider'
 
 export { Sider }
 export default Sider
-

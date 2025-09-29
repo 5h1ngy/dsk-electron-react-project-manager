@@ -11,10 +11,7 @@ import type {
   UpdateProjectInput,
   ProjectMemberRoleInput
 } from '@main/services/project/schemas'
-import type {
-  ProjectDetailsDTO,
-  ProjectSummaryDTO
-} from '@main/services/project/types'
+import type { ProjectDetailsDTO, ProjectSummaryDTO } from '@main/services/project/types'
 import type {
   CreateTaskInput,
   UpdateTaskInput,
@@ -37,17 +34,12 @@ import type {
   ListNotesInput,
   SearchNotesInput
 } from '@main/services/note/schemas'
-import type {
-  NoteDetailsDTO,
-  NoteSummaryDTO,
-  NoteSearchResultDTO
-} from '@main/services/note/types'
+import type { NoteDetailsDTO, NoteSummaryDTO, NoteSearchResultDTO } from '@main/services/note/types'
 import type { SavedViewDTO } from '@main/services/view/types'
-import type {
-  CreateViewInput,
-  UpdateViewInput,
-  ListViewsInput
-} from '@main/services/view/schemas'
+import type { CreateViewInput, UpdateViewInput, ListViewsInput } from '@main/services/view/schemas'
+import type { RoleSummary } from '@main/services/roles'
+import type { RolePermissionDefinition } from '@main/services/roles/constants'
+import type { CreateRoleInput, UpdateRoleInput } from '@main/services/roles/schemas'
 
 export interface IpcSuccess<T> {
   ok: true
@@ -129,14 +121,8 @@ export interface TaskApi {
 }
 
 export interface TaskStatusApi {
-  list: (
-    token: string,
-    payload: ListTaskStatusesInput
-  ) => Promise<IpcResponse<TaskStatusDTO[]>>
-  create: (
-    token: string,
-    payload: CreateTaskStatusInput
-  ) => Promise<IpcResponse<TaskStatusDTO>>
+  list: (token: string, payload: ListTaskStatusesInput) => Promise<IpcResponse<TaskStatusDTO[]>>
+  create: (token: string, payload: CreateTaskStatusInput) => Promise<IpcResponse<TaskStatusDTO>>
   update: (
     token: string,
     statusId: string,
@@ -162,10 +148,7 @@ export interface NoteApi {
     payload: UpdateNoteInput
   ) => Promise<IpcResponse<NoteDetailsDTO>>
   remove: (token: string, noteId: string) => Promise<IpcResponse<{ success: boolean }>>
-  search: (
-    token: string,
-    payload: SearchNotesInput
-  ) => Promise<IpcResponse<NoteSearchResultDTO[]>>
+  search: (token: string, payload: SearchNotesInput) => Promise<IpcResponse<NoteSearchResultDTO[]>>
 }
 
 export interface ViewApi {
@@ -179,6 +162,18 @@ export interface ViewApi {
   remove: (token: string, viewId: string) => Promise<IpcResponse<{ success: boolean }>>
 }
 
+export interface RoleApi {
+  list: (token: string) => Promise<IpcResponse<RoleSummary[]>>
+  permissions: (token: string) => Promise<IpcResponse<RolePermissionDefinition[]>>
+  create: (token: string, payload: CreateRoleInput) => Promise<IpcResponse<RoleSummary>>
+  update: (
+    token: string,
+    roleId: string,
+    payload: UpdateRoleInput
+  ) => Promise<IpcResponse<RoleSummary>>
+  remove: (token: string, roleId: string) => Promise<IpcResponse<{ success: boolean }>>
+}
+
 export interface PreloadApi {
   health: HealthApi
   auth: AuthApi
@@ -187,4 +182,5 @@ export interface PreloadApi {
   taskStatus: TaskStatusApi
   note: NoteApi
   view: ViewApi
+  role: RoleApi
 }

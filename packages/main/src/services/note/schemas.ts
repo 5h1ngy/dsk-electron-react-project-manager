@@ -18,11 +18,7 @@ export const notebookSchema = z
   .min(1, 'Notebook name is required')
   .max(80, 'Notebook name too long')
 
-export const noteTagSchema = z
-  .string()
-  .trim()
-  .min(1, 'Tag cannot be empty')
-  .max(40, 'Tag too long')
+export const noteTagSchema = z.string().trim().min(1, 'Tag cannot be empty').max(40, 'Tag too long')
 
 export const noteBodySchema = z
   .string()
@@ -61,11 +57,7 @@ export const listNotesSchema = z.object({
 export const noteIdSchema = identifierSchema
 
 export const searchNotesSchema = z.object({
-  query: z
-    .string()
-    .trim()
-    .min(1, 'Query is required')
-    .max(120, 'Query is too long'),
+  query: z.string().trim().min(1, 'Query is required').max(120, 'Query is too long'),
   projectId: identifierSchema.optional()
 })
 

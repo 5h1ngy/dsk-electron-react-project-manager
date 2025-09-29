@@ -52,9 +52,7 @@ describe('TaskSavedViewsControls', () => {
     await user.click(screen.getByText(baseView.name))
     expect(onSelect).toHaveBeenCalledWith(baseView.id)
 
-    await user.click(
-      screen.getByRole('button', { name: /tasks\.savedViews\.saveButton/ })
-    )
+    await user.click(screen.getByRole('button', { name: /tasks\.savedViews\.saveButton/ }))
     expect(onCreate).toHaveBeenCalled()
 
     rerender(
@@ -69,9 +67,7 @@ describe('TaskSavedViewsControls', () => {
       />
     )
 
-    await user.click(
-      screen.getByRole('button', { name: /tasks\.savedViews\.deleteButton/ })
-    )
+    await user.click(screen.getByRole('button', { name: /tasks\.savedViews\.deleteButton/ }))
     expect(onDelete).toHaveBeenCalledWith(baseView.id)
   })
 })

@@ -391,8 +391,8 @@
       "delete": "Supprimer",
       "panelTitle": "Actions",
       "openFilters": "Filtres",
-    "resetFilters": "Rinitialiser les filtres",
-    "closeFilters": "Fermer"
+      "resetFilters": "Rinitialiser les filtres",
+      "closeFilters": "Fermer"
     },
     "view": {
       "list": "Vue liste",
@@ -467,7 +467,7 @@
   },
   "views": {
     "placeholder": "Vues enregistrées",
-      "panelTitle": "Vues enregistrées",
+    "panelTitle": "Vues enregistrées",
     "saveButton": "Enregistrer la vue",
     "deleteButton": "Supprimer",
     "saveSuccess": "Vue enregistrée",

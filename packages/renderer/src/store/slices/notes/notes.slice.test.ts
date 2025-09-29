@@ -7,11 +7,7 @@ import {
   searchNotes,
   updateNote
 } from '@renderer/store/slices/notes/thunks'
-import type {
-  NoteDetails,
-  NoteSummary,
-  NoteSearchResult
-} from '@renderer/store/slices/notes/types'
+import type { NoteDetails, NoteSummary, NoteSearchResult } from '@renderer/store/slices/notes/types'
 
 describe('notes slice', () => {
   const now = new Date()
@@ -109,9 +105,7 @@ describe('notes slice', () => {
       })
     )
 
-    expect(state.byProjectId[updated.projectId]?.entities[updated.id]?.title).toContain(
-      '(updated)'
-    )
+    expect(state.byProjectId[updated.projectId]?.entities[updated.id]?.title).toContain('(updated)')
     expect(state.detailsById[updated.id]?.data?.title).toContain('(updated)')
   })
 

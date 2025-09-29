@@ -1,13 +1,4 @@
-import {
-  Button,
-  Card,
-  Pagination,
-  Popconfirm,
-  Space,
-  Tag,
-  Typography,
-  theme
-} from 'antd'
+import { Button, Card, Pagination, Popconfirm, Space, Tag, Typography, theme } from 'antd'
 import { useSemanticBadges, buildBadgeStyle } from '@renderer/theme/hooks/useSemanticBadges'
 import {
   DeleteOutlined,
@@ -22,7 +13,6 @@ import { useTranslation } from 'react-i18next'
 import { EmptyState, LoadingSkeleton } from '@renderer/components/DataStates'
 import { useDelayedLoading } from '@renderer/hooks/useDelayedLoading'
 import type { UserDTO } from '@main/services/auth'
-import type { RoleName } from '@main/services/auth/constants'
 
 const GRID_STYLE = {
   display: 'grid',
@@ -92,7 +82,7 @@ export const UserCardsGrid = ({
             key={user.id}
             hoverable
             style={CARD_STYLE}
-            bodyStyle={CARD_BODY_STYLE}
+            styles={{ body: CARD_BODY_STYLE }}
             extra={
               <Space size={4}>
                 <Button
@@ -132,7 +122,7 @@ export const UserCardsGrid = ({
                 @{user.username}
               </Typography.Text>
               <Space size={6} wrap>
-                {user.roles.map((role: RoleName) => {
+                {user.roles.map((role) => {
                   const badge = badgeTokens.userRole[role] ?? badgeTokens.userRole.Viewer
                   return (
                     <Tag key={role} bordered={false} style={buildBadgeStyle(badge)}>

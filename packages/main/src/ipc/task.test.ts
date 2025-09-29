@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { AuthService } from '@main/services/auth'
 import type { TaskService } from '@main/services/task'
 import type { CommentDTO, TaskDetailsDTO } from '@main/services/task/types'
@@ -51,12 +52,11 @@ const createTaskDetails = (overrides: Partial<TaskDetailsDTO> = {}): TaskDetails
 const createCommentDto = (overrides: Partial<CommentDTO> = {}): CommentDTO => ({
   id: overrides.id ?? 'comment-1',
   taskId: overrides.taskId ?? 'task-1',
-  author:
-    overrides.author ?? {
-      id: 'user-3',
-      username: 'alex.roe',
-      displayName: 'Alex Roe'
-    },
+  author: overrides.author ?? {
+    id: 'user-3',
+    username: 'alex.roe',
+    displayName: 'Alex Roe'
+  },
   body: overrides.body ?? 'Progress update shared with the stakeholders.',
   createdAt: overrides.createdAt ?? new Date('2024-02-03T12:30:00.000Z'),
   updatedAt: overrides.updatedAt ?? new Date('2024-02-03T12:30:00.000Z')

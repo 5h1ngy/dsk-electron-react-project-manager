@@ -10,16 +10,16 @@ import { resolvePalette } from '@renderer/theme/foundations/palette'
 import { resolveAccentForeground } from '@renderer/theme/foundations/brand'
 
 export const ThemeControls = ({ className }: ThemeControlsProps = {}): JSX.Element => {
-  const { accentOptions, dropdownProps, mode, onAccentSelect, onToggleMode, t } =
-    useThemeControls()
+  const { accentOptions, dropdownProps, mode, onAccentSelect, onToggleMode, t } = useThemeControls()
   const { token } = theme.useToken()
   const { spacing } = useThemeTokens()
   const palette = useMemo(() => resolvePalette(mode), [mode])
 
-  const panelWidth = useMemo(
-    () => token.controlHeightLG * 5,
-    [token.controlHeightLG]
-  )
+  const controlHeightLG =
+    typeof token.controlHeightLG === 'number' && Number.isFinite(token.controlHeightLG)
+      ? token.controlHeightLG
+      : 40
+  const panelWidth = useMemo(() => controlHeightLG * 5, [controlHeightLG])
   const sectionGap = spacing.md
   const accentGap = spacing.sm
 
@@ -30,7 +30,7 @@ export const ThemeControls = ({ className }: ThemeControlsProps = {}): JSX.Eleme
         variant="outlined"
         style={{ width: panelWidth, boxShadow: token.boxShadow }}
         onClick={(event) => event.stopPropagation()}
-        bodyStyle={{ padding: token.paddingLG }}
+        styles={{ body: { padding: token.paddingLG } }}
       >
         <Flex vertical gap={sectionGap}>
           <Flex align="center" justify="space-between">
@@ -80,6 +80,7 @@ export const ThemeControls = ({ className }: ThemeControlsProps = {}): JSX.Eleme
     panelWidth,
     accentGap,
     sectionGap,
+    spacing.sm,
     t,
     token.boxShadow,
     token.boxShadowSecondary,

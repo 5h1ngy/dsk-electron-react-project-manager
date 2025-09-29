@@ -84,8 +84,8 @@ export const ProjectSummaryList = ({
               project.role === 'admin' && (onEdit || onDelete)
                 ? [
                     <Button
-                      key='edit'
-                      type='text'
+                      key="edit"
+                      type="text"
                       icon={<EditOutlined />}
                       onClick={(event) => {
                         event.stopPropagation()
@@ -95,7 +95,7 @@ export const ProjectSummaryList = ({
                       {t('actions.edit')}
                     </Button>,
                     <Popconfirm
-                      key='delete'
+                      key="delete"
                       title={t('actions.deleteTitle')}
                       description={t('actions.deleteDescription', { name: project.name })}
                       okText={t('actions.deleteConfirm')}
@@ -104,7 +104,7 @@ export const ProjectSummaryList = ({
                       onConfirm={() => onDelete?.(project)}
                     >
                       <Button
-                        type='text'
+                        type="text"
                         danger
                         icon={<DeleteOutlined />}
                         onClick={(event) => event.stopPropagation()}
@@ -118,7 +118,7 @@ export const ProjectSummaryList = ({
           >
             <List.Item.Meta
               title={
-                <Space align='center' size={token.marginSM} wrap>
+                <Space align="center" size={token.marginSM} wrap>
                   <Typography.Text strong>{project.name}</Typography.Text>
                   <Tag bordered={false} style={buildBadgeStyle(badgeTokens.projectKey)}>
                     {project.key}
@@ -127,9 +127,9 @@ export const ProjectSummaryList = ({
                 </Space>
               }
               description={
-                <Space direction='vertical' size={token.marginXS} style={{ width: '100%' }}>
+                <Space direction="vertical" size={token.marginXS} style={{ width: '100%' }}>
                   {project.description ? (
-                    <Typography.Paragraph type='secondary' style={{ marginBottom: 0 }}>
+                    <Typography.Paragraph type="secondary" style={{ marginBottom: 0 }}>
                       {project.description}
                     </Typography.Paragraph>
                   ) : null}
@@ -137,13 +137,13 @@ export const ProjectSummaryList = ({
                     {tags.length > 0 ? (
                       tags
                     ) : (
-                      <Typography.Text type='secondary'>{t('list.noTags')}</Typography.Text>
+                      <Typography.Text type="secondary">{t('list.noTags')}</Typography.Text>
                     )}
                   </Space>
-                  <Typography.Text type='secondary'>
+                  <Typography.Text type="secondary">
                     {t('list.createdOn', { date: formatDate(project.createdAt, i18n.language) })}
                   </Typography.Text>
-                  <Typography.Text type='secondary'>
+                  <Typography.Text type="secondary">
                     {t('list.memberCount', { count: project.memberCount })}
                   </Typography.Text>
                 </Space>
@@ -167,4 +167,3 @@ export const ProjectSummaryList = ({
 ProjectSummaryList.displayName = 'ProjectSummaryList'
 
 export default ProjectSummaryList
-

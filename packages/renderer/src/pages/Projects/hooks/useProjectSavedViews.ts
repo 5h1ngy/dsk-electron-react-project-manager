@@ -97,7 +97,9 @@ const createId = (): string => {
   return `view-${Math.random().toString(36).slice(2, 10)}`
 }
 
-export const useProjectSavedViews = (userId: string | null | undefined): UseProjectSavedViewsResult => {
+export const useProjectSavedViews = (
+  userId: string | null | undefined
+): UseProjectSavedViewsResult => {
   const storageKey = useMemo(() => buildStorageKey(userId), [userId])
   const [views, setViews] = useState<ProjectSavedView[]>(() => readViews(storageKey))
   const [selectedId, setSelectedId] = useState<string | null>(() => readSelectedId(storageKey))
@@ -111,24 +113,21 @@ export const useProjectSavedViews = (userId: string | null | undefined): UseProj
     persist(storageKey, views, selectedId)
   }, [storageKey, views, selectedId])
 
-  const saveView = useCallback(
-    (name: string, filters: ProjectViewFilters) => {
-      const trimmedName = name.trim()
-      const newView: ProjectSavedView = {
-        id: createId(),
-        name: trimmedName.length > 0 ? trimmedName : new Date().toLocaleString(),
-        filters,
-        createdAt: new Date().toISOString()
-      }
-      setViews((current) => {
-        const withoutDuplicate = current.filter((view) => view.name !== newView.name)
-        return [...withoutDuplicate, newView]
-      })
-      setSelectedId(newView.id)
-      return newView
-    },
-    []
-  )
+  const saveView = useCallback((name: string, filters: ProjectViewFilters) => {
+    const trimmedName = name.trim()
+    const newView: ProjectSavedView = {
+      id: createId(),
+      name: trimmedName.length > 0 ? trimmedName : new Date().toLocaleString(),
+      filters,
+      createdAt: new Date().toISOString()
+    }
+    setViews((current) => {
+      const withoutDuplicate = current.filter((view) => view.name !== newView.name)
+      return [...withoutDuplicate, newView]
+    })
+    setSelectedId(newView.id)
+    return newView
+  }, [])
 
   const deleteView = useCallback((id: string) => {
     setViews((current) => current.filter((view) => view.id !== id))
@@ -139,10 +138,7 @@ export const useProjectSavedViews = (userId: string | null | undefined): UseProj
     setSelectedId(id)
   }, [])
 
-  const getViewById = useCallback(
-    (id: string) => views.find((view) => view.id === id),
-    [views]
-  )
+  const getViewById = useCallback((id: string) => views.find((view) => view.id === id), [views])
 
   return {
     views,
@@ -155,4 +151,3 @@ export const useProjectSavedViews = (userId: string | null | undefined): UseProj
 }
 
 export default useProjectSavedViews
-

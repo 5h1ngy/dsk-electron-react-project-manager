@@ -144,5 +144,3 @@ export const buildBadgeStyle = (spec: BadgeSpec) => ({
   borderColor: spec.border ?? 'transparent',
   fontWeight: 600
 })
-
-

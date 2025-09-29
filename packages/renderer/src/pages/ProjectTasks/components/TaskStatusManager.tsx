@@ -124,9 +124,7 @@ const TaskStatusManager = ({
       if (!label) {
         return
       }
-      await dispatch(
-        updateTaskStatus({ statusId: editingStatus.id, payload: { label } })
-      ).unwrap()
+      await dispatch(updateTaskStatus({ statusId: editingStatus.id, payload: { label } })).unwrap()
       message.success(t('tasks.statusManager.messages.updated'))
       setEditOpen(false)
       setEditingStatus(null)
@@ -211,11 +209,7 @@ const TaskStatusManager = ({
 
   return (
     <>
-      <Button
-        icon={<SettingOutlined />}
-        onClick={handleOpenManager}
-        disabled={disabled}
-      >
+      <Button icon={<SettingOutlined />} onClick={handleOpenManager} disabled={disabled}>
         {t('tasks.statusManager.manageButton')}
       </Button>
       <Modal
@@ -224,15 +218,10 @@ const TaskStatusManager = ({
         onCancel={handleCloseManager}
         footer={null}
         width={520}
-        destroyOnClose
+        destroyOnHidden
       >
         <Space direction="vertical" size="middle" style={{ width: '100%' }}>
-          <Button
-            type="dashed"
-            icon={<PlusOutlined />}
-            onClick={openCreateModal}
-            disabled={isBusy}
-          >
+          <Button type="dashed" icon={<PlusOutlined />} onClick={openCreateModal} disabled={isBusy}>
             {t('tasks.statusManager.add')}
           </Button>
           <List
@@ -284,9 +273,7 @@ const TaskStatusManager = ({
               >
                 <List.Item.Meta
                   title={status.label}
-                  description={
-                    <Typography.Text type="secondary">{status.key}</Typography.Text>
-                  }
+                  description={<Typography.Text type="secondary">{status.key}</Typography.Text>}
                 />
               </List.Item>
             )}
@@ -302,7 +289,7 @@ const TaskStatusManager = ({
         }}
         onOk={handleCreate}
         confirmLoading={isBusy}
-        destroyOnClose
+        destroyOnHidden
       >
         <Form form={form} layout="vertical">
           <Form.Item
@@ -333,7 +320,7 @@ const TaskStatusManager = ({
         }}
         onOk={handleEdit}
         confirmLoading={isBusy}
-        destroyOnClose
+        destroyOnHidden
       >
         <Form form={form} layout="vertical">
           <Form.Item
@@ -364,7 +351,7 @@ const TaskStatusManager = ({
         }}
         onOk={handleDelete}
         confirmLoading={isBusy}
-        destroyOnClose
+        destroyOnHidden
       >
         <Typography.Paragraph>
           {t('tasks.statusManager.deletePrompt', {
@@ -394,4 +381,3 @@ TaskStatusManager.displayName = 'TaskStatusManager'
 
 export { TaskStatusManager }
 export default TaskStatusManager
-

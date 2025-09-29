@@ -132,7 +132,10 @@ export class TaskStatusService {
 
     try {
       return await this.withTransaction(async (transaction) => {
-        const status = await TaskStatus.findByPk(statusId, { transaction, lock: transaction.LOCK.UPDATE })
+        const status = await TaskStatus.findByPk(statusId, {
+          transaction,
+          lock: transaction.LOCK.UPDATE
+        })
         if (!status) {
           throw new AppError('ERR_NOT_FOUND', 'Stato non trovato')
         }
@@ -195,9 +198,7 @@ export class TaskStatusService {
           order: input.order
         })
 
-        const ordered = statuses
-          .sort((a, b) => a.position - b.position)
-          .map(mapTaskStatus)
+        const ordered = statuses.sort((a, b) => a.position - b.position).map(mapTaskStatus)
 
         return ordered
       })
@@ -327,4 +328,3 @@ export class TaskStatusService {
     return candidate
   }
 }
-

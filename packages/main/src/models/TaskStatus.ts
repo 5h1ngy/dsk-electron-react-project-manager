@@ -1,12 +1,4 @@
-import {
-  BelongsTo,
-  Column,
-  DataType,
-  ForeignKey,
-  Index,
-  Model,
-  Table
-} from 'sequelize-typescript'
+import { BelongsTo, Column, DataType, ForeignKey, Index, Model, Table } from 'sequelize-typescript'
 
 import { Project } from '@main/models/Project'
 
@@ -51,4 +43,3 @@ export class TaskStatus extends Model {
   @BelongsTo(() => Project)
   declare project?: Project
 }
-

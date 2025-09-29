@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { AuthService } from '@main/services/auth'
 import type { ViewService } from '@main/services/view'
 import type { SavedViewDTO } from '@main/services/view/types'
@@ -85,12 +86,9 @@ describe('ViewIpcRegistrar', () => {
     const createResponse = await handlers.get('view:create')!({}, 'token', createPayload)
     expect(createResponse).toEqual({ ok: true, data: dto })
 
-    const updateResponse = await handlers.get('view:update')!(
-      {},
-      'token',
-      dto.id,
-      { name: 'Updated' }
-    )
+    const updateResponse = await handlers.get('view:update')!({}, 'token', dto.id, {
+      name: 'Updated'
+    })
     expect(updateResponse).toEqual({
       ok: true,
       data: { ...dto, name: 'Updated' }

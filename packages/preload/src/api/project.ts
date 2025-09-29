@@ -14,8 +14,7 @@ const CHANNELS = {
 } as const
 
 export const projectApi = {
-  list: async (token: string) =>
-    await invokeIpc<ProjectSummaryDTO[]>(CHANNELS.list, token),
+  list: async (token: string) => await invokeIpc<ProjectSummaryDTO[]>(CHANNELS.list, token),
   get: async (token: string, projectId: string) =>
     await invokeIpc<ProjectDetailsDTO>(CHANNELS.get, token, projectId),
   create: async (token: string, payload: CreateProjectInput) =>

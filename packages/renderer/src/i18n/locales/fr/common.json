@@ -17,7 +17,13 @@
     "title": "DSK Project Manager",
     "welcome": "Bienvenue, {{name}}",
     "logout": "Se déconnecter",
-    "navigation": {"dashboard": "Tableau de bord", "projects": "Projets", "settings": "Paramètres"},
+    "navigation": {
+      "dashboard": "Tableau de bord",
+      "projects": "Projets",
+      "settings": "Paramètres",
+      "userManagement": "Gestion des utilisateurs",
+      "roleManagement": "Gestion des rôles"
+    },
     "collapseSidebar": "Réduire la navigation",
     "expandSidebar": "Développer la navigation",
     "searchPlaceholder": "Rechercher dans les fichiers et projets",
@@ -53,5 +59,3 @@
     }
   }
 }
-
-

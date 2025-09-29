@@ -1,16 +1,5 @@
 import { CalendarOutlined, DeleteOutlined, EditOutlined, TeamOutlined } from '@ant-design/icons'
-import {
-  Button,
-  Card,
-  Col,
-  Pagination,
-  Popconfirm,
-  Row,
-  Space,
-  Tag,
-  Typography,
-  theme
-} from 'antd'
+import { Button, Card, Col, Pagination, Popconfirm, Row, Space, Tag, Typography, theme } from 'antd'
 import { useMemo, type JSX } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -84,7 +73,7 @@ export const ProjectCardsGrid = ({
                 hoverable
                 onClick={() => onSelect(project.id)}
                 style={{ height: '100%' }}
-                bodyStyle={CARD_BODY_STYLE}
+                styles={{ body: CARD_BODY_STYLE }}
                 title={
                   <Space direction="vertical" size={4}>
                     <Typography.Text strong ellipsis>

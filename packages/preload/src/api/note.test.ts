@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ipcRenderer } from 'electron'
 import { noteApi } from '@preload/api/note'
 
@@ -30,8 +31,8 @@ describe('note preload api', () => {
 
   it('propaga errore per risposta non valida', async () => {
     invokeMock.mockResolvedValue({ wrong: true })
-    await expect(
-      noteApi.list('token', { projectId: 'proj-1' } as any)
-    ).rejects.toThrow('ERR_INVALID_IPC_RESPONSE:note:list')
+    await expect(noteApi.list('token', { projectId: 'proj-1' } as any)).rejects.toThrow(
+      'ERR_INVALID_IPC_RESPONSE:note:list'
+    )
   })
 })

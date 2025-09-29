@@ -19,12 +19,10 @@ const CHANNELS = {
 } as const
 
 export const authApi = {
-  login: async (payload: LoginInput) =>
-    await invokeIpc<SessionPayload>(CHANNELS.login, payload),
+  login: async (payload: LoginInput) => await invokeIpc<SessionPayload>(CHANNELS.login, payload),
   register: async (payload: RegisterUserInput) =>
     await invokeIpc<SessionPayload>(CHANNELS.register, payload),
-  logout: async (token: string) =>
-    await invokeIpc<{ success: boolean }>(CHANNELS.logout, token),
+  logout: async (token: string) => await invokeIpc<{ success: boolean }>(CHANNELS.logout, token),
   session: async (token: string) => await invokeIpc<UserDTO | null>(CHANNELS.session, token),
   listUsers: async (token: string) => await invokeIpc<UserDTO[]>(CHANNELS.listUsers, token),
   createUser: async (token: string, payload: CreateUserInput) =>

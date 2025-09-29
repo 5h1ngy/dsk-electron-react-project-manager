@@ -16,4 +16,3 @@ export const selectProjectTaskStatuses = (projectId: string) =>
 
 export const selectProjectTaskStatusesStatus = (projectId: string) =>
   createSelector(selectSlice, (state) => state.byProjectId[projectId]?.status ?? 'idle')
-

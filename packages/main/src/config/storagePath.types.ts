@@ -9,4 +9,3 @@ export interface StoragePathResolverOptions {
   environment?: NodeJS.ProcessEnv
   homeDirectoryProvider?: () => string
 }
-

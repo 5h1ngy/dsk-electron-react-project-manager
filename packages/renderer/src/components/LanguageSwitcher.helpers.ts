@@ -12,4 +12,3 @@ export const getLocaleFlag = (locale: SupportedLocale): string => FLAG_BY_LOCALE
 export const LANGUAGE_SELECT_STYLE = {
   minWidth: 72
 } as const
-

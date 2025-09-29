@@ -105,10 +105,7 @@ export const updateViewSchema = z
     sort: viewSortSchema.nullable().optional(),
     columns: viewColumnsSchema.optional()
   })
-  .refine(
-    (value) => Object.keys(value).length > 0,
-    'Specificare almeno un campo da aggiornare'
-  )
+  .refine((value) => Object.keys(value).length > 0, 'Specificare almeno un campo da aggiornare')
 
 export const viewIdSchema = z.object({
   viewId: z.string().uuid()

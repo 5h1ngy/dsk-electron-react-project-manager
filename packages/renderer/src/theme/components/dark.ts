@@ -70,7 +70,7 @@ export const buildDarkComponents = (
   Pagination: {
     itemBg: palette.surfaceElevated,
     itemActiveBg: brand.primary,
-itemInputBg: palette.surfaceContainer,
+    itemInputBg: palette.surfaceContainer,
     itemSize: shape.controlHeightSM
   },
   Segmented: {
@@ -112,5 +112,3 @@ itemInputBg: palette.surfaceContainer,
     colorTextDescription: palette.textSecondary
   }
 })
-
-

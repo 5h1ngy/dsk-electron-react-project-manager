@@ -1,7 +1,10 @@
 import { useCallback, useEffect, useState } from 'react'
 import type { HealthResponse } from '@main/ipc/health'
 
-import type { HealthState, UseHealthStatusResult } from '@renderer/components/HealthStatusCard.types'
+import type {
+  HealthState,
+  UseHealthStatusResult
+} from '@renderer/components/HealthStatusCard.types'
 
 export const useHealthStatus = (): UseHealthStatusResult => {
   const [state, setState] = useState<HealthState>({ loading: true })

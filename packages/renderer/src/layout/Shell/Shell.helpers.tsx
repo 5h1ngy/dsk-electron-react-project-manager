@@ -1,4 +1,10 @@
-import { AppstoreOutlined, DashboardOutlined, SettingOutlined, TeamOutlined } from '@ant-design/icons'
+import {
+  AppstoreOutlined,
+  DashboardOutlined,
+  SafetyCertificateOutlined,
+  SettingOutlined,
+  TeamOutlined
+} from '@ant-design/icons'
 import type { MenuProps } from 'antd'
 import type { TFunction } from 'i18next'
 import type { ReactNode } from 'react'
@@ -33,6 +39,12 @@ const USER_MANAGEMENT_NAVIGATION: NavigationDefinition = {
   icon: <TeamOutlined />
 }
 
+const ROLE_MANAGEMENT_NAVIGATION: NavigationDefinition = {
+  path: '/admin/roles',
+  labelKey: 'appShell.navigation.roleManagement',
+  icon: <SafetyCertificateOutlined />
+}
+
 interface NavigationOptions {
   includeUserManagement?: boolean
 }
@@ -40,7 +52,7 @@ interface NavigationOptions {
 const buildNavigationDefinitions = (options?: NavigationOptions): NavigationDefinition[] => {
   const items = [...BASE_NAVIGATION]
   if (options?.includeUserManagement) {
-    items.splice(1, 0, USER_MANAGEMENT_NAVIGATION)
+    items.splice(1, 0, USER_MANAGEMENT_NAVIGATION, ROLE_MANAGEMENT_NAVIGATION)
   }
   return items
 }

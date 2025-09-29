@@ -33,7 +33,11 @@ export interface ShellStyleResult {
   avatarForeground: string
 }
 
-export const useShellStyles = ({ menuTheme, collapsed, displayName }: UseShellStylesParams): ShellStyleResult => {
+export const useShellStyles = ({
+  menuTheme,
+  collapsed,
+  displayName
+}: UseShellStylesParams): ShellStyleResult => {
   const { token } = theme.useToken()
   const { spacing } = useThemeTokens()
 
@@ -120,7 +124,7 @@ export const useShellStyles = ({ menuTheme, collapsed, displayName }: UseShellSt
 
   const accountAvatarSizes = {
     collapsed: token.controlHeightSM,
-    expanded: Math.max(token.controlHeightSM, token.controlHeightMD)
+    expanded: Math.max(token.controlHeightSM, token.controlHeight)
   }
 
   const headerContainerStyle: CSSProperties = {

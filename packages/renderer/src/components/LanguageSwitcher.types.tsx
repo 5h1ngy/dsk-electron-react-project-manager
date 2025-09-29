@@ -21,4 +21,3 @@ export interface UseLanguageSwitcherResult {
   handleChange: (locale: SupportedLocale) => void
   defaultSize: SelectProps<SupportedLocale>['size']
 }
-

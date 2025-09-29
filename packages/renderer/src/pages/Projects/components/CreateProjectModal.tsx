@@ -68,7 +68,11 @@ export const CreateProjectModal = ({
             control={form.control}
             name="name"
             render={({ field }) => (
-              <Input {...field} value={field.value ?? ''} placeholder={t('form.fields.name.placeholder')} />
+              <Input
+                {...field}
+                value={field.value ?? ''}
+                placeholder={t('form.fields.name.placeholder')}
+              />
             )}
           />
         </Form.Item>

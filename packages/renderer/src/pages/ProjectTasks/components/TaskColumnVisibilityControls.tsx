@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import type { JSX } from 'react'
 import { Checkbox, Space, Typography } from 'antd'
 import { useTranslation } from 'react-i18next'

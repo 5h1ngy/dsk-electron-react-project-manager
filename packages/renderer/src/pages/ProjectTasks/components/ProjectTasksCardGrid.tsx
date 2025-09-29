@@ -5,18 +5,7 @@ import {
   MessageOutlined,
   UserOutlined
 } from '@ant-design/icons'
-import {
-  Button,
-  Card,
-  Col,
-  Pagination,
-  Popconfirm,
-  Row,
-  Space,
-  Tag,
-  Typography,
-  theme
-} from 'antd'
+import { Button, Card, Col, Pagination, Popconfirm, Row, Space, Tag, Typography, theme } from 'antd'
 import { useMemo, type JSX } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -92,7 +81,7 @@ export const ProjectTasksCardGrid = ({
               hoverable
               onClick={() => onSelect(task)}
               style={{ height: '100%' }}
-              bodyStyle={CARD_BODY_STYLE}
+              styles={{ body: CARD_BODY_STYLE }}
               title={
                 <Space direction="vertical" size={4}>
                   <Typography.Text type="secondary">{task.key}</Typography.Text>
@@ -138,7 +127,12 @@ export const ProjectTasksCardGrid = ({
             >
               <Space direction="vertical" size="small" style={{ width: '100%' }}>
                 <Space size={6} wrap>
-                  <Tag bordered={false} style={buildBadgeStyle(badgeTokens.status[task.status] ?? badgeTokens.statusFallback)}>
+                  <Tag
+                    bordered={false}
+                    style={buildBadgeStyle(
+                      badgeTokens.status[task.status] ?? badgeTokens.statusFallback
+                    )}
+                  >
                     {statusLabels[task.status] ?? t(`details.status.${task.status}`)}
                   </Tag>
                   <Tag
@@ -202,7 +196,3 @@ export const ProjectTasksCardGrid = ({
 ProjectTasksCardGrid.displayName = 'ProjectTasksCardGrid'
 
 export default ProjectTasksCardGrid
-
-
-
-

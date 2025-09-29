@@ -30,13 +30,7 @@ export const EmptyState = ({
     </Space>
   )
 
-  return (
-    <Empty
-      className={className}
-      image={Empty.PRESENTED_IMAGE_SIMPLE}
-      description={content}
-    />
-  )
+  return <Empty className={className} image={Empty.PRESENTED_IMAGE_SIMPLE} description={content} />
 }
 
 EmptyState.displayName = 'EmptyState'

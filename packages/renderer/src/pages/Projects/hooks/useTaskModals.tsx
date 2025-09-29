@@ -5,17 +5,9 @@ import { useForm, type UseFormReturn, type Resolver } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import { useAppDispatch } from '@renderer/store/hooks'
-import {
-  createTask,
-  updateTask,
-  deleteTask,
-  type TaskDetails
-} from '@renderer/store/slices/tasks'
+import { createTask, updateTask, deleteTask, type TaskDetails } from '@renderer/store/slices/tasks'
 import type { ProjectDetails } from '@renderer/store/slices/projects'
-import {
-  taskFormSchema,
-  type TaskFormValues
-} from '@renderer/pages/Projects/schemas/taskSchemas'
+import { taskFormSchema, type TaskFormValues } from '@renderer/pages/Projects/schemas/taskSchemas'
 import type { TaskStatusItem } from '@renderer/store/slices/taskStatuses'
 
 export interface TaskModalsState {
@@ -59,9 +51,10 @@ export const useTaskModals = ({
   const [messageApi, taskMessageContext] = message.useMessage()
 
   const [detailTaskId, setDetailTaskId] = useState<string | null>(null)
-  const [editorState, setEditorState] = useState<{ mode: 'create' | 'edit'; taskId?: string } | null>(
-    null
-  )
+  const [editorState, setEditorState] = useState<{
+    mode: 'create' | 'edit'
+    taskId?: string
+  } | null>(null)
   const [deletingTaskId, setDeletingTaskId] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
 
@@ -77,13 +70,10 @@ export const useTaskModals = ({
       })),
     [statuses]
   )
-  const defaultStatusKey = useMemo(
-    () => statusOptions[0]?.value ?? 'todo',
-    [statusOptions]
-  )
+  const defaultStatusKey = useMemo(() => statusOptions[0]?.value ?? 'todo', [statusOptions])
 
   const editorForm = useForm<TaskFormValues>({
-    resolver: (zodResolver(taskFormSchema) as unknown as Resolver<TaskFormValues>),
+    resolver: zodResolver(taskFormSchema) as unknown as Resolver<TaskFormValues>,
     mode: 'onChange',
     defaultValues: {
       title: '',
@@ -96,14 +86,14 @@ export const useTaskModals = ({
   })
 
   const detailTask = useMemo(
-    () => (detailTaskId ? tasks.find((task) => task.id === detailTaskId) ?? null : null),
+    () => (detailTaskId ? (tasks.find((task) => task.id === detailTaskId) ?? null) : null),
     [detailTaskId, tasks]
   )
 
   const editorTask = useMemo(
     () =>
       editorState?.mode === 'edit' && editorState.taskId
-        ? tasks.find((task) => task.id === editorState.taskId) ?? null
+        ? (tasks.find((task) => task.id === editorState.taskId) ?? null)
         : null,
     [editorState, tasks]
   )
@@ -297,4 +287,3 @@ export const useTaskModals = ({
     taskMessageContext
   }
 }
-

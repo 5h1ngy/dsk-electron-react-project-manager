@@ -19,7 +19,10 @@ export const buildPriorityOptions = (t: TFunction<'projects'>): SelectOption[] =
   { value: 'critical', label: t('details.priority.critical') }
 ]
 
-export const buildAssigneeOptions = (tasks: TaskDetails[], t: TFunction<'projects'>): SelectOption[] => {
+export const buildAssigneeOptions = (
+  tasks: TaskDetails[],
+  t: TFunction<'projects'>
+): SelectOption[] => {
   const entries = new Map<string, string>()
   tasks.forEach((task) => {
     if (task.assignee) {
@@ -41,8 +44,9 @@ export const filterTasks = (tasks: TaskDetails[], filters: TaskFilters): TaskDet
   return tasks.filter((task) => {
     const matchesSearch =
       needle.length === 0 ||
-      [task.key, task.title, task.description ?? '', task.assignee?.displayName ?? '']
-        .some((value) => value.toLowerCase().includes(needle))
+      [task.key, task.title, task.description ?? '', task.assignee?.displayName ?? ''].some(
+        (value) => value.toLowerCase().includes(needle)
+      )
 
     if (!matchesSearch) {
       return false
@@ -79,5 +83,3 @@ export const filterTasks = (tasks: TaskDetails[], filters: TaskFilters): TaskDet
     return matchesStatus && matchesPriority && matchesAssignee && matchesDueDate
   })
 }
-
-

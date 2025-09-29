@@ -1,0 +1,86 @@
+{
+  "actions": {
+    "create": "Créer un rôle",
+    "refresh": "Actualiser",
+    "edit": "Modifier",
+    "delete": "Supprimer"
+  },
+  "table": {
+    "name": "Nom",
+    "description": "Description",
+    "permissions": "Permissions",
+    "userCount": "Utilisateurs",
+    "type": "Type",
+    "systemRole": "Système",
+    "customRole": "Personnalisé",
+    "actions": "Actions",
+    "noDescription": "Aucune description"
+  },
+  "form": {
+    "name": "Nom",
+    "namePlaceholder": "Entrez le nom du rôle",
+    "description": "Description",
+    "descriptionPlaceholder": "Description facultative",
+    "permissions": "Permissions"
+  },
+  "validation": {
+    "nameRequired": "Le nom du rôle est obligatoire",
+    "nameLength": "Utilisez au maximum 64 caractères",
+    "permissionsRequired": "Sélectionnez au moins une permission"
+  },
+  "messages": {
+    "createSuccess": "Rôle créé avec succès",
+    "updateSuccess": "Rôle mis à jour avec succès",
+    "deleteSuccess": "Rôle « {{name}} » supprimé"
+  },
+  "errors": {
+    "title": "Impossible de charger les rôles",
+    "sessionExpired": "Votre session a expiré. Veuillez vous reconnecter."
+  },
+  "create": {
+    "title": "Nouveau rôle",
+    "confirm": "Créer le rôle",
+    "cancel": "Annuler"
+  },
+  "edit": {
+    "title": "Modifier {{name}}",
+    "confirm": "Enregistrer",
+    "cancel": "Annuler"
+  },
+  "emptyState": "Aucun rôle créé pour le moment",
+  "loadingState": "Chargement des rôles...",
+  "permissions": {
+    "manageUsers": {
+      "label": "Gérer les utilisateurs",
+      "description": "Créer, mettre à jour, désactiver et réinitialiser les comptes de l'espace de travail."
+    },
+    "manageRoles": {
+      "label": "Gérer les rôles",
+      "description": "Créer des rôles et configurer leurs permissions."
+    },
+    "manageProjects": {
+      "label": "Gérer les projets",
+      "description": "Créer, mettre à jour et archiver des projets."
+    },
+    "manageTasks": {
+      "label": "Gérer les tâches",
+      "description": "Créer, mettre à jour et supprimer des tâches et des commentaires."
+    },
+    "manageTaskStatuses": {
+      "label": "Gérer les statuts des tâches",
+      "description": "Configurer les colonnes du flux de travail et leur ordre."
+    },
+    "manageNotes": {
+      "label": "Gérer les notes",
+      "description": "Créer, mettre à jour et supprimer des notes et carnets."
+    },
+    "manageViews": {
+      "label": "Gérer les vues enregistrées",
+      "description": "Créer, mettre à jour et partager des ensembles de filtres enregistrés."
+    },
+    "viewAnalytics": {
+      "label": "Consulter les analyses",
+      "description": "Accéder aux tableaux de bord et aux rapports de l'espace de travail."
+    }
+  }
+}

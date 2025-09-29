@@ -17,7 +17,12 @@ export class ProjectSeeder {
   async upsert(
     transaction: Transaction,
     seed: ProjectSeedDefinition
-  ): Promise<{ project: Project | null; taskCount: number; commentCount: number; noteCount: number }> {
+  ): Promise<{
+    project: Project | null
+    taskCount: number
+    commentCount: number
+    noteCount: number
+  }> {
     const existing = await Project.findOne({ where: { key: seed.key }, transaction })
     if (existing) {
       logger.debug(`Project ${seed.key} already present, skipping`, 'Seed')

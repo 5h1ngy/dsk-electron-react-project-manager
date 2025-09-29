@@ -5,10 +5,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 
 import { useAppSelector } from '@renderer/store/hooks'
 import { selectThemeMode } from '@renderer/store/slices/theme'
-import {
-  buildNavigationItems,
-  resolveSelectedKey
-} from '@renderer/layout/Shell/Shell.helpers'
+import { buildNavigationItems, resolveSelectedKey } from '@renderer/layout/Shell/Shell.helpers'
 import type { UseShellLayoutResult } from '@renderer/layout/Shell/Shell.types'
 import type { UserDTO } from '@main/services/auth'
 
@@ -21,10 +18,7 @@ export const useShellLayout = (currentUser?: UserDTO): UseShellLayoutResult => {
   const [breakpointCollapsed, setBreakpointCollapsed] = useState(false)
   const mode = useAppSelector(selectThemeMode)
 
-  const menuTheme: 'light' | 'dark' = useMemo(
-    () => (mode === 'dark' ? 'dark' : 'light'),
-    [mode]
-  )
+  const menuTheme: 'light' | 'dark' = useMemo(() => (mode === 'dark' ? 'dark' : 'light'), [mode])
 
   const includeUserManagement = useMemo(
     () => currentUser?.roles?.includes('Admin') ?? false,
@@ -60,12 +54,15 @@ export const useShellLayout = (currentUser?: UserDTO): UseShellLayoutResult => {
     })
   }, [setBreakpointCollapsed])
 
-  const handleCollapseChange = useCallback((value: boolean) => {
-    setCollapsed(value)
-    if (!value) {
-      setBreakpointCollapsed(false)
-    }
-  }, [setBreakpointCollapsed])
+  const handleCollapseChange = useCallback(
+    (value: boolean) => {
+      setCollapsed(value)
+      if (!value) {
+        setBreakpointCollapsed(false)
+      }
+    },
+    [setBreakpointCollapsed]
+  )
 
   const handleBreakpoint = useCallback(
     (broken: boolean) => {

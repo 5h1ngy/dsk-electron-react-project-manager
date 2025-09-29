@@ -23,11 +23,7 @@ export const createProjectSchema = z.object({
     .max(10, 'Massimo 10 caratteri')
     .regex(projectKeyRegex, 'Usare solo lettere A-Z')
     .transform((value) => value.toUpperCase()),
-  name: z
-    .string()
-    .trim()
-    .min(1, 'Il nome è obbligatorio')
-    .max(120, 'Massimo 120 caratteri'),
+  name: z.string().trim().min(1, 'Il nome è obbligatorio').max(120, 'Massimo 120 caratteri'),
   description: z
     .string()
     .trim()
@@ -38,17 +34,8 @@ export const createProjectSchema = z.object({
 })
 
 export const updateProjectSchema = z.object({
-  name: z
-    .string()
-    .trim()
-    .min(1, 'Il nome è obbligatorio')
-    .max(120, 'Massimo 120 caratteri'),
-  description: z
-    .string()
-    .trim()
-    .max(2000, 'Massimo 2000 caratteri')
-    .nullable()
-    .optional(),
+  name: z.string().trim().min(1, 'Il nome è obbligatorio').max(120, 'Massimo 120 caratteri'),
+  description: z.string().trim().max(2000, 'Massimo 2000 caratteri').nullable().optional(),
   tags: tagsArraySchema.optional()
 })
 

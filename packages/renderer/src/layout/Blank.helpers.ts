@@ -21,4 +21,3 @@ export const BLANK_CONTENT_STYLE: CSSProperties = {
   alignItems: 'center',
   padding: 24
 }
-

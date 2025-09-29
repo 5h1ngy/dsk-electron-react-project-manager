@@ -5,4 +5,3 @@ export const formatTimestamp = (timestamp: string): string => {
   }
   return date.toLocaleString()
 }
-

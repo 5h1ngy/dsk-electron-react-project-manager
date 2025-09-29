@@ -9,7 +9,11 @@ export const useAccountMenuStyles = ({ width }: UseAccountMenuStylesParams = {})
   const { token } = theme.useToken()
   const { spacing } = useThemeTokens()
 
-  const cardWidth = width ?? token.controlHeightLG * 5
+  const controlHeightLG =
+    typeof token.controlHeightLG === 'number' && Number.isFinite(token.controlHeightLG)
+      ? token.controlHeightLG
+      : 40
+  const cardWidth = width ?? controlHeightLG * 5
 
   return {
     sectionGap: spacing.sm,
@@ -19,15 +23,17 @@ export const useAccountMenuStyles = ({ width }: UseAccountMenuStylesParams = {})
       marginBottom: token.marginSM
     } as const,
     cardProps: {
-      bordered: false,
+      variant: 'borderless' as const,
       style: {
         width: cardWidth,
         background: token.colorBgElevated,
         borderRadius: token.borderRadiusLG,
         boxShadow: token.boxShadowSecondary
       },
-      bodyStyle: {
-        padding: token.paddingLG
+      styles: {
+        body: {
+          padding: token.paddingLG
+        }
       }
     }
   }

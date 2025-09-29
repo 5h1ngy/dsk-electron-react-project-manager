@@ -13,6 +13,7 @@
 ---
 
 ## Table of Contents
+
 - [Feature Highlights](#feature-highlights)
 - [Tech Stack](#tech-stack)
 - [Project Structure](#project-structure)
@@ -42,12 +43,12 @@
 
 ## Tech Stack
 
-| Layer | Highlights |
-| ----- | ---------- |
-| Runtime | Electron 38, Node 22 |
-| Renderer | React 19, React Router 6, Ant Design 5, Redux Toolkit, React Hook Form, i18next |
-| Domain | SQLite, Sequelize (TypeScript), Zod, @node-rs/argon2 |
-| Tooling | electron-vite, ts-node + tsconfig-paths, Jest + ts-jest, Testing Library, ESLint 9, Prettier 3, TypeScript 5.7 |
+| Layer    | Highlights                                                                                                     |
+| -------- | -------------------------------------------------------------------------------------------------------------- |
+| Runtime  | Electron 38, Node 22                                                                                           |
+| Renderer | React 19, React Router 6, Ant Design 5, Redux Toolkit, React Hook Form, i18next                                |
+| Domain   | SQLite, Sequelize (TypeScript), Zod, @node-rs/argon2                                                           |
+| Tooling  | electron-vite, ts-node + tsconfig-paths, Jest + ts-jest, Testing Library, ESLint 9, Prettier 3, TypeScript 5.7 |
 
 ---
 
@@ -88,13 +89,13 @@ All commands assume a recent Node 22 environment. The Electron app automatically
 
 ## Scripts & Tooling
 
-| Command | Purpose |
-| ------- | ------- |
-| `npm run format` | Prettier formatting across the repo |
-| `npm run lint` | ESLint with caching |
-| `npm run typecheck` | Aggregated TypeScript checks for Node and web |
-| `npm test`, `npm run test:watch` | Jest multi-project test runner |
-| `npm run db:seed` | Execute `DevelopmentSeeder` via ts-node with path aliases |
+| Command                          | Purpose                                                   |
+| -------------------------------- | --------------------------------------------------------- |
+| `npm run format`                 | Prettier formatting across the repo                       |
+| `npm run lint`                   | ESLint with caching                                       |
+| `npm run typecheck`              | Aggregated TypeScript checks for Node and web             |
+| `npm test`, `npm run test:watch` | Jest multi-project test runner                            |
+| `npm run db:seed`                | Execute `DevelopmentSeeder` via ts-node with path aliases |
 
 ---
 
@@ -129,13 +130,13 @@ Utility helpers unwrap the union inside the renderer and trigger session recover
 
 ## Configuration
 
-| Variable | Default | Description |
-| -------- | ------- | ----------- |
-| `LOG_LEVEL` | `info` | Adjusts the structured logger verbosity |
-| `SESSION_TIMEOUT_MINUTES` | `60` | Overrides the default auth session TTL (also persisted in `system_settings`) |
-| `DB_STORAGE_PATH` | Electron app data dir | Custom database location for runtime and seeding |
-| `ELECTRON_START_URL` | auto | Dev server URL, injected by electron-vite during `npm run dev` |
-| `ENABLE_DEVTOOLS` | auto | `true` forces DevTools on, `false` blocks them regardless of environment |
+| Variable                  | Default               | Description                                                                  |
+| ------------------------- | --------------------- | ---------------------------------------------------------------------------- |
+| `LOG_LEVEL`               | `info`                | Adjusts the structured logger verbosity                                      |
+| `SESSION_TIMEOUT_MINUTES` | `60`                  | Overrides the default auth session TTL (also persisted in `system_settings`) |
+| `DB_STORAGE_PATH`         | Electron app data dir | Custom database location for runtime and seeding                             |
+| `ELECTRON_START_URL`      | auto                  | Dev server URL, injected by electron-vite during `npm run dev`               |
+| `ENABLE_DEVTOOLS`         | auto                  | `true` forces DevTools on, `false` blocks them regardless of environment     |
 
 Use `.env` or per-machine environment variables to customize settings; see `.env.example` for guidance.
 

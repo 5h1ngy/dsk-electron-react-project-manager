@@ -1,6 +1,10 @@
 import { createEntityAdapter, createSlice, type PayloadAction } from '@reduxjs/toolkit'
 
-import type { ProjectDetails, ProjectSummary, ProjectsState } from '@renderer/store/slices/projects/types'
+import type {
+  ProjectDetails,
+  ProjectSummary,
+  ProjectsState
+} from '@renderer/store/slices/projects/types'
 import {
   addProjectMember,
   createProject,

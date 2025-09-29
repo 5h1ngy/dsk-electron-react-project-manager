@@ -41,7 +41,7 @@ export const selectTasksByStatus = (projectId: string, status: TaskStatus) =>
 
 export const selectTaskById = (projectId: string, taskId: string) =>
   createSelector(buildProjectSelector(projectId), (projectState) =>
-    projectState ? projectState.entities[taskId] ?? null : null
+    projectState ? (projectState.entities[taskId] ?? null) : null
   )
 
 export const selectTaskComments = (taskId: string) =>

@@ -91,10 +91,7 @@ export const TaskDetailsModal = ({
     })
     return labels
   }, [statusOptions])
-  const defaultStatusKey = useMemo(
-    () => statusOptions[0]?.value ?? 'todo',
-    [statusOptions]
-  )
+  const defaultStatusKey = useMemo(() => statusOptions[0]?.value ?? 'todo', [statusOptions])
   const dispatch = useAppDispatch()
   const badgeTokens = useSemanticBadges()
   const navigate = useNavigate()
@@ -105,7 +102,10 @@ export const TaskDetailsModal = ({
   const mutationStatus = useAppSelector(selectTaskMutationStatus)
   const updating = isEditing && mutationStatus === 'loading'
 
-  const defaultEditValues = useMemo(() => buildEditValues(task, defaultStatusKey), [task, defaultStatusKey])
+  const defaultEditValues = useMemo(
+    () => buildEditValues(task, defaultStatusKey),
+    [task, defaultStatusKey]
+  )
 
   const editForm = useForm<TaskFormValues>({
     resolver: zodResolver(taskFormSchema) as unknown as Resolver<TaskFormValues>,
@@ -138,7 +138,7 @@ export const TaskDetailsModal = ({
       setIsEditing(false)
       editForm.reset(buildEditValues(null, defaultStatusKey))
     }
-  }, [open, commentForm, editForm])
+  }, [open, commentForm, editForm, defaultStatusKey])
 
   useEffect(() => {
     if (!task || !open || isEditing) {
@@ -320,9 +320,7 @@ export const TaskDetailsModal = ({
       if (tag.variant === 'status') {
         return {
           label: tag.label,
-          badge:
-            badgeTokens.status[tag.key as TaskDetails['status']] ??
-            badgeTokens.statusFallback
+          badge: badgeTokens.status[tag.key as TaskDetails['status']] ?? badgeTokens.statusFallback
         }
       }
       return {
@@ -468,17 +466,17 @@ export const TaskDetailsModal = ({
                   <Controller
                     control={editControl}
                     name="status"
-                  render={({ field }) => (
-                    <Select
-                      {...field}
-                      value={field.value}
-                      options={statusOptions}
-                      showSearch
-                      optionFilterProp="label"
-                      disabled={statusOptions.length === 0 || updating}
-                    />
-                  )}
-                />
+                    render={({ field }) => (
+                      <Select
+                        {...field}
+                        value={field.value}
+                        options={statusOptions}
+                        showSearch
+                        optionFilterProp="label"
+                        disabled={statusOptions.length === 0 || updating}
+                      />
+                    )}
+                  />
                 </Form.Item>
 
                 <Form.Item
@@ -663,11 +661,3 @@ const EmptyState = (): JSX.Element => {
 TaskDetailsModal.displayName = 'TaskDetailsModal'
 
 export default TaskDetailsModal
-
-
-
-
-
-
-
-

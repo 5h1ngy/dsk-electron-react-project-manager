@@ -15,7 +15,15 @@ const baseView = () => ({
     dueDateRange: null
   },
   sort: null,
-  columns: ['key', 'title'] as ('key' | 'title' | 'status' | 'priority' | 'assignee' | 'dueDate' | 'commentCount')[],
+  columns: ['key', 'title'] as (
+    | 'key'
+    | 'title'
+    | 'status'
+    | 'priority'
+    | 'assignee'
+    | 'dueDate'
+    | 'commentCount'
+  )[],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString()
 })
@@ -51,13 +59,24 @@ describe('viewsReducer', () => {
     }
 
     const view = baseView()
-    const next = viewsReducer(state, createView.fulfilled(view, '', {
-      projectId: 'project-1',
-      name: view.name,
-      filters: view.filters,
-      sort: null,
-      columns: ['key', 'title'] as ('key' | 'title' | 'status' | 'priority' | 'assignee' | 'dueDate' | 'commentCount')[]
-    }))
+    const next = viewsReducer(
+      state,
+      createView.fulfilled(view, '', {
+        projectId: 'project-1',
+        name: view.name,
+        filters: view.filters,
+        sort: null,
+        columns: ['key', 'title'] as (
+          | 'key'
+          | 'title'
+          | 'status'
+          | 'priority'
+          | 'assignee'
+          | 'dueDate'
+          | 'commentCount'
+        )[]
+      })
+    )
 
     expect(next.byProjectId['project-1'].items[0].id).toBe(view.id)
     expect(next.byProjectId['project-1'].selectedId).toBe(view.id)

@@ -1,1 +1,1 @@
-export { default } from './UserManagementPage'\n
+export { default } from './UserManagementPage'

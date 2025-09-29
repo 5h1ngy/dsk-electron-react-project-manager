@@ -177,4 +177,3 @@ export const loadUsers = (): AppThunk => async (dispatch, getState) => {
   }
   await dispatch(fetchUsers(token))
 }
-

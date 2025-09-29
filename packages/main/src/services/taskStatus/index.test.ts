@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { randomUUID } from 'node:crypto'
 import { join } from 'node:path'
 import { tmpdir } from 'node:os'
@@ -66,24 +67,12 @@ describe('TaskStatusService', () => {
   }
 
   it('gestisce il ciclo di vita degli stati', async () => {
-    const {
-      sequelize,
-      directory,
-      taskStatusService,
-      taskService,
-      actor,
-      project
-    } = await setup()
+    const { sequelize, directory, taskStatusService, taskService, actor, project } = await setup()
 
     try {
       const listed = await taskStatusService.listStatuses(actor, { projectId: project.id })
       expect(listed).toHaveLength(4)
-      expect(listed.map((status) => status.key)).toEqual([
-        'todo',
-        'in_progress',
-        'blocked',
-        'done'
-      ])
+      expect(listed.map((status) => status.key)).toEqual(['todo', 'in_progress', 'blocked', 'done'])
 
       const created = await taskStatusService.createStatus(actor, {
         projectId: project.id,
@@ -127,12 +116,7 @@ describe('TaskStatusService', () => {
   })
 
   it('impedisce operazioni senza permessi adeguati', async () => {
-    const {
-      sequelize,
-      directory,
-      taskStatusService,
-      project
-    } = await setup()
+    const { sequelize, directory, taskStatusService, project } = await setup()
 
     try {
       const viewerRole = await Role.findOne({ where: { name: 'Viewer' } })

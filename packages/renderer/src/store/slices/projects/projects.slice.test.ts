@@ -1,9 +1,6 @@
 import { projectsReducer, selectProject } from '@renderer/store/slices/projects/slice'
 import { projectsAdapter } from '@renderer/store/slices/projects/slice'
-import {
-  createProject,
-  fetchProjects
-} from '@renderer/store/slices/projects/thunks'
+import { createProject, fetchProjects } from '@renderer/store/slices/projects/thunks'
 import type { ProjectDetails, ProjectSummary } from '@renderer/store/slices/projects/types'
 
 describe('projects slice', () => {

@@ -6,4 +6,3 @@ export interface RoleTagDescriptor {
   key: RoleName
   label: string
 }
-

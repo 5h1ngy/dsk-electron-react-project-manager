@@ -6,4 +6,3 @@ export const formatLogContext = (context?: string): string => {
   }
   return ` [${context}]`
 }
-

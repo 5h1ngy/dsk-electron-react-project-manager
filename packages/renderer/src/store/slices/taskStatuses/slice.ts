@@ -140,4 +140,3 @@ const taskStatusesSlice = createSlice({
 
 export const { resetTaskStatuses } = taskStatusesSlice.actions
 export const taskStatusesReducer = taskStatusesSlice.reducer
-

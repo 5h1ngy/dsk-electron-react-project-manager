@@ -1,4 +1,4 @@
-import type { JSX } from 'react'
+import type { FC } from 'react'
 import { Breadcrumb, Button, Form, Input, Modal, Space, Typography } from 'antd'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
@@ -13,12 +13,15 @@ import { CreateProjectModal } from '@renderer/pages/Projects/components/CreatePr
 import { EditProjectModal } from '@renderer/pages/Projects/components/EditProjectModal'
 import ProjectSavedViewsControls from '@renderer/pages/Projects/components/ProjectSavedViewsControls'
 import { useProjectsPage } from '@renderer/pages/Projects/hooks/useProjectsPage'
-import { PROJECTS_CONTAINER_STYLE, createProjectsBreadcrumb } from '@renderer/pages/Projects/Projects.helpers'
+import {
+  PROJECTS_CONTAINER_STYLE,
+  createProjectsBreadcrumb
+} from '@renderer/pages/Projects/Projects.helpers'
 import type { ProjectsPageProps } from '@renderer/pages/Projects/Projects.types'
 import { ShellHeaderPortal } from '@renderer/layout/Shell/ShellHeader.context'
 import { usePrimaryBreadcrumb } from '@renderer/layout/Shell/hooks/usePrimaryBreadcrumb'
 
-const ProjectsPage = ({}: ProjectsPageProps): JSX.Element => {
+const ProjectsPage: FC<ProjectsPageProps> = () => {
   const { t } = useTranslation('projects')
   const navigate = useNavigate()
   const {
@@ -122,8 +125,8 @@ const ProjectsPage = ({}: ProjectsPageProps): JSX.Element => {
         setSaveViewModalOpen(false)
         saveViewForm.resetFields()
       }
-    } catch (error: any) {
-      if (error?.errorFields) {
+    } catch (error: unknown) {
+      if (typeof error === 'object' && error !== null && 'errorFields' in error) {
         return
       }
     }
@@ -261,7 +264,7 @@ const ProjectsPage = ({}: ProjectsPageProps): JSX.Element => {
         okText={t('views.modal.save')}
         cancelText={t('views.modal.cancel')}
         onOk={handleSaveView}
-        destroyOnClose
+        destroyOnHidden
       >
         <Form form={saveViewForm} layout="vertical">
           <Form.Item
@@ -286,8 +289,3 @@ ProjectsPage.displayName = 'ProjectsPage'
 
 export { ProjectsPage }
 export default ProjectsPage
-
-
-
-
-

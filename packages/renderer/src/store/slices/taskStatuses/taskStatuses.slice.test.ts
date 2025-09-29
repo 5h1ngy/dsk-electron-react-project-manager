@@ -89,9 +89,9 @@ describe('taskStatusesReducer', () => {
         { statusId: 'status-2', payload: { label: 'Impeded' } }
       )
     )
-    expect(state.byProjectId['project-1']?.items.find((status) => status.id === 'status-2')?.label).toBe(
-      'Impeded'
-    )
+    expect(
+      state.byProjectId['project-1']?.items.find((status) => status.id === 'status-2')?.label
+    ).toBe('Impeded')
 
     state = taskStatusesReducer(
       state,
@@ -111,11 +111,11 @@ describe('taskStatusesReducer', () => {
 
     state = taskStatusesReducer(
       state,
-      deleteTaskStatus.fulfilled(
-        { projectId: 'project-1', statusId: 'status-2' },
-        '',
-        { projectId: 'project-1', statusId: 'status-2', fallbackStatusId: 'status-1' }
-      )
+      deleteTaskStatus.fulfilled({ projectId: 'project-1', statusId: 'status-2' }, '', {
+        projectId: 'project-1',
+        statusId: 'status-2',
+        fallbackStatusId: 'status-1'
+      })
     )
     expect(state.byProjectId['project-1']?.items).toHaveLength(1)
     expect(state.byProjectId['project-1']?.items[0]?.id).toBe('status-1')

@@ -6,6 +6,7 @@ import { taskApi } from '@preload/api/task'
 import { taskStatusApi } from '@preload/api/taskStatus'
 import { noteApi } from '@preload/api/note'
 import { viewApi } from '@preload/api/view'
+import { roleApi } from '@preload/api/role'
 import type { PreloadApi } from '@preload/types'
 
 const api: PreloadApi = Object.freeze({
@@ -15,7 +16,8 @@ const api: PreloadApi = Object.freeze({
   task: taskApi,
   taskStatus: taskStatusApi,
   note: noteApi,
-  view: viewApi
+  view: viewApi,
+  role: roleApi
 })
 
 if (process.contextIsolated) {

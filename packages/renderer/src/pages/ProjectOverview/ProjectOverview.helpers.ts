@@ -120,7 +120,11 @@ export const calculateProjectInsights = (
       continue
     }
 
-    if (due.isSame(today, 'day') || due.isBefore(upcomingLimit, 'day') || due.isSame(upcomingLimit, 'day')) {
+    if (
+      due.isSame(today, 'day') ||
+      due.isBefore(upcomingLimit, 'day') ||
+      due.isSame(upcomingLimit, 'day')
+    ) {
       upcoming.push(task)
     }
   }

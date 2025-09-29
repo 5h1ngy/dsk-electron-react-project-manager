@@ -8,7 +8,10 @@ import {
   selectSupportedLocales,
   type SupportedLocale
 } from '@renderer/store/slices/locale'
-import type { LanguageOption, UseLanguageSwitcherResult } from '@renderer/components/LanguageSwitcher.types'
+import type {
+  LanguageOption,
+  UseLanguageSwitcherResult
+} from '@renderer/components/LanguageSwitcher.types'
 import { getLocaleFlag } from '@renderer/components/LanguageSwitcher.helpers'
 
 export const useLanguageSwitcher = (): UseLanguageSwitcherResult => {

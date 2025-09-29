@@ -38,7 +38,7 @@ import { useAppSelector } from '@renderer/store/hooks'
 import { selectCurrentUser } from '@renderer/store/slices/auth/selectors'
 import { selectProjects, selectProjectsStatus } from '@renderer/store/slices/projects'
 
-const Dashboard = (): JSX.Element => {
+const Dashboard = (): JSX.Element | null => {
   const { t } = useTranslation('dashboard')
   const navigate = useNavigate()
   const currentUser = useAppSelector(selectCurrentUser)
@@ -113,7 +113,9 @@ const Dashboard = (): JSX.Element => {
     return selectRecentProjects(sorted, 5)
   }, [projects])
 
-  const lastLoginText = currentUser.lastLoginAt
+  const isCurrentUserAdmin = (currentUser?.roles ?? []).includes('Admin')
+
+  const lastLoginText = currentUser?.lastLoginAt
     ? dayjs(currentUser.lastLoginAt).format('LLL')
     : t('summary.noLastLogin')
 
@@ -121,39 +123,36 @@ const Dashboard = (): JSX.Element => {
     { title: t('appShell.navigation.dashboard', { ns: 'common' }) }
   ])
 
-  const quickLinks = useMemo(
-    () => {
-      const items = [
-        {
-          key: 'projects',
-          label: t('quickLinks.projects'),
-          description: t('quickLinks.projectsDescription'),
-          icon: <AppstoreOutlined />,
-          onClick: () => navigate('/projects')
-        },
-        {
-          key: 'settings',
-          label: t('quickLinks.settings'),
-          description: t('quickLinks.settingsDescription'),
-          icon: <SettingOutlined />,
-          onClick: () => navigate('/settings')
-        }
-      ]
-
-      if (currentUser.roles.includes('Admin')) {
-        items.push({
-          key: 'users',
-          label: t('quickLinks.users'),
-          description: t('quickLinks.usersDescription'),
-          icon: <TeamOutlined />,
-          onClick: () => navigate('/admin/users')
-        })
+  const quickLinks = useMemo(() => {
+    const items = [
+      {
+        key: 'projects',
+        label: t('quickLinks.projects'),
+        description: t('quickLinks.projectsDescription'),
+        icon: <AppstoreOutlined />,
+        onClick: () => navigate('/projects')
+      },
+      {
+        key: 'settings',
+        label: t('quickLinks.settings'),
+        description: t('quickLinks.settingsDescription'),
+        icon: <SettingOutlined />,
+        onClick: () => navigate('/settings')
       }
+    ]
 
-      return items
-    },
-    [currentUser.roles, navigate, t]
-  )
+    if (isCurrentUserAdmin) {
+      items.push({
+        key: 'users',
+        label: t('quickLinks.users'),
+        description: t('quickLinks.usersDescription'),
+        icon: <TeamOutlined />,
+        onClick: () => navigate('/admin/users')
+      })
+    }
+
+    return items
+  }, [isCurrentUserAdmin, navigate, t])
 
   const summaryCards = useMemo(
     () => [
@@ -184,6 +183,10 @@ const Dashboard = (): JSX.Element => {
     ],
     [collaborativeProjects, managedProjects, totalProjects, watchingProjects, t]
   )
+
+  if (!currentUser) {
+    return null
+  }
 
   return (
     <>
@@ -234,11 +237,7 @@ const Dashboard = (): JSX.Element => {
                           <Typography.Text>{role.label}</Typography.Text>
                           <Typography.Text strong>{role.count}</Typography.Text>
                         </Flex>
-                        <Progress
-                          percent={role.percent}
-                          showInfo={false}
-                          
-                        />
+                        <Progress percent={role.percent} showInfo={false} />
                       </div>
                     ))}
                   </Space>
@@ -282,10 +281,12 @@ const Dashboard = (): JSX.Element => {
             <Card title={t('profile.title')}>
               <Space direction="vertical" size={12} style={{ width: '100%' }}>
                 <Typography.Text>
-                  <Typography.Text strong>{t('profile.username')}:</Typography.Text> {currentUser.username}
+                  <Typography.Text strong>{t('profile.username')}:</Typography.Text>{' '}
+                  {currentUser.username}
                 </Typography.Text>
                 <Typography.Text>
-                  <Typography.Text strong>{t('profile.lastLogin')}:</Typography.Text> {lastLoginText}
+                  <Typography.Text strong>{t('profile.lastLogin')}:</Typography.Text>{' '}
+                  {lastLoginText}
                 </Typography.Text>
                 <Space direction="vertical" size={4}>
                   <Typography.Text strong>{t('profile.roles')}</Typography.Text>
@@ -307,10 +308,12 @@ const Dashboard = (): JSX.Element => {
                     hoverable
                     onClick={link.onClick}
                     style={{ flex: '1 1 220px', minWidth: 220, cursor: 'pointer' }}
-                    bodyStyle={{ padding: 16 }}
+                    styles={{ body: { padding: 16 } }}
                   >
                     <Space align="start" size={12}>
-                      <Typography.Text style={{ fontSize: 20, lineHeight: 1 }}>{link.icon}</Typography.Text>
+                      <Typography.Text style={{ fontSize: 20, lineHeight: 1 }}>
+                        {link.icon}
+                      </Typography.Text>
                       <Flex vertical gap={4} style={{ flex: 1 }}>
                         <Typography.Text strong>{link.label}</Typography.Text>
                         <Typography.Text type="secondary">{link.description}</Typography.Text>
@@ -321,7 +324,9 @@ const Dashboard = (): JSX.Element => {
                 ))}
               </Flex>
             </Card>
-            <div style=\{\{ marginTop: 16 \}\}>\r\n              <HealthStatusCard cardStyle=\{\{ width: '100%' \}\} />\r\n            </div>
+            <div style={{ marginTop: 16 }}>
+              <HealthStatusCard cardStyle={{ width: '100%' }} />
+            </div>
           </Col>
         </Row>
       </Space>
@@ -333,4 +338,3 @@ Dashboard.displayName = 'Dashboard'
 
 export { Dashboard }
 export default Dashboard
-

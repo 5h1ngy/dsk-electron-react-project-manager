@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { Sequelize } from 'sequelize-typescript'
 
 import { HealthIpcRegistrar, HEALTH_CHANNEL } from '@main/ipc/health'

@@ -8,7 +8,11 @@ import {
   selectProjectsError,
   selectProjectsStatus
 } from '@renderer/store/slices/projects'
-import { fetchTasks, selectProjectTasks, selectProjectTasksStatus } from '@renderer/store/slices/tasks'
+import {
+  fetchTasks,
+  selectProjectTasks,
+  selectProjectTasksStatus
+} from '@renderer/store/slices/tasks'
 import type { TaskDetails, LoadStatus } from '@renderer/store/slices/tasks'
 import { selectCurrentUser } from '@renderer/store/slices/auth/selectors'
 import {
@@ -49,7 +53,10 @@ export const useProjectDetails = (projectId?: string): UseProjectDetailsResult =
   const dispatch = useAppDispatch()
   const [messageApi, messageContext] = message.useMessage()
 
-  const projectSelector = useMemo(() => (projectId ? selectProjectById(projectId) : () => null), [projectId])
+  const projectSelector = useMemo(
+    () => (projectId ? selectProjectById(projectId) : () => null),
+    [projectId]
+  )
   const tasksSelector = useMemo(
     () => (projectId ? selectProjectTasks(projectId) : () => []),
     [projectId]
@@ -59,10 +66,7 @@ export const useProjectDetails = (projectId?: string): UseProjectDetailsResult =
     [projectId]
   )
   const tasksStatusSelector = useMemo(
-    () =>
-      projectId
-        ? selectProjectTasksStatus(projectId)
-        : (() => 'idle' as LoadStatus),
+    () => (projectId ? selectProjectTasksStatus(projectId) : () => 'idle' as LoadStatus),
     [projectId]
   )
 
@@ -74,28 +78,19 @@ export const useProjectDetails = (projectId?: string): UseProjectDetailsResult =
     [projectId]
   )
   const taskStatusesStatusSelector = useMemo(
-    () =>
-      projectId
-        ? selectProjectTaskStatusesStatus(projectId)
-        : (() => 'idle' as LoadStatus),
+    () => (projectId ? selectProjectTaskStatusesStatus(projectId) : () => 'idle' as LoadStatus),
     [projectId]
   )
   const taskStatuses = useAppSelector(taskStatusesSelector)
   const taskStatusesStatus = useAppSelector(taskStatusesStatusSelector)
   const notesStatusSelector = useMemo(
-    () =>
-      projectId
-        ? selectProjectNotesStatus(projectId)
-        : (() => 'idle' as LoadStatus),
+    () => (projectId ? selectProjectNotesStatus(projectId) : () => 'idle' as LoadStatus),
     [projectId]
   )
   const notes = useAppSelector(notesSelector)
   const notesStatus = useAppSelector(notesStatusSelector)
   const notesFiltersSelector = useMemo(
-    () =>
-      projectId
-        ? selectProjectNotesFilters(projectId)
-        : (() => defaultNoteFilters),
+    () => (projectId ? selectProjectNotesFilters(projectId) : () => defaultNoteFilters),
     [projectId]
   )
   const notesFilters = useAppSelector(notesFiltersSelector)

@@ -86,8 +86,8 @@ export const ProjectTasksList = ({
               canManage
                 ? [
                     <Button
-                      key='edit'
-                      type='text'
+                      key="edit"
+                      type="text"
                       icon={<EditOutlined />}
                       onClick={(event) => {
                         event.stopPropagation()
@@ -97,7 +97,7 @@ export const ProjectTasksList = ({
                       {t('tasks.actions.edit')}
                     </Button>,
                     <Popconfirm
-                      key='delete'
+                      key="delete"
                       title={t('tasks.actions.deleteTitle')}
                       description={t('tasks.actions.deleteDescription', { title: task.title })}
                       okText={t('tasks.actions.deleteConfirm')}
@@ -106,7 +106,7 @@ export const ProjectTasksList = ({
                       onConfirm={() => onDelete(task)}
                     >
                       <Button
-                        type='text'
+                        type="text"
                         danger
                         icon={<DeleteOutlined />}
                         loading={deletingTaskId === task.id}
@@ -121,9 +121,9 @@ export const ProjectTasksList = ({
           >
             <List.Item.Meta
               title={
-                <Space align='center' size={token.marginSM} wrap>
+                <Space align="center" size={token.marginSM} wrap>
                   <Typography.Text strong>{task.title}</Typography.Text>
-                  <Typography.Text type='secondary'>#{task.key}</Typography.Text>
+                  <Typography.Text type="secondary">#{task.key}</Typography.Text>
                   <Tag bordered={false} style={buildBadgeStyle(statusToken)}>
                     {statusBadge}
                   </Tag>
@@ -140,17 +140,17 @@ export const ProjectTasksList = ({
                 </Space>
               }
               description={
-                <Space direction='vertical' size={token.marginXS} style={{ width: '100%' }}>
+                <Space direction="vertical" size={token.marginXS} style={{ width: '100%' }}>
                   {task.description ? (
-                    <Typography.Paragraph type='secondary' style={{ marginBottom: 0 }}>
+                    <Typography.Paragraph type="secondary" style={{ marginBottom: 0 }}>
                       {task.description}
                     </Typography.Paragraph>
                   ) : null}
                   <Space size={token.marginSM} wrap>
-                    <Typography.Text type='secondary'>
+                    <Typography.Text type="secondary">
                       {t('details.assignee')}: {assignee}
                     </Typography.Text>
-                    <Typography.Text type='secondary'>
+                    <Typography.Text type="secondary">
                       {t('details.tasksColumns.dueDate')}: {formatDate(task.dueDate)}
                     </Typography.Text>
                   </Space>
@@ -175,4 +175,3 @@ export const ProjectTasksList = ({
 ProjectTasksList.displayName = 'ProjectTasksList'
 
 export default ProjectTasksList
-

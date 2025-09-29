@@ -17,14 +17,21 @@
     "title": "DSK Project Manager",
     "welcome": "Welcome, {{name}}",
     "logout": "Sign out",
-    "navigation": {"dashboard": "Dashboard", "projects": "Projects", "settings": "Settings", "userManagement": "User management"},
+    "navigation": {
+      "dashboard": "Dashboard",
+      "projects": "Projects",
+      "settings": "Settings",
+      "userManagement": "User management",
+      "roleManagement": "Role management"
+    },
     "collapseSidebar": "Collapse navigation",
     "expandSidebar": "Expand navigation",
     "searchPlaceholder": "Search across files and projects",
     "quickCreate": "New",
     "help": "Help & Support",
     "notifications": "Notifications",
-    "settings": "Settings", "userManagement": "User management",
+    "settings": "Settings",
+    "userManagement": "User management",
     "theme": {
       "title": "Appearance",
       "mode": "Dark mode",
@@ -53,5 +60,3 @@
     }
   }
 }
-
-
