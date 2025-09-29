@@ -113,21 +113,21 @@ export const TaskFormModal = ({
             help={form.formState.errors.status?.message}
             required
           >
-          <Controller
-            control={form.control}
-            name="status"
-            render={({ field }) => (
-              <Select
-                {...field}
-                value={field.value}
-                options={statusOptions}
-                showSearch
-                optionFilterProp="label"
-                disabled={statusOptions.length === 0}
-              />
-            )}
-          />
-        </Form.Item>
+            <Controller
+              control={form.control}
+              name="status"
+              render={({ field }) => (
+                <Select
+                  {...field}
+                  value={field.value}
+                  options={statusOptions}
+                  showSearch
+                  optionFilterProp="label"
+                  disabled={statusOptions.length === 0}
+                />
+              )}
+            />
+          </Form.Item>
 
           <Form.Item
             label={t('tasks.form.fields.priority')}
@@ -206,7 +206,3 @@ export const TaskFormModal = ({
 TaskFormModal.displayName = 'TaskFormModal'
 
 export default TaskFormModal
-
-
-
-

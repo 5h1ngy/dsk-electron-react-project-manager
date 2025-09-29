@@ -107,6 +107,3 @@ export const buildLightComponents = (
     titleMarginBottom: spacing.md
   }
 })
-
-
-

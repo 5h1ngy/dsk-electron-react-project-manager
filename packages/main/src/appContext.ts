@@ -11,6 +11,7 @@ import { TaskService } from '@main/services/task'
 import { TaskStatusService } from '@main/services/taskStatus'
 import { NoteService } from '@main/services/note'
 import { ViewService } from '@main/services/view'
+import { RoleService } from '@main/services/roles'
 
 export const MAIN_WINDOW_OPTIONS: Electron.BrowserWindowConstructorOptions = {
   width: 1280,
@@ -189,6 +190,7 @@ class AppContext {
   taskStatusService?: TaskStatusService
   noteService?: NoteService
   viewService?: ViewService
+  roleService?: RoleService
 
   setDatabase(sequelize: Sequelize): void {
     this.sequelize = sequelize
@@ -197,6 +199,7 @@ class AppContext {
     this.taskService = new TaskService(sequelize, this.auditService)
     this.noteService = new NoteService(sequelize, this.auditService)
     this.viewService = new ViewService(sequelize, this.auditService)
+    this.roleService = new RoleService(sequelize, this.auditService)
   }
 }
 

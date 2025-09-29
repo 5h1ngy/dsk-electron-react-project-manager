@@ -21,9 +21,7 @@ const SettingsPage = (): JSX.Element => {
           <Typography.Title level={3} style={{ marginBottom: 0 }}>
             {t('settingsPage.title')}
           </Typography.Title>
-          <Typography.Paragraph type="secondary">
-            {t('appShell.title')}
-          </Typography.Paragraph>
+          <Typography.Paragraph type="secondary">{t('appShell.title')}</Typography.Paragraph>
         </div>
 
         <Card>

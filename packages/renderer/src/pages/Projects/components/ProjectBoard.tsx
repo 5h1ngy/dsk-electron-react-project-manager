@@ -91,7 +91,3 @@ export const ProjectBoard = ({
 ProjectBoard.displayName = 'ProjectBoard'
 
 export default ProjectBoard
-
-
-
-

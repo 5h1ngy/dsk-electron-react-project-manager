@@ -17,7 +17,7 @@ import {
   type UpdateUserInput,
   type RegisterUserInput
 } from '@main/services/auth/schemas'
-import { ROLE_NAMES, type RoleName } from '@main/services/auth/constants'
+import type { RoleName } from '@main/services/auth/constants'
 import { logger } from '@main/config/logger'
 import type { ServiceActor } from '@main/services/types'
 
@@ -43,8 +43,6 @@ interface AuthContext {
   roles: RoleName[]
 }
 
-const ROLE_NAME_SET = new Set<RoleName>(ROLE_NAMES)
-
 const sanitizeUser = (user: User, roles: RoleName[]): UserDTO => ({
   id: user.id,
   username: user.username,
@@ -58,8 +56,8 @@ const sanitizeUser = (user: User, roles: RoleName[]): UserDTO => ({
 
 const extractRoleNames = (user: User): RoleName[] =>
   (user.userRoles ?? [])
-    .map((userRole) => userRole.role?.name as RoleName | undefined)
-    .filter((name): name is RoleName => Boolean(name) && ROLE_NAME_SET.has(name as RoleName))
+    .map((userRole) => userRole.role?.name)
+    .filter((name): name is RoleName => typeof name === 'string' && name.trim().length > 0)
 
 export class AuthService {
   constructor(
@@ -397,7 +395,7 @@ export class AuthService {
           if (remainingAdmins <= 1) {
             throw new AppError(
               'ERR_PERMISSION',
-              'Non è possibile eliminare l\'ultimo amministratore del sistema'
+              "Non è possibile eliminare l'ultimo amministratore del sistema"
             )
           }
         }

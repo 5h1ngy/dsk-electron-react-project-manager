@@ -10,9 +10,7 @@ export const capitalize = (value: string): string => {
 }
 
 export const stripAccents = (value: string): string =>
-  value
-    .normalize('NFKD')
-    .replace(/[\u0300-\u036f]/g, '')
+  value.normalize('NFKD').replace(/[\u0300-\u036f]/g, '')
 
 export const formatIsoDate = (date: Date): string => date.toISOString().slice(0, 10)
 

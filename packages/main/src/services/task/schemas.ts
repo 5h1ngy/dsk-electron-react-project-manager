@@ -90,19 +90,11 @@ export const moveTaskSchema = z.object({
 
 export const createCommentSchema = z.object({
   taskId: identifierSchema,
-  body: z
-    .string()
-    .trim()
-    .min(1, 'Comment cannot be empty')
-    .max(5000, 'Comment is too long')
+  body: z.string().trim().min(1, 'Comment cannot be empty').max(5000, 'Comment is too long')
 })
 
 export const searchTasksSchema = z.object({
-  query: z
-    .string()
-    .trim()
-    .min(1, 'Query is required')
-    .max(120, 'Query is too long')
+  query: z.string().trim().min(1, 'Query is required').max(120, 'Query is too long')
 })
 
 export type CreateTaskInput = z.infer<typeof createTaskSchema>

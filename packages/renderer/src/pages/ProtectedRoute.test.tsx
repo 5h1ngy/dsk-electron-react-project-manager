@@ -27,14 +27,16 @@ const mockedUseAppDispatch = useAppDispatch as unknown as jest.Mock
 const mockedUseAppSelector = useAppSelector as unknown as jest.Mock
 const mockedLogout = logout as unknown as jest.Mock
 
-const shellMock = jest.fn(({ children, onLogout }: { children: ReactNode; onLogout: () => void }) => (
-  <div data-testid="shell">
-    <button type="button" onClick={onLogout}>
-      trigger-logout
-    </button>
-    <div data-testid="shell-content">{children}</div>
-  </div>
-))
+const shellMock = jest.fn(
+  ({ children, onLogout }: { children: ReactNode; onLogout: () => void }) => (
+    <div data-testid="shell">
+      <button type="button" onClick={onLogout}>
+        trigger-logout
+      </button>
+      <div data-testid="shell-content">{children}</div>
+    </div>
+  )
+)
 
 jest.mock('@renderer/layout/Shell', () => ({
   __esModule: true,
@@ -61,7 +63,7 @@ describe('ProtectedRoute', () => {
     isAuthenticated: boolean
     currentUser: UserDTO | null
   }) => {
-    ;mockedUseAppSelector.mockImplementation((selector) => {
+    mockedUseAppSelector.mockImplementation((selector) => {
       if (selector === selectIsAuthenticated) {
         return isAuthenticated
       }
@@ -86,8 +88,8 @@ describe('ProtectedRoute', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
-    ;mockedUseAppDispatch.mockReturnValue(mockDispatch)
-    ;mockedLogout.mockImplementation(() => ({ type: 'auth/logout' }))
+    mockedUseAppDispatch.mockReturnValue(mockDispatch)
+    mockedLogout.mockImplementation(() => ({ type: 'auth/logout' }))
     shellMock.mockClear()
   })
 
@@ -119,7 +121,7 @@ describe('ProtectedRoute', () => {
 
   it('dispatches the logout thunk when the provided handler fires', async () => {
     const logoutAction = { type: 'auth/logout' }
-    ;mockedLogout.mockReturnValue(logoutAction)
+    mockedLogout.mockReturnValue(logoutAction)
     setupSelectors({ isAuthenticated: true, currentUser: mockUser })
 
     renderWithRouter()

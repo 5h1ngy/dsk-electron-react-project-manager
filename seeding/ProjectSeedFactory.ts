@@ -9,11 +9,7 @@ import type {
   ProjectSeedDefinition,
   TaskSeedDefinition
 } from './DevelopmentSeeder.types'
-import type {
-  CommentsSeedConfig,
-  ProjectsSeedConfig,
-  NotesSeedConfig
-} from './seedConfig'
+import type { CommentsSeedConfig, ProjectsSeedConfig, NotesSeedConfig } from './seedConfig'
 import { capitalize, formatIsoDate, pickWeighted, type WeightedValue } from './seed.helpers'
 
 const TAG_CATALOG = [
@@ -91,9 +87,7 @@ export class ProjectSeedFactory {
 
     for (let index = 0; index < projectCount; index += 1) {
       const key = this.createUniqueProjectKey(usedKeys)
-      const maintainers = (pools.get('Maintainer') ?? []).filter(
-        (user) => user.id !== adminUser.id
-      )
+      const maintainers = (pools.get('Maintainer') ?? []).filter((user) => user.id !== adminUser.id)
       const primaryOwner =
         maintainers.length > 0 ? this.random.helpers.arrayElement(maintainers) : adminUser
 
@@ -240,14 +234,14 @@ export class ProjectSeedFactory {
     })
     const backlogExtra =
       this.projectConfig.backlogBufferMax > 0
-        ? this.random.helpers.maybe(
+        ? (this.random.helpers.maybe(
             () =>
               this.random.number.int({
                 min: 1,
                 max: this.projectConfig.backlogBufferMax
               }),
             { probability: 0.5 }
-          ) ?? 0
+          ) ?? 0)
         : 0
 
     const total = baseCount + backlogExtra
@@ -276,10 +270,9 @@ export class ProjectSeedFactory {
     const status = pickWeighted(this.random, STATUS_WEIGHTS)
     const priority = pickWeighted(this.random, PRIORITY_WEIGHTS)
     const dueDate =
-      this.random.helpers.maybe(
-        () => formatIsoDate(this.random.date.soon({ days: 120 })),
-        { probability: status === 'done' ? 0.4 : 0.75 }
-      ) ?? null
+      this.random.helpers.maybe(() => formatIsoDate(this.random.date.soon({ days: 120 })), {
+        probability: status === 'done' ? 0.4 : 0.75
+      }) ?? null
 
     const ownerId =
       params.ownerCandidates.length > 0
@@ -288,12 +281,10 @@ export class ProjectSeedFactory {
 
     const assigneeId =
       params.assigneeCandidates.length > 0
-        ? (
-            this.random.helpers.maybe(
-              () => this.random.helpers.arrayElement(params.assigneeCandidates),
-              { probability: 0.85 }
-            ) ?? null
-          )
+        ? (this.random.helpers.maybe(
+            () => this.random.helpers.arrayElement(params.assigneeCandidates),
+            { probability: 0.85 }
+          ) ?? null)
         : null
 
     const comments = this.buildCommentSeeds({
@@ -348,15 +339,14 @@ export class ProjectSeedFactory {
 
     for (let index = 0; index < count; index += 1) {
       const ownerId = this.random.helpers.arrayElement(ownerPool)
-      const isPrivate =
-        this.random.number.float({ min: 0, max: 1 }) < config.privateRatio
+      const isPrivate = this.random.number.float({ min: 0, max: 1 }) < config.privateRatio
 
       const notebook =
         config.notebooks.length > 0
-          ? this.random.helpers.maybe(
+          ? (this.random.helpers.maybe(
               () => this.random.helpers.arrayElement(config.notebooks).trim(),
               { probability: 0.65 }
-            ) ?? null
+            ) ?? null)
           : null
 
       const tags = this.pickNoteTags(tagsPool)
@@ -432,10 +422,9 @@ export class ProjectSeedFactory {
   }): string {
     const prompt = this.random.helpers.arrayElement(COMMENT_PROMPTS)
     const summary = `${prompt} ${this.random.lorem.sentence()}`
-    const context = this.random.helpers.maybe(
-      () => this.random.lorem.sentence(),
-      { probability: 0.4 }
-    )
+    const context = this.random.helpers.maybe(() => this.random.lorem.sentence(), {
+      probability: 0.4
+    })
     const closing =
       params.authorRole === 'owner'
         ? 'Owner note: keep scope tight.'
@@ -507,10 +496,7 @@ export class ProjectSeedFactory {
       return []
     }
 
-    const max = Math.min(
-      Math.max(this.notesConfig.tagsPerNote.max, 0),
-      pool.length
-    )
+    const max = Math.min(Math.max(this.notesConfig.tagsPerNote.max, 0), pool.length)
     const min = Math.min(Math.max(this.notesConfig.tagsPerNote.min, 0), max)
 
     if (max === 0) {
@@ -522,26 +508,18 @@ export class ProjectSeedFactory {
       return []
     }
 
-    return this.random.helpers
-      .arrayElements(pool, count)
-      .map((tag) => tag.toLowerCase())
+    return this.random.helpers.arrayElements(pool, count).map((tag) => tag.toLowerCase())
   }
 
   private buildLinkedTaskIndexes(taskCount: number): number[] {
     if (taskCount === 0) {
       return []
     }
-    if (
-      this.random.number.float({ min: 0, max: 1 }) >
-      this.notesConfig.linkProbability
-    ) {
+    if (this.random.number.float({ min: 0, max: 1 }) > this.notesConfig.linkProbability) {
       return []
     }
 
-    const max = Math.min(
-      Math.max(this.notesConfig.linkTargets.max, 0),
-      taskCount
-    )
+    const max = Math.min(Math.max(this.notesConfig.linkTargets.max, 0), taskCount)
     const min = Math.min(Math.max(this.notesConfig.linkTargets.min, 0), max)
 
     if (max === 0) {
@@ -564,10 +542,9 @@ export class ProjectSeedFactory {
   private buildNoteTitle(): string {
     const prefix = this.random.helpers.arrayElement(NOTE_PREFIXES)
     const subject = capitalize(this.random.company.bsNoun())
-    const qualifier = this.random.helpers.maybe(
-      () => capitalize(this.random.company.bsBuzz()),
-      { probability: 0.4 }
-    )
+    const qualifier = this.random.helpers.maybe(() => capitalize(this.random.company.bsBuzz()), {
+      probability: 0.4
+    })
     const composed = qualifier ? `${prefix}: ${subject} ${qualifier}` : `${prefix}: ${subject}`
     return composed.slice(0, 160)
   }
@@ -585,10 +562,7 @@ export class ProjectSeedFactory {
       sections.push(`## ${header}\n\n${paragraph}`)
     }
 
-    if (
-      this.random.number.float({ min: 0, max: 1 }) <
-      this.notesConfig.checklistProbability
-    ) {
+    if (this.random.number.float({ min: 0, max: 1 }) < this.notesConfig.checklistProbability) {
       const checklistItems = this.random.helpers.multiple(
         () => `- [ ] ${capitalize(this.random.company.bsBuzz())}`,
         { count: this.random.number.int({ min: 2, max: 5 }) }

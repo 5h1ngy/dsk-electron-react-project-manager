@@ -74,9 +74,7 @@ export class AppLogger {
     const mappedLevel = this.mapConsoleLevel(level)
     const formatted = `${COLORS.renderer}${message}${RESET}`
     const rendererContext = sourceId ? `renderer:${sourceId}${line ? `:${line}` : ''}` : undefined
-    this.write(
-      `${this.formatLine(mappedLevel, formatted, rendererContext)}`
-    )
+    this.write(`${this.formatLine(mappedLevel, formatted, rendererContext)}`)
   }
 
   private log(level: LogLevel, message: string, context?: string, error?: unknown): void {
@@ -164,7 +162,10 @@ export const shouldSuppressDevtoolsMessage = (sourceId: string, message: string)
 
   if (isDevtools && isAutofillNoise) {
     if (!autoFillWarningLogged) {
-      defaultLogger.debug('Suppressed verbose devtools Autofill noise. DevTools remains functional.', 'DevTools')
+      defaultLogger.debug(
+        'Suppressed verbose devtools Autofill noise. DevTools remains functional.',
+        'DevTools'
+      )
       autoFillWarningLogged = true
     }
     return true

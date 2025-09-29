@@ -73,8 +73,7 @@ const setup = async () => {
 
 describe('NoteService', () => {
   it('gestisce creazione, privacy e collegamenti dei task', async () => {
-    const { sequelize, directory, projectService, taskService, noteService, admin } =
-      await setup()
+    const { sequelize, directory, projectService, taskService, noteService, admin } = await setup()
 
     try {
       const adminActor = createActor(admin.id, ['Admin'])

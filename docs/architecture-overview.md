@@ -38,4 +38,3 @@ This project is structured as a multi-package Electron application with a clear 
 - **Linting & Formatting**: ESLint (`eslint.config.mjs`) and Prettier (`.prettierrc.yaml`) enforce consistent coding standards across packages.
 
 This layered design keeps the security-sensitive main process isolated, while the renderer remains a fully featured React application that communicates via typed IPC boundaries. The supporting tooling ensures the project remains maintainable as new features are introduced.
-

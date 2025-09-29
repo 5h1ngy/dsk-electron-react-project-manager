@@ -7,4 +7,3 @@ export interface LoggerOptions {
   writer?: (line: string) => void
   clock?: () => Date
 }
-

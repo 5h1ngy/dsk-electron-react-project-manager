@@ -6,10 +6,7 @@ import { useHealthStatus } from '@renderer/components/HealthStatusCard.hooks'
 import type { HealthStatusCardProps } from '@renderer/components/HealthStatusCard.types'
 import { formatTimestamp } from '@renderer/components/HealthStatusCard.helpers'
 
-export const HealthStatusCard = ({
-  className,
-  cardStyle
-}: HealthStatusCardProps): JSX.Element => {
+export const HealthStatusCard = ({ className, cardStyle }: HealthStatusCardProps): JSX.Element => {
   const { loading, data, error, refresh } = useHealthStatus()
 
   const uptimeLabel = useMemo(() => {
@@ -23,10 +20,7 @@ export const HealthStatusCard = ({
     return `${minutes}m ${seconds}s`
   }, [data])
 
-  const mergedCardStyle = useMemo<CSSProperties>(
-    () => ({ width: 360, ...cardStyle }),
-    [cardStyle]
-  )
+  const mergedCardStyle = useMemo<CSSProperties>(() => ({ width: 360, ...cardStyle }), [cardStyle])
 
   if (loading && !data && !error) {
     return (

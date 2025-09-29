@@ -1,10 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit'
 
-import type {
-  CreateViewInput,
-  UpdateViewInput,
-  ListViewsInput
-} from '@main/services/view/schemas'
+import type { CreateViewInput, UpdateViewInput, ListViewsInput } from '@main/services/view/schemas'
 import type { SavedViewDTO } from '@main/services/view/types'
 import {
   extractErrorMessage,
@@ -95,4 +91,3 @@ export const deleteView = createAsyncThunk<
     return handleViewError(error, dispatch, rejectWithValue)
   }
 })
-

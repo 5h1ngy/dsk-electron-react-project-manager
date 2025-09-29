@@ -70,4 +70,3 @@ export class ProjectIpcRegistrar {
     return await this.authService.resolveActor(token, { touch: true })
   }
 }
-

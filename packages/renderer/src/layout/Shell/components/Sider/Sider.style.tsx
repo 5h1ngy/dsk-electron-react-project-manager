@@ -19,8 +19,7 @@ export const useSiderStyles = (themeMode: 'light' | 'dark'): SiderStyle => {
   const palette = useMemo(() => resolvePalette(themeMode), [themeMode])
 
   return useMemo(() => {
-    const background =
-      themeMode === 'dark' ? token.colorBgElevated : token.colorBgContainer
+    const background = themeMode === 'dark' ? token.colorBgElevated : token.colorBgContainer
 
     return {
       background,
@@ -29,7 +28,10 @@ export const useSiderStyles = (themeMode: 'light' | 'dark'): SiderStyle => {
       accentForeground: resolveAccentForeground(token.colorPrimary, palette, themeMode),
       muted: token.colorTextSecondary,
       text: token.colorTextHeading,
-      shadow: themeMode === 'dark' ? '0 12px 28px rgba(2, 6, 23, 0.4)' : '0 6px 18px rgba(15, 23, 42, 0.12)'
+      shadow:
+        themeMode === 'dark'
+          ? '0 12px 28px rgba(2, 6, 23, 0.4)'
+          : '0 6px 18px rgba(15, 23, 42, 0.12)'
     }
   }, [
     palette,

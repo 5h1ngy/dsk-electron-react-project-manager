@@ -8,7 +8,10 @@ import {
   setAccentColor,
   setMode
 } from '@renderer/store/slices/theme'
-import type { UseThemeControlsResult, ThemeDropdownProps } from '@renderer/components/ThemeControls.types'
+import type {
+  UseThemeControlsResult,
+  ThemeDropdownProps
+} from '@renderer/components/ThemeControls.types'
 import { ACCENT_PRESETS } from '@renderer/theme/foundations/brand'
 
 export const useThemeControls = (): UseThemeControlsResult => {

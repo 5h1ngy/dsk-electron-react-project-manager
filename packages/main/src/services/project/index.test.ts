@@ -80,9 +80,7 @@ describe('ProjectService', () => {
       expect(project.key).toBe('KP')
       expect(project.tags).toEqual(expect.arrayContaining(['kanban', 'ops']))
       expect(project.members).toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({ userId: admin.id, role: 'admin' })
-        ])
+        expect.arrayContaining([expect.objectContaining({ userId: admin.id, role: 'admin' })])
       )
 
       const membership = await ProjectMember.findOne({
@@ -145,9 +143,7 @@ describe('ProjectService', () => {
       })
 
       expect(updated.members).toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({ userId: maintainer.id, role: 'edit' })
-        ])
+        expect.arrayContaining([expect.objectContaining({ userId: maintainer.id, role: 'edit' })])
       )
 
       await projectService.addOrUpdateMember(adminActor, project.id, {
@@ -161,11 +157,7 @@ describe('ProjectService', () => {
         code: 'ERR_PERMISSION'
       })
 
-      const afterRemoval = await projectService.removeMember(
-        adminActor,
-        project.id,
-        maintainer.id
-      )
+      const afterRemoval = await projectService.removeMember(adminActor, project.id, maintainer.id)
       expect(afterRemoval.members).not.toEqual(
         expect.arrayContaining([expect.objectContaining({ userId: maintainer.id })])
       )

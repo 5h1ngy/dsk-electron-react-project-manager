@@ -7,8 +7,9 @@ import { useAppSelector } from '@renderer/store/hooks'
 import { selectThemeMode } from '@renderer/store/slices/theme'
 import { buildNavigationItems, resolveSelectedKey } from '@renderer/layout/Shell/Shell.helpers'
 import type { UseShellLayoutResult } from '@renderer/layout/Shell/Shell.types'
+import type { UserDTO } from '@main/services/auth'
 
-export const useShellLayout = (): UseShellLayoutResult => {
+export const useShellLayout = (currentUser?: UserDTO): UseShellLayoutResult => {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const location = useLocation()
@@ -17,17 +18,22 @@ export const useShellLayout = (): UseShellLayoutResult => {
   const [breakpointCollapsed, setBreakpointCollapsed] = useState(false)
   const mode = useAppSelector(selectThemeMode)
 
-  const menuTheme: 'light' | 'dark' = useMemo(
-    () => (mode === 'dark' ? 'dark' : 'light'),
-    [mode]
+  const menuTheme: 'light' | 'dark' = useMemo(() => (mode === 'dark' ? 'dark' : 'light'), [mode])
+
+  const includeUserManagement = useMemo(
+    () => currentUser?.roles?.includes('Admin') ?? false,
+    [currentUser?.roles]
   )
 
-  const menuItems = useMemo<MenuProps['items']>(() => buildNavigationItems(t), [t])
+  const menuItems = useMemo<MenuProps['items']>(
+    () => buildNavigationItems(t, { includeUserManagement }),
+    [includeUserManagement, t]
+  )
 
   const selectedKeys = useMemo(() => {
-    const key = resolveSelectedKey(location.pathname)
+    const key = resolveSelectedKey(location.pathname, { includeUserManagement })
     return key ? [key] : []
-  }, [location.pathname])
+  }, [includeUserManagement, location.pathname])
 
   const handleMenuSelect = useCallback<NonNullable<MenuProps['onClick']>>(
     ({ key }) => {
@@ -48,12 +54,15 @@ export const useShellLayout = (): UseShellLayoutResult => {
     })
   }, [setBreakpointCollapsed])
 
-  const handleCollapseChange = useCallback((value: boolean) => {
-    setCollapsed(value)
-    if (!value) {
-      setBreakpointCollapsed(false)
-    }
-  }, [setBreakpointCollapsed])
+  const handleCollapseChange = useCallback(
+    (value: boolean) => {
+      setCollapsed(value)
+      if (!value) {
+        setBreakpointCollapsed(false)
+      }
+    },
+    [setBreakpointCollapsed]
+  )
 
   const handleBreakpoint = useCallback(
     (broken: boolean) => {

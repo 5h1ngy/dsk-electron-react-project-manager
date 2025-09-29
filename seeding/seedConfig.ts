@@ -122,9 +122,10 @@ export const loadSeedConfig = (): SeedConfig => {
   }
 
   const overridePath = process.env.SEED_CONFIG_PATH?.trim()
-  const targetPath = overridePath && overridePath.length > 0
-    ? resolve(overridePath)
-    : join(__dirname, CONFIG_FILENAME)
+  const targetPath =
+    overridePath && overridePath.length > 0
+      ? resolve(overridePath)
+      : join(__dirname, CONFIG_FILENAME)
 
   let overrides: DeepPartial<SeedConfig> = {}
 
@@ -171,8 +172,7 @@ const mergeConfig = (defaults: SeedConfig, overrides: DeepPartial<SeedConfig>): 
       min: overrides.projects?.tasksPerProject?.min ?? defaults.projects.tasksPerProject.min,
       max: overrides.projects?.tasksPerProject?.max ?? defaults.projects.tasksPerProject.max
     },
-    backlogBufferMax:
-      overrides.projects?.backlogBufferMax ?? defaults.projects.backlogBufferMax,
+    backlogBufferMax: overrides.projects?.backlogBufferMax ?? defaults.projects.backlogBufferMax,
     tagsPerProject: {
       min: overrides.projects?.tagsPerProject?.min ?? defaults.projects.tagsPerProject.min,
       max: overrides.projects?.tagsPerProject?.max ?? defaults.projects.tagsPerProject.max
@@ -191,8 +191,7 @@ const mergeConfig = (defaults: SeedConfig, overrides: DeepPartial<SeedConfig>): 
           overrides.projects?.members?.contributor?.min ??
           defaults.projects.members.contributor.min,
         max:
-          overrides.projects?.members?.contributor?.max ??
-          defaults.projects.members.contributor.max
+          overrides.projects?.members?.contributor?.max ?? defaults.projects.members.contributor.max
       },
       viewer: {
         min: overrides.projects?.members?.viewer?.min ?? defaults.projects.members.viewer.min,
@@ -201,14 +200,8 @@ const mergeConfig = (defaults: SeedConfig, overrides: DeepPartial<SeedConfig>): 
     }
   },
   comments: {
-    minByStatus: buildStatusMap(
-      defaults.comments.minByStatus,
-      overrides.comments?.minByStatus
-    ),
-    maxByStatus: buildStatusMap(
-      defaults.comments.maxByStatus,
-      overrides.comments?.maxByStatus
-    )
+    minByStatus: buildStatusMap(defaults.comments.minByStatus, overrides.comments?.minByStatus),
+    maxByStatus: buildStatusMap(defaults.comments.maxByStatus, overrides.comments?.maxByStatus)
   },
   notes: {
     perProject: {
@@ -228,10 +221,7 @@ const mergeConfig = (defaults: SeedConfig, overrides: DeepPartial<SeedConfig>): 
       min: overrides.notes?.tagsPerNote?.min ?? defaults.notes.tagsPerNote.min,
       max: overrides.notes?.tagsPerNote?.max ?? defaults.notes.tagsPerNote.max
     },
-    linkProbability: clampRatio(
-      overrides.notes?.linkProbability,
-      defaults.notes.linkProbability
-    ),
+    linkProbability: clampRatio(overrides.notes?.linkProbability, defaults.notes.linkProbability),
     linkTargets: {
       min: overrides.notes?.linkTargets?.min ?? defaults.notes.linkTargets.min,
       max: overrides.notes?.linkTargets?.max ?? defaults.notes.linkTargets.max
@@ -241,12 +231,8 @@ const mergeConfig = (defaults: SeedConfig, overrides: DeepPartial<SeedConfig>): 
       defaults.notes.checklistProbability
     ),
     summaryParagraphs: {
-      min:
-        overrides.notes?.summaryParagraphs?.min ??
-        defaults.notes.summaryParagraphs.min,
-      max:
-        overrides.notes?.summaryParagraphs?.max ??
-        defaults.notes.summaryParagraphs.max
+      min: overrides.notes?.summaryParagraphs?.min ?? defaults.notes.summaryParagraphs.min,
+      max: overrides.notes?.summaryParagraphs?.max ?? defaults.notes.summaryParagraphs.max
     }
   }
 })

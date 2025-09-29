@@ -52,9 +52,7 @@ describe('PublicRoute', () => {
 
     expect(await screen.findByTestId('blank-layout')).toBeInTheDocument()
     expect(screen.getByTestId('public-content')).toBeInTheDocument()
-    expect(blankMock).toHaveBeenCalledWith(
-      expect.objectContaining({ children: expect.anything() })
-    )
+    expect(blankMock).toHaveBeenCalledWith(expect.objectContaining({ children: expect.anything() }))
   })
 
   it('navigates to the redirect path when already authenticated', async () => {

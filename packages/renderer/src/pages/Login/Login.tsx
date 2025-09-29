@@ -1,13 +1,17 @@
-import type { ChangeEvent, JSX } from 'react'
+import type { ChangeEvent, FC } from 'react'
 import { Alert, Button, Card, Form, Input, Typography } from 'antd'
 import { Controller } from 'react-hook-form'
 import { Link } from 'react-router-dom'
 
-import { LOGIN_CARD_STYLE, INFO_TEXT_STYLE, SECONDARY_INFO_STYLE } from '@renderer/pages/Login/Login.helpers'
+import {
+  LOGIN_CARD_STYLE,
+  INFO_TEXT_STYLE,
+  SECONDARY_INFO_STYLE
+} from '@renderer/pages/Login/Login.helpers'
 import type { LoginProps } from '@renderer/pages/Login/Login.types'
 import { useLoginForm } from '@renderer/pages/Login/hooks/useLoginForm'
 
-const Login = ({}: LoginProps): JSX.Element => {
+const Login: FC<LoginProps> = () => {
   const { t, status, error, clearError, control, errors, handleSubmit, onSubmit } = useLoginForm()
 
   return (

@@ -1,11 +1,7 @@
 import { z } from 'zod'
 
 export const createTaskSchema = z.object({
-  title: z
-    .string()
-    .trim()
-    .min(1, 'Il titolo è obbligatorio')
-    .max(160, 'Massimo 160 caratteri'),
+  title: z.string().trim().min(1, 'Il titolo è obbligatorio').max(160, 'Massimo 160 caratteri'),
   description: z
     .string()
     .trim()
@@ -60,10 +56,7 @@ const dueDateInputSchema = z
     }
     return value
   })
-  .refine(
-    (value) => value === null || /^\d{4}-\d{2}-\d{2}$/.test(value),
-    'Data non valida'
-  )
+  .refine((value) => value === null || /^\d{4}-\d{2}-\d{2}$/.test(value), 'Data non valida')
   .refine((value) => {
     if (!value) {
       return true
@@ -89,11 +82,7 @@ const assigneeInputSchema = z
   })
 
 export const taskFormSchema = z.object({
-  title: z
-    .string()
-    .trim()
-    .min(1, 'Il titolo è obbligatorio')
-    .max(160, 'Massimo 160 caratteri'),
+  title: z.string().trim().min(1, 'Il titolo è obbligatorio').max(160, 'Massimo 160 caratteri'),
   description: normalizeDescription,
   status: taskStatusSchema,
   priority: taskPrioritySchema,
@@ -102,5 +91,3 @@ export const taskFormSchema = z.object({
 })
 
 export type TaskFormValues = z.infer<typeof taskFormSchema>
-
-

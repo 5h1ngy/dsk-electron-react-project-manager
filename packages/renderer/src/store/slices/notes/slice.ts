@@ -103,7 +103,7 @@ const notesSlice = createSlice({
         const projectState = ensureProjectState(state, projectId)
         projectState.status = 'succeeded'
         projectState.ids = notes.map((note) => note.id)
-        projectState.entities = notes.reduce<Record<string, typeof notes[number]>>(
+        projectState.entities = notes.reduce<Record<string, (typeof notes)[number]>>(
           (accumulator, note) => {
             accumulator[note.id] = note
             return accumulator

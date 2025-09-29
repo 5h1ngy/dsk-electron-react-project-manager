@@ -1,6 +1,23 @@
 import { useMemo, useState, type JSX } from 'react'
-import { AppstoreOutlined, BarsOutlined, ColumnWidthOutlined, PlusOutlined, TableOutlined } from '@ant-design/icons'
-import { Button, DatePicker, Drawer, Flex, Grid, Input, Segmented, Select, Space, theme } from 'antd'
+import {
+  AppstoreOutlined,
+  BarsOutlined,
+  ColumnWidthOutlined,
+  PlusOutlined,
+  TableOutlined
+} from '@ant-design/icons'
+import {
+  Button,
+  DatePicker,
+  Drawer,
+  Flex,
+  Grid,
+  Input,
+  Segmented,
+  Select,
+  Space,
+  theme
+} from 'antd'
 import type { SelectProps } from 'antd'
 import type { ReactNode } from 'react'
 import { SearchOutlined } from '@ant-design/icons'
@@ -139,10 +156,12 @@ export const TaskFiltersBar = ({
       {savedViewsControls ? (
         <BorderedPanel
           padding="md"
-          bodyStyle={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: token.paddingSM
+          styles={{
+            body: {
+              display: 'flex',
+              flexDirection: 'column',
+              gap: token.paddingSM
+            }
           }}
           title={
             <Space size={6} align="center">
@@ -213,12 +232,7 @@ export const TaskFiltersBar = ({
           </Space>
         ) : null}
         {onCreate ? (
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            onClick={onCreate}
-            disabled={!canCreate}
-          >
+          <Button type="primary" icon={<PlusOutlined />} onClick={onCreate} disabled={!canCreate}>
             {t('tasks.actions.create')}
           </Button>
         ) : null}
@@ -248,13 +262,6 @@ export const TaskFiltersBar = ({
         open={filtersOpen}
         onClose={() => setFiltersOpen(false)}
         width={screens.lg ? 420 : '100%'}
-        contentWrapperStyle={{
-          borderRadius: `${token.borderRadiusLG}px`,
-          margin: screens.lg ? token.marginLG : 0,
-          border: `${token.lineWidth}px solid ${token.colorBorderSecondary}`,
-          boxShadow: token.boxShadowSecondary,
-          overflow: 'hidden'
-        }}
         title={
           <Space size={6} align="center">
             <FilterOutlined />
@@ -262,6 +269,13 @@ export const TaskFiltersBar = ({
           </Space>
         }
         styles={{
+          wrapper: {
+            borderRadius: `${token.borderRadiusLG}px`,
+            margin: screens.lg ? token.marginLG : 0,
+            border: `${token.lineWidth}px solid ${token.colorBorderSecondary}`,
+            boxShadow: token.boxShadowSecondary,
+            overflow: 'hidden'
+          },
           header: { padding: token.paddingLG, marginBottom: 0 },
           body: { padding: token.paddingLG, display: 'flex', flexDirection: 'column', gap: 16 },
           footer: {
@@ -299,4 +313,3 @@ export const TaskFiltersBar = ({
 TaskFiltersBar.displayName = 'TaskFiltersBar'
 
 export default TaskFiltersBar
-

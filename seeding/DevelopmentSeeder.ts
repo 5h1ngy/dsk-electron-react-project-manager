@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker'
+import { randomInt } from 'node:crypto'
 import type { Sequelize } from 'sequelize-typescript'
 import type { Transaction } from 'sequelize'
 
@@ -17,10 +18,7 @@ import { UserSeedFactory } from './UserSeedFactory'
 import { UserSeeder } from './UserSeeder'
 import { loadSeedConfig, type SeedConfig } from './seedConfig'
 
-const DEFAULT_OPTIONS: Required<DevelopmentSeederOptions> = {
-  fakerSeed: 20251018,
-  passwordSeed: 'changeme!'
-}
+const DEFAULT_PASSWORD_SEED = 'changeme!'
 
 export class DevelopmentSeeder {
   private readonly random = faker
@@ -31,8 +29,17 @@ export class DevelopmentSeeder {
   private readonly userSeeder: UserSeeder
   private readonly projectSeeder: ProjectSeeder
 
-  constructor(private readonly sequelize: Sequelize, options: DevelopmentSeederOptions = {}) {
-    this.options = { ...DEFAULT_OPTIONS, ...options }
+  constructor(
+    private readonly sequelize: Sequelize,
+    options: DevelopmentSeederOptions = {}
+  ) {
+    const fakerSeed = options.fakerSeed ?? randomInt(1, 2 ** 31) // faker expects a positive 32-bit integer
+    const passwordSeed = options.passwordSeed ?? DEFAULT_PASSWORD_SEED
+
+    this.options = {
+      fakerSeed,
+      passwordSeed
+    }
     this.config = loadSeedConfig()
     this.userFactory = new UserSeedFactory(this.random, this.config.users)
     this.projectFactory = new ProjectSeedFactory(
@@ -47,6 +54,7 @@ export class DevelopmentSeeder {
 
   async run(): Promise<void> {
     this.random.seed(this.options.fakerSeed)
+    logger.info(`Using faker seed: ${this.options.fakerSeed}`, 'Seed')
 
     await this.sequelize.transaction(async (transaction) => {
       const state = await this.buildState(transaction)

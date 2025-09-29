@@ -1,9 +1,5 @@
 import type { SavedViewDTO } from '@main/services/view/types'
-import type {
-  CreateViewInput,
-  ListViewsInput,
-  UpdateViewInput
-} from '@main/services/view/schemas'
+import type { CreateViewInput, ListViewsInput, UpdateViewInput } from '@main/services/view/schemas'
 import { invokeIpc } from '@preload/api/shared'
 
 const CHANNELS = {
@@ -23,4 +19,3 @@ export const viewApi = {
   remove: async (token: string, viewId: string) =>
     await invokeIpc<{ success: boolean }>(CHANNELS.remove, token, viewId)
 }
-

@@ -9,13 +9,28 @@ import {
   TeamOutlined,
   UserOutlined
 } from '@ant-design/icons'
-import { Button, DatePicker, Drawer, Flex, Grid, Input, Segmented, Select, Space, theme } from 'antd'
+import {
+  Button,
+  DatePicker,
+  Drawer,
+  Flex,
+  Grid,
+  Input,
+  Segmented,
+  Select,
+  Space,
+  theme
+} from 'antd'
 import type { ChangeEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import dayjs, { type Dayjs } from 'dayjs'
 
 import { BorderedPanel } from '@renderer/components/Surface/BorderedPanel'
-import type { CreatedRange, RoleFilter, ViewMode } from '@renderer/pages/Projects/hooks/useProjectsPage'
+import type {
+  CreatedRange,
+  RoleFilter,
+  ViewMode
+} from '@renderer/pages/Projects/hooks/useProjectsPage'
 
 const { RangePicker } = DatePicker
 
@@ -146,10 +161,12 @@ export const ProjectsActionBar = ({
       {savedViewsControls ? (
         <BorderedPanel
           padding="md"
-          bodyStyle={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: token.paddingSM
+          styles={{
+            body: {
+              display: 'flex',
+              flexDirection: 'column',
+              gap: token.paddingSM
+            }
           }}
           title={
             <Space size={6} align="center">
@@ -282,16 +299,16 @@ export const ProjectsActionBar = ({
         width={screens.lg ? 420 : '100%'}
         open={filtersOpen}
         onClose={() => setFiltersOpen(false)}
-        destroyOnClose={false}
+        destroyOnHidden={false}
         maskClosable
-        contentWrapperStyle={{
-          borderRadius: `${token.borderRadiusLG}px`,
-          margin: screens.lg ? token.marginLG : 0,
-          border: `${token.lineWidth}px solid ${token.colorBorderSecondary}`,
-          boxShadow: token.boxShadowSecondary,
-          overflow: 'hidden'
-        }}
         styles={{
+          wrapper: {
+            borderRadius: `${token.borderRadiusLG}px`,
+            margin: screens.lg ? token.marginLG : 0,
+            border: `${token.lineWidth}px solid ${token.colorBorderSecondary}`,
+            boxShadow: token.boxShadowSecondary,
+            overflow: 'hidden'
+          },
           header: { padding: token.paddingLG, marginBottom: 0 },
           body: { padding: token.paddingLG, display: 'flex', flexDirection: 'column', gap: 16 },
           footer: {

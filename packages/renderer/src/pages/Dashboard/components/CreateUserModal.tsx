@@ -5,8 +5,6 @@ import type { UseFormReturn } from 'react-hook-form'
 import { Controller } from 'react-hook-form'
 import type { SelectProps } from 'antd'
 
-import { ROLE_NAMES, type RoleName } from '@main/services/auth/constants'
-
 import type { CreateUserValues } from '@renderer/pages/Dashboard/schemas/userSchemas'
 import { useSemanticBadges, buildBadgeStyle } from '@renderer/theme/hooks/useSemanticBadges'
 
@@ -15,13 +13,15 @@ interface CreateUserModalProps {
   onCancel: () => void
   onSubmit: () => Promise<void>
   form: UseFormReturn<CreateUserValues>
+  roleOptions: string[]
 }
 
 export const CreateUserModal = ({
   open,
   onCancel,
   onSubmit,
-  form
+  form,
+  roleOptions
 }: CreateUserModalProps): JSX.Element => {
   const { t } = useTranslation('dashboard')
   const {
@@ -31,19 +31,17 @@ export const CreateUserModal = ({
   } = form
   const { token } = theme.useToken()
   const badgeTokens = useSemanticBadges()
-  const roleOptions = useMemo(
+  const selectOptions = useMemo(
     () =>
-      ROLE_NAMES.map((role): { label: string; value: RoleName } => ({
+      roleOptions.map((role) => ({
         label: t(`dashboard:roles.${role}`, { defaultValue: role }),
         value: role
       })),
-    [t]
+    [roleOptions, t]
   )
-  const roleTagRender = useCallback<
-    NonNullable<SelectProps<RoleName>['tagRender']>
-  >(
+  const roleTagRender = useCallback<NonNullable<SelectProps<string>['tagRender']>>(
     ({ label, value, closable, onClose }) => {
-      const role = value as RoleName
+      const role = value as string
       const badge = badgeTokens.userRole[role] ?? badgeTokens.userRole.Viewer
       return (
         <Tag
@@ -122,7 +120,7 @@ export const CreateUserModal = ({
               <Select
                 {...field}
                 mode="multiple"
-                options={roleOptions}
+                options={selectOptions}
                 placeholder={t('dashboard:modals.create.fields.rolesPlaceholder')}
                 tagRender={roleTagRender}
               />

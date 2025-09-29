@@ -12,16 +12,18 @@ export class AuditService {
     diff: unknown = null,
     options: { transaction?: Transaction } = {}
   ): Promise<void> {
-    await AuditLog.create({
-      id: randomUUID(),
-      userId,
-      entity,
-      entityId,
-      action,
-      diffJSON: diff ? JSON.stringify(diff) : null,
-      createdAt: new Date()
-    }, { transaction: options.transaction })
+    await AuditLog.create(
+      {
+        id: randomUUID(),
+        userId,
+        entity,
+        entityId,
+        action,
+        diffJSON: diff ? JSON.stringify(diff) : null,
+        createdAt: new Date()
+      },
+      { transaction: options.transaction }
+    )
     logger.debug(`Audit recorded for ${entity} ${action}`, 'Audit')
   }
 }
-

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { AuthService } from '@main/services/auth'
 import type { ProjectService } from '@main/services/project'
 import type { ProjectDetailsDTO, ProjectSummaryDTO } from '@main/services/project/types'
@@ -30,17 +31,16 @@ const createProjectDetails = (overrides: Partial<ProjectDetailsDTO> = {}): Proje
     role: overrides.role ?? 'admin',
     memberCount: overrides.memberCount ?? 4,
     tags: overrides.tags ?? ['ux', 'refactor'],
-    members:
-      overrides.members ?? [
-        {
-          userId: 'user-1',
-          username: 'jane.doe',
-          displayName: 'Jane Doe',
-          isActive: true,
-          role: 'admin',
-          createdAt: new Date('2024-02-01T09:05:00.000Z')
-        }
-      ]
+    members: overrides.members ?? [
+      {
+        userId: 'user-1',
+        username: 'jane.doe',
+        displayName: 'Jane Doe',
+        isActive: true,
+        role: 'admin',
+        createdAt: new Date('2024-02-01T09:05:00.000Z')
+      }
+    ]
   }
   return base
 }

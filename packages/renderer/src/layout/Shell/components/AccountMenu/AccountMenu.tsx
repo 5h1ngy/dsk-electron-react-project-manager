@@ -5,7 +5,13 @@ import type { JSX } from 'react'
 import { useAccountMenuStyles } from '@renderer/layout/Shell/components/AccountMenu/AccountMenu.style'
 import type { AccountMenuProps } from '@renderer/layout/Shell/components/AccountMenu/AccountMenu.types'
 
-const AccountMenu = ({ displayName, username, onLogout, labels, width }: AccountMenuProps): JSX.Element => {
+const AccountMenu = ({
+  displayName,
+  username,
+  onLogout,
+  labels,
+  width
+}: AccountMenuProps): JSX.Element => {
   const { sectionGap, headerGap, dividerStyle, cardProps } = useAccountMenuStyles({ width })
 
   return (

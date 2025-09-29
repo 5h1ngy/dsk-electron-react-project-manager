@@ -36,18 +36,14 @@ export const buildBrandTokens = (
   const primaryHover = lighten(accentColor, 0.12)
   const primaryActive = darken(accentColor, 0.18)
 
-  const primarySurface =
-    mode === 'dark' ? darken(accentColor, 0.6) : lighten(accentColor, 0.58)
-  const secondaryBase =
-    mode === 'dark' ? lighten(accentColor, 0.32) : darken(accentColor, 0.15)
+  const primarySurface = mode === 'dark' ? darken(accentColor, 0.6) : lighten(accentColor, 0.58)
+  const secondaryBase = mode === 'dark' ? lighten(accentColor, 0.32) : darken(accentColor, 0.15)
   const secondaryHover =
     mode === 'dark' ? lighten(secondaryBase, 0.08) : darken(secondaryBase, 0.08)
   const secondaryActive =
     mode === 'dark' ? darken(secondaryBase, 0.08) : darken(secondaryBase, 0.16)
-  const secondarySurface =
-    mode === 'dark' ? darken(accentColor, 0.45) : lighten(accentColor, 0.45)
-  const secondaryBorder =
-    mode === 'dark' ? darken(accentColor, 0.3) : lighten(accentColor, 0.28)
+  const secondarySurface = mode === 'dark' ? darken(accentColor, 0.45) : lighten(accentColor, 0.45)
+  const secondaryBorder = mode === 'dark' ? darken(accentColor, 0.3) : lighten(accentColor, 0.28)
 
   return {
     primary,
@@ -93,6 +89,3 @@ export const resolveAccentForeground = (
   const brightness = (r * 299 + g * 587 + b * 114) / 1000
   return brightness > 140 ? palette.textOnBright : palette.textOnDark
 }
-
-
-

@@ -8,4 +8,3 @@ export interface ErrorBoundaryState {
   hasError: boolean
   message?: string
 }
-

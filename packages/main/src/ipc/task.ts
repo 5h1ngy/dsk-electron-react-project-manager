@@ -20,13 +20,10 @@ export class TaskIpcRegistrar {
   }
 
   register(): void {
-    this.registrar.register(
-      'task:list',
-      async (token: string, projectId: string) => {
-        const actor = await this.resolveActor(token)
-        return await this.taskService.listByProject(actor, projectId)
-      }
-    )
+    this.registrar.register('task:list', async (token: string, projectId: string) => {
+      const actor = await this.resolveActor(token)
+      return await this.taskService.listByProject(actor, projectId)
+    })
 
     this.registrar.register('task:get', async (token: string, taskId: string) => {
       const actor = await this.resolveActor(token)
@@ -60,21 +57,15 @@ export class TaskIpcRegistrar {
       return { success: true }
     })
 
-    this.registrar.register(
-      'task:comment:list',
-      async (token: string, taskId: string) => {
-        const actor = await this.resolveActor(token)
-        return await this.taskService.listComments(actor, taskId)
-      }
-    )
+    this.registrar.register('task:comment:list', async (token: string, taskId: string) => {
+      const actor = await this.resolveActor(token)
+      return await this.taskService.listComments(actor, taskId)
+    })
 
-    this.registrar.register(
-      'task:comment:add',
-      async (token: string, payload: unknown) => {
-        const actor = await this.resolveActor(token)
-        return await this.taskService.addComment(actor, payload)
-      }
-    )
+    this.registrar.register('task:comment:add', async (token: string, payload: unknown) => {
+      const actor = await this.resolveActor(token)
+      return await this.taskService.addComment(actor, payload)
+    })
 
     this.registrar.register('task:search', async (token: string, payload: unknown) => {
       const actor = await this.resolveActor(token)
@@ -86,4 +77,3 @@ export class TaskIpcRegistrar {
     return await this.authService.resolveActor(token, { touch: true })
   }
 }
-

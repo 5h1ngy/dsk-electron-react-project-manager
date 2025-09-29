@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   buildContentSecurityPolicy,
   createNetworkBlockerHandler,
@@ -53,4 +54,3 @@ describe('buildContentSecurityPolicy', () => {
     expect(csp).not.toContain('ws://127.0.0.1:*')
   })
 })
-

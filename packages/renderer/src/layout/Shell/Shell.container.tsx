@@ -20,14 +20,15 @@ const ShellContainer = ({ currentUser, onLogout, children }: ShellProps): JSX.El
     handleCollapseChange,
     handleBreakpoint,
     labels
-  } = useShellLayout()
+  } = useShellLayout(currentUser)
 
   const styles = useShellStyles({
     menuTheme,
     collapsed,
     displayName: currentUser.displayName
   })
-  const { accountButtonStyle, accountAvatarStyle, accountAvatarSizes, dropdownWidth, token } = styles
+  const { accountButtonStyle, accountAvatarStyle, accountAvatarSizes, dropdownWidth, token } =
+    styles
 
   useEffect(() => {
     const styleId = 'app-pagination-active-style'
@@ -64,12 +65,7 @@ const ShellContainer = ({ currentUser, onLogout, children }: ShellProps): JSX.El
   const accountButton = useMemo(
     () => (
       <Dropdown trigger={['click']} popupRender={() => accountMenu} placement="topLeft">
-        <Button
-          block
-          size="large"
-          style={accountButtonStyle}
-          aria-label={labels.logout}
-        >
+        <Button block size="large" style={accountButtonStyle} aria-label={labels.logout}>
           <Avatar
             style={accountAvatarStyle}
             size={collapsed ? accountAvatarSizes.collapsed : accountAvatarSizes.expanded}
@@ -129,4 +125,3 @@ ShellContainer.displayName = 'ShellContainer'
 
 export { ShellContainer as Shell }
 export default ShellContainer
-

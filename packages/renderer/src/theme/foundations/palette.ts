@@ -50,4 +50,3 @@ const DARK_PALETTE: PaletteTokens = {
 
 export const resolvePalette = (mode: ThemeMode): PaletteTokens =>
   mode === 'dark' ? DARK_PALETTE : LIGHT_PALETTE
-

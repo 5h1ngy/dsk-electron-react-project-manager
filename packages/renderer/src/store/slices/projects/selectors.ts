@@ -18,8 +18,11 @@ export const selectSelectedProjectId = (state: RootState) => state.projects.sele
 export const selectSelectedProject = createSelector(
   selectProjectsState,
   selectSelectedProjectId,
-  (state, selectedId) => (selectedId ? state.details[selectedId] ?? null : null)
+  (state, selectedId) => (selectedId ? (state.details[selectedId] ?? null) : null)
 )
 
 export const selectProjectById = (projectId: string) =>
-  createSelector(selectProjectsState, (state) => state.details[projectId] ?? state.entities[projectId] ?? null)
+  createSelector(
+    selectProjectsState,
+    (state) => state.details[projectId] ?? state.entities[projectId] ?? null
+  )

@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto'
 import { mkdirSync } from 'node:fs'
 import { dirname } from 'node:path'
-import { fn, col } from 'sequelize'
+import { fn, col, DataTypes } from 'sequelize'
 import { Sequelize } from 'sequelize-typescript'
 import { SystemSetting } from '@main/models/SystemSetting'
 import { Role } from '@main/models/Role'
@@ -22,7 +22,10 @@ import { DEFAULT_TASK_STATUSES } from '@main/services/taskStatus/defaults'
 import type { DatabaseInitializationOptions } from '@main/config/database.types'
 import { logger } from '@main/config/logger'
 import { ROLE_NAMES } from '@main/services/auth/constants'
+import { DEFAULT_ROLE_DESCRIPTIONS, DEFAULT_ROLE_PERMISSIONS } from '@main/services/roles/constants'
 import { hashPassword } from '@main/services/auth/password'
+import { RoleService } from '@main/services/roles'
+import { AuditService } from '@main/services/audit'
 
 /**
  * Coordinates database creation/migration while keeping the procedural
@@ -87,11 +90,59 @@ export class DatabaseManager {
   ]
 
   private async ensureCoreData(sequelize: Sequelize): Promise<void> {
+    await this.ensureRoleSchema(sequelize)
     await this.ensureRoles()
     await this.ensureAdminUser()
     await this.ensureTaskStatuses()
     await this.ensureTaskFtsInfrastructure(sequelize)
     await this.ensureNoteFtsInfrastructure(sequelize)
+  }
+
+  private async ensureRoleSchema(sequelize: Sequelize): Promise<void> {
+    const queryInterface = sequelize.getQueryInterface()
+    let descriptionExists = false
+    let permissionsExists = false
+
+    try {
+      const table = await queryInterface.describeTable('roles')
+      descriptionExists = Object.prototype.hasOwnProperty.call(table, 'description')
+      permissionsExists = Object.prototype.hasOwnProperty.call(table, 'permissions')
+    } catch (error) {
+      logger.warn('Unable to inspect roles schema; attempting to add missing columns', 'Database')
+      logger.debug(error instanceof Error ? error.message : String(error), 'Database')
+    }
+
+    if (!descriptionExists) {
+      try {
+        await queryInterface.addColumn('roles', 'description', {
+          type: DataTypes.TEXT,
+          allowNull: true
+        })
+      } catch (error) {
+        logger.debug(
+          `Skip adding description column: ${error instanceof Error ? error.message : String(error)}`,
+          'Database'
+        )
+      }
+    }
+
+    if (!permissionsExists) {
+      try {
+        await queryInterface.addColumn('roles', 'permissions', {
+          type: DataTypes.JSON,
+          allowNull: false,
+          defaultValue: []
+        })
+      } catch (error) {
+        logger.debug(
+          `Skip adding permissions column: ${error instanceof Error ? error.message : String(error)}`,
+          'Database'
+        )
+      }
+    }
+
+    const roleService = new RoleService(sequelize, new AuditService())
+    await roleService.ensureDefaults()
   }
 
   private async ensureTaskStatuses(): Promise<void> {
@@ -109,11 +160,11 @@ export class DatabaseManager {
       })
 
       if (existingStatuses.length === 0) {
-        const distinctTaskStatuses = await Task.findAll({
+        const distinctTaskStatuses = (await Task.findAll({
           attributes: [[fn('DISTINCT', col('status')), 'status']],
           where: { projectId: project.id },
           raw: true
-        }) as Array<{ status: string | null }>
+        })) as Array<{ status: string | null }>
 
         const existingKeys = new Set(
           distinctTaskStatuses
@@ -127,9 +178,7 @@ export class DatabaseManager {
           existingKeys.delete(status.key)
         }
         for (const key of existingKeys) {
-          const label = key
-            .replace(/[_-]+/g, ' ')
-            .replace(/\b\w/g, (match) => match.toUpperCase())
+          const label = key.replace(/[_-]+/g, ' ').replace(/\b\w/g, (match) => match.toUpperCase())
           definitions.push({ key, label })
         }
 
@@ -149,11 +198,11 @@ export class DatabaseManager {
       const maxPosition =
         existingStatuses.reduce((max, status) => Math.max(max, status.position), 0) || 0
 
-      const distinctTaskStatuses = await Task.findAll({
+      const distinctTaskStatuses = (await Task.findAll({
         attributes: [[fn('DISTINCT', col('status')), 'status']],
         where: { projectId: project.id },
         raw: true
-      }) as Array<{ status: string | null }>
+      })) as Array<{ status: string | null }>
 
       const missingTaskStatuses = distinctTaskStatuses.filter((row): row is { status: string } => {
         if (typeof row.status !== 'string' || row.status.length === 0) {
@@ -209,6 +258,8 @@ export class DatabaseManager {
       missing.map((name) => ({
         id: randomUUID(),
         name,
+        description: DEFAULT_ROLE_DESCRIPTIONS[name] ?? null,
+        permissions: DEFAULT_ROLE_PERMISSIONS[name] ?? [],
         createdAt: new Date(),
         updatedAt: new Date()
       }))

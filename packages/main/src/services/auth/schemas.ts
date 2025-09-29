@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { ROLE_NAMES, PASSWORD_POLICY } from '@main/services/auth/constants'
+import { PASSWORD_POLICY } from '@main/services/auth/constants'
 
 const usernameRegex = /^[a-zA-Z0-9_.-]+$/
 
@@ -16,7 +16,7 @@ export const CreateUserSchema = z
     password: z.string().min(PASSWORD_POLICY.minLength),
     displayName: z.string().min(1).max(64),
     isActive: z.boolean().default(true),
-    roles: z.array(z.enum(ROLE_NAMES)).min(1, 'Almeno un ruolo richiesto')
+    roles: z.array(z.string().min(1).max(64)).min(1, 'Almeno un ruolo richiesto')
   })
   .strict()
 
@@ -37,7 +37,7 @@ export const UpdateUserSchema = z
     displayName: z.string().min(1).max(64).optional(),
     password: z.string().min(PASSWORD_POLICY.minLength).optional(),
     isActive: z.boolean().optional(),
-    roles: z.array(z.enum(ROLE_NAMES)).min(1).optional()
+    roles: z.array(z.string().min(1).max(64)).min(1).optional()
   })
   .strict()
 

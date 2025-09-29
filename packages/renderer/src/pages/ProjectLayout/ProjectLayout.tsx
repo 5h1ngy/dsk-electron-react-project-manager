@@ -212,12 +212,7 @@ const ProjectLayout = (): JSX.Element => {
             {taskModals.taskMessageContext}
           </div>
         ) : null}
-        <Tabs
-          activeKey={activeKey}
-          items={tabItems}
-          onChange={handleTabChange}
-          destroyOnHidden
-        />
+        <Tabs activeKey={activeKey} items={tabItems} onChange={handleTabChange} destroyOnHidden />
         <Outlet context={contextValue} />
       </Space>
       <TaskDetailsModal
@@ -252,5 +247,3 @@ ProjectLayout.displayName = 'ProjectLayout'
 
 export { ProjectLayout }
 export default ProjectLayout
-
-

@@ -15,11 +15,7 @@ import {
   type UpdateNoteInput
 } from '@main/services/note/schemas'
 import { mapNoteDetails, mapNoteSummary } from '@main/services/note/helpers'
-import type {
-  NoteDetailsDTO,
-  NoteSearchResultDTO,
-  NoteSummaryDTO
-} from '@main/services/note/types'
+import type { NoteDetailsDTO, NoteSearchResultDTO, NoteSummaryDTO } from '@main/services/note/types'
 import type { ServiceActor } from '@main/services/types'
 import { Note } from '@main/models/Note'
 import { NoteTag } from '@main/models/NoteTag'
@@ -102,11 +98,7 @@ export class NoteService {
     return { project, role: actorRole }
   }
 
-  private canReadNote(
-    actor: ServiceActor,
-    actorRole: ProjectMembershipRole,
-    note: Note
-  ): boolean {
+  private canReadNote(actor: ServiceActor, actorRole: ProjectMembershipRole, note: Note): boolean {
     if (!note.isPrivate) {
       return true
     }
@@ -130,10 +122,7 @@ export class NoteService {
     return resolveRoleWeight(actorRole) >= resolveRoleWeight('admin')
   }
 
-  protected async loadNote(
-    noteId: string,
-    transaction?: Transaction
-  ): Promise<Note> {
+  protected async loadNote(noteId: string, transaction?: Transaction): Promise<Note> {
     const note = await Note.findByPk(noteId, {
       include: [
         { model: NoteTag },
@@ -208,9 +197,13 @@ export class NoteService {
     const existingIds = new Set(tasks.map((task) => task.id))
     const missing = taskIds.filter((taskId) => !existingIds.has(taskId))
     if (missing.length) {
-      throw new AppError('ERR_VALIDATION', 'Alcuni task collegati non appartengono al progetto corrente', {
-        details: { missingTaskIds: missing }
-      })
+      throw new AppError(
+        'ERR_VALIDATION',
+        'Alcuni task collegati non appartengono al progetto corrente',
+        {
+          details: { missingTaskIds: missing }
+        }
+      )
     }
 
     await NoteTaskLink.bulkCreate(
@@ -323,15 +316,29 @@ export class NoteService {
 
         const reloaded = await this.loadNote(note.id, transaction)
 
-        await this.auditService.record(actor.userId, 'note', note.id, 'create', {
-          projectId: project.id,
-          isPrivate: note.isPrivate
-        }, { transaction })
+        await this.auditService.record(
+          actor.userId,
+          'note',
+          note.id,
+          'create',
+          {
+            projectId: project.id,
+            isPrivate: note.isPrivate
+          },
+          { transaction }
+        )
 
         if (input.linkedTaskIds && input.linkedTaskIds.length) {
-          await this.auditService.record(actor.userId, 'note', note.id, 'link_tasks', {
-            taskIds: input.linkedTaskIds
-          }, { transaction })
+          await this.auditService.record(
+            actor.userId,
+            'note',
+            note.id,
+            'link_tasks',
+            {
+              taskIds: input.linkedTaskIds
+            },
+            { transaction }
+          )
         }
 
         if (!this.canReadNote(actor, role, reloaded)) {
@@ -393,9 +400,16 @@ export class NoteService {
 
         const updated = await this.loadNote(note.id, transaction)
 
-        await this.auditService.record(actor.userId, 'note', note.id, 'update', {
-          changedFields: Object.keys(input)
-        }, { transaction })
+        await this.auditService.record(
+          actor.userId,
+          'note',
+          note.id,
+          'update',
+          {
+            changedFields: Object.keys(input)
+          },
+          { transaction }
+        )
 
         return mapNoteDetails(updated)
       })
@@ -433,10 +447,7 @@ export class NoteService {
     }
   }
 
-  async search(
-    actor: ServiceActor,
-    payload: unknown
-  ): Promise<NoteSearchResultDTO[]> {
+  async search(actor: ServiceActor, payload: unknown): Promise<NoteSearchResultDTO[]> {
     let input: SearchNotesInput
     try {
       input = searchNotesSchema.parse(payload)
@@ -510,10 +521,7 @@ export class NoteService {
     }
   }
 
-  private async searchViaFts(
-    query: string,
-    projectIds: string[] | null
-  ): Promise<SearchRow[]> {
+  private async searchViaFts(query: string, projectIds: string[] | null): Promise<SearchRow[]> {
     const escaped = `"${query.replace(/"/g, '""')}"`
     const whereClause = projectIds ? 'AND n.projectId IN (:projectIds)' : ''
 
@@ -538,16 +546,10 @@ export class NoteService {
     return rows
   }
 
-  private async searchViaLike(
-    query: string,
-    projectIds: string[] | null
-  ): Promise<SearchRow[]> {
+  private async searchViaLike(query: string, projectIds: string[] | null): Promise<SearchRow[]> {
     const likePattern = `%${query}%`
     const where: Record<string, unknown> = {
-      [Op.or]: [
-        { title: { [Op.like]: likePattern } },
-        { bodyMd: { [Op.like]: likePattern } }
-      ]
+      [Op.or]: [{ title: { [Op.like]: likePattern } }, { bodyMd: { [Op.like]: likePattern } }]
     }
 
     if (projectIds) {

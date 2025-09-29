@@ -21,9 +21,7 @@ const Blank = ({ children }: BlankLayoutProps): JSX.Element => (
         <ThemeControls />
       </Space>
     </Header>
-    <Content style={BLANK_CONTENT_STYLE}>
-      {children}
-    </Content>
+    <Content style={BLANK_CONTENT_STYLE}>{children}</Content>
   </Layout>
 )
 

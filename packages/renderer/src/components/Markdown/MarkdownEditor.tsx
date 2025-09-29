@@ -116,7 +116,11 @@ export const MarkdownEditor = ({
       }
 
       const afterTrigger = searchRange.slice(triggerPos + suggestionTrigger.length)
-      if (afterTrigger.includes(']') || afterTrigger.includes('\n') || afterTrigger.includes('\r')) {
+      if (
+        afterTrigger.includes(']') ||
+        afterTrigger.includes('\n') ||
+        afterTrigger.includes('\r')
+      ) {
         setTriggerIndex(null)
         setIsSuggestOpen(false)
         setQuery('')
@@ -334,14 +338,15 @@ export const MarkdownEditor = ({
           {isSuggestOpen && filteredSuggestions.length ? (
             <Card
               size="small"
-              bordered
               style={{
                 background: token.colorBgElevated,
                 borderColor: token.colorBorderSecondary,
                 boxShadow: token.boxShadowSecondary ?? token.boxShadow
               }}
-              bodyStyle={{
-                padding: token.paddingXS
+              styles={{
+                body: {
+                  padding: token.paddingXS
+                }
               }}
             >
               <List
@@ -359,9 +364,7 @@ export const MarkdownEditor = ({
                         padding: token.paddingXS,
                         borderRadius: token.borderRadiusSM,
                         cursor: 'pointer',
-                        background: isActive
-                          ? token.colorPrimaryBg
-                          : token.colorBgContainer
+                        background: isActive ? token.colorPrimaryBg : token.colorBgContainer
                       }}
                     >
                       <Space direction="vertical" size={token.marginXXS} style={{ width: '100%' }}>
@@ -380,14 +383,15 @@ export const MarkdownEditor = ({
       ) : (
         <Card
           size="small"
-          bordered
           style={{
             minHeight: 160,
             background: token.colorBgContainer,
             borderColor: token.colorBorderSecondary
           }}
-          bodyStyle={{
-            padding: spacing.md
+          styles={{
+            body: {
+              padding: spacing.md
+            }
           }}
         >
           {value.trim() ? (

@@ -6,7 +6,6 @@ import { useTranslation } from 'react-i18next'
 import { EmptyState, LoadingSkeleton } from '@renderer/components/DataStates'
 import { useDelayedLoading } from '@renderer/hooks/useDelayedLoading'
 import type { UserDTO } from '@main/services/auth'
-import type { RoleName } from '@main/services/auth/constants'
 import { useSemanticBadges, buildBadgeStyle } from '@renderer/theme/hooks/useSemanticBadges'
 
 export interface UserListViewProps {
@@ -48,16 +47,19 @@ export const UserListView = ({
     return <EmptyState title={t('table.empty')} />
   }
 
-  const formatLastLogin = (value: string | null) =>
-    value
-      ? t('filters.users.lastLogin', {
-          date: new Intl.DateTimeFormat(i18n.language, {
-            day: '2-digit',
-            month: 'short',
-            year: 'numeric'
-          }).format(new Date(value))
-        })
-      : t('dashboard:status.inactive')
+  const formatLastLogin = (value: string | Date | null) => {
+    if (!value) {
+      return t('dashboard:status.inactive')
+    }
+    const date = value instanceof Date ? value : new Date(value)
+    return t('filters.users.lastLogin', {
+      date: new Intl.DateTimeFormat(i18n.language, {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric'
+      }).format(date)
+    })
+  }
 
   return (
     <List
@@ -73,23 +75,18 @@ export const UserListView = ({
             key={user.id}
             style={{ paddingInline: token.paddingLG }}
             actions={[
-              <Button
-                key='edit'
-                type='text'
-                icon={<EditOutlined />}
-                onClick={() => onEdit(user)}
-              >
+              <Button key="edit" type="text" icon={<EditOutlined />} onClick={() => onEdit(user)}>
                 {t('actions.edit')}
               </Button>,
               <Popconfirm
-                key='delete'
+                key="delete"
                 title={t('actions.deleteTitle')}
                 description={t('actions.deleteDescription', { username: user.username })}
                 okText={t('actions.confirmDelete')}
                 cancelText={t('actions.cancel')}
                 onConfirm={() => onDelete(user)}
               >
-                <Button type='text' danger icon={<DeleteOutlined />}>
+                <Button type="text" danger icon={<DeleteOutlined />}>
                   {t('actions.delete')}
                 </Button>
               </Popconfirm>
@@ -97,18 +94,18 @@ export const UserListView = ({
           >
             <List.Item.Meta
               title={
-                <Space align='center' size={token.marginSM} wrap>
+                <Space align="center" size={token.marginSM} wrap>
                   <Typography.Text strong>{user.displayName || user.username}</Typography.Text>
-                  <Typography.Text type='secondary'>@{user.username}</Typography.Text>
+                  <Typography.Text type="secondary">@{user.username}</Typography.Text>
                   <Tag bordered={false} style={buildBadgeStyle(statusBadge)}>
                     {user.isActive ? t('status.active') : t('status.inactive')}
                   </Tag>
                 </Space>
               }
               description={
-                <Space direction='vertical' size={token.marginXS} style={{ width: '100%' }}>
+                <Space direction="vertical" size={token.marginXS} style={{ width: '100%' }}>
                   <Space size={token.marginXS} wrap>
-                    {user.roles.map((role: RoleName) => {
+                    {user.roles.map((role) => {
                       const badge = badgeTokens.userRole[role] ?? badgeTokens.userRole.Viewer
                       return (
                         <Tag key={role} bordered={false} style={buildBadgeStyle(badge)}>
@@ -118,7 +115,7 @@ export const UserListView = ({
                     })}
                   </Space>
                   <Typography.Text
-                    type='secondary'
+                    type="secondary"
                     style={{ display: 'flex', alignItems: 'center', gap: token.marginXS }}
                   >
                     <ClockCircleOutlined />
@@ -145,5 +142,3 @@ export const UserListView = ({
 UserListView.displayName = 'UserListView'
 
 export default UserListView
-
-

@@ -1,6 +1,7 @@
 export const ROLE_NAMES = ['Admin', 'Maintainer', 'Contributor', 'Viewer'] as const
 
-export type RoleName = (typeof ROLE_NAMES)[number]
+export type SystemRoleName = (typeof ROLE_NAMES)[number]
+export type RoleName = string
 
 export const SESSION_TIMEOUT_MINUTES = 30
 

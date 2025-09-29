@@ -7,7 +7,6 @@ import { DeleteOutlined, EditOutlined } from '@ant-design/icons'
 import { useSemanticBadges, buildBadgeStyle } from '@renderer/theme/hooks/useSemanticBadges'
 
 import type { UserDTO } from '@main/services/auth'
-import type { RoleName } from '@main/services/auth/constants'
 
 import { useAppSelector } from '@renderer/store/hooks'
 import { selectCurrentUser } from '@renderer/store/slices/auth'
@@ -170,7 +169,7 @@ export const useUserManagement = (): UserManagementState => {
         title: t('dashboard:table.roles'),
         dataIndex: 'roles',
         key: 'roles',
-        render: (roles: RoleName[]) => (
+        render: (roles: string[]) => (
           <Space size={4} wrap>
             {roles.map((role) => {
               const badge = badgeTokens.userRole[role] ?? badgeTokens.userRole.Viewer

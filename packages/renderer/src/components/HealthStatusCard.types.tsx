@@ -15,4 +15,3 @@ export interface HealthState {
 export interface UseHealthStatusResult extends HealthState {
   refresh: () => Promise<void>
 }
-

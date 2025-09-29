@@ -58,7 +58,7 @@ export const KanbanColumn = ({
       title={<Typography.Text strong>{label}</Typography.Text>}
       size="small"
       style={{ minHeight: 360 }}
-      bodyStyle={{ padding: 12 }}
+      styles={{ body: { padding: 12 } }}
       onDragOver={handleDragOver}
       onDrop={handleDrop}
     >

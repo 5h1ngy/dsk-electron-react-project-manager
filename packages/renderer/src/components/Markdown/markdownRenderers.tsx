@@ -1,3 +1,4 @@
+/* eslint-disable react/display-name */
 import { Card, Space, Typography, theme } from 'antd'
 import type { Components } from 'react-markdown'
 import React from 'react'
@@ -6,62 +7,51 @@ type ThemeToken = ReturnType<typeof theme.useToken>['token']
 
 const buildHeading =
   (token: ThemeToken, level: 1 | 2 | 3 | 4 | 5) =>
-  ({ children }: { children?: React.ReactNode }) =>
-    (
-      <Typography.Title
-        level={level}
-        style={{
-          marginTop: level === 1 ? token.marginXXL : token.marginXL,
-          marginBottom: token.marginSM
-        }}
-      >
-        {children}
-      </Typography.Title>
-    )
+  ({ children }: { children?: React.ReactNode }) => (
+    <Typography.Title
+      level={level}
+      style={{
+        marginTop: level === 1 ? token.marginXXL : token.marginXL,
+        marginBottom: token.marginSM
+      }}
+    >
+      {children}
+    </Typography.Title>
+  )
 
-const renderInline = (content: React.ReactNode) => (
-  <Typography.Text>{content}</Typography.Text>
-)
+const renderInline = (content: React.ReactNode) => <Typography.Text>{content}</Typography.Text>
 
 const renderParagraph =
   (token: ThemeToken) =>
-  ({ children }: { children?: React.ReactNode }) =>
-    (
-      <Typography.Paragraph style={{ marginBottom: token.marginSM }}>
-        {children}
-      </Typography.Paragraph>
-    )
+  ({ children }: { children?: React.ReactNode }) => (
+    <Typography.Paragraph style={{ marginBottom: token.marginSM }}>{children}</Typography.Paragraph>
+  )
 
 const renderBlockquote =
   (token: ThemeToken) =>
-  ({ children }: { children?: React.ReactNode }) =>
-    (
-      <Card
-        size="small"
-        bordered
-        style={{
-          borderLeft: `${token.lineWidthBold}px solid ${token.colorBorder}`,
-          background: token.colorFillQuaternary,
-          marginBottom: token.marginMD
-        }}
-        bodyStyle={{
+  ({ children }: { children?: React.ReactNode }) => (
+    <Card
+      size="small"
+      style={{
+        borderLeft: `${token.lineWidthBold}px solid ${token.colorBorder}`,
+        background: token.colorFillQuaternary,
+        marginBottom: token.marginMD
+      }}
+      styles={{
+        body: {
           padding: token.paddingSM
-        }}
-      >
-        <Typography.Paragraph
-          italic
-          type="secondary"
-          style={{ marginBottom: 0 }}
-        >
-          {children}
-        </Typography.Paragraph>
-      </Card>
-    )
+        }
+      }}
+    >
+      <Typography.Paragraph italic type="secondary" style={{ marginBottom: 0 }}>
+        {children}
+      </Typography.Paragraph>
+    </Card>
+  )
 
 const isReactElement = (
   child: React.ReactNode
-): child is React.ReactElement<{ children?: React.ReactNode }> =>
-  React.isValidElement(child)
+): child is React.ReactElement<{ children?: React.ReactNode }> => React.isValidElement(child)
 
 const extractNodeContent = (node: React.ReactNode): React.ReactNode => {
   if (!isReactElement(node)) {
@@ -82,15 +72,8 @@ const renderList =
         style={{ width: '100%', marginBottom: token.marginSM }}
       >
         {items.map((item, index) => (
-          <Space
-            key={index}
-            align="start"
-            size={token.marginSM}
-            style={{ width: '100%' }}
-          >
-            <Typography.Text strong>
-              {ordered ? `${index + 1}.` : '•'}
-            </Typography.Text>
+          <Space key={index} align="start" size={token.marginSM} style={{ width: '100%' }}>
+            <Typography.Text strong>{ordered ? `${index + 1}.` : '•'}</Typography.Text>
             <Typography.Paragraph style={{ marginBottom: 0, flex: 1 }}>
               {extractNodeContent(item)}
             </Typography.Paragraph>
@@ -102,13 +85,7 @@ const renderList =
 
 const renderCode =
   (token: ThemeToken) =>
-  ({
-    inline,
-    children
-  }: {
-    inline?: boolean
-    children?: React.ReactNode
-  }) => {
+  ({ inline, children }: { inline?: boolean; children?: React.ReactNode }) => {
     if (inline) {
       return (
         <Typography.Text
@@ -128,15 +105,16 @@ const renderCode =
     return (
       <Card
         size="small"
-        bordered
         style={{
           background: token.colorFillTertiary,
           borderColor: token.colorBorder,
           marginBottom: token.marginSM
         }}
-        bodyStyle={{
-          padding: token.paddingSM,
-          overflowX: 'auto'
+        styles={{
+          body: {
+            padding: token.paddingSM,
+            overflowX: 'auto'
+          }
         }}
       >
         <Typography.Paragraph
@@ -153,9 +131,7 @@ const renderCode =
     )
   }
 
-export const buildMarkdownComponents = (
-  token: ThemeToken
-): Components => ({
+export const buildMarkdownComponents = (token: ThemeToken): Components => ({
   p: renderParagraph(token),
   h1: buildHeading(token, 2),
   h2: buildHeading(token, 3),
@@ -174,9 +150,7 @@ export const buildMarkdownComponents = (
       {children}
     </Typography.Text>
   ),
-  strong: ({ children }) => (
-    <Typography.Text strong>{children}</Typography.Text>
-  ),
+  strong: ({ children }) => <Typography.Text strong>{children}</Typography.Text>,
   em: ({ children }) => <Typography.Text italic>{children}</Typography.Text>,
   a: ({ href, children }) => (
     <Typography.Link href={href ?? '#'} target="_blank" rel="noreferrer">

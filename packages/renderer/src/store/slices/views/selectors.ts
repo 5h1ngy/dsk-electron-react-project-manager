@@ -30,4 +30,3 @@ export const selectViewsMutationStatus = createSelector(
   selectViewsState,
   (state) => state.mutationStatus
 )
-

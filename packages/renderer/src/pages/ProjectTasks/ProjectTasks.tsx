@@ -39,6 +39,10 @@ import type { SavedView } from '@renderer/store/slices/views/types'
 import type { LoadStatus } from '@renderer/store/slices/tasks/types'
 import { VIEW_COLUMN_VALUES } from '@main/services/view/schemas'
 
+const TABLE_PAGE_SIZE = 10
+const CARD_PAGE_SIZE = 8
+const LIST_PAGE_SIZE = 12
+
 const getColumnsForView = (selected: ReadonlyArray<OptionalTaskColumn>) =>
   VIEW_COLUMN_VALUES.filter((column) =>
     column === 'commentCount' ? selected.includes('commentCount') : true
@@ -90,10 +94,7 @@ const ProjectTasksPage = (): JSX.Element => {
   const savedViews = useAppSelector(savedViewsSelector)
 
   const viewsStatusSelector = useMemo(
-    () =>
-      projectId
-        ? selectProjectViewsStatus(projectId)
-        : (() => 'idle' as LoadStatus),
+    () => (projectId ? selectProjectViewsStatus(projectId) : () => 'idle' as LoadStatus),
     [projectId]
   )
   const viewsStatus = useAppSelector(viewsStatusSelector)
@@ -104,9 +105,6 @@ const ProjectTasksPage = (): JSX.Element => {
   )
   const selectedViewId = useAppSelector(selectedViewSelector)
   const mutationStatus = useAppSelector(selectViewsMutationStatus)
-  const TABLE_PAGE_SIZE = 10
-  const CARD_PAGE_SIZE = 8
-  const LIST_PAGE_SIZE = 12
 
   const statusOptions = useMemo(() => buildStatusOptions(t, taskStatuses), [t, taskStatuses])
   const statusLabelMap = useMemo(() => {
@@ -121,10 +119,7 @@ const ProjectTasksPage = (): JSX.Element => {
   const assigneeOptions = useMemo(() => buildAssigneeOptions(tasks, t), [tasks, t])
 
   const filteredTasks = useMemo(() => filterTasks(tasks, filters), [tasks, filters])
-  const tableColumns = useMemo(
-    () => getColumnsForView(visibleColumns),
-    [visibleColumns]
-  )
+  const tableColumns = useMemo(() => getColumnsForView(visibleColumns), [visibleColumns])
 
   const applyFiltersFromView = useCallback(
     (view: SavedView) => {
@@ -184,8 +179,8 @@ const ProjectTasksPage = (): JSX.Element => {
       applyFiltersFromView(created)
       setIsSaveModalOpen(false)
       viewForm.resetFields()
-    } catch (error: any) {
-      if (error?.errorFields) {
+    } catch (error: unknown) {
+      if (typeof error === 'object' && error !== null && 'errorFields' in error) {
         return
       }
     }
@@ -447,7 +442,7 @@ const ProjectTasksPage = (): JSX.Element => {
         }}
         onOk={handleSaveView}
         confirmLoading={mutationStatus === 'loading'}
-        destroyOnClose
+        destroyOnHidden
       >
         <Form form={viewForm} layout="vertical">
           <Form.Item
@@ -467,18 +462,3 @@ ProjectTasksPage.displayName = 'ProjectTasksPage'
 
 export { ProjectTasksPage }
 export default ProjectTasksPage
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

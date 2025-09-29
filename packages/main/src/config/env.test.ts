@@ -39,4 +39,3 @@ describe('EnvConfig', () => {
     expect(config.logLevel).toBe('info')
   })
 })
-

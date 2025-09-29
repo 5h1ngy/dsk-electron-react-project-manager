@@ -55,11 +55,7 @@ export const ProjectTasksTable = ({
       dataIndex: 'title',
       key: 'title',
       render: (value: string, record) => (
-        <Space
-          direction="vertical"
-          size={token.marginXXS}
-          style={{ maxWidth: 480, width: '100%' }}
-        >
+        <Space direction="vertical" size={token.marginXXS} style={{ maxWidth: 480, width: '100%' }}>
           <Typography.Text ellipsis>{value}</Typography.Text>
           {record.description ? (
             <Typography.Paragraph
@@ -79,7 +75,10 @@ export const ProjectTasksTable = ({
       key: 'status',
       width: 140,
       render: (value: TaskDetails['status']) => (
-        <Tag bordered={false} style={buildBadgeStyle(badgeTokens.status[value] ?? badgeTokens.statusFallback)}>
+        <Tag
+          bordered={false}
+          style={buildBadgeStyle(badgeTokens.status[value] ?? badgeTokens.statusFallback)}
+        >
           {statusLabels[value] ?? t(`details.status.${value}`)}
         </Tag>
       )
@@ -202,4 +201,3 @@ export const ProjectTasksTable = ({
     />
   )
 }
-

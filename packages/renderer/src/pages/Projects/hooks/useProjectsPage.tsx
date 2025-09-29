@@ -17,7 +17,10 @@ import {
 import type { ProjectSummary } from '@renderer/store/slices/projects'
 import { selectCurrentUser } from '@renderer/store/slices/auth/selectors'
 import { useProjectForms } from '@renderer/pages/Projects/hooks/useProjectForms'
-import type { CreateProjectValues, UpdateProjectValues } from '@renderer/pages/Projects/schemas/projectSchemas'
+import type {
+  CreateProjectValues,
+  UpdateProjectValues
+} from '@renderer/pages/Projects/schemas/projectSchemas'
 import useProjectSavedViews, {
   type ProjectSavedView,
   type ProjectViewFilters
@@ -385,9 +388,7 @@ export const useProjectsPage = (options?: UseProjectsPageOptions): UseProjectsPa
       return
     }
     const normalizedDescription =
-      values.description && values.description.trim().length > 0
-        ? values.description.trim()
-        : null
+      values.description && values.description.trim().length > 0 ? values.description.trim() : null
     try {
       setActiveMutation('update')
       await dispatch(

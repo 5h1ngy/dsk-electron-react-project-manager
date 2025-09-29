@@ -15,7 +15,7 @@ const buildTableSkeleton = (items: number, titleWidth: number): ReactNode => (
   <Space direction="vertical" size="small">
     <Skeleton.Input active size="large" style={{ width: titleWidth }} />
     {Array.from({ length: items }).map((_, index) => (
-      <Card key={`table-skeleton-${index}`} size="small" bordered={false}>
+      <Card key={`table-skeleton-${index}`} size="small" variant="borderless">
         <Skeleton
           active
           round
@@ -31,15 +31,11 @@ const buildCardsSkeleton = (items: number, gutter: number, titleWidth: number): 
   <Row gutter={[gutter, gutter]}>
     {Array.from({ length: items }).map((_, index) => (
       <Col xs={24} sm={12} lg={8} xl={6} key={`card-skeleton-${index}`}>
-        <Card bordered>
+        <Card>
           <Space direction="vertical" size="small">
             <Skeleton.Button active size="small" shape="round" style={{ width: titleWidth }} />
             <Skeleton.Input active size="large" style={{ width: '100%' }} />
-            <Skeleton
-              active
-              title={false}
-              paragraph={{ rows: 2, width: ['95%', '80%'] }}
-            />
+            <Skeleton active title={false} paragraph={{ rows: 2, width: ['95%', '80%'] }} />
           </Space>
         </Card>
       </Col>
@@ -63,17 +59,17 @@ const DEFAULT_ITEMS: Record<LoadingSkeletonVariant, number> = {
   list: 4
 }
 
-export const LoadingSkeleton = ({
-  variant = 'list',
-  items,
-  className
-}: LoadingSkeletonProps) => {
+export const LoadingSkeleton = ({ variant = 'list', items, className }: LoadingSkeletonProps) => {
   const { token } = theme.useToken()
   const { spacing } = useThemeTokens()
   const count = items ?? DEFAULT_ITEMS[variant]
 
-  const tableWidth = token.controlHeightLG * 5
-  const cardTitleWidth = token.controlHeightLG * 2.5
+  const controlHeightLG =
+    typeof token.controlHeightLG === 'number' && Number.isFinite(token.controlHeightLG)
+      ? token.controlHeightLG
+      : 40
+  const tableWidth = controlHeightLG * 5
+  const cardTitleWidth = controlHeightLG * 2.5
   const gutter = spacing.lg
 
   const content: Record<LoadingSkeletonVariant, ReactNode> = {

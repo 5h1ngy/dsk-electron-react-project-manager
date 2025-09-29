@@ -1,4 +1,4 @@
-import type { ChangeEvent, JSX } from 'react'
+import type { ChangeEvent, FC } from 'react'
 import { Alert, Button, Card, Form, Input, Typography } from 'antd'
 import { Controller } from 'react-hook-form'
 import { Link } from 'react-router-dom'
@@ -7,7 +7,7 @@ import { REGISTER_CARD_STYLE, INFO_TEXT_STYLE } from '@renderer/pages/Register/R
 import type { RegisterProps } from '@renderer/pages/Register/Register.types'
 import { useRegisterForm } from '@renderer/pages/Register/hooks/useRegisterForm'
 
-const Register = ({}: RegisterProps): JSX.Element => {
+const Register: FC<RegisterProps> = () => {
   const { t, status, error, clearError, control, errors, handleSubmit, onSubmit } =
     useRegisterForm()
 

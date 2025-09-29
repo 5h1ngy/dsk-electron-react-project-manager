@@ -18,7 +18,10 @@ export interface ProjectRouteContext {
   taskStatusesStatus: string
   canManageTasks: boolean
   openTaskDetails: (taskId: string) => void
-  openTaskCreate: (options?: { status?: TaskDetails['status']; priority?: TaskDetails['priority'] }) => void
+  openTaskCreate: (options?: {
+    status?: TaskDetails['status']
+    priority?: TaskDetails['priority']
+  }) => void
   openTaskEdit: (taskId: string) => void
   deleteTask: (taskId: string) => Promise<void>
   deletingTaskId: string | null

@@ -1,9 +1,40 @@
 import { useCallback, useEffect, useMemo, useState, type ReactElement } from 'react'
 import {
-  Badge, Button, Card, Divider, Drawer, Flex, Form, Grid, Input, List, Modal, Popconfirm, Select, Skeleton, Space, Segmented, Spin, Switch, Tag, Typography, message, theme
+  Badge,
+  Button,
+  Card,
+  Divider,
+  Drawer,
+  Flex,
+  Form,
+  Grid,
+  Input,
+  List,
+  Modal,
+  Popconfirm,
+  Select,
+  Skeleton,
+  Space,
+  Segmented,
+  Spin,
+  Switch,
+  Tag,
+  Typography,
+  message,
+  theme
 } from 'antd'
 import {
-  AppstoreOutlined, DeleteOutlined, EditOutlined, FilterOutlined, FileMarkdownOutlined, LinkOutlined, LockOutlined, PlusOutlined, SearchOutlined, TableOutlined, UnlockOutlined
+  AppstoreOutlined,
+  DeleteOutlined,
+  EditOutlined,
+  FilterOutlined,
+  FileMarkdownOutlined,
+  LinkOutlined,
+  LockOutlined,
+  PlusOutlined,
+  SearchOutlined,
+  TableOutlined,
+  UnlockOutlined
 } from '@ant-design/icons'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -61,10 +92,7 @@ const noteFormSchema = z.object({
     .trim()
     .min(1, 'projects:notes.validation.title')
     .max(160, 'projects:notes.validation.titleMax'),
-  body: z
-    .string()
-    .trim()
-    .min(1, 'projects:notes.validation.body'),
+  body: z.string().trim().min(1, 'projects:notes.validation.body'),
   notebook: z
     .string()
     .trim()
@@ -81,7 +109,10 @@ const noteFormSchema = z.object({
     )
     .max(20, 'projects:notes.validation.tooManyTags')
     .optional(),
-  linkedTaskIds: z.array(z.string().trim()).max(20, 'projects:notes.validation.tooManyLinks').optional(),
+  linkedTaskIds: z
+    .array(z.string().trim())
+    .max(20, 'projects:notes.validation.tooManyLinks')
+    .optional(),
   isPrivate: z.boolean().optional()
 })
 
@@ -126,9 +157,7 @@ const buildTagOptions = (notes: NoteSummary[]) =>
 const buildNotebookOptions = (notes: NoteSummary[]) =>
   Array.from(
     new Set(
-      notes
-        .map((note) => note.notebook?.trim())
-        .filter((value): value is string => Boolean(value))
+      notes.map((note) => note.notebook?.trim()).filter((value): value is string => Boolean(value))
     )
   ).map((notebook) => ({
     label: notebook,
@@ -136,15 +165,8 @@ const buildNotebookOptions = (notes: NoteSummary[]) =>
   }))
 
 const ProjectNotesPage = (): ReactElement => {
-  const {
-    projectId,
-    project,
-    notes,
-    notesStatus,
-    canManageNotes,
-    tasks,
-    openTaskDetails
-  } = useProjectRouteContext()
+  const { projectId, notes, notesStatus, canManageNotes, tasks, openTaskDetails } =
+    useProjectRouteContext()
   const dispatch = useAppDispatch()
   const { t } = useTranslation('projects')
   const [messageApi, contextHolder] = message.useMessage()
@@ -343,25 +365,25 @@ const ProjectNotesPage = (): ReactElement => {
     [t]
   )
   const includePrivateOptions = useMemo(
-      () => [
-        {
-          label: (
-            <Space size={6} style={{ color: 'inherit' }}>
-              <UnlockOutlined />
-              <span>{t('notes.filters.includePrivateOptions.public')}</span>
-            </Space>
-          ),
-          value: 'public'
-        },
-        {
-          label: (
-            <Space size={6} style={{ color: 'inherit' }}>
-              <LockOutlined />
-              <span>{t('notes.filters.includePrivateOptions.private')}</span>
-            </Space>
-          ),
-          value: 'private'
-        }
+    () => [
+      {
+        label: (
+          <Space size={6} style={{ color: 'inherit' }}>
+            <UnlockOutlined />
+            <span>{t('notes.filters.includePrivateOptions.public')}</span>
+          </Space>
+        ),
+        value: 'public'
+      },
+      {
+        label: (
+          <Space size={6} style={{ color: 'inherit' }}>
+            <LockOutlined />
+            <span>{t('notes.filters.includePrivateOptions.private')}</span>
+          </Space>
+        ),
+        value: 'private'
+      }
     ],
     [t]
   )
@@ -379,28 +401,24 @@ const ProjectNotesPage = (): ReactElement => {
 
   const buildNoteActions = (note: NoteSummary, variant: 'list' | 'card'): ReactElement[] =>
     [
-      (
+      <Button
+        key="view"
+        type={variant === 'card' ? 'link' : 'text'}
+        icon={<FileMarkdownOutlined />}
+        onClick={() => handleViewerOpen(note.id)}
+      >
+        {t('notes.actions.view')}
+      </Button>,
+      canManageNotes ? (
         <Button
-          key="view"
+          key="edit"
           type={variant === 'card' ? 'link' : 'text'}
-          icon={<FileMarkdownOutlined />}
-          onClick={() => handleViewerOpen(note.id)}
+          icon={<EditOutlined />}
+          onClick={() => handleEditNote(note)}
         >
-          {t('notes.actions.view')}
+          {t('notes.actions.edit')}
         </Button>
-      ),
-      canManageNotes
-        ? (
-            <Button
-              key="edit"
-              type={variant === 'card' ? 'link' : 'text'}
-              icon={<EditOutlined />}
-              onClick={() => handleEditNote(note)}
-            >
-              {t('notes.actions.edit')}
-            </Button>
-          )
-        : null
+      ) : null
     ].filter(Boolean) as ReactElement[]
 
   const filtersContent = (
@@ -473,13 +491,6 @@ const ProjectNotesPage = (): ReactElement => {
         open={filtersDrawerOpen}
         onClose={() => setFiltersDrawerOpen(false)}
         width={screens.lg ? 420 : '100%'}
-        contentWrapperStyle={{
-          borderRadius: `${token.borderRadiusLG}px`,
-          margin: screens.lg ? token.marginLG : 0,
-          border: `${token.lineWidth}px solid ${token.colorBorderSecondary}`,
-          boxShadow: token.boxShadowSecondary,
-          overflow: 'hidden'
-        }}
         title={
           <Space size={6} align="center">
             <FilterOutlined />
@@ -487,6 +498,13 @@ const ProjectNotesPage = (): ReactElement => {
           </Space>
         }
         styles={{
+          wrapper: {
+            borderRadius: `${token.borderRadiusLG}px`,
+            margin: screens.lg ? token.marginLG : 0,
+            border: `${token.lineWidth}px solid ${token.colorBorderSecondary}`,
+            boxShadow: token.boxShadowSecondary,
+            overflow: 'hidden'
+          },
           header: { padding: token.paddingLG, marginBottom: 0 },
           body: { padding: token.paddingLG, display: 'flex', flexDirection: 'column', gap: 16 }
         }}
@@ -518,7 +536,7 @@ const ProjectNotesPage = (): ReactElement => {
                   key={note.id}
                   actions={buildNoteActions(note, 'card')}
                   style={{ flex: '1 1 320px', minWidth: 280, maxWidth: 420 }}
-                  bodyStyle={{ display: 'flex', flexDirection: 'column', gap: 8 }}
+                  styles={{ body: { display: 'flex', flexDirection: 'column', gap: 8 } }}
                   title={
                     <Flex align="center" justify="space-between" wrap>
                       <Typography.Text strong>{note.title}</Typography.Text>
@@ -555,7 +573,9 @@ const ProjectNotesPage = (): ReactElement => {
               <List.Item.Meta
                 title={
                   <Space size={8}>
-                    <Typography.Link onClick={() => handleViewerOpen(note.id)}>{note.title}</Typography.Link>
+                    <Typography.Link onClick={() => handleViewerOpen(note.id)}>
+                      {note.title}
+                    </Typography.Link>
                     {renderVisibilityTag(note)}
                   </Space>
                 }
@@ -1029,7 +1049,9 @@ const NoteDetailsModal = ({
                 <Form.Item
                   label={t('notes.editor.fields.linkedTasks')}
                   validateStatus={errors.linkedTaskIds ? 'error' : ''}
-                  help={errors.linkedTaskIds ? t(errors.linkedTaskIds.message as string) : undefined}
+                  help={
+                    errors.linkedTaskIds ? t(errors.linkedTaskIds.message as string) : undefined
+                  }
                 >
                   <Select
                     {...field}
@@ -1147,9 +1169,7 @@ const NoteSearchDrawer = ({
 const HighlightSnippet = ({ highlight }: { highlight: string | null | undefined }) => {
   const { t } = useTranslation('projects')
   if (!highlight) {
-    return (
-      <Typography.Text type="secondary">{t('notes.search.noHighlight')}</Typography.Text>
-    )
+    return <Typography.Text type="secondary">{t('notes.search.noHighlight')}</Typography.Text>
   }
   const segments = highlight.split(/(<mark>|<\/mark>)/g)
   let active = false
@@ -1178,6 +1198,3 @@ const HighlightSnippet = ({ highlight }: { highlight: string | null | undefined 
 
 export { ProjectNotesPage }
 export default ProjectNotesPage
-
-
-

@@ -20,21 +20,15 @@ export class ViewIpcRegistrar {
   }
 
   register(): void {
-    this.registrar.register(
-      'view:list',
-      async (token: string, payload: unknown) => {
-        const actor = await this.resolveActor(token)
-        return await this.viewService.listViews(actor, payload)
-      }
-    )
+    this.registrar.register('view:list', async (token: string, payload: unknown) => {
+      const actor = await this.resolveActor(token)
+      return await this.viewService.listViews(actor, payload)
+    })
 
-    this.registrar.register(
-      'view:create',
-      async (token: string, payload: unknown) => {
-        const actor = await this.resolveActor(token)
-        return await this.viewService.createView(actor, payload)
-      }
-    )
+    this.registrar.register('view:create', async (token: string, payload: unknown) => {
+      const actor = await this.resolveActor(token)
+      return await this.viewService.createView(actor, payload)
+    })
 
     this.registrar.register(
       'view:update',
@@ -44,18 +38,14 @@ export class ViewIpcRegistrar {
       }
     )
 
-    this.registrar.register(
-      'view:delete',
-      async (token: string, viewId: string) => {
-        const actor = await this.resolveActor(token)
-        await this.viewService.deleteView(actor, viewId)
-        return { success: true }
-      }
-    )
+    this.registrar.register('view:delete', async (token: string, viewId: string) => {
+      const actor = await this.resolveActor(token)
+      await this.viewService.deleteView(actor, viewId)
+      return { success: true }
+    })
   }
 
   private async resolveActor(token: string) {
     return await this.authService.resolveActor(token, { touch: true })
   }
 }
-

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { AuthService, SessionPayload, UserDTO } from '@main/services/auth'
 import { AppError } from '@main/config/appError'
 import { AuthIpcRegistrar } from '@main/ipc/auth'
@@ -84,17 +85,21 @@ describe('AuthIpcRegistrar', () => {
     const authRegistrar = new AuthIpcRegistrar({ authService, registrar })
     authRegistrar.register()
 
-    const loginResponse = await registry.handlers
-      .get('auth:login')!
-      ({}, { username: 'a', password: 'b' })
+    const loginResponse = await registry.handlers.get('auth:login')!(
+      {},
+      { username: 'a', password: 'b' }
+    )
     expect(loginResponse).toEqual({ ok: true, data: loginPayload })
 
     const logoutResponse = await registry.handlers.get('auth:logout')!({}, 'token')
     expect(logoutResponse).toEqual({ ok: true, data: { success: true } })
     expect(authService.logout).toHaveBeenCalledWith('token')
 
-    const deleteResponse = await registry.handlers
-      .get('auth:delete-user')!({}, 'token', 'target-user')
+    const deleteResponse = await registry.handlers.get('auth:delete-user')!(
+      {},
+      'token',
+      'target-user'
+    )
     expect(deleteResponse).toEqual({ ok: true, data: { success: true } })
     expect(authService.deleteUser).toHaveBeenCalledWith('token', 'target-user')
   })
@@ -104,8 +109,10 @@ describe('AuthIpcRegistrar', () => {
     const authRegistrar = new AuthIpcRegistrar({ authService, registrar })
     authRegistrar.register()
 
-    const response = await registry.handlers
-      .get('auth:login')!({}, { username: 'x', password: 'y' })
+    const response = await registry.handlers.get('auth:login')!(
+      {},
+      { username: 'x', password: 'y' }
+    )
     expect(response).toEqual({
       ok: false,
       code: 'ERR_PERMISSION',

@@ -15,6 +15,7 @@ import { TaskIpcRegistrar } from '@main/ipc/task'
 import { TaskStatusIpcRegistrar } from '@main/ipc/taskStatus'
 import { NoteIpcRegistrar } from '@main/ipc/note'
 import { ViewIpcRegistrar } from '@main/ipc/view'
+import { RoleIpcRegistrar } from '@main/ipc/role'
 import { HealthIpcRegistrar } from '@main/ipc/health'
 import { IpcChannelRegistrar, ipcChannelRegistrar } from '@main/ipc/utils'
 
@@ -58,9 +59,11 @@ class SessionLifecycleManager {
         }
       }
     } catch (error) {
-      this.options.logger.warn('Failed to load session timeout setting; using default value', 'Auth')
-      const detail =
-        error instanceof Error ? error.stack ?? error.message : String(error)
+      this.options.logger.warn(
+        'Failed to load session timeout setting; using default value',
+        'Auth'
+      )
+      const detail = error instanceof Error ? (error.stack ?? error.message) : String(error)
       this.options.logger.debug(`Session timeout lookup failed: ${detail}`, 'Auth')
     }
 
@@ -119,7 +122,10 @@ class MainProcessApplication {
     if (gotLock) {
       return
     }
-    this.deps.logger.warn('Second application instance detected. Quitting current launch.', 'Bootstrap')
+    this.deps.logger.warn(
+      'Second application instance detected. Quitting current launch.',
+      'Bootstrap'
+    )
     this.deps.app.quit()
     process.exit(0)
   }
@@ -213,10 +219,24 @@ class MainProcessApplication {
       registrar: this.deps.ipcRegistrar
     }).register()
 
-    const { projectService, taskService, taskStatusService, noteService, viewService } = this.deps.context
-    if (!projectService || !taskService || !taskStatusService || !noteService || !viewService) {
+    const {
+      projectService,
+      taskService,
+      taskStatusService,
+      noteService,
+      viewService,
+      roleService
+    } = this.deps.context
+    if (
+      !projectService ||
+      !taskService ||
+      !taskStatusService ||
+      !noteService ||
+      !viewService ||
+      !roleService
+    ) {
       throw new Error(
-        'Project, Task, TaskStatus, Note and View services must be initialized before registering IPC'
+        'Project, Task, TaskStatus, Note, View and Role services must be initialized before registering IPC'
       )
     }
 
@@ -248,7 +268,15 @@ class MainProcessApplication {
       viewService,
       registrar: this.deps.ipcRegistrar
     }).register()
-    this.deps.logger.debug('Auth, Project, Task, TaskStatus, Note and View IPC channels registered', 'IPC')
+    new RoleIpcRegistrar({
+      authService: this.deps.context.authService,
+      roleService,
+      registrar: this.deps.ipcRegistrar
+    }).register()
+    this.deps.logger.debug(
+      'Auth, Project, Task, TaskStatus, Note, View and Role IPC channels registered',
+      'IPC'
+    )
   }
 }
 

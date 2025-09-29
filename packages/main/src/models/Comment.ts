@@ -1,11 +1,4 @@
-import {
-  BelongsTo,
-  Column,
-  DataType,
-  ForeignKey,
-  Model,
-  Table
-} from 'sequelize-typescript'
+import { BelongsTo, Column, DataType, ForeignKey, Model, Table } from 'sequelize-typescript'
 import { Task } from '@main/models/Task'
 import { User } from '@main/models/User'
 

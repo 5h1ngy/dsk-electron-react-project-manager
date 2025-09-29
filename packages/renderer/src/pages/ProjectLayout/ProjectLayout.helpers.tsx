@@ -37,7 +37,11 @@ export const buildTabLabelMap = (t: TFunction<'projects'>): Record<ProjectTabKey
 })
 
 const renderBreadcrumbLink = (label: string, handler?: () => void) =>
-  handler ? <Typography.Link onClick={handler}>{label}</Typography.Link> : <Typography.Text>{label}</Typography.Text>
+  handler ? (
+    <Typography.Link onClick={handler}>{label}</Typography.Link>
+  ) : (
+    <Typography.Text>{label}</Typography.Text>
+  )
 
 export const buildBreadcrumbItems = ({
   t,

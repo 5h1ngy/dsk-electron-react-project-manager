@@ -1,5 +1,16 @@
 import { useMemo, useState, type JSX } from 'react'
-import { Button, Drawer, Flex, Grid, Input, Segmented, Select, Space, Typography, theme } from 'antd'
+import {
+  Button,
+  Drawer,
+  Flex,
+  Grid,
+  Input,
+  Segmented,
+  Select,
+  Space,
+  Typography,
+  theme
+} from 'antd'
 import {
   AppstoreOutlined,
   BarsOutlined,
@@ -10,26 +21,21 @@ import {
 } from '@ant-design/icons'
 import type { SegmentedValue } from 'antd/es/segmented'
 import { useTranslation } from 'react-i18next'
-
-import type { RoleName } from '@main/services/auth/constants'
 import { BorderedPanel } from '@renderer/components/Surface/BorderedPanel'
-
 export interface UserFiltersValue {
   search: string
-  role: RoleName | 'all'
+  role: string | 'all'
   status: 'all' | 'active' | 'inactive'
 }
-
 export interface UserFiltersProps {
   value: UserFiltersValue
-  roleOptions: RoleName[]
+  roleOptions: string[]
   onChange: (value: Partial<UserFiltersValue>) => void
   onCreate: () => void
   canCreate?: boolean
   viewMode: 'table' | 'list' | 'cards'
   onViewModeChange: (mode: 'table' | 'list' | 'cards') => void
 }
-
 export const UserFilters = ({
   value,
   roleOptions,
@@ -60,7 +66,6 @@ export const UserFilters = ({
       token.paddingXXS
     ]
   )
-
   const filtersContent = (
     <Flex vertical gap={16}>
       <Input
@@ -86,12 +91,12 @@ export const UserFilters = ({
             ]}
           />
         </Space>
-        <Select<RoleName | 'all'>
+        <Select<string | 'all'>
           allowClear={false}
           size="large"
           style={{ width: '100%' }}
           value={value.role}
-          onChange={(next) => onChange({ role: next })}
+          onChange={(next) => onChange({ role: next as UserFiltersValue['role'] })}
           options={[
             { label: t('filters.users.roles.all'), value: 'all' },
             ...roleOptions.map((role) => ({
@@ -104,7 +109,6 @@ export const UserFilters = ({
       </Flex>
     </Flex>
   )
-
   const viewSegmentedOptions = useMemo(
     () => [
       {
@@ -137,7 +141,6 @@ export const UserFilters = ({
     ],
     [t]
   )
-
   const actionsContent = (
     <Flex align="center" wrap gap={12} style={{ width: '100%' }}>
       <Space size="small" wrap style={{ flex: '1 1 auto' }}>
@@ -159,7 +162,6 @@ export const UserFilters = ({
       </Flex>
     </Flex>
   )
-
   return (
     <>
       <BorderedPanel padding="lg" style={{ width: '100%' }}>
@@ -176,14 +178,14 @@ export const UserFilters = ({
             <span>{t('dashboard:filters.panelTitle', { defaultValue: 'Filtri' })}</span>
           </Space>
         }
-        contentWrapperStyle={{
-          borderRadius: `${token.borderRadiusLG}px`,
-          margin: screens.lg ? token.marginLG : 0,
-          border: `${token.lineWidth}px solid ${token.colorBorderSecondary}`,
-          boxShadow: token.boxShadowSecondary,
-          overflow: 'hidden'
-        }}
         styles={{
+          wrapper: {
+            borderRadius: `${token.borderRadiusLG}px`,
+            margin: screens.lg ? token.marginLG : 0,
+            border: `${token.lineWidth}px solid ${token.colorBorderSecondary}`,
+            boxShadow: token.boxShadowSecondary,
+            overflow: 'hidden'
+          },
           header: { padding: token.paddingLG, marginBottom: 0 },
           body: { padding: token.paddingLG, display: 'flex', flexDirection: 'column', gap: 16 }
         }}
@@ -207,8 +209,5 @@ export const UserFilters = ({
     </>
   )
 }
-
 UserFilters.displayName = 'UserFilters'
-
 export default UserFilters
-

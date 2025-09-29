@@ -103,5 +103,62 @@
     "noDescription": "Keine Beschreibung vorhanden",
     "noProjects": "Sie sind derzeit keinem Projekt zugeordnet.",
     "heading": "Persoenliche Uebersicht"
+  },
+  "overview": {
+    "welcome": "Willkommen zurück, {{name}}",
+    "subtitle": "Hier siehst du, was in deinem Arbeitsbereich passiert."
+  },
+  "summary": {
+    "cards": {
+      "total": {
+        "title": "Projekte",
+        "caption": "Alle Rollen"
+      },
+      "managed": {
+        "title": "Betreute Projekte",
+        "caption": "Du bist Administrator"
+      },
+      "collaborating": {
+        "title": "Zusammenarbeit",
+        "caption": "Projekte, die du bearbeiten kannst"
+      },
+      "watching": {
+        "title": "Beobachtung",
+        "caption": "Nur Lesezugriff"
+      }
+    },
+    "roles": {
+      "admin": "Betreut",
+      "edit": "Zusammenarbeit",
+      "view": "Beobachtung"
+    },
+    "noLastLogin": "Noch keine Anmeldung erfasst"
+  },
+  "quickLinks": {
+    "title": "Schnellaktionen",
+    "create": "Projekt erstellen",
+    "projects": "Zu meinen Projekten",
+    "projectsDescription": "Aktive Initiativen und Aufgaben prüfen.",
+    "settings": "Einstellungen öffnen",
+    "settingsDescription": "Darstellung und Workspace-Einstellungen anpassen.",
+    "users": "Benutzer verwalten",
+    "usersDescription": "Benutzer einladen, deaktivieren oder Berechtigungen ändern."
+  },
+  "insights": {
+    "title": "Workspace-Einblicke",
+    "roles": "Projekte nach Rolle",
+    "tags": "Meistgenutzte Tags",
+    "noTags": "Tags erscheinen, sobald Projekte Etiketten besitzen.",
+    "tagCountLabel": "{{count}} Verwendungen"
+  },
+  "profile": {
+    "title": "Dein Profil",
+    "username": "Benutzername",
+    "lastLogin": "Letzte Anmeldung",
+    "roles": "Rollen"
+  },
+  "recentProjects": {
+    "title": "Neueste Projekte",
+    "empty": "Du nimmst noch an keinem Projekt teil."
   }
 }

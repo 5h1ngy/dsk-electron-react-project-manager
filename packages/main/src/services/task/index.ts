@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto'
-import { Op, QueryTypes, fn, type Sequelize, type Transaction } from 'sequelize'
+import { Op, QueryTypes, fn, type FindOptions, type Sequelize, type Transaction } from 'sequelize'
 import { AuditService } from '@main/services/audit'
 import { Project } from '@main/models/Project'
 import { ProjectMember, type ProjectMembershipRole } from '@main/models/ProjectMember'
@@ -95,7 +95,7 @@ export class TaskService {
     })
 
     if (!membership) {
-      throw new AppError('ERR_VALIDATION', 'L\'assegnatario deve essere membro del progetto')
+      throw new AppError('ERR_VALIDATION', "L'assegnatario deve essere membro del progetto")
     }
   }
 
@@ -142,10 +142,7 @@ export class TaskService {
     return task as Task & { project: Project }
   }
 
-  private async generateTaskKey(
-    project: Project,
-    transaction: Transaction
-  ): Promise<string> {
+  private async generateTaskKey(project: Project, transaction: Transaction): Promise<string> {
     const tasks = await Task.findAll({
       where: { projectId: project.id },
       attributes: ['key'],
@@ -205,7 +202,7 @@ export class TaskService {
     try {
       const { project, role } = await this.resolveProjectAccess(actor, projectId, 'view')
 
-      const queryOptions: any = {
+      const queryOptions: FindOptions<Task> & { distinct: boolean } = {
         where: { projectId: project.id },
         include: [
           { model: User, as: 'assignee' },
@@ -285,11 +282,7 @@ export class TaskService {
         await this.ensureParentTask(project.id, input.parentId ?? null, transaction)
 
         const key = await this.generateTaskKey(project, transaction)
-        const statusKey = await this.resolveStatusKey(
-          project.id,
-          input.status ?? null,
-          transaction
-        )
+        const statusKey = await this.resolveStatusKey(project.id, input.status ?? null, transaction)
 
         return await Task.create(
           {
@@ -330,7 +323,7 @@ export class TaskService {
         throw new AppError('ERR_INTERNAL', 'Task creato non reperibile')
       }
 
-        const details = mapTaskDetails(created, project.key, 0)
+      const details = mapTaskDetails(created, project.key, 0)
       return {
         ...details,
         linkedNotes: this.filterLinkedNotes(actor, role, details.linkedNotes)
@@ -340,11 +333,7 @@ export class TaskService {
     }
   }
 
-  async updateTask(
-    actor: ServiceActor,
-    taskId: string,
-    payload: unknown
-  ): Promise<TaskDetailsDTO> {
+  async updateTask(actor: ServiceActor, taskId: string, payload: unknown): Promise<TaskDetailsDTO> {
     let input: UpdateTaskInput
     try {
       input = updateTaskSchema.parse(payload)
@@ -404,11 +393,7 @@ export class TaskService {
     }
   }
 
-  async moveTask(
-    actor: ServiceActor,
-    taskId: string,
-    payload: unknown
-  ): Promise<TaskDetailsDTO> {
+  async moveTask(actor: ServiceActor, taskId: string, payload: unknown): Promise<TaskDetailsDTO> {
     let input: MoveTaskInput
     try {
       input = moveTaskSchema.parse(payload)
@@ -504,7 +489,7 @@ export class TaskService {
         return []
       }
 
-      const searchQueryOptions: any = {
+      const searchQueryOptions: FindOptions<Task> & { distinct: boolean } = {
         where: { id: { [Op.in]: taskIds } },
         include: [
           { model: User, as: 'assignee' },
@@ -625,10 +610,7 @@ export class TaskService {
     }
   }
 
-  private async searchTaskIdsViaFts(
-    query: string,
-    projectIds: string[] | null
-  ): Promise<string[]> {
+  private async searchTaskIdsViaFts(query: string, projectIds: string[] | null): Promise<string[]> {
     const escaped = `"${query.replace(/"/g, '""')}"`
     const whereClause = projectIds ? 'AND t.projectId IN (:projectIds)' : ''
 
@@ -657,10 +639,7 @@ export class TaskService {
   ): Promise<string[]> {
     const likePattern = `%${query}%`
     const where: Record<string, unknown> = {
-      [Op.or]: [
-        { title: { [Op.like]: likePattern } },
-        { description: { [Op.like]: likePattern } }
-      ]
+      [Op.or]: [{ title: { [Op.like]: likePattern } }, { description: { [Op.like]: likePattern } }]
     }
 
     if (projectIds) {
@@ -676,4 +655,3 @@ export class TaskService {
     return tasks.map((task) => task.id)
   }
 }
-

@@ -1,5 +1,17 @@
-import type { JSX } from 'react'
-import { Card, Col, List, Progress, Row, Skeleton, Space, Statistic, Typography, Flex, theme } from 'antd'
+import type { FC } from 'react'
+import {
+  Card,
+  Col,
+  List,
+  Progress,
+  Row,
+  Skeleton,
+  Space,
+  Statistic,
+  Typography,
+  Flex,
+  theme
+} from 'antd'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import dayjs from 'dayjs'
@@ -9,19 +21,19 @@ import { useDelayedLoading } from '@renderer/hooks/useDelayedLoading'
 import { ProjectDetailsCard } from '@renderer/pages/Projects/components/ProjectDetailsCard'
 import { useProjectRouteContext } from '@renderer/pages/ProjectLayout'
 import { calculateProjectInsights } from '@renderer/pages/ProjectOverview/ProjectOverview.helpers'
-import type { DistributionItem, ProjectOverviewPageProps } from '@renderer/pages/ProjectOverview/ProjectOverview.types'
+import type {
+  DistributionItem,
+  ProjectOverviewPageProps
+} from '@renderer/pages/ProjectOverview/ProjectOverview.types'
 
-const ProjectOverviewPage = ({}: ProjectOverviewPageProps): JSX.Element => {
+const ProjectOverviewPage: FC<ProjectOverviewPageProps> = () => {
   const { project, projectLoading, tasks, taskStatuses } = useProjectRouteContext()
   const { t } = useTranslation('projects')
   const { token } = theme.useToken()
   const showSkeleton = useDelayedLoading(projectLoading)
 
   const insights = useMemo(() => calculateProjectInsights(tasks), [tasks])
-  const statusOrder = useMemo(
-    () => taskStatuses.map((status) => status.key),
-    [taskStatuses]
-  )
+  const statusOrder = useMemo(() => taskStatuses.map((status) => status.key), [taskStatuses])
 
   const statusLabelMap = useMemo(() => {
     const map = new Map<string, string>()
@@ -51,18 +63,25 @@ const ProjectOverviewPage = ({}: ProjectOverviewPageProps): JSX.Element => {
     })
   }, [insights.statusDistribution, statusOrder])
 
-  const priorityOrder: Array<'critical' | 'high' | 'medium' | 'low'> = ['critical', 'high', 'medium', 'low']
   const orderedPriorityDistribution = useMemo(() => {
+    const priorityOrder: Array<'critical' | 'high' | 'medium' | 'low'> = [
+      'critical',
+      'high',
+      'medium',
+      'low'
+    ]
     const orderMap = new Map(priorityOrder.map((priority, index) => [priority, index]))
     return [...insights.priorityDistribution].sort((a, b) => {
-      const indexA = orderMap.get(a.key as typeof priorityOrder[number]) ?? Number.MAX_SAFE_INTEGER
-      const indexB = orderMap.get(b.key as typeof priorityOrder[number]) ?? Number.MAX_SAFE_INTEGER
+      const indexA =
+        orderMap.get(a.key as (typeof priorityOrder)[number]) ?? Number.MAX_SAFE_INTEGER
+      const indexB =
+        orderMap.get(b.key as (typeof priorityOrder)[number]) ?? Number.MAX_SAFE_INTEGER
       if (indexA === indexB) {
         return b.count - a.count
       }
       return indexA - indexB
     })
-  }, [insights.priorityDistribution, priorityOrder])
+  }, [insights.priorityDistribution])
 
   const metricCards = useMemo(
     () => [
@@ -103,7 +122,16 @@ const ProjectOverviewPage = ({}: ProjectOverviewPageProps): JSX.Element => {
         color: token.colorTextSecondary
       }
     ],
-    [insights.totals, t, token.colorError, token.colorPrimary, token.colorSuccess, token.colorText, token.colorTextSecondary, token.colorWarning]
+    [
+      insights.totals,
+      t,
+      token.colorError,
+      token.colorPrimary,
+      token.colorSuccess,
+      token.colorText,
+      token.colorTextSecondary,
+      token.colorWarning
+    ]
   )
 
   const metricsGridStyle = useMemo(() => {
@@ -116,7 +144,11 @@ const ProjectOverviewPage = ({}: ProjectOverviewPageProps): JSX.Element => {
     }
   }, [token.marginMD, token.marginSM])
 
-  const renderDistribution = (items: DistributionItem[], total: number, labelForKey: (key: string) => string) => {
+  const renderDistribution = (
+    items: DistributionItem[],
+    total: number,
+    labelForKey: (key: string) => string
+  ) => {
     if (items.length === 0) {
       return <Typography.Text type="secondary">{t('details.overview.empty')}</Typography.Text>
     }
@@ -146,11 +178,7 @@ const ProjectOverviewPage = ({}: ProjectOverviewPageProps): JSX.Element => {
     const { completionTrend } = insights
     const max = completionTrend.reduce((acc, point) => Math.max(acc, point.count), 0)
     if (completionTrend.length === 0 || max === 0) {
-      return (
-        <Typography.Text type="secondary">
-          {t('details.overview.trend.empty')}
-        </Typography.Text>
-      )
+      return <Typography.Text type="secondary">{t('details.overview.trend.empty')}</Typography.Text>
     }
     return (
       <Flex align="end" gap={8} style={{ width: '100%', minHeight: 140 }}>
@@ -220,7 +248,7 @@ const ProjectOverviewPage = ({}: ProjectOverviewPageProps): JSX.Element => {
           ) : (
             <div style={metricsGridStyle}>
               {metricCards.map((metric) => (
-                <Card bordered={false} key={metric.key} style={{ height: '100%' }}>
+                <Card variant="borderless" key={metric.key} style={{ height: '100%' }}>
                   <Statistic
                     title={metric.title}
                     value={metric.value}
@@ -252,11 +280,8 @@ const ProjectOverviewPage = ({}: ProjectOverviewPageProps): JSX.Element => {
           {showSkeleton ? (
             <Skeleton active paragraph={{ rows: 4 }} title={false} />
           ) : (
-            renderDistribution(
-              orderedPriorityDistribution,
-              insights.totals.total,
-              (priority) =>
-                t(`details.priority.${priority}`, { defaultValue: priority })
+            renderDistribution(orderedPriorityDistribution, insights.totals.total, (priority) =>
+              t(`details.priority.${priority}`, { defaultValue: priority })
             )
           )}
         </Card>
@@ -266,9 +291,7 @@ const ProjectOverviewPage = ({}: ProjectOverviewPageProps): JSX.Element => {
           {showSkeleton ? (
             <Skeleton active paragraph={{ rows: 4 }} title={false} />
           ) : insights.assigneeWorkload.length === 0 ? (
-            <Typography.Text type="secondary">
-              {t('details.overview.empty')}
-            </Typography.Text>
+            <Typography.Text type="secondary">{t('details.overview.empty')}</Typography.Text>
           ) : (
             <Space direction="vertical" size={12} style={{ width: '100%' }}>
               {insights.assigneeWorkload.map((entry) => {
@@ -299,11 +322,7 @@ const ProjectOverviewPage = ({}: ProjectOverviewPageProps): JSX.Element => {
       </Col>
       <Col xs={24} lg={16} xl={16}>
         <Card title={t('details.overview.trendCard.title')} style={{ height: '100%' }}>
-          {showSkeleton ? (
-            <Skeleton active paragraph={{ rows: 4 }} title={false} />
-          ) : (
-            renderTrend()
-          )}
+          {showSkeleton ? <Skeleton active paragraph={{ rows: 4 }} title={false} /> : renderTrend()}
         </Card>
       </Col>
       <Col xs={24} lg={8} xl={8}>
@@ -320,13 +339,16 @@ const ProjectOverviewPage = ({}: ProjectOverviewPageProps): JSX.Element => {
               dataSource={insights.upcomingTasks}
               renderItem={(task) => (
                 <List.Item key={task.id} style={{ paddingInline: 0 }}>
-                  <Flex justify="space-between" align="center" wrap gap={8} style={{ width: '100%' }}>
+                  <Flex
+                    justify="space-between"
+                    align="center"
+                    wrap
+                    gap={8}
+                    style={{ width: '100%' }}
+                  >
                     <div style={{ flex: '1 1 60%' }}>
                       <Typography.Text strong>{task.title}</Typography.Text>
-                      <Typography.Paragraph
-                        type="secondary"
-                        style={{ marginBottom: 0 }}
-                      >
+                      <Typography.Paragraph type="secondary" style={{ marginBottom: 0 }}>
                         {task.key}
                       </Typography.Paragraph>
                     </div>
@@ -363,13 +385,16 @@ const ProjectOverviewPage = ({}: ProjectOverviewPageProps): JSX.Element => {
               dataSource={insights.overdueTasks}
               renderItem={(task) => (
                 <List.Item key={task.id} style={{ paddingInline: 0 }}>
-                  <Flex justify="space-between" align="center" wrap gap={8} style={{ width: '100%' }}>
+                  <Flex
+                    justify="space-between"
+                    align="center"
+                    wrap
+                    gap={8}
+                    style={{ width: '100%' }}
+                  >
                     <div style={{ flex: '1 1 60%' }}>
                       <Typography.Text strong>{task.title}</Typography.Text>
-                      <Typography.Paragraph
-                        type="secondary"
-                        style={{ marginBottom: 0 }}
-                      >
+                      <Typography.Paragraph type="secondary" style={{ marginBottom: 0 }}>
                         {task.key}
                       </Typography.Paragraph>
                     </div>

@@ -20,11 +20,7 @@ const BodyStyleSynchronizer = () => {
     body.style.color = token.colorTextBase
     body.style.fontFamily = token.fontFamily
     documentElement.style.backgroundColor = token.colorBgLayout
-  }, [
-    token.colorBgLayout,
-    token.colorTextBase,
-    token.fontFamily
-  ])
+  }, [token.colorBgLayout, token.colorTextBase, token.fontFamily])
 
   return null
 }

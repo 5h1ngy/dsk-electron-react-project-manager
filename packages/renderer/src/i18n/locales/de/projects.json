@@ -393,8 +393,8 @@
       "delete": "Loeschen",
       "panelTitle": "Aktionen",
       "openFilters": "Filter",
-    "resetFilters": "Filter zurcksetzen",
-    "closeFilters": "Schlieen"
+      "resetFilters": "Filter zurcksetzen",
+      "closeFilters": "Schlieen"
     },
     "view": {
       "list": "Listenansicht",
@@ -470,7 +470,7 @@
   },
   "views": {
     "placeholder": "Gespeicherte Ansichten",
-      "panelTitle": "Gespeicherte Ansichten",
+    "panelTitle": "Gespeicherte Ansichten",
     "saveButton": "Ansicht speichern",
     "deleteButton": "Löschen",
     "saveSuccess": "Ansicht gespeichert",

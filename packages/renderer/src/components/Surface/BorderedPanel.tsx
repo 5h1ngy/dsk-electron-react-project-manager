@@ -1,5 +1,6 @@
 import type { CSSProperties, PropsWithChildren, ReactNode } from 'react'
 import { Card, theme } from 'antd'
+import type { CardProps } from 'antd'
 
 type PanelPadding = 'sm' | 'md' | 'lg'
 
@@ -22,6 +23,7 @@ export interface BorderedPanelProps {
   headerStyle?: CSSProperties
   className?: string
   padding?: PanelPadding
+  styles?: CardProps['styles']
 }
 
 export const BorderedPanel = ({
@@ -32,7 +34,8 @@ export const BorderedPanel = ({
   bodyStyle,
   headerStyle,
   className,
-  padding = 'md'
+  padding = 'md',
+  styles
 }: PropsWithChildren<BorderedPanelProps>) => {
   const { token } = theme.useToken()
   const borderColor = token.colorBorderSecondary ?? token.colorBorder
@@ -63,7 +66,8 @@ export const BorderedPanel = ({
         body: {
           padding: resolvedPadding,
           ...bodyStyle
-        }
+        },
+        ...styles
       }}
     >
       {children}

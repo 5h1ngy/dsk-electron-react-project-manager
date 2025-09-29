@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { AuthService } from '@main/services/auth'
 import type { NoteService } from '@main/services/note'
 import type { NoteDetailsDTO, NoteSearchResultDTO, NoteSummaryDTO } from '@main/services/note/types'

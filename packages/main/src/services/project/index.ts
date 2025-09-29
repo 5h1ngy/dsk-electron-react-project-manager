@@ -16,7 +16,11 @@ import {
   type CreateProjectInput,
   type UpdateProjectInput
 } from '@main/services/project/schemas'
-import type { ProjectActor, ProjectDetailsDTO, ProjectSummaryDTO } from '@main/services/project/types'
+import type {
+  ProjectActor,
+  ProjectDetailsDTO,
+  ProjectSummaryDTO
+} from '@main/services/project/types'
 import {
   DEFAULT_MEMBER_ROLE,
   assertProjectRole,
@@ -26,11 +30,7 @@ import {
 import { mapProjectDetails, mapProjectSummary } from '@main/services/project/helpers'
 import { DEFAULT_TASK_STATUSES } from '@main/services/taskStatus/defaults'
 
-const userIdSchema = z
-  .string()
-  .trim()
-  .min(1, 'userId richiesto')
-  .max(36, 'userId troppo lungo')
+const userIdSchema = z.string().trim().min(1, 'userId richiesto').max(36, 'userId troppo lungo')
 
 const addMemberSchema = z.object({
   userId: userIdSchema,
@@ -183,8 +183,7 @@ export class ProjectService {
       })
 
       return projects.map((project) => {
-        const membership =
-          project.members?.find((member) => member.userId === actor.userId) ?? null
+        const membership = project.members?.find((member) => member.userId === actor.userId) ?? null
         if (!membership) {
           throw new AppError('ERR_INTERNAL', 'Permessi progetto non disponibili')
         }
@@ -198,17 +197,17 @@ export class ProjectService {
 
   async getProject(actor: ProjectActor, projectId: string): Promise<ProjectDetailsDTO> {
     try {
-    const project = await Project.findByPk(projectId, {
-      include: [
-        {
-          model: ProjectMember,
-          include: [User]
-        },
-        {
-          model: ProjectTag
-        }
-      ]
-    })
+      const project = await Project.findByPk(projectId, {
+        include: [
+          {
+            model: ProjectMember,
+            include: [User]
+          },
+          {
+            model: ProjectTag
+          }
+        ]
+      })
 
       if (!project) {
         throw new AppError('ERR_NOT_FOUND', 'Progetto non trovato')
@@ -394,7 +393,11 @@ export class ProjectService {
       throw wrapError(error)
     }
   }
-  async removeMember(actor: ProjectActor, projectId: string, userId: string): Promise<ProjectDetailsDTO> {
+  async removeMember(
+    actor: ProjectActor,
+    projectId: string,
+    userId: string
+  ): Promise<ProjectDetailsDTO> {
     try {
       const membership = await this.loadMembership(projectId, actor.userId)
       assertProjectRole(actor, membership?.role ?? null, 'admin')
@@ -448,5 +451,3 @@ export class ProjectService {
 }
 
 export type { ProjectActor } from '@main/services/project/types'
-
-
