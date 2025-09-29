@@ -20,7 +20,7 @@ const ShellContainer = ({ currentUser, onLogout, children }: ShellProps): JSX.El
     handleCollapseChange,
     handleBreakpoint,
     labels
-  } = useShellLayout()
+  } = useShellLayout(currentUser)
 
   const styles = useShellStyles({
     menuTheme,

@@ -17,14 +17,14 @@
     "title": "DSK Project Manager",
     "welcome": "Willkommen, {{name}}",
     "logout": "Abmelden",
-    "navigation": {"dashboard": "Dashboard", "projects": "Projekte", "settings": "Einstellungen"},
+    "navigation": {"dashboard": "Dashboard", "projects": "Projekte", "settings": "Einstellungen", "userManagement": "Benutzerverwaltung"},
     "collapseSidebar": "Navigation einklappen",
     "expandSidebar": "Navigation ausklappen",
     "searchPlaceholder": "In Dateien und Projekten suchen",
     "quickCreate": "Neu",
     "help": "Hilfe & Support",
     "notifications": "Benachrichtigungen",
-    "settings": "Einstellungen",
+    "settings": "Einstellungen", "userManagement": "Benutzerverwaltung",
     "theme": {
       "title": "Darstellung",
       "mode": "Dunkler Modus",
@@ -53,4 +53,5 @@
     }
   }
 }
+
 

@@ -9,6 +9,7 @@ import ProjectOverviewPage from '@renderer/pages/ProjectOverview'
 import ProjectTasksPage from '@renderer/pages/ProjectTasks'
 import ProjectNotesPage from '@renderer/pages/ProjectNotes'
 import SettingsPage from '@renderer/pages/Settings'
+import UserManagementPage from '@renderer/pages/UserManagement'
 import { ProtectedRoute } from '@renderer/pages/ProtectedRoute'
 import { PublicRoute } from '@renderer/pages/PublicRoute'
 
@@ -21,6 +22,7 @@ export const AppRoutes = () => (
     <Route element={<ProtectedRoute />}>
       <Route index element={<DashboardPage />} />
       <Route path="/projects" element={<ProjectsPage />} />
+      <Route path="/admin/users" element={<UserManagementPage />} />
       <Route path="/settings" element={<SettingsPage />} />
       <Route path="/projects/:projectId" element={<ProjectLayout />}>
         <Route index element={<ProjectOverviewPage />} />
