@@ -10,6 +10,7 @@
     "refresh": "Aggiorna",
     "create": "Nuovo progetto",
     "edit": "Modifica",
+    "delete": "Elimina",
     "deleteTitle": "Rimuovi progetto",
     "deleteDescription": "Vuoi davvero rimuovere {{name}}?",
     "deleteConfirm": "Rimuovi",

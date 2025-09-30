@@ -115,13 +115,18 @@ export const ProjectList = ({
     {
       title: t('list.columns.actions'),
       key: 'actions',
-      width: 120,
+      width: 160,
+      align: 'right',
       render: (_value: unknown, record) => {
         if (record.role !== 'admin') {
           return null
         }
         return (
-          <Space size={4}>
+          <Space
+            size={4}
+            wrap
+            style={{ justifyContent: 'flex-end', width: '100%' }}
+          >
             <Button
               type="text"
               icon={<EditOutlined />}
@@ -173,7 +178,7 @@ export const ProjectList = ({
         }
       }
       size="middle"
-      scroll={{ x: 1024 }}
+      scroll={{ x: 'max-content' }}
       onRow={(record) => ({
         onClick: () => onSelect(record.id),
         style: { cursor: 'pointer' }

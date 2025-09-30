@@ -14,10 +14,8 @@ import {
   Breadcrumb,
   Button,
   Card,
-  Col,
   Flex,
   Progress,
-  Row,
   Space,
   Statistic,
   Tag,
@@ -212,21 +210,23 @@ const Dashboard = (): JSX.Element | null => {
         </Space>
       </ShellHeaderPortal>
       <Space direction="vertical" size="large" style={{ width: '100%' }}>
-        <Row gutter={[16, 16]}>
-          <Col xs={24} xl={16}>
-            <Row gutter={[16, 16]}>
+        <Flex wrap gap={16} align="stretch" style={{ width: '100%' }}>
+          <Flex
+            vertical
+            gap={16}
+            style={{ flex: '1 1 640px', minWidth: 320 }}
+          >
+            <Flex wrap gap={16}>
               {summaryCards.map((card) => (
-                <Col key={card.key} xs={24} sm={12} xl={6}>
-                  <Card>
-                    <Space direction="vertical" size={8} style={{ width: '100%' }}>
-                      <Statistic title={card.title} value={card.value} />
-                      <Typography.Text type="secondary">{card.caption}</Typography.Text>
-                    </Space>
-                  </Card>
-                </Col>
+                <Card key={card.key} style={{ flex: '1 1 200px', minWidth: 200 }}>
+                  <Space direction="vertical" size={8} style={{ width: '100%' }}>
+                    <Statistic title={card.title} value={card.value} />
+                    <Typography.Text type="secondary">{card.caption}</Typography.Text>
+                  </Space>
+                </Card>
               ))}
-            </Row>
-            <Card title={t('insights.title')} style={{ marginTop: 16 }}>
+            </Flex>
+            <Card title={t('insights.title')}>
               <Space direction="vertical" size={24} style={{ width: '100%' }}>
                 <div>
                   <Typography.Text strong>{t('insights.roles')}</Typography.Text>
@@ -269,15 +269,19 @@ const Dashboard = (): JSX.Element | null => {
                 </div>
               </Space>
             </Card>
-            <Card title={t('recentProjects.title')} style={{ marginTop: 16 }}>
+            <Card title={t('recentProjects.title')}>
               {projectsSkeleton ? (
                 <LoadingSkeleton variant="list" />
               ) : (
                 renderProjectsList(recentProjects, t, badgeTokens)
               )}
             </Card>
-          </Col>
-          <Col xs={24} xl={8}>
+          </Flex>
+          <Flex
+            vertical
+            gap={16}
+            style={{ flex: '1 1 320px', minWidth: 280, maxWidth: 420 }}
+          >
             <Card title={t('profile.title')}>
               <Space direction="vertical" size={12} style={{ width: '100%' }}>
                 <Typography.Text>
@@ -300,7 +304,7 @@ const Dashboard = (): JSX.Element | null => {
                 </Space>
               </Space>
             </Card>
-            <Card title={t('quickLinks.title')} style={{ marginTop: 16 }}>
+            <Card title={t('quickLinks.title')}>
               <Flex wrap gap={16}>
                 {quickLinks.map((link) => (
                   <Card
@@ -324,11 +328,9 @@ const Dashboard = (): JSX.Element | null => {
                 ))}
               </Flex>
             </Card>
-            <div style={{ marginTop: 16 }}>
-              <HealthStatusCard cardStyle={{ width: '100%' }} />
-            </div>
-          </Col>
-        </Row>
+            <HealthStatusCard cardStyle={{ width: '100%' }} />
+          </Flex>
+        </Flex>
       </Space>
     </>
   )
