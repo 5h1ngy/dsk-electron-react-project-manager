@@ -25,6 +25,73 @@ const BodyStyleSynchronizer = () => {
   return null
 }
 
+const SCROLLBAR_STYLE_ID = 'app-scrollbar-styles'
+
+const ScrollbarStyleSynchronizer = () => {
+  const { token } = theme.useToken()
+
+  useEffect(() => {
+    let styleTag = document.getElementById(SCROLLBAR_STYLE_ID) as HTMLStyleElement | null
+    if (!styleTag) {
+      styleTag = document.createElement('style')
+      styleTag.id = SCROLLBAR_STYLE_ID
+      document.head.appendChild(styleTag)
+    }
+
+    const trackColor = token.colorBgElevated ?? token.colorBgContainer ?? '#1f1f1f'
+    const thumbColor = token.colorBorderSecondary ?? token.colorPrimary ?? '#6b7280'
+    const hoverColor = token.colorPrimary ?? thumbColor
+    const borderRadius =
+      typeof token.borderRadiusSM === 'number' ? `${token.borderRadiusSM}px` : '6px'
+    const thickness = '10px'
+
+    styleTag.textContent = `
+      * {
+        scrollbar-width: thin;
+        scrollbar-color: ${thumbColor} ${trackColor};
+      }
+
+      *::-webkit-scrollbar {
+        width: ${thickness};
+        height: ${thickness};
+      }
+
+      *::-webkit-scrollbar-track {
+        background: ${trackColor};
+        border-radius: ${borderRadius};
+      }
+
+      *::-webkit-scrollbar-thumb {
+        background-color: ${thumbColor};
+        border-radius: ${borderRadius};
+        border: 2px solid ${trackColor};
+      }
+
+      *::-webkit-scrollbar-thumb:hover {
+        background-color: ${hoverColor};
+      }
+
+      *::-webkit-scrollbar-corner {
+        background: ${trackColor};
+      }
+    `
+
+    return () => {
+      if (styleTag) {
+        styleTag.textContent = ''
+      }
+    }
+  }, [
+    token.borderRadiusSM,
+    token.colorBgContainer,
+    token.colorBgElevated,
+    token.colorBorderSecondary,
+    token.colorPrimary
+  ])
+
+  return null
+}
+
 const App = () => {
   const dispatch = useAppDispatch()
   const mode = useAppSelector(selectThemeMode)
@@ -51,6 +118,7 @@ const App = () => {
         >
           <AntdApp>
             <BodyStyleSynchronizer />
+            <ScrollbarStyleSynchronizer />
             <AppRoutes />
           </AntdApp>
         </HashRouter>
