@@ -42,6 +42,7 @@ export const useUserData = ({ enabled }: UseUserDataOptions): UserDataState => {
   const mountedRef = useRef(true)
 
   useEffect(() => {
+    mountedRef.current = true
     return () => {
       mountedRef.current = false
     }
@@ -53,6 +54,12 @@ export const useUserData = ({ enabled }: UseUserDataOptions): UserDataState => {
     }
   }, [])
 
+  const setHasLoadedSafe = useCallback((value: boolean) => {
+    if (mountedRef.current) {
+      setHasLoaded(value)
+    }
+  }, [])
+
   const executeLoad = useCallback(async () => {
     if (!enabled) {
       return
@@ -61,10 +68,10 @@ export const useUserData = ({ enabled }: UseUserDataOptions): UserDataState => {
     try {
       await dispatch(loadUsers())
     } finally {
-      setHasLoaded(true)
+      setHasLoadedSafe(true)
       setLoadingSafe(false)
     }
-  }, [dispatch, enabled, setLoadingSafe])
+  }, [dispatch, enabled, setHasLoadedSafe, setLoadingSafe])
 
   useEffect(() => {
     if (!enabled) {
