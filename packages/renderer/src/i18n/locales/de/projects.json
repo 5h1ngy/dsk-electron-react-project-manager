@@ -9,6 +9,7 @@
     "refresh": "Aktualisieren",
     "create": "Neues Projekt",
     "edit": "Bearbeiten",
+    "delete": "Loeschen",
     "deleteTitle": "Projekt entfernen",
     "deleteDescription": "Moechten Sie {{name}} wirklich entfernen?",
     "deleteConfirm": "Entfernen",
