@@ -1,0 +1,10 @@
+#!/bin/sh
+
+ROOT_DIR="$(git rev-parse --show-toplevel 2>/dev/null)"
+
+if [ -z "$ROOT_DIR" ]; then
+  echo "[prepare-commit-msg] Unable to determine repository root." >&2
+  exit 1
+fi
+
+node "$ROOT_DIR/scripts/git/enforce-merge-policy.mjs" "$@"

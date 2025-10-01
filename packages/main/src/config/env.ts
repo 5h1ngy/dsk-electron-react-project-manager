@@ -25,7 +25,8 @@ export class EnvConfig {
       dotenv.config({ path: envPath })
     }
     return new EnvConfig({
-      logLevel: EnvConfig.parseLogLevel(process.env.LOG_LEVEL)
+      logLevel: EnvConfig.parseLogLevel(process.env.LOG_LEVEL),
+      appVersion: EnvConfig.requireVersion(process.env.APP_VERSION)
     })
   }
 
@@ -38,6 +39,10 @@ export class EnvConfig {
 
   get logLevel(): LogLevelSetting {
     return this.config.logLevel
+  }
+
+  get appVersion(): string {
+    return this.config.appVersion
   }
 
   /**
@@ -56,6 +61,14 @@ export class EnvConfig {
       default:
         return 'info'
     }
+  }
+
+  private static requireVersion(value?: string): string {
+    const normalized = value?.trim()
+    if (!normalized || normalized === 'undefined' || normalized === 'null') {
+      throw new Error('APP_VERSION is required in the environment')
+    }
+    return normalized
   }
 }
 

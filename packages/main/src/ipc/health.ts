@@ -1,4 +1,3 @@
-import type { App } from 'electron'
 import type { Sequelize } from 'sequelize-typescript'
 
 import { AppError } from '@main/config/appError'
@@ -16,20 +15,20 @@ export const HEALTH_CHANNEL = 'system:health'
 
 export interface HealthIpcDependencies {
   sequelize: Sequelize
-  appRef: Pick<App, 'getVersion'>
+  version: string
   registrar: IpcChannelRegistrar
   channel?: string
 }
 
 export class HealthIpcRegistrar {
   private readonly sequelize: Sequelize
-  private readonly appRef: Pick<App, 'getVersion'>
+  private readonly version: string
   private readonly registrar: IpcChannelRegistrar
   private readonly channel: string
 
   constructor(dependencies: HealthIpcDependencies) {
     this.sequelize = dependencies.sequelize
-    this.appRef = dependencies.appRef
+    this.version = dependencies.version
     this.registrar = dependencies.registrar
     this.channel = dependencies.channel ?? HEALTH_CHANNEL
   }
@@ -40,7 +39,7 @@ export class HealthIpcRegistrar {
         await this.sequelize.authenticate()
         return {
           status: 'healthy',
-          version: this.appRef.getVersion(),
+          version: this.version,
           timestamp: new Date().toISOString(),
           uptimeSeconds: process.uptime()
         }

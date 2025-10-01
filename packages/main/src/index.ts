@@ -5,6 +5,7 @@ import { app, BrowserWindow } from 'electron'
 import { registerSecurityHooks } from '@main/services/security'
 import { initializeDatabase } from '@main/config/database'
 import { resolveAppStoragePath } from '@main/config/storagePath'
+import { env } from '@main/config/env'
 import { logger } from '@main/config/logger'
 import { SystemSetting } from '@main/models/SystemSetting'
 import { SESSION_TIMEOUT_MINUTES } from '@main/services/auth/constants'
@@ -104,6 +105,7 @@ interface MainProcessDependencies {
   registerSecurityHooks: () => void
   sessionLifecycle: SessionLifecycleManager
   ipcRegistrar: IpcChannelRegistrar
+  appVersion: string
 }
 
 class MainProcessApplication {
@@ -112,6 +114,9 @@ class MainProcessApplication {
   constructor(private readonly deps: MainProcessDependencies) {}
 
   bootstrap(): void {
+    if (this.deps.app.getVersion() !== this.deps.appVersion) {
+      this.deps.app.setVersion(this.deps.appVersion)
+    }
     this.enforceSingleInstance()
     this.registerAppEvents()
     this.registerProcessEvents()
@@ -209,8 +214,8 @@ class MainProcessApplication {
   private registerIpcChannels(database: Sequelize): void {
     new HealthIpcRegistrar({
       sequelize: database,
-      appRef: this.deps.app,
-      registrar: this.deps.ipcRegistrar
+      registrar: this.deps.ipcRegistrar,
+      version: this.deps.appVersion
     }).register()
     this.deps.logger.debug('Health IPC channel registered', 'IPC')
 
@@ -299,7 +304,8 @@ const application = new MainProcessApplication({
   initializeDatabase,
   registerSecurityHooks,
   sessionLifecycle,
-  ipcRegistrar: ipcChannelRegistrar
+  ipcRegistrar: ipcChannelRegistrar,
+  appVersion: env.appVersion
 })
 
 application.bootstrap()

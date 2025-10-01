@@ -46,6 +46,7 @@ const config: Config = {
         '<rootDir>/packages/preload/**/*.test.ts',
         '<rootDir>/seeding/**/*.test.ts'
       ],
+      setupFiles: ['<rootDir>/test/setupEnv.ts'],
       moduleNameMapper: sharedModuleNameMapper,
       transform: {
         '^.+\\.(ts|tsx)$': [
@@ -61,6 +62,7 @@ const config: Config = {
       preset: 'ts-jest',
       testEnvironment: 'jsdom',
       testMatch: ['<rootDir>/packages/renderer/**/*.test.ts?(x)'],
+      setupFiles: ['<rootDir>/test/setupEnv.ts'],
       setupFilesAfterEnv: ['<rootDir>/test/setupRendererTests.ts'],
       moduleNameMapper: sharedModuleNameMapper,
       transform: {

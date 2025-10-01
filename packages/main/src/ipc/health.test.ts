@@ -23,7 +23,7 @@ describe('HealthIpcRegistrar', () => {
   let sequelize: Sequelize
   let handlers: Map<string, (...args: any[]) => Promise<unknown>>
   let registrar: IpcChannelRegistrar
-  const appRef = { getVersion: () => '1.2.3' }
+  const version = '1.2.3'
 
   beforeEach(() => {
     authenticate = jest.fn().mockResolvedValue(undefined)
@@ -35,7 +35,7 @@ describe('HealthIpcRegistrar', () => {
   })
 
   it('reports healthy status when authentication succeeds', async () => {
-    new HealthIpcRegistrar({ sequelize, appRef, registrar }).register()
+    new HealthIpcRegistrar({ sequelize, version, registrar }).register()
 
     const response = await handlers.get(HEALTH_CHANNEL)!({})
 
@@ -43,7 +43,7 @@ describe('HealthIpcRegistrar', () => {
       ok: true,
       data: {
         status: 'healthy',
-        version: '1.2.3'
+        version
       }
     })
     expect(authenticate).toHaveBeenCalledTimes(1)
@@ -52,7 +52,7 @@ describe('HealthIpcRegistrar', () => {
   it('returns an error response when authentication fails', async () => {
     authenticate.mockRejectedValue(new Error('boom'))
 
-    new HealthIpcRegistrar({ sequelize, appRef, registrar }).register()
+    new HealthIpcRegistrar({ sequelize, version, registrar }).register()
 
     const response = await handlers.get(HEALTH_CHANNEL)!({})
     expect(response).toEqual({
