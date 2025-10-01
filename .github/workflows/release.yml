@@ -1,0 +1,141 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  prepare:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.release_info.outputs.version }}
+      notes: ${{ steps.release_info.outputs.notes }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate release information
+        id: release_info
+        run: node scripts/release/generate-release-info.mjs
+
+      - name: Update package version
+        run: npm version ${{ steps.release_info.outputs.version }} --no-git-tag-version
+
+      - name: Commit version bump
+        run: |
+          if git diff --quiet; then
+            echo "No changes to commit."
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git commit -am "chore: bump version to ${{ steps.release_info.outputs.version }} [skip release]"
+            git push origin HEAD:main
+          fi
+
+  build:
+    needs: prepare
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            id: linux
+            build: npm run build:linux
+          - os: macos-latest
+            id: mac
+            build: npm run build:mac
+          - os: windows-latest
+            id: windows
+            build: npm run build:win
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Align package version
+        run: npm version ${{ needs.prepare.outputs.version }} --no-git-tag-version
+
+      - name: Build project
+        run: ${{ matrix.build }}
+
+      - name: Collect artifacts
+        run: |
+          mkdir -p artifacts/${{ matrix.id }}
+          if [ -d dist ]; then
+            find dist -maxdepth 1 -type f -print0 | xargs -0 -I{} cp "{}" artifacts/${{ matrix.id }}/
+          fi
+        shell: bash
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.id }}
+          path: artifacts/${{ matrix.id }}
+          if-no-files-found: error
+
+  release:
+    needs:
+      - prepare
+      - build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: release-assets
+
+      - name: Create version tag
+        run: |
+          VERSION=${{ needs.prepare.outputs.version }}
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -a "v$VERSION" -m "Release v$VERSION"
+          git push origin "v$VERSION"
+
+      - name: Flatten artifact list
+        id: files
+        run: |
+          FILES=$(find release-assets -type f -printf "%p\n")
+          echo "list<<EOF" >> $GITHUB_OUTPUT
+          echo "$FILES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Publish GitHub release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ needs.prepare.outputs.version }}
+          name: v${{ needs.prepare.outputs.version }}
+          body: ${{ needs.prepare.outputs.notes }}
+          files: ${{ steps.files.outputs.list }}
