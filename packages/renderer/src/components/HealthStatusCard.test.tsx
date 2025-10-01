@@ -23,7 +23,7 @@ describe('HealthStatusCard', () => {
       error: undefined,
       data: {
         status: 'healthy',
-        version: '0.41.0',
+        version: '0.41.1',
         timestamp: new Date('2025-01-01T00:00:00.000Z').toISOString(),
         uptimeSeconds: 125
       }
@@ -32,7 +32,7 @@ describe('HealthStatusCard', () => {
     render(<HealthStatusCard />)
 
     expect(screen.getByText('Versione:')).toBeInTheDocument()
-    expect(screen.getByText('0.41.0')).toBeInTheDocument()
+    expect(screen.getByText('0.41.1')).toBeInTheDocument()
     expect(screen.getByText('2m 5s')).toBeInTheDocument()
     expect(screen.getByText('healthy')).toBeInTheDocument()
   })
@@ -58,7 +58,7 @@ describe('HealthStatusCard', () => {
       error: undefined,
       data: {
         status: 'healthy',
-        version: '0.41.0',
+        version: '0.41.1',
         timestamp: new Date().toISOString(),
         uptimeSeconds: 10
       }

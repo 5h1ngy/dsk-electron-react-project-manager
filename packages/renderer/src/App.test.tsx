@@ -11,7 +11,7 @@ const createHealthResponse = () => ({
   ok: true,
   data: {
     status: 'healthy' as const,
-    version: '0.41.0',
+    version: '0.41.1',
     timestamp: new Date().toISOString(),
     uptimeSeconds: 5
   }
