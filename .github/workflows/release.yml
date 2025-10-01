@@ -5,6 +5,10 @@ on:
     branches:
       - main
 
+permissions:
+  contents: write
+  actions: read
+
 jobs:
   prepare:
     if: github.actor != 'github-actions[bot]'
@@ -127,7 +131,7 @@ jobs:
       - name: Flatten artifact list
         id: files
         run: |
-          FILES=$(find release-assets -type f -printf "%p\n")
+          FILES=$(find release-assets -type f -print)
           echo "list<<EOF" >> $GITHUB_OUTPUT
           echo "$FILES" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
