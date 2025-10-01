@@ -19,7 +19,7 @@ describe('health preload api', () => {
       ok: true,
       data: {
         status: 'healthy',
-        version: '0.41.0',
+        version: '0.41.1',
         timestamp: new Date().toISOString(),
         uptimeSeconds: 10
       }
