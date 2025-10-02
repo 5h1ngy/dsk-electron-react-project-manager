@@ -8,7 +8,7 @@
 
 ![Application preview](assets/preview.png)
 
-> Release 0.41.8 - Modern desktop project manager with a hardened Electron main process, a typed preload bridge, and a polished React/Redux experience.
+> Release 0.41.9 - Modern desktop project manager with a hardened Electron main process, a typed preload bridge, and a polished React/Redux experience.
 
 ---
 
@@ -99,11 +99,11 @@ All commands assume a recent Node 22 environment. The Electron app automatically
 
 ### Versioning & Releases
 
-- La versione applicativa è dichiarata in `.env` (`APP_VERSION`) e sincronizzata automaticamente con `package.json`.
-- I branch che puntano a `develop` devono iniziare con `feature/` o `bugfix/`; `main` accetta solo `release/` o `hotfix/`.
-- Al merge di una PR su `develop` o `main`, il workflow _Version Automation_ adegua `.env`, `package.json`, `package-lock.json` e aggiorna la riga della release nel README.
-- Le commit di tipo `release: vX.Y.Z` su `main` avviano la pipeline di rilascio che genera artefatti _portable_ per Windows, macOS (zip) e Linux (AppImage) e pubblica automaticamente tag e release su GitHub.
-- Esegui `npm run setup:hooks` (o semplicemente `npm install`) dopo il clone per configurare gli hook git che verificano messaggi Conventional Commit e rispettano la policy di merge locale.
+- Esegui `npm run version:bump` per impostare manualmente la nuova versione: lo script aggiorna `.env`, `package.json`, `package-lock.json`, la riga "Release ..." nel README e crea automaticamente il commit `chore: bump version to X.Y.Z`.
+- La versione applicativa e' dichiarata in `.env` (`APP_VERSION`) e deve rimanere allineata con `package.json`; il comando precedente garantisce l'aggiornamento coerente dei file.
+- Su `develop` sono ammessi solo branch `feature/`, `feat/`, `bugfix/`, `bug/`, `fix/`; su `main` soltanto `release/` e `hotfix/`. I merge non conformi vengono bloccati sia in locale sia in CI.
+- La pipeline `Release` su GitHub si limita a buildare i pacchetti (portable per Win/macOS/Linux) e a pubblicare tag+release partendo dalla versione presente nel repository.
+- Dopo il clone esegui `npm run setup:hooks` (o `npm install`) per configurare i githook che applicano i controlli sui prefissi e i Conventional Commit.
 
 ---
 
