@@ -42,7 +42,7 @@ jobs:
                 echo "Branch prefix valid for merge into develop."
                 exit 0
               fi
-              echo "Only feature/*, feat/*, bugfix/*, bug/* o fix/* possono essere uniti in develop." >&2
+              echo "Only feature/*, feat/*, bugfix/*, bug/* or fix/* branches can be merged into develop." >&2
               exit 1
               ;;
             *)

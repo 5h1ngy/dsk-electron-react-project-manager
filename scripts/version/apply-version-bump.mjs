@@ -2,228 +2,141 @@
 
 import { readFileSync, writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
+import { execSync } from 'node:child_process'
+import readline from 'node:readline'
 
+const PROJECT_ROOT = process.cwd()
+const VERSION_FILES = ['package.json', 'package-lock.json', '.env', 'README.md']
 const args = process.argv.slice(2)
 
-const getArgValue = (flag) => {
-  const index = args.indexOf(flag)
-  if (index === -1 || index === args.length - 1) {
+const getCliVersion = () => {
+  const idx = args.findIndex((value) => value === '--version' || value === '-v')
+  if (idx === -1) {
     return undefined
   }
-  return args[index + 1]
+  if (idx === args.length - 1) {
+    console.error('[version] Missing value after --version flag.')
+    process.exit(1)
+  }
+  return args[idx + 1].trim()
 }
 
-const cwd = process.cwd()
-const branchArg = getArgValue('--branch') ?? process.env.SOURCE_BRANCH ?? process.env.BRANCH_NAME
-const targetBranch =
-  getArgValue('--target') ?? process.env.TARGET_BRANCH ?? process.env.BASE_BRANCH ?? ''
-const dryRun = args.includes('--dry-run')
-
-if (!branchArg) {
-  console.error('[version] Missing source branch name. Provide with --branch.')
-  process.exit(1)
-}
-
-const branchName = branchArg.trim()
-const branchKey = branchName.toLowerCase()
-
-const ruleSets = [
-  { type: 'feature', prefixes: ['feature/', 'feat/'] },
-  { type: 'bugfix', prefixes: ['bugfix/', 'bug/', 'fix/'] },
-  { type: 'hotfix', prefixes: ['hotfix/'] },
-  { type: 'release', prefixes: ['release/'] }
-]
-
-const neutralPrefixes = [
-  'chore/',
-  'ci/',
-  'docs/',
-  'build/',
-  'refactor/',
-  'perf/',
-  'style/',
-  'test/',
-  'revert/'
-]
-
-const matchedRule = ruleSets.find((set) => set.prefixes.some((prefix) => branchKey.startsWith(prefix)))
-
-const neutralMatch = neutralPrefixes.some((prefix) => branchKey.startsWith(prefix))
-
-if (!matchedRule && neutralMatch) {
-  console.log(
-    JSON.stringify({
-      branch: branchName,
-      targetBranch,
-      currentVersion: null,
-      nextVersion: null,
-      bumpType: 'none',
-      changed: false,
-      reason: 'Neutral branch prefix; version unchanged.'
+const question = (prompt) =>
+  new Promise((resolveAnswer) => {
+    const rl = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout
     })
-  )
-  process.exit(0)
-}
+    rl.question(prompt, (answer) => {
+      rl.close()
+      resolveAnswer(answer.trim())
+    })
+  })
 
-if (!matchedRule) {
-  console.error(
-    `[version] Unsupported branch "${branchName}". Expected prefixes: ${[
-      ...ruleSets.flatMap((set) => set.prefixes),
-      ...neutralPrefixes
-    ]
-      .map((item) => `"${item}"`)
-      .join(', ')}.`
-  )
-  process.exit(1)
-}
-
-const rule = matchedRule
-
-const ensureTargetCompatibility = () => {
-  if (!targetBranch) {
-    return
-  }
-
-  const policy = new Map([
-    [
-      'main',
-      {
-        allowed: ['release', 'hotfix'],
-        message: 'Only release/* or hotfix/* branches can be merged into main.'
-      }
-    ],
-    [
-      'develop',
-      {
-        allowed: ['feature', 'bugfix'],
-        message: 'Only feature/* or bugfix/* branches can be merged into develop.'
-      }
-    ]
-  ])
-
-  const ruleForTarget = policy.get(targetBranch)
-
-  if (!ruleForTarget) {
-    return
-  }
-
-  if (!ruleForTarget.allowed.includes(rule.type)) {
-    console.error(`[version] Merge policy violation: ${ruleForTarget.message}`)
+const ensureCleanTree = () => {
+  const status = execSync('git status --porcelain', { cwd: PROJECT_ROOT }).toString().trim()
+  if (status) {
+    console.error('[version] Working tree not clean. Commit or stash changes before running the bump script.')
     process.exit(1)
   }
 }
 
-ensureTargetCompatibility()
-
-const loadJson = (relativePath) => {
-  const filePath = resolve(cwd, relativePath)
+const readJson = (relativePath) => {
+  const filePath = resolve(PROJECT_ROOT, relativePath)
   const raw = readFileSync(filePath, 'utf8')
-  return { filePath, data: JSON.parse(raw), raw }
+  return { filePath, data: JSON.parse(raw) }
 }
 
-const currentPackage = loadJson('package.json')
-const currentVersion = currentPackage.data.version
-
-const parseVersion = (version) => {
-  const parts = version.split('.').map((value) => Number.parseInt(value, 10))
-  if (parts.length !== 3 || parts.some((value) => Number.isNaN(value) || value < 0)) {
-    throw new Error(`[version] Invalid semantic version: "${version}"`)
-  }
-  return parts
+const writeJson = (filePath, data) => {
+  writeFileSync(filePath, `${JSON.stringify(data, null, 2)}\n`, 'utf8')
 }
 
-const formatVersion = ([major, minor, patch]) => `${major}.${minor}.${patch}`
-
-const bumpVersion = (versionParts, type) => {
-  const [major, minor, patch] = versionParts
-  switch (type) {
-    case 'feature':
-      return [major, minor + 1, 1]
-    case 'bugfix':
-    case 'hotfix':
-      return [major, minor, patch + 1]
-    case 'release':
-      return [major + 1, minor, patch]
-    default:
-      throw new Error(`[version] Unsupported bump type: ${type}`)
-  }
+const updatePackageJson = (version) => {
+  const pkg = readJson('package.json')
+  pkg.data.version = version
+  writeJson(pkg.filePath, pkg.data)
 }
 
-const currentParts = parseVersion(currentVersion)
-const nextParts = bumpVersion(currentParts, rule.type)
-const nextVersion = formatVersion(nextParts)
-
-if (nextVersion === currentVersion) {
-  console.log(
-    JSON.stringify({
-      branch: branchName,
-      targetBranch,
-      currentVersion,
-      nextVersion,
-      changed: false,
-      reason: 'Version unchanged.'
-    })
-  )
-  process.exit(0)
-}
-
-const updatePackageJson = () => {
-  currentPackage.data.version = nextVersion
-  writeFileSync(currentPackage.filePath, `${JSON.stringify(currentPackage.data, null, 2)}\n`, 'utf8')
-}
-
-const updatePackageLock = () => {
-  const lock = loadJson('package-lock.json')
-  lock.data.version = nextVersion
+const updatePackageLock = (version) => {
+  const lock = readJson('package-lock.json')
+  lock.data.version = version
   if (lock.data.packages?.['']) {
-    lock.data.packages[''].version = nextVersion
+    lock.data.packages[''].version = version
   }
-  writeFileSync(lock.filePath, `${JSON.stringify(lock.data, null, 2)}\n`, 'utf8')
+  writeJson(lock.filePath, lock.data)
 }
 
-const updateEnvFile = () => {
-  const envPath = resolve(cwd, '.env')
+const updateEnvFile = (version) => {
+  const envPath = resolve(PROJECT_ROOT, '.env')
   const raw = readFileSync(envPath, 'utf8')
-  const updated = raw.replace(
-    /^APP_VERSION=.*$/m,
-    (line) => (line ? `APP_VERSION=${nextVersion}` : line)
-  )
   if (!/^APP_VERSION=/m.test(raw)) {
-    throw new Error('[version] APP_VERSION entry is missing in .env')
+    throw new Error('APP_VERSION entry is missing in .env')
   }
-  writeFileSync(envPath, updated, 'utf8')
+  const next = raw.replace(/^APP_VERSION=.*$/m, `APP_VERSION=${version}`)
+  writeFileSync(envPath, next, 'utf8')
 }
 
-const updateReadme = () => {
-  const readmePath = resolve(cwd, 'README.md')
+const updateReadme = (version) => {
+  const readmePath = resolve(PROJECT_ROOT, 'README.md')
   const raw = readFileSync(readmePath, 'utf8')
-  const updated = raw.replace(
-    /> Release \d+\.\d+\.\d+ -/,
-    `> Release ${nextVersion} -`
-  )
-  writeFileSync(readmePath, updated, 'utf8')
-}
-
-const updates = [
-  updatePackageJson,
-  updatePackageLock,
-  updateEnvFile,
-  updateReadme
-]
-
-if (!dryRun) {
-  for (const action of updates) {
-    action()
+  if (!/> Release \d+\.\d+\.\d+ -/m.test(raw)) {
+    throw new Error('Unable to locate the Release heading in README.md')
   }
+  const next = raw.replace(/> Release \d+\.\d+\.\d+ -/, `> Release ${version} -`)
+  writeFileSync(readmePath, next, 'utf8')
 }
 
-console.log(
-  JSON.stringify({
-    branch: branchName,
-    targetBranch,
-    currentVersion,
-    nextVersion,
-    bumpType: rule.type,
-    changed: !dryRun
+const validateSemver = (value) => /^\d+\.\d+\.\d+$/.test(value)
+
+const getCurrentVersion = () => {
+  const pkg = readJson('package.json')
+  return pkg.data.version
+}
+
+const stageFiles = () => {
+  execSync(`git add ${VERSION_FILES.join(' ')}`, {
+    cwd: PROJECT_ROOT,
+    stdio: 'inherit'
   })
-)
+}
+
+const commitVersion = (version) => {
+  execSync(`git commit -m "chore: bump version to ${version}"`, {
+    cwd: PROJECT_ROOT,
+    stdio: 'inherit'
+  })
+}
+
+const main = async () => {
+  ensureCleanTree()
+
+  const currentVersion = getCurrentVersion()
+  console.log(`[version] Current version: ${currentVersion}`)
+
+  const provided = getCliVersion()
+  const input = provided ?? (await question('Enter the new version (x.y.z): '))
+  if (!validateSemver(input)) {
+    console.error('[version] Invalid semantic version. Expected format x.y.z (e.g., 1.2.3)')
+    process.exit(1)
+  }
+
+  if (input === currentVersion) {
+    console.error('[version] New version matches the current version. Nothing to do.')
+    process.exit(1)
+  }
+
+  updatePackageJson(input)
+  updatePackageLock(input)
+  updateEnvFile(input)
+  updateReadme(input)
+
+  stageFiles()
+  commitVersion(input)
+
+  console.log(`[version] Bumped project version to ${input} and created commit.`)
+}
+
+main().catch((error) => {
+  console.error('[version] Failed to bump version:', error.message ?? error)
+  process.exit(1)
+})
