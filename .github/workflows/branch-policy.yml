@@ -38,11 +38,11 @@ jobs:
               exit 1
               ;;
             develop)
-              if [[ "${HEAD_REF}" == feature/* || "${HEAD_REF}" == bugfix/* ]]; then
+              if [[ "${HEAD_REF}" == feature/* || "${HEAD_REF}" == feat/* || "${HEAD_REF}" == bugfix/* || "${HEAD_REF}" == bug/* || "${HEAD_REF}" == fix/* ]]; then
                 echo "Branch prefix valid for merge into develop."
                 exit 0
               fi
-              echo "Only feature/* or bugfix/* branches can be merged into develop." >&2
+              echo "Only feature/*, feat/*, bugfix/*, bug/* o fix/* possono essere uniti in develop." >&2
               exit 1
               ;;
             *)

@@ -99,11 +99,11 @@ All commands assume a recent Node 22 environment. The Electron app automatically
 
 ### Versioning & Releases
 
-- La versione applicativa è dichiarata in `.env` (`APP_VERSION`) e sincronizzata automaticamente con `package.json`.
-- I branch che puntano a `develop` devono iniziare con `feature/` o `bugfix/`; `main` accetta solo `release/` o `hotfix/`.
-- Al merge di una PR su `develop` o `main`, il workflow _Version Automation_ adegua `.env`, `package.json`, `package-lock.json` e aggiorna la riga della release nel README.
-- Le commit di tipo `release: vX.Y.Z` su `main` avviano la pipeline di rilascio che genera artefatti _portable_ per Windows, macOS (zip) e Linux (AppImage) e pubblica automaticamente tag e release su GitHub.
-- Esegui `npm run setup:hooks` (o semplicemente `npm install`) dopo il clone per configurare gli hook git che verificano messaggi Conventional Commit e rispettano la policy di merge locale.
+- La versione applicativa è dichiarata in `.env` (`APP_VERSION`) e sincronizzata con `package.json`; gli hook Git aggiornano entrambi i file (più `package-lock.json` e README) prima di concludere il merge commit.
+- Su `develop` sono ammessi solo branch `feature/`, `feat/`, `bugfix/`, `bug/`, `fix/`; su `main` soltanto `release/` e `hotfix/`. I merge non conformi vengono bloccati sia in locale sia in CI.
+- In un merge locale verso `develop`/`main` lo script `scripts/version/apply-version-bump.mjs` viene eseguito automaticamente durante l'hook `prepare-commit-msg`, così il commit risultante contiene già l'incremento di versione.
+- La pipeline `Release` su GitHub si limita a buildare i pacchetti (portable per Win/macOS/Linux) e a pubblicare tag+release a partire dalla versione già presente nel repository.
+- Dopo il clone esegui `npm run setup:hooks` (o `npm install`) per configurare i githook che applicano le regole di versione e i controlli Conventional Commit.
 
 ---
 

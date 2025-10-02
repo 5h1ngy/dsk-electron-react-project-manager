@@ -25,24 +25,59 @@ if (!branchArg) {
 }
 
 const branchName = branchArg.trim()
+const branchKey = branchName.toLowerCase()
 
-const branchRules = [
-  { prefix: 'feature/', type: 'feature' },
-  { prefix: 'bugfix/', type: 'bugfix' },
-  { prefix: 'hotfix/', type: 'hotfix' },
-  { prefix: 'release/', type: 'release' }
+const ruleSets = [
+  { type: 'feature', prefixes: ['feature/', 'feat/'] },
+  { type: 'bugfix', prefixes: ['bugfix/', 'bug/', 'fix/'] },
+  { type: 'hotfix', prefixes: ['hotfix/'] },
+  { type: 'release', prefixes: ['release/'] }
 ]
 
-const rule = branchRules.find((item) => branchName.startsWith(item.prefix))
+const neutralPrefixes = [
+  'chore/',
+  'ci/',
+  'docs/',
+  'build/',
+  'refactor/',
+  'perf/',
+  'style/',
+  'test/',
+  'revert/'
+]
 
-if (!rule) {
+const matchedRule = ruleSets.find((set) => set.prefixes.some((prefix) => branchKey.startsWith(prefix)))
+
+const neutralMatch = neutralPrefixes.some((prefix) => branchKey.startsWith(prefix))
+
+if (!matchedRule && neutralMatch) {
+  console.log(
+    JSON.stringify({
+      branch: branchName,
+      targetBranch,
+      currentVersion: null,
+      nextVersion: null,
+      bumpType: 'none',
+      changed: false,
+      reason: 'Neutral branch prefix; version unchanged.'
+    })
+  )
+  process.exit(0)
+}
+
+if (!matchedRule) {
   console.error(
-    `[version] Unsupported branch "${branchName}". Expected prefixes: ${branchRules
-      .map((item) => `"${item.prefix}"`)
+    `[version] Unsupported branch "${branchName}". Expected prefixes: ${[
+      ...ruleSets.flatMap((set) => set.prefixes),
+      ...neutralPrefixes
+    ]
+      .map((item) => `"${item}"`)
       .join(', ')}.`
   )
   process.exit(1)
 }
+
+const rule = matchedRule
 
 const ensureTargetCompatibility = () => {
   if (!targetBranch) {
