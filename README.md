@@ -8,7 +8,7 @@
 
 ![Application preview](assets/preview.png)
 
-> Release 7.4.19 - Modern desktop project manager with a hardened Electron main process, a typed preload bridge, and a polished React/Redux experience.
+> Release 0.41.8 - Modern desktop project manager with a hardened Electron main process, a typed preload bridge, and a polished React/Redux experience.
 
 ---
 
@@ -96,6 +96,14 @@ All commands assume a recent Node 22 environment. The Electron app automatically
 | `npm run typecheck`              | Aggregated TypeScript checks for Node and web             |
 | `npm test`, `npm run test:watch` | Jest multi-project test runner                            |
 | `npm run db:seed`                | Execute `DevelopmentSeeder` via ts-node with path aliases |
+
+### Versioning & Releases
+
+- La versione applicativa è dichiarata in `.env` (`APP_VERSION`) e sincronizzata automaticamente con `package.json`.
+- I branch che puntano a `develop` devono iniziare con `feature/` o `bugfix/`; `main` accetta solo `release/` o `hotfix/`.
+- Al merge di una PR su `develop` o `main`, il workflow _Version Automation_ adegua `.env`, `package.json`, `package-lock.json` e aggiorna la riga della release nel README.
+- Le commit di tipo `release: vX.Y.Z` su `main` avviano la pipeline di rilascio che genera artefatti _portable_ per Windows, macOS (zip) e Linux (AppImage) e pubblica automaticamente tag e release su GitHub.
+- Esegui `npm run setup:hooks` (o semplicemente `npm install`) dopo il clone per configurare gli hook git che verificano messaggi Conventional Commit e rispettano la policy di merge locale.
 
 ---
 
