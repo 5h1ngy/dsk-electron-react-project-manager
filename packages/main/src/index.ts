@@ -114,9 +114,6 @@ class MainProcessApplication {
   constructor(private readonly deps: MainProcessDependencies) {}
 
   bootstrap(): void {
-    if (this.deps.app.getVersion() !== this.deps.appVersion) {
-      this.deps.app.setVersion(this.deps.appVersion)
-    }
     this.enforceSingleInstance()
     this.registerAppEvents()
     this.registerProcessEvents()
