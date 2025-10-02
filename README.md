@@ -100,6 +100,7 @@ All commands assume a recent Node 22 environment. The Electron app automatically
 ### Versioning & Releases
 
 - La versione applicativa è dichiarata in `.env` (`APP_VERSION`) e sincronizzata con `package.json`; gli hook Git aggiornano entrambi i file (più `package-lock.json` e README) prima di concludere il merge commit.
+- Il setup forza `merge.ff=false` e imposta `--no-ff` di default su `develop` e `main`, cosi' ogni merge genera sempre un commit su cui gli hook possono operare.
 - Su `develop` sono ammessi solo branch `feature/`, `feat/`, `bugfix/`, `bug/`, `fix/`; su `main` soltanto `release/` e `hotfix/`. I merge non conformi vengono bloccati sia in locale sia in CI.
 - In un merge locale verso `develop`/`main` lo script `scripts/version/apply-version-bump.mjs` viene eseguito automaticamente durante l'hook `prepare-commit-msg`, così il commit risultante contiene già l'incremento di versione.
 - La pipeline `Release` su GitHub si limita a buildare i pacchetti (portable per Win/macOS/Linux) e a pubblicare tag+release a partire dalla versione già presente nel repository.
