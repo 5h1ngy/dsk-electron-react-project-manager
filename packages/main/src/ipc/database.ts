@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto'
 import { BrowserWindow, dialog } from 'electron'
 
 import type { DatabaseMaintenanceService } from '@main/services/databaseMaintenance'
@@ -5,6 +6,7 @@ import type { IpcChannelRegistrar } from '@main/ipc/utils'
 import type {
   DatabaseExportResult,
   DatabaseImportResult,
+  DatabaseProgressUpdate,
   DatabaseRestartResult
 } from '@main/services/databaseMaintenance/types'
 import { AppError } from '@main/config/appError'
@@ -63,6 +65,24 @@ export class DatabaseIpcRegistrar {
     this.windowProvider = dependencies.windowProvider
   }
 
+  private getTargetWindow(hint?: BrowserWindow | null | undefined): BrowserWindow | undefined {
+    return (
+      hint ??
+      resolveWindow(this.windowProvider) ??
+      BrowserWindow.getFocusedWindow() ??
+      BrowserWindow.getAllWindows()[0]
+    )
+  }
+
+  private dispatchProgress(
+    channel: 'database:export-progress' | 'database:import-progress',
+    update: DatabaseProgressUpdate,
+    hint?: BrowserWindow | null | undefined
+  ): void {
+    const target = this.getTargetWindow(hint)
+    target?.webContents.send(channel, update)
+  }
+
   register(): void {
     this.registrar.register(
       'database:export',
@@ -80,8 +100,13 @@ export class DatabaseIpcRegistrar {
         }
 
         const targetPath = ensureExtension(filePath)
-        await this.service.exportEncryptedDatabase(token, password, targetPath)
-        return { canceled: false, filePath: targetPath }
+        const operationId = randomUUID()
+        await this.service.exportEncryptedDatabase(token, password, targetPath, {
+          operationId,
+          onProgress: (update) =>
+            this.dispatchProgress('database:export-progress', update, browserWindow)
+        })
+        return { canceled: false, filePath: targetPath, operationId }
       }
     )
 
@@ -104,8 +129,17 @@ export class DatabaseIpcRegistrar {
           throw new AppError('ERR_VALIDATION', 'Percorso file non valido')
         }
 
-        await this.service.importEncryptedDatabase(token, password, sourcePath)
-        return { canceled: false, restartRequired: this.service.hasPendingRestart() }
+        const operationId = randomUUID()
+        await this.service.importEncryptedDatabase(token, password, sourcePath, {
+          operationId,
+          onProgress: (update) =>
+            this.dispatchProgress('database:import-progress', update, browserWindow)
+        })
+        return {
+          canceled: false,
+          restartRequired: this.service.hasPendingRestart(),
+          operationId
+        }
       }
     )
 

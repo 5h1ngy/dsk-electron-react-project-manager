@@ -43,8 +43,10 @@ import type { CreateRoleInput, UpdateRoleInput } from '@main/services/roles/sche
 import type {
   DatabaseExportResult,
   DatabaseImportResult,
+  DatabaseProgressUpdate,
   DatabaseRestartResult
 } from '@main/services/databaseMaintenance/types'
+export type { DatabaseProgressUpdate } from '@main/services/databaseMaintenance/types'
 
 export interface IpcSuccess<T> {
   ok: true
@@ -183,6 +185,8 @@ export interface DatabaseApi {
   export: (token: string, password: string) => Promise<IpcResponse<DatabaseExportResult>>
   import: (token: string, password: string) => Promise<IpcResponse<DatabaseImportResult>>
   restart: (token: string) => Promise<IpcResponse<DatabaseRestartResult>>
+  onExportProgress: (handler: (update: DatabaseProgressUpdate) => void) => () => void
+  onImportProgress: (handler: (update: DatabaseProgressUpdate) => void) => () => void
 }
 
 export interface PreloadApi {

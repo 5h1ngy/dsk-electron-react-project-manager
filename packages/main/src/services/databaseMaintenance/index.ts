@@ -15,6 +15,12 @@ import type { App } from 'electron'
 import type { AuthService } from '@main/services/auth'
 import type { AuditService } from '@main/services/audit'
 import type { ServiceActor } from '@main/services/types'
+import type {
+  DatabaseOperation,
+  DatabaseOperationContext,
+  DatabaseProgressPhase,
+  DatabaseProgressUpdate
+} from '@main/services/databaseMaintenance/types'
 import { AppError, wrapError } from '@main/config/appError'
 import { logger } from '@main/config/logger'
 
@@ -61,6 +67,41 @@ interface DatabaseMaintenanceDependencies {
 }
 
 const normalizePassword = (password: string): string => password.normalize('NFKC')
+
+class ProgressReporter {
+  private lastPercent = 0
+
+  constructor(
+    private readonly operation: DatabaseOperation,
+    private readonly context: DatabaseOperationContext
+  ) {}
+
+  emit(
+    phase: DatabaseProgressPhase,
+    percent: number,
+    detail?: string,
+    counts?: { current?: number; total?: number }
+  ): void {
+    if (!this.context.onProgress) {
+      return
+    }
+    const clamped = Math.max(0, Math.min(100, percent))
+    this.lastPercent = clamped
+    this.context.onProgress({
+      operation: this.operation,
+      operationId: this.context.operationId,
+      phase,
+      percent: Number.isFinite(clamped) ? Number(clamped.toFixed(2)) : clamped,
+      detail,
+      current: counts?.current,
+      total: counts?.total
+    })
+  }
+
+  getPercent(): number {
+    return this.lastPercent
+  }
+}
 
 const openDatabase = async (path: string, mode: number): Promise<sqlite3.Database> =>
   await new Promise<sqlite3.Database>((resolve, reject) => {
@@ -216,10 +257,15 @@ interface SequenceRow {
   seq: number
 }
 
-const collectDatabaseSnapshot = async (databasePath: string): Promise<DatabaseSnapshot> => {
+const collectDatabaseSnapshot = async (
+  databasePath: string,
+  reporter?: ProgressReporter
+): Promise<DatabaseSnapshot> => {
   const database = await openDatabase(databasePath, SQLITE_READONLY)
   try {
     await runStatement(database, 'PRAGMA foreign_keys=OFF')
+
+    reporter?.emit('snapshotSchema', 5)
 
     const schemaRows = await allStatements<SchemaRow>(
       database,
@@ -232,9 +278,11 @@ const collectDatabaseSnapshot = async (databasePath: string): Promise<DatabaseSn
          WHEN 'view' THEN 1
          WHEN 'index' THEN 2
          WHEN 'trigger' THEN 3
-         ELSE 4
+       ELSE 4
        END, name`
     )
+
+    reporter?.emit('snapshotSchema', 10)
 
     const schema: SchemaEntry[] = schemaRows
       .filter((row) => !(row.type === 'table' && isFtsAuxiliaryTable(row.name)))
@@ -249,6 +297,12 @@ const collectDatabaseSnapshot = async (databasePath: string): Promise<DatabaseSn
     const tableSchemas = schema.filter(
       (entry) => entry.type === 'table' && !isFtsAuxiliaryTable(entry.name)
     )
+    const totalTables = tableSchemas.length
+    let processedTables = 0
+
+    if (totalTables === 0) {
+      reporter?.emit('snapshotTable', 45)
+    }
 
     for (const table of tableSchemas) {
       const tableInfo = await allStatements<{ name: string }>(
@@ -257,25 +311,29 @@ const collectDatabaseSnapshot = async (databasePath: string): Promise<DatabaseSn
       )
       const columns = tableInfo.map((info) => info.name)
 
-      if (columns.length === 0) {
-        tables.push({ name: table.name, columns, rows: [] })
-        continue
+      let encodedRows: unknown[][] = []
+
+      if (columns.length > 0) {
+        const rows = await allStatements<Record<string, unknown>>(
+          database,
+          `SELECT ${columns.map((column) => quoteIdentifier(column)).join(', ')}
+           FROM ${quoteIdentifier(table.name)}`
+        )
+
+        encodedRows = rows.map((row) => columns.map((column) => encodeCell(row[column])))
       }
-
-      const rows = await allStatements<Record<string, unknown>>(
-        database,
-        `SELECT ${columns.map((column) => quoteIdentifier(column)).join(', ')}
-         FROM ${quoteIdentifier(table.name)}`
-      )
-
-      const encodedRows = rows.map((row) =>
-        columns.map((column) => encodeCell(row[column]))
-      )
 
       tables.push({
         name: table.name,
         columns,
         rows: encodedRows
+      })
+
+      processedTables += 1
+      const percent = 10 + (processedTables / Math.max(totalTables, 1)) * 35
+      reporter?.emit('snapshotTable', percent, table.name, {
+        current: processedTables,
+        total: totalTables
       })
     }
 
@@ -293,14 +351,18 @@ const collectDatabaseSnapshot = async (databasePath: string): Promise<DatabaseSn
       sequences = []
     }
 
+    reporter?.emit('snapshotSequences', totalTables > 0 ? 55 : 50)
+
     const [{ version }] = await allStatements<{ version: string }>(
       database,
       'SELECT sqlite_version() AS version'
     )
 
+    const exportedAt = new Date().toISOString()
+
     return {
       metadata: {
-        exportedAt: new Date().toISOString(),
+        exportedAt,
         sqliteVersion: version
       },
       schema,
@@ -314,7 +376,8 @@ const collectDatabaseSnapshot = async (databasePath: string): Promise<DatabaseSn
 
 const restoreDatabaseSnapshot = async (
   snapshot: DatabaseSnapshot,
-  destinationPath: string
+  destinationPath: string,
+  reporter?: ProgressReporter
 ): Promise<void> => {
   const database = await openDatabase(destinationPath, SQLITE_CREATE)
 
@@ -327,8 +390,24 @@ const restoreDatabaseSnapshot = async (
       await runStatement(database, entry.sql)
     }
 
+    reporter?.emit('restoreSchema', 60)
+
+    const totalTables = snapshot.tables.length
+    let processedTables = 0
+
+    if (totalTables === 0) {
+      reporter?.emit('restoreTable', 85)
+    }
+
     for (const table of snapshot.tables) {
       if (table.columns.length === 0 || table.rows.length === 0) {
+        processedTables += 1
+        const percent =
+          60 + (processedTables / Math.max(totalTables, 1)) * 30
+        reporter?.emit('restoreTable', percent, table.name, {
+          current: processedTables,
+          total: totalTables
+        })
         continue
       }
 
@@ -346,12 +425,22 @@ const restoreDatabaseSnapshot = async (
       } finally {
         await finalizePrepared(statement)
       }
+
+      processedTables += 1
+      const percent =
+        60 + (processedTables / Math.max(totalTables, 1)) * 30
+      reporter?.emit('restoreTable', percent, table.name, {
+        current: processedTables,
+        total: totalTables
+      })
     }
 
     const nonTableSchemas = snapshot.schema.filter((entry) => entry.type !== 'table')
     for (const entry of nonTableSchemas) {
       await runStatement(database, entry.sql)
     }
+
+    reporter?.emit('restoreIndexes', 92)
 
     for (const sequence of snapshot.sequences ?? []) {
       try {
@@ -365,8 +454,12 @@ const restoreDatabaseSnapshot = async (
       }
     }
 
+    reporter?.emit('restoreSequences', 96)
+
     await runStatement(database, 'COMMIT')
     await runStatement(database, 'PRAGMA foreign_keys=ON')
+
+    reporter?.emit('finalize', 98)
   } catch (error) {
     try {
       await runStatement(database, 'ROLLBACK')
@@ -472,10 +565,18 @@ export class DatabaseMaintenanceService {
     return normalized
   }
 
-  async exportEncryptedDatabase(token: string, password: string, destinationPath: string): Promise<void> {
+  async exportEncryptedDatabase(
+    token: string,
+    password: string,
+    destinationPath: string,
+    context: DatabaseOperationContext
+  ): Promise<void> {
     const actor = await this.resolveAdminActor(token)
     const normalizedPassword = this.ensurePassword(password)
     const databasePath = await this.getDatabasePath()
+    const reporter = new ProgressReporter('export', context)
+
+    reporter.emit('prepare', 0)
 
     try {
       await stat(databasePath)
@@ -484,19 +585,28 @@ export class DatabaseMaintenanceService {
     }
 
     try {
-      const snapshot = await collectDatabaseSnapshot(databasePath)
+      const snapshot = await collectDatabaseSnapshot(databasePath, reporter)
+      reporter.emit('serialize', 60)
       const snapshotBuffer = Buffer.from(JSON.stringify(snapshot), 'utf-8')
+
+      reporter.emit('compress', 70)
       const compressed = await gzip(snapshotBuffer)
       const salt = randomBytes(SALT_LENGTH)
       const key = await deriveKey(normalizedPassword, salt)
       const iv = randomBytes(IV_LENGTH)
       const cipher = createCipheriv('aes-256-gcm', key, iv)
+
+      reporter.emit('encrypt', 82)
       const encrypted = Buffer.concat([cipher.update(compressed), cipher.final()])
       const authTag = cipher.getAuthTag()
       const header = buildHeader(salt, iv, authTag)
 
       await mkdir(dirname(destinationPath), { recursive: true })
+
+      reporter.emit('write', 95)
       await writeFile(destinationPath, Buffer.concat([header, encrypted]), { mode: 0o600 })
+
+      reporter.emit('complete', 100)
 
       await this.auditService.record(actor.userId, 'database', 'primary', 'export', {
         destinationPath,
@@ -511,12 +621,16 @@ export class DatabaseMaintenanceService {
   async importEncryptedDatabase(
     token: string,
     password: string,
-    sourcePath: string
+    sourcePath: string,
+    context: DatabaseOperationContext
   ): Promise<void> {
     const actor = await this.resolveAdminActor(token)
     const normalizedPassword = this.ensurePassword(password)
     const databasePath = await this.getDatabasePath()
     this.restartPending = false
+    const reporter = new ProgressReporter('import', context)
+
+    reporter.emit('prepare', 0)
 
     let ciphertext: Buffer
     try {
@@ -533,8 +647,11 @@ export class DatabaseMaintenanceService {
       const key = await deriveKey(normalizedPassword, salt)
       const decipher = createDecipheriv('aes-256-gcm', key, iv)
       decipher.setAuthTag(authTag)
+      reporter.emit('decrypt', 20)
       const compressed = Buffer.concat([decipher.update(payload), decipher.final()])
+      reporter.emit('decrypt', 25)
       decompressed = await gunzip(compressed)
+      reporter.emit('decompress', 30)
     } catch (error) {
       throw new AppError(
         'ERR_PERMISSION',
@@ -544,17 +661,19 @@ export class DatabaseMaintenanceService {
     }
 
     let snapshot: DatabaseSnapshot
-    try {
-      snapshot = JSON.parse(decompressed.toString('utf-8')) as DatabaseSnapshot
-    } catch (error) {
-      throw new AppError('ERR_VALIDATION', 'Contenuto del backup non valido', { cause: error })
-    }
+   try {
+     snapshot = JSON.parse(decompressed.toString('utf-8')) as DatabaseSnapshot
+      reporter.emit('parse', 35)
+   } catch (error) {
+     throw new AppError('ERR_VALIDATION', 'Contenuto del backup non valido', { cause: error })
+   }
 
     const tempPath = `${databasePath}.import-${randomUUID()}`
 
     try {
       await mkdir(dirname(databasePath), { recursive: true })
-      await restoreDatabaseSnapshot(snapshot, tempPath)
+      reporter.emit('restoreSchema', 55)
+      await restoreDatabaseSnapshot(snapshot, tempPath, reporter)
       await this.storage.teardownDatabase()
       await rm(databasePath, { force: true })
       await rename(tempPath, databasePath)
@@ -572,6 +691,7 @@ export class DatabaseMaintenanceService {
       }
       this.restartPending = true
       this.log.success('Database importato con successo. Riavvio richiesto.', 'Database')
+      reporter.emit('complete', 100)
     } catch (error) {
       try {
         await rm(tempPath, { force: true })

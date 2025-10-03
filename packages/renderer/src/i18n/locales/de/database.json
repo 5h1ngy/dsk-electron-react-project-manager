@@ -12,10 +12,10 @@
   },
   "import": {
     "title": "Verschlüsselte Datenbank importieren",
-    "subtitle": "Geben Sie das Kennwort eines vorhandenen verschl�sselten Backups ein. Nach erfolgreichem Import werden Sie zum Neustart aufgefordert.",
+    "subtitle": "Geben Sie das Kennwort eines vorhandenen verschlsselten Backups ein. Nach erfolgreichem Import werden Sie zum Neustart aufgefordert.",
     "passwordLabel": "Entschlüsselungskennwort",
     "submit": "Datenbank importieren",
-    "success": "Datenbank erfolgreich importiert. Verwenden Sie den Dialog, um die Anwendung zu schlie�en und neu zu starten.",
+    "success": "Datenbank erfolgreich importiert. Verwenden Sie den Dialog, um die Anwendung zu schlieen und neu zu starten.",
     "cancelled": "Import abgebrochen"
   },
   "errors": {
@@ -25,7 +25,46 @@
   },
   "restartModal": {
     "title": "Neustart erforderlich",
-    "description": "Die verschl�sselte Datenbank wurde importiert. Schlie�en Sie die Anwendung, um die �nderungen anzuwenden.",
-    "confirm": "Anwendung schlie�en"
+    "description": "Die verschlsselte Datenbank wurde importiert. Schlieen Sie die Anwendung, um die nderungen anzuwenden.",
+    "confirm": "Anwendung schlieen"
+  },
+  "progress": {
+    "title": {
+      "export": "Verschlüsselte Datenbank exportieren",
+      "import": "Verschlüsselte Datenbank importieren"
+    },
+    "description": {
+      "export": "Das verschlüsselte Archiv wird vorbereitet. Bitte Anwendung geöffnet lassen.",
+      "import": "Das verschlüsselte Archiv wird wiederhergestellt. Bitte Anwendung geöffnet lassen."
+    },
+    "pending": "Vorgang wird gestartet…",
+    "generic": "Fortschritt {{percent}}%",
+    "complete": "Vorgang abgeschlossen",
+    "counter": "{{current}} von {{total}} Elementen",
+    "phases": {
+      "export": {
+        "prepare": "Export vorbereiten",
+        "snapshotSchema": "Schemadaten sammeln",
+        "snapshotTable": "Tabelle {{table}} wird gelesen ({{current}}/{{total}})",
+        "snapshotSequences": "Sequenzwerte erfassen",
+        "serialize": "Snapshot serialisieren",
+        "compress": "Daten komprimieren",
+        "encrypt": "Payload verschlüsseln",
+        "write": "Verschlüsseltes Archiv schreiben",
+        "complete": "Export abgeschlossen"
+      },
+      "import": {
+        "prepare": "Import vorbereiten",
+        "decrypt": "Archiv entschlüsseln",
+        "decompress": "Daten dekomprimieren",
+        "parse": "Snapshot validieren",
+        "restoreSchema": "Schema wiederherstellen",
+        "restoreTable": "Tabelle {{table}} wird wiederhergestellt ({{current}}/{{total}})",
+        "restoreIndexes": "Indizes und Sichten neu aufbauen",
+        "restoreSequences": "Sequenzwerte wiederherstellen",
+        "finalize": "Import abschließen",
+        "complete": "Import abgeschlossen"
+      }
+    }
   }
 }

@@ -27,5 +27,44 @@
     "title": "Restart required",
     "description": "The encrypted database has been imported. Close the application to apply the changes.",
     "confirm": "Close application"
+  },
+  "progress": {
+    "title": {
+      "export": "Export encrypted database",
+      "import": "Import encrypted database"
+    },
+    "description": {
+      "export": "We are preparing the encrypted archive. Please keep the application open.",
+      "import": "We are restoring the encrypted archive. Please keep the application open."
+    },
+    "pending": "Starting operation…",
+    "generic": "Progress {{percent}}%",
+    "complete": "Operation completed",
+    "counter": "{{current}} of {{total}} items",
+    "phases": {
+      "export": {
+        "prepare": "Preparing export",
+        "snapshotSchema": "Collecting schema metadata",
+        "snapshotTable": "Reading table {{table}} ({{current}}/{{total}})",
+        "snapshotSequences": "Capturing sequence values",
+        "serialize": "Serializing snapshot",
+        "compress": "Compressing data",
+        "encrypt": "Encrypting payload",
+        "write": "Writing encrypted archive",
+        "complete": "Export completed"
+      },
+      "import": {
+        "prepare": "Preparing import",
+        "decrypt": "Decrypting archive",
+        "decompress": "Decompressing data",
+        "parse": "Validating snapshot",
+        "restoreSchema": "Recreating schema",
+        "restoreTable": "Restoring table {{table}} ({{current}}/{{total}})",
+        "restoreIndexes": "Rebuilding indexes and views",
+        "restoreSequences": "Restoring sequence values",
+        "finalize": "Finalizing import",
+        "complete": "Import completed"
+      }
+    }
   }
 }

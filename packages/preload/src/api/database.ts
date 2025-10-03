@@ -1,6 +1,9 @@
+import { ipcRenderer } from 'electron'
 import type {
   DatabaseExportResult,
-  DatabaseImportResult
+  DatabaseImportResult,
+  DatabaseProgressUpdate,
+  DatabaseRestartResult
 } from '@main/services/databaseMaintenance/types'
 import { invokeIpc } from '@preload/api/shared'
 
@@ -16,5 +19,23 @@ export const databaseApi = {
   import: async (token: string, password: string) =>
     await invokeIpc<DatabaseImportResult>(CHANNELS.import, token, password),
   restart: async (token: string) =>
-    await invokeIpc<DatabaseRestartResult>(CHANNELS.restart, token)
+    await invokeIpc<DatabaseRestartResult>(CHANNELS.restart, token),
+  onExportProgress: (handler: (update: DatabaseProgressUpdate) => void) => {
+    const listener = (_event: unknown, update: DatabaseProgressUpdate) => {
+      handler(update)
+    }
+    ipcRenderer.on('database:export-progress', listener)
+    return () => {
+      ipcRenderer.removeListener('database:export-progress', listener)
+    }
+  },
+  onImportProgress: (handler: (update: DatabaseProgressUpdate) => void) => {
+    const listener = (_event: unknown, update: DatabaseProgressUpdate) => {
+      handler(update)
+    }
+    ipcRenderer.on('database:import-progress', listener)
+    return () => {
+      ipcRenderer.removeListener('database:import-progress', listener)
+    }
+  }
 }
