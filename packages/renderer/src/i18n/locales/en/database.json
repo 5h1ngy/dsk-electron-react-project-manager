@@ -12,15 +12,20 @@
   },
   "import": {
     "title": "Import encrypted database",
-    "subtitle": "Provide the password for an existing encrypted backup. The application will restart after a successful import.",
+    "subtitle": "Provide the password for an existing encrypted backup. You will be asked to restart after a successful import.",
     "passwordLabel": "Decryption password",
-    "submit": "Import and restart",
-    "success": "Database imported successfully. The application will restart now.",
+    "submit": "Import database",
+    "success": "Database imported successfully. Use the dialog to close and restart the application.",
     "cancelled": "Import cancelled"
   },
   "errors": {
     "passwordRequired": "Password is required",
     "passwordTooShort": "Password must be at least {{length}} characters long",
     "passwordMismatch": "Passwords do not match"
+  },
+  "restartModal": {
+    "title": "Restart required",
+    "description": "The encrypted database has been imported. Close the application to apply the changes.",
+    "confirm": "Close application"
   }
 }

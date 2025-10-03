@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState, type JSX } from 'react'
-import { Breadcrumb, Button, Card, Form, Input, Space, Typography, message } from 'antd'
+import { Breadcrumb, Button, Card, Form, Input, Modal, Space, Typography, message } from 'antd'
 import { useTranslation } from 'react-i18next'
 import { Navigate, useNavigate } from 'react-router-dom'
 
@@ -31,6 +31,8 @@ const DatabasePage = (): JSX.Element => {
   const navigate = useNavigate()
   const [exporting, setExporting] = useState(false)
   const [importing, setImporting] = useState(false)
+  const [restartModalVisible, setRestartModalVisible] = useState(false)
+  const [restarting, setRestarting] = useState(false)
   const [messageApi, messageContext] = message.useMessage()
 
   const breadcrumbItems = usePrimaryBreadcrumb(
@@ -113,6 +115,9 @@ const DatabasePage = (): JSX.Element => {
         } else {
           messageApi.success(t('import.success'))
           importForm.resetFields()
+          if (result.restartRequired) {
+            setRestartModalVisible(true)
+          }
         }
       } catch (error) {
         if (isSessionExpiredError(error)) {
@@ -126,6 +131,24 @@ const DatabasePage = (): JSX.Element => {
     },
     [handleSessionFailure, importForm, messageApi, t, token]
   )
+
+  const handleRestartConfirm = useCallback(async () => {
+    if (!token) {
+      handleSessionFailure()
+      return
+    }
+    setRestarting(true)
+    try {
+      await handleResponse(window.api.database.restart(token))
+    } catch (error) {
+      setRestarting(false)
+      if (isSessionExpiredError(error)) {
+        handleSessionFailure()
+        return
+      }
+      messageApi.error(extractErrorMessage(error))
+    }
+  }, [handleSessionFailure, messageApi, token])
 
   const passwordRules = useMemo(
     () => [
@@ -148,6 +171,30 @@ const DatabasePage = (): JSX.Element => {
   return (
     <>
       {messageContext}
+      <Modal
+        open={restartModalVisible}
+        closable={false}
+        maskClosable={false}
+        keyboard={false}
+        centered
+        title={t('restartModal.title')}
+        footer={
+          <Button
+            type="primary"
+            danger
+            onClick={handleRestartConfirm}
+            loading={restarting}
+          >
+            {t('restartModal.confirm')}
+          </Button>
+        }
+      >
+        <Space direction="vertical" size={12} style={{ width: '100%' }}>
+          <Typography.Paragraph style={{ marginBottom: 0 }}>
+            {t('restartModal.description')}
+          </Typography.Paragraph>
+        </Space>
+      </Modal>
       <ShellHeaderPortal>
         <Breadcrumb items={breadcrumbItems} />
       </ShellHeaderPortal>

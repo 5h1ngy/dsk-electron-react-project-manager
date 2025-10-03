@@ -5,5 +5,9 @@ export interface DatabaseExportResult {
 
 export interface DatabaseImportResult {
   canceled: boolean
-  restartScheduled?: boolean
+  restartRequired?: boolean
+}
+
+export interface DatabaseRestartResult {
+  success: boolean
 }

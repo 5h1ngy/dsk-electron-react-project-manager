@@ -36,7 +36,8 @@ const MIN_PASSWORD_LENGTH = 12
 const SCRYPT_PARAMS = Object.freeze({
   N: 2 ** 15,
   r: 8,
-  p: 1
+  p: 1,
+  maxmem: 64 * 1024 * 1024
 })
 
 interface StorageController {
@@ -110,6 +111,7 @@ export class DatabaseMaintenanceService {
   private readonly app: App
   private readonly storage: StorageController
   private readonly log: typeof logger
+  private restartPending = false
 
   constructor(dependencies: DatabaseMaintenanceDependencies) {
     this.authService = dependencies.authService
@@ -222,11 +224,19 @@ export class DatabaseMaintenanceService {
       await rm(databasePath, { force: true })
       await rename(tempPath, databasePath)
 
-      await this.auditService.record(actor.userId, 'database', 'primary', 'import', {
-        sourcePath,
-        bytes: plaintext.length
-      })
-      this.log.success('Database importato con successo. Riavvio programmato.', 'Database')
+      try {
+        await this.auditService.record(actor.userId, 'database', 'primary', 'import', {
+          sourcePath,
+          bytes: plaintext.length
+        })
+      } catch (auditError) {
+        this.log.warn('Impossibile registrare audit dopo import database', 'Database')
+        const detail =
+          auditError instanceof Error ? auditError.stack ?? auditError.message : String(auditError)
+        this.log.debug(detail, 'Database')
+      }
+      this.restartPending = true
+      this.log.success('Database importato con successo. Riavvio richiesto.', 'Database')
     } catch (error) {
       try {
         await rm(tempPath, { force: true })
@@ -235,15 +245,26 @@ export class DatabaseMaintenanceService {
       }
       throw wrapError(error)
     }
+  }
 
-    setTimeout(() => {
-      try {
-        this.log.info('Applicazione in riavvio dopo import database', 'Database')
-        this.app.relaunch()
-        this.app.exit(0)
-      } catch (error) {
-        this.log.error('Riavvio applicazione fallito dopo import database', 'Database', error)
-      }
-    }, 200)
+  hasPendingRestart(): boolean {
+    return this.restartPending
+  }
+
+  async restartApplication(token: string): Promise<void> {
+    await this.resolveAdminActor(token)
+    if (!this.restartPending) {
+      throw new AppError('ERR_INTERNAL', 'Nessun riavvio del database in attesa')
+    }
+
+    try {
+      this.restartPending = false
+      this.log.info("Applicazione in riavvio su richiesta dell'utente", 'Database')
+      this.app.relaunch()
+      this.app.exit(0)
+    } catch (error) {
+      this.restartPending = true
+      throw wrapError(error)
+    }
   }
 }

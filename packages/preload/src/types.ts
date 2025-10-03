@@ -42,7 +42,8 @@ import type { RolePermissionDefinition } from '@main/services/roles/constants'
 import type { CreateRoleInput, UpdateRoleInput } from '@main/services/roles/schemas'
 import type {
   DatabaseExportResult,
-  DatabaseImportResult
+  DatabaseImportResult,
+  DatabaseRestartResult
 } from '@main/services/databaseMaintenance/types'
 
 export interface IpcSuccess<T> {
@@ -181,6 +182,7 @@ export interface RoleApi {
 export interface DatabaseApi {
   export: (token: string, password: string) => Promise<IpcResponse<DatabaseExportResult>>
   import: (token: string, password: string) => Promise<IpcResponse<DatabaseImportResult>>
+  restart: (token: string) => Promise<IpcResponse<DatabaseRestartResult>>
 }
 
 export interface PreloadApi {

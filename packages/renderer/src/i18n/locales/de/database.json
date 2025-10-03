@@ -12,15 +12,20 @@
   },
   "import": {
     "title": "VerschlÃ¼sselte Datenbank importieren",
-    "subtitle": "Geben Sie das Kennwort eines vorhandenen verschlÃ¼sselten Backups ein. Die Anwendung wird danach automatisch neu gestartet.",
+    "subtitle": "Geben Sie das Kennwort eines vorhandenen verschlüsselten Backups ein. Nach erfolgreichem Import werden Sie zum Neustart aufgefordert.",
     "passwordLabel": "EntschlÃ¼sselungskennwort",
-    "submit": "Importieren und neu starten",
-    "success": "Datenbank erfolgreich importiert. Die Anwendung wird jetzt neu gestartet.",
+    "submit": "Datenbank importieren",
+    "success": "Datenbank erfolgreich importiert. Verwenden Sie den Dialog, um die Anwendung zu schließen und neu zu starten.",
     "cancelled": "Import abgebrochen"
   },
   "errors": {
     "passwordRequired": "Kennwort ist erforderlich",
     "passwordTooShort": "Das Kennwort muss mindestens {{length}} Zeichen enthalten",
     "passwordMismatch": "KennwÃ¶rter stimmen nicht Ã¼berein"
+  },
+  "restartModal": {
+    "title": "Neustart erforderlich",
+    "description": "Die verschlüsselte Datenbank wurde importiert. Schließen Sie die Anwendung, um die Änderungen anzuwenden.",
+    "confirm": "Anwendung schließen"
   }
 }

@@ -12,15 +12,20 @@
   },
   "import": {
     "title": "Importer la base chiffrÃ©e",
-    "subtitle": "Saisissez le mot de passe d'une sauvegarde chiffrÃ©e existante. L'application redÃ©marrera aprÃ¨s l'import.",
+    "subtitle": "Saisissez le mot de passe d'une sauvegarde chiffrée existante. Vous serez invité à redémarrer après un import réussi.",
     "passwordLabel": "Mot de passe de dÃ©chiffrement",
-    "submit": "Importer et redÃ©marrer",
-    "success": "Base de donnÃ©es importÃ©e avec succÃ¨s. L'application va redÃ©marrer.",
+    "submit": "Importer la base",
+    "success": "Base de données importée avec succès. Utilisez la fenêtre pour fermer et relancer l'application.",
     "cancelled": "Import annulÃ©"
   },
   "errors": {
     "passwordRequired": "Le mot de passe est requis",
     "passwordTooShort": "Le mot de passe doit contenir au moins {{length}} caractÃ¨res",
     "passwordMismatch": "Les mots de passe ne correspondent pas"
+  },
+  "restartModal": {
+    "title": "Redémarrage requis",
+    "description": "La base de données chiffrée a été importée. Fermez l'application pour appliquer les modifications.",
+    "confirm": "Fermer l'application"
   }
 }

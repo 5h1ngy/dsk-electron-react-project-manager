@@ -2,7 +2,11 @@ import { BrowserWindow, dialog } from 'electron'
 
 import type { DatabaseMaintenanceService } from '@main/services/databaseMaintenance'
 import type { IpcChannelRegistrar } from '@main/ipc/utils'
-import type { DatabaseExportResult, DatabaseImportResult } from '@main/services/databaseMaintenance/types'
+import type {
+  DatabaseExportResult,
+  DatabaseImportResult,
+  DatabaseRestartResult
+} from '@main/services/databaseMaintenance/types'
 import { AppError } from '@main/config/appError'
 
 const EXPORT_FILTERS = [
@@ -91,7 +95,15 @@ export class DatabaseIpcRegistrar {
         }
 
         await this.service.importEncryptedDatabase(token, password, sourcePath)
-        return { canceled: false, restartScheduled: true }
+        return { canceled: false, restartRequired: this.service.hasPendingRestart() }
+      }
+    )
+
+    this.registrar.register(
+      'database:restart',
+      async (token: string): Promise<DatabaseRestartResult> => {
+        await this.service.restartApplication(token)
+        return { success: true }
       }
     )
   }
