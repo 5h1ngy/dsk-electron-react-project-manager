@@ -8,6 +8,8 @@ import {
 import { mkdir, readFile, rename, rm, stat, writeFile } from 'node:fs/promises'
 import { dirname } from 'node:path'
 import { promisify } from 'node:util'
+import { gzip as gzipCallback, gunzip as gunzipCallback } from 'zlib'
+import sqlite3 from 'sqlite3'
 import type { App } from 'electron'
 
 import type { AuthService } from '@main/services/auth'
@@ -17,6 +19,8 @@ import { AppError, wrapError } from '@main/config/appError'
 import { logger } from '@main/config/logger'
 
 const scrypt = promisify(scryptCallback)
+const gzip = promisify(gzipCallback)
+const gunzip = promisify(gunzipCallback)
 
 /**
  * File layout:
@@ -40,6 +44,9 @@ const SCRYPT_PARAMS = Object.freeze({
   maxmem: 64 * 1024 * 1024
 })
 
+const SQLITE_READONLY = sqlite3.OPEN_READONLY
+const SQLITE_CREATE = sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE
+
 interface StorageController {
   getDatabasePath(): string | null
   teardownDatabase(): Promise<void>
@@ -54,6 +61,323 @@ interface DatabaseMaintenanceDependencies {
 }
 
 const normalizePassword = (password: string): string => password.normalize('NFKC')
+
+const openDatabase = async (path: string, mode: number): Promise<sqlite3.Database> =>
+  await new Promise<sqlite3.Database>((resolve, reject) => {
+    const database = new sqlite3.Database(path, mode, (error) => {
+      if (error) {
+        reject(error)
+        return
+      }
+      resolve(database)
+    })
+  })
+
+const closeDatabase = async (database: sqlite3.Database): Promise<void> =>
+  await new Promise<void>((resolve, reject) => {
+    database.close((error) => {
+      if (error) {
+        reject(error)
+        return
+      }
+      resolve()
+    })
+  })
+
+const runStatement = async (
+  database: sqlite3.Database,
+  sql: string,
+  params: unknown[] = []
+): Promise<void> =>
+  await new Promise<void>((resolve, reject) => {
+    database.run(sql, params, function (error) {
+      if (error) {
+        reject(error)
+        return
+      }
+      resolve()
+    })
+  })
+
+const allStatements = async <T = unknown>(
+  database: sqlite3.Database,
+  sql: string,
+  params: unknown[] = []
+): Promise<T[]> =>
+  await new Promise<T[]>((resolve, reject) => {
+    database.all(sql, params, (error, rows) => {
+      if (error) {
+        reject(error)
+        return
+      }
+      resolve(rows as T[])
+    })
+  })
+
+const prepareStatement = async (
+  database: sqlite3.Database,
+  sql: string
+): Promise<sqlite3.Statement> =>
+  await new Promise<sqlite3.Statement>((resolve, reject) => {
+    const statement = database.prepare(sql, (error) => {
+      if (error) {
+        reject(error)
+        return
+      }
+      resolve(statement)
+    })
+  })
+
+const runPrepared = async (statement: sqlite3.Statement, params: unknown[]): Promise<void> =>
+  await new Promise<void>((resolve, reject) => {
+    statement.run(params, function (error) {
+      if (error) {
+        reject(error)
+        return
+      }
+      resolve()
+    })
+  })
+
+const finalizePrepared = async (statement: sqlite3.Statement): Promise<void> =>
+  await new Promise<void>((resolve, reject) => {
+    statement.finalize((error) => {
+      if (error) {
+        reject(error)
+        return
+      }
+      resolve()
+    })
+  })
+
+const quoteIdentifier = (identifier: string): string =>
+  `"${identifier.replace(/"/g, '""')}"`
+
+const isEncodedBlob = (value: unknown): value is { __type: 'blob'; data: string } =>
+  Boolean(
+    value &&
+      typeof value === 'object' &&
+      (value as { __type?: unknown }).__type === 'blob' &&
+      typeof (value as { data?: unknown }).data === 'string'
+  )
+
+const encodeCell = (value: unknown): unknown => {
+  if (Buffer.isBuffer(value)) {
+    return {
+      __type: 'blob',
+      data: value.toString('base64')
+    }
+  }
+  return value ?? null
+}
+
+const decodeCell = (value: unknown): unknown => {
+  if (isEncodedBlob(value)) {
+    return Buffer.from(value.data, 'base64')
+  }
+  return value
+}
+
+interface SchemaEntry {
+  name: string
+  type: string
+  sql: string
+}
+
+interface TableSnapshot {
+  name: string
+  columns: string[]
+  rows: unknown[][]
+}
+
+interface SequenceEntry {
+  name: string
+  seq: number
+}
+
+interface DatabaseSnapshot {
+  metadata: {
+    exportedAt: string
+    sqliteVersion: string
+  }
+  schema: SchemaEntry[]
+  tables: TableSnapshot[]
+  sequences: SequenceEntry[]
+}
+
+interface SchemaRow {
+  name: string
+  type: string
+  sql: string | null
+}
+
+interface SequenceRow {
+  name: string
+  seq: number
+}
+
+const collectDatabaseSnapshot = async (databasePath: string): Promise<DatabaseSnapshot> => {
+  const database = await openDatabase(databasePath, SQLITE_READONLY)
+  try {
+    await runStatement(database, 'PRAGMA foreign_keys=OFF')
+
+    const schemaRows = await allStatements<SchemaRow>(
+      database,
+      `SELECT name, type, sql
+       FROM sqlite_schema
+       WHERE sql IS NOT NULL
+         AND name NOT LIKE 'sqlite_%'
+       ORDER BY CASE type
+         WHEN 'table' THEN 0
+         WHEN 'view' THEN 1
+         WHEN 'index' THEN 2
+         WHEN 'trigger' THEN 3
+         ELSE 4
+       END, name`
+    )
+
+    const schema: SchemaEntry[] = schemaRows
+      .filter((row) => !(row.type === 'table' && isFtsAuxiliaryTable(row.name)))
+      .map((row) => ({
+        name: row.name,
+        type: row.type,
+        sql: row.sql ?? ''
+      }))
+
+    const tables: TableSnapshot[] = []
+
+    const tableSchemas = schema.filter(
+      (entry) => entry.type === 'table' && !isFtsAuxiliaryTable(entry.name)
+    )
+
+    for (const table of tableSchemas) {
+      const tableInfo = await allStatements<{ name: string }>(
+        database,
+        `PRAGMA table_info(${quoteIdentifier(table.name)})`
+      )
+      const columns = tableInfo.map((info) => info.name)
+
+      if (columns.length === 0) {
+        tables.push({ name: table.name, columns, rows: [] })
+        continue
+      }
+
+      const rows = await allStatements<Record<string, unknown>>(
+        database,
+        `SELECT ${columns.map((column) => quoteIdentifier(column)).join(', ')}
+         FROM ${quoteIdentifier(table.name)}`
+      )
+
+      const encodedRows = rows.map((row) =>
+        columns.map((column) => encodeCell(row[column]))
+      )
+
+      tables.push({
+        name: table.name,
+        columns,
+        rows: encodedRows
+      })
+    }
+
+    let sequences: SequenceEntry[] = []
+    try {
+      const sequenceRows = await allStatements<SequenceRow>(
+        database,
+        'SELECT name, seq FROM sqlite_sequence'
+      )
+      sequences = sequenceRows.map((row) => ({
+        name: row.name,
+        seq: row.seq
+      }))
+    } catch {
+      sequences = []
+    }
+
+    const [{ version }] = await allStatements<{ version: string }>(
+      database,
+      'SELECT sqlite_version() AS version'
+    )
+
+    return {
+      metadata: {
+        exportedAt: new Date().toISOString(),
+        sqliteVersion: version
+      },
+      schema,
+      tables,
+      sequences
+    }
+  } finally {
+    await closeDatabase(database)
+  }
+}
+
+const restoreDatabaseSnapshot = async (
+  snapshot: DatabaseSnapshot,
+  destinationPath: string
+): Promise<void> => {
+  const database = await openDatabase(destinationPath, SQLITE_CREATE)
+
+  try {
+    await runStatement(database, 'PRAGMA foreign_keys=OFF')
+    await runStatement(database, 'BEGIN IMMEDIATE TRANSACTION')
+
+    const tableSchemas = snapshot.schema.filter((entry) => entry.type === 'table')
+    for (const entry of tableSchemas) {
+      await runStatement(database, entry.sql)
+    }
+
+    for (const table of snapshot.tables) {
+      if (table.columns.length === 0 || table.rows.length === 0) {
+        continue
+      }
+
+      const columnList = table.columns.map((column) => quoteIdentifier(column)).join(', ')
+      const placeholders = table.columns.map(() => '?').join(', ')
+      const statement = await prepareStatement(
+        database,
+        `INSERT INTO ${quoteIdentifier(table.name)} (${columnList}) VALUES (${placeholders})`
+      )
+      try {
+        for (const row of table.rows) {
+          const decodedValues = row.map((value) => decodeCell(value))
+          await runPrepared(statement, decodedValues)
+        }
+      } finally {
+        await finalizePrepared(statement)
+      }
+    }
+
+    const nonTableSchemas = snapshot.schema.filter((entry) => entry.type !== 'table')
+    for (const entry of nonTableSchemas) {
+      await runStatement(database, entry.sql)
+    }
+
+    for (const sequence of snapshot.sequences ?? []) {
+      try {
+        await runStatement(database, 'DELETE FROM sqlite_sequence WHERE name = ?', [sequence.name])
+        await runStatement(database, 'INSERT INTO sqlite_sequence(name, seq) VALUES (?, ?)', [
+          sequence.name,
+          sequence.seq
+        ])
+      } catch {
+        /* ignore if sqlite_sequence is not present */
+      }
+    }
+
+    await runStatement(database, 'COMMIT')
+    await runStatement(database, 'PRAGMA foreign_keys=ON')
+  } catch (error) {
+    try {
+      await runStatement(database, 'ROLLBACK')
+    } catch {
+      /* ignore rollback errors */
+    }
+    throw error
+  } finally {
+    await closeDatabase(database)
+  }
+}
 
 const deriveKey = async (password: string, salt: Buffer): Promise<Buffer> => {
   const key = await scrypt(password, salt, KEY_LENGTH, SCRYPT_PARAMS)
@@ -160,12 +484,14 @@ export class DatabaseMaintenanceService {
     }
 
     try {
-      const plaintext = await readFile(databasePath)
+      const snapshot = await collectDatabaseSnapshot(databasePath)
+      const snapshotBuffer = Buffer.from(JSON.stringify(snapshot), 'utf-8')
+      const compressed = await gzip(snapshotBuffer)
       const salt = randomBytes(SALT_LENGTH)
       const key = await deriveKey(normalizedPassword, salt)
       const iv = randomBytes(IV_LENGTH)
       const cipher = createCipheriv('aes-256-gcm', key, iv)
-      const encrypted = Buffer.concat([cipher.update(plaintext), cipher.final()])
+      const encrypted = Buffer.concat([cipher.update(compressed), cipher.final()])
       const authTag = cipher.getAuthTag()
       const header = buildHeader(salt, iv, authTag)
 
@@ -174,7 +500,7 @@ export class DatabaseMaintenanceService {
 
       await this.auditService.record(actor.userId, 'database', 'primary', 'export', {
         destinationPath,
-        bytes: plaintext.length
+        bytes: snapshotBuffer.length
       })
       this.log.success(`Database esportato in ${destinationPath}`, 'Database')
     } catch (error) {
@@ -190,6 +516,7 @@ export class DatabaseMaintenanceService {
     const actor = await this.resolveAdminActor(token)
     const normalizedPassword = this.ensurePassword(password)
     const databasePath = await this.getDatabasePath()
+    this.restartPending = false
 
     let ciphertext: Buffer
     try {
@@ -201,12 +528,13 @@ export class DatabaseMaintenanceService {
     const { salt, iv, authTag } = parseHeader(ciphertext)
     const payload = ciphertext.subarray(HEADER_LENGTH)
 
-    let plaintext: Buffer
+    let decompressed: Buffer
     try {
       const key = await deriveKey(normalizedPassword, salt)
       const decipher = createDecipheriv('aes-256-gcm', key, iv)
       decipher.setAuthTag(authTag)
-      plaintext = Buffer.concat([decipher.update(payload), decipher.final()])
+      const compressed = Buffer.concat([decipher.update(payload), decipher.final()])
+      decompressed = await gunzip(compressed)
     } catch (error) {
       throw new AppError(
         'ERR_PERMISSION',
@@ -215,11 +543,18 @@ export class DatabaseMaintenanceService {
       )
     }
 
+    let snapshot: DatabaseSnapshot
+    try {
+      snapshot = JSON.parse(decompressed.toString('utf-8')) as DatabaseSnapshot
+    } catch (error) {
+      throw new AppError('ERR_VALIDATION', 'Contenuto del backup non valido', { cause: error })
+    }
+
     const tempPath = `${databasePath}.import-${randomUUID()}`
 
     try {
       await mkdir(dirname(databasePath), { recursive: true })
-      await writeFile(tempPath, plaintext, { mode: 0o600 })
+      await restoreDatabaseSnapshot(snapshot, tempPath)
       await this.storage.teardownDatabase()
       await rm(databasePath, { force: true })
       await rename(tempPath, databasePath)
@@ -227,7 +562,7 @@ export class DatabaseMaintenanceService {
       try {
         await this.auditService.record(actor.userId, 'database', 'primary', 'import', {
           sourcePath,
-          bytes: plaintext.length
+          bytes: decompressed.length
         })
       } catch (auditError) {
         this.log.warn('Impossibile registrare audit dopo import database', 'Database')
@@ -268,3 +603,16 @@ export class DatabaseMaintenanceService {
     }
   }
 }
+const FTS_AUXILIARY_SUFFIXES = [
+  '_fts_config',
+  '_fts_data',
+  '_fts_idx',
+  '_fts_docsize',
+  '_fts_content',
+  '_fts_segments',
+  '_fts_segdir',
+  '_fts_stat'
+]
+
+const isFtsAuxiliaryTable = (name: string): boolean =>
+  FTS_AUXILIARY_SUFFIXES.some((suffix) => name.endsWith(suffix))
