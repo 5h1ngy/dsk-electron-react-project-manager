@@ -8,7 +8,7 @@
 
 ![Application preview](assets/preview.png)
 
-> Release 0.41.9 - Modern desktop project manager with a hardened Electron main process, a typed preload bridge, and a polished React/Redux experience.
+> Release 0.41.12 - Modern desktop project manager with a hardened Electron main process, a typed preload bridge, and a polished React/Redux experience.
 
 ---
 
