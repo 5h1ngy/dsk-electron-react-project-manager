@@ -18,7 +18,17 @@ const EXPORT_FILTERS = [
 
 const IMPORT_FILTERS = EXPORT_FILTERS
 
-const DEFAULT_EXPORT_NAME = 'dsk-project-manager.dskdb'
+const buildDefaultExportName = (): string => {
+  const now = new Date()
+  const pad = (value: number) => String(value).padStart(2, '0')
+  const year = now.getFullYear()
+  const month = pad(now.getMonth() + 1)
+  const day = pad(now.getDate())
+  const hours = pad(now.getHours())
+  const minutes = pad(now.getMinutes())
+  const seconds = pad(now.getSeconds())
+  return `${year}${month}${day}-${hours}${minutes}${seconds}.dskdb`
+}
 
 type DialogWindowProvider = () => BrowserWindow | null | undefined
 
@@ -60,7 +70,7 @@ export class DatabaseIpcRegistrar {
         const browserWindow = resolveWindow(this.windowProvider)
         const { canceled, filePath } = await dialog.showSaveDialog(browserWindow, {
           title: 'Esporta database cifrato',
-          defaultPath: DEFAULT_EXPORT_NAME,
+          defaultPath: buildDefaultExportName(),
           filters: EXPORT_FILTERS,
           properties: ['showOverwriteConfirmation']
         })
