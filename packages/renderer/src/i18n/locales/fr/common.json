@@ -22,7 +22,8 @@
       "projects": "Projets",
       "settings": "Paramètres",
       "userManagement": "Gestion des utilisateurs",
-      "roleManagement": "Gestion des rôles"
+      "roleManagement": "Gestion des rôles",
+      "database": "Base de données"
     },
     "collapseSidebar": "Réduire la navigation",
     "expandSidebar": "Développer la navigation",

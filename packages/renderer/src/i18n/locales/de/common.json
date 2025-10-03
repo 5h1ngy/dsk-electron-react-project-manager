@@ -22,7 +22,8 @@
       "projects": "Projekte",
       "settings": "Einstellungen",
       "userManagement": "Benutzerverwaltung",
-      "roleManagement": "Rollenverwaltung"
+      "roleManagement": "Rollenverwaltung",
+      "database": "Datenbank"
     },
     "collapseSidebar": "Navigation einklappen",
     "expandSidebar": "Navigation ausklappen",

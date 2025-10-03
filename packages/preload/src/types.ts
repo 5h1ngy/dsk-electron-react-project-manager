@@ -40,6 +40,10 @@ import type { CreateViewInput, UpdateViewInput, ListViewsInput } from '@main/ser
 import type { RoleSummary } from '@main/services/roles'
 import type { RolePermissionDefinition } from '@main/services/roles/constants'
 import type { CreateRoleInput, UpdateRoleInput } from '@main/services/roles/schemas'
+import type {
+  DatabaseExportResult,
+  DatabaseImportResult
+} from '@main/services/databaseMaintenance/types'
 
 export interface IpcSuccess<T> {
   ok: true
@@ -174,6 +178,11 @@ export interface RoleApi {
   remove: (token: string, roleId: string) => Promise<IpcResponse<{ success: boolean }>>
 }
 
+export interface DatabaseApi {
+  export: (token: string, password: string) => Promise<IpcResponse<DatabaseExportResult>>
+  import: (token: string, password: string) => Promise<IpcResponse<DatabaseImportResult>>
+}
+
 export interface PreloadApi {
   health: HealthApi
   auth: AuthApi
@@ -183,4 +192,5 @@ export interface PreloadApi {
   note: NoteApi
   view: ViewApi
   role: RoleApi
+  database: DatabaseApi
 }

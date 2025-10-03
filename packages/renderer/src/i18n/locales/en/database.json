@@ -1,0 +1,26 @@
+{
+  "title": "Encrypted database",
+  "description": "Export or import the encrypted workspace database. Keep the password in a safe place.",
+  "export": {
+    "title": "Export encrypted database",
+    "subtitle": "Choose a strong password and store the encrypted file securely.",
+    "passwordLabel": "Encryption password",
+    "confirmPasswordLabel": "Confirm password",
+    "submit": "Export database",
+    "success": "Encrypted database saved to {{path}}",
+    "cancelled": "Export cancelled"
+  },
+  "import": {
+    "title": "Import encrypted database",
+    "subtitle": "Provide the password for an existing encrypted backup. The application will restart after a successful import.",
+    "passwordLabel": "Decryption password",
+    "submit": "Import and restart",
+    "success": "Database imported successfully. The application will restart now.",
+    "cancelled": "Import cancelled"
+  },
+  "errors": {
+    "passwordRequired": "Password is required",
+    "passwordTooShort": "Password must be at least {{length}} characters long",
+    "passwordMismatch": "Passwords do not match"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "title": "Database cifrato",
+  "description": "Esporta o importa il database cifrato dell'ambiente di lavoro. Conserva la password in un luogo sicuro.",
+  "export": {
+    "title": "Esporta database cifrato",
+    "subtitle": "Scegli una password robusta e conserva il file cifrato in modo sicuro.",
+    "passwordLabel": "Password di cifratura",
+    "confirmPasswordLabel": "Conferma password",
+    "submit": "Esporta database",
+    "success": "Database cifrato salvato in {{path}}",
+    "cancelled": "Esportazione annullata"
+  },
+  "import": {
+    "title": "Importa database cifrato",
+    "subtitle": "Inserisci la password di un backup cifrato esistente. L'applicazione si riavvierà dopo l'import.",
+    "passwordLabel": "Password di decifratura",
+    "submit": "Importa e riavvia",
+    "success": "Database importato con successo. L'applicazione si riavvierà ora.",
+    "cancelled": "Import annullato"
+  },
+  "errors": {
+    "passwordRequired": "La password è obbligatoria",
+    "passwordTooShort": "La password deve contenere almeno {{length}} caratteri",
+    "passwordMismatch": "Le password non coincidono"
+  }
+}

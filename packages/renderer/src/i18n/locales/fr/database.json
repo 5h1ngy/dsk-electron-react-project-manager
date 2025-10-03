@@ -1,0 +1,26 @@
+{
+  "title": "Base de données chiffrée",
+  "description": "Exportez ou importez la base de données chiffrée de l'espace de travail. Conservez le mot de passe en lieu sûr.",
+  "export": {
+    "title": "Exporter la base chiffrée",
+    "subtitle": "Choisissez un mot de passe robuste et stockez le fichier chiffré en toute sécurité.",
+    "passwordLabel": "Mot de passe de chiffrement",
+    "confirmPasswordLabel": "Confirmez le mot de passe",
+    "submit": "Exporter la base",
+    "success": "Base de données chiffrée enregistrée dans {{path}}",
+    "cancelled": "Export annulé"
+  },
+  "import": {
+    "title": "Importer la base chiffrée",
+    "subtitle": "Saisissez le mot de passe d'une sauvegarde chiffrée existante. L'application redémarrera après l'import.",
+    "passwordLabel": "Mot de passe de déchiffrement",
+    "submit": "Importer et redémarrer",
+    "success": "Base de données importée avec succès. L'application va redémarrer.",
+    "cancelled": "Import annulé"
+  },
+  "errors": {
+    "passwordRequired": "Le mot de passe est requis",
+    "passwordTooShort": "Le mot de passe doit contenir au moins {{length}} caractères",
+    "passwordMismatch": "Les mots de passe ne correspondent pas"
+  }
+}
