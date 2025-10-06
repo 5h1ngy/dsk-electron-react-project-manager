@@ -363,8 +363,19 @@
         "empty": "Nessun commento",
         "addLabel": "Aggiungi un commento",
         "validation": "Inserisci un commento",
-        "submit": "Invia commento"
-      }
+        "submit": "Invia commento",
+        "success": "Commento aggiunto"
+      },
+      "loadingTitle": "Dettagli del task",
+      "goBack": "Torna ai task",
+      "propertiesTitle": "Proprietà del task",
+      "statusLabel": "Stato",
+      "priorityLabel": "Priorità",
+      "ownerLabel": "Proprietario",
+      "assigneeLabel": "Assegnatario",
+      "createdAtLabel": "Creato il",
+      "dueDateLabel": "Scadenza",
+      "updatedAtLabel": "Ultimo aggiornamento"
     },
     "filterPanel": "Filtri",
     "actionsPanel": "Azioni"

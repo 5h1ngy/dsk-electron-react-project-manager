@@ -8,7 +8,6 @@ import { EmptyState } from '@renderer/components/DataStates'
 import { useProjectDetails } from '@renderer/pages/Projects/hooks/useProjectDetails'
 import { useTaskModals } from '@renderer/pages/Projects/hooks/useTaskModals'
 import { TaskFormModal } from '@renderer/pages/Projects/components/TaskFormModal'
-import { TaskDetailsModal } from '@renderer/pages/Projects/components/TaskDetailsModal'
 import {
   buildBreadcrumbItems,
   buildTabItems,
@@ -67,10 +66,10 @@ const ProjectLayout = (): JSX.Element => {
 
     const located = tasks.find((task) => task.id === taskToFocus)
     if (located) {
-      taskModals.openDetail(located.id)
       const next = new URLSearchParams(searchParams)
       next.delete('task')
       setSearchParams(next, { replace: true })
+      navigate(`/projects/${projectId}/tasks/${located.id}`)
       return
     }
 
@@ -79,7 +78,7 @@ const ProjectLayout = (): JSX.Element => {
       next.delete('task')
       setSearchParams(next, { replace: true })
     }
-  }, [projectId, searchParams, setSearchParams, taskModals, tasks, tasksStatus])
+  }, [navigate, projectId, searchParams, setSearchParams, tasks, tasksStatus])
 
   const basePath = `/projects/${projectId ?? ''}`
   const activeKey = projectId ? resolveActiveTab(location.pathname, basePath) : 'overview'
@@ -152,6 +151,16 @@ const ProjectLayout = (): JSX.Element => {
     )
   }
 
+  const handleOpenTaskDetails = useCallback(
+    (taskId: string) => {
+      if (!projectId) {
+        return
+      }
+      navigate(`/projects/${projectId}/tasks/${taskId}`)
+    },
+    [navigate, projectId]
+  )
+
   const contextValue: ProjectRouteContext = {
     projectId: projectId ?? '',
     project: project ?? null,
@@ -164,7 +173,7 @@ const ProjectLayout = (): JSX.Element => {
     refreshTasks,
     refreshTaskStatuses,
     canManageTasks,
-    openTaskDetails: taskModals.openDetail,
+    openTaskDetails: handleOpenTaskDetails,
     openTaskCreate: (options) => taskModals.openCreate(options),
     openTaskEdit: taskModals.openEdit,
     deleteTask: taskModals.deleteTask,
@@ -215,19 +224,6 @@ const ProjectLayout = (): JSX.Element => {
         <Tabs activeKey={activeKey} items={tabItems} onChange={handleTabChange} destroyOnHidden />
         <Outlet context={contextValue} />
       </Space>
-      <TaskDetailsModal
-        open={taskModals.isDetailOpen}
-        task={taskModals.detailTask}
-        allowManage={canManageTasks}
-        onClose={taskModals.closeDetail}
-        onDelete={(task) => taskModals.deleteTask(task.id)}
-        deleting={
-          taskModals.deletingTaskId !== null &&
-          taskModals.deletingTaskId === taskModals.detailTask?.id
-        }
-        assigneeOptions={taskModals.assigneeOptions}
-        statusOptions={taskModals.statusOptions}
-      />
       <TaskFormModal
         open={taskModals.isEditorOpen}
         mode={taskModals.editorMode ?? 'create'}
