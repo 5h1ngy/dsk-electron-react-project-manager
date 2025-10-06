@@ -18,6 +18,8 @@ import { NoteIpcRegistrar } from '@main/ipc/note'
 import { ViewIpcRegistrar } from '@main/ipc/view'
 import { RoleIpcRegistrar } from '@main/ipc/role'
 import { HealthIpcRegistrar } from '@main/ipc/health'
+import { DatabaseMaintenanceService } from '@main/services/databaseMaintenance'
+import { DatabaseIpcRegistrar } from '@main/ipc/database'
 import { IpcChannelRegistrar, ipcChannelRegistrar } from '@main/ipc/utils'
 
 const SESSION_TIMEOUT_SETTING_KEY = 'auth.sessionTimeoutMinutes'
@@ -191,7 +193,7 @@ class MainProcessApplication {
     })
     this.deps.logger.success('Database connection established', 'Database')
 
-    this.deps.context.setDatabase(database)
+    this.deps.context.setDatabase(database, storagePath)
     this.deps.logger.debug('Application context initialized', 'Bootstrap')
 
     this.registerIpcChannels(database)
@@ -275,8 +277,26 @@ class MainProcessApplication {
       roleService,
       registrar: this.deps.ipcRegistrar
     }).register()
+
+    const databaseService = new DatabaseMaintenanceService({
+      authService: this.deps.context.authService,
+      auditService: this.deps.context.auditService,
+      app: this.deps.app,
+      storage: {
+        getDatabasePath: () => this.deps.context.getDatabasePath(),
+        teardownDatabase: () => this.deps.context.teardownDatabase()
+      },
+      log: this.deps.logger
+    })
+
+    new DatabaseIpcRegistrar({
+      service: databaseService,
+      registrar: this.deps.ipcRegistrar,
+      windowProvider: () => this.mainWindow ?? BrowserWindow.getFocusedWindow() ?? undefined
+    }).register()
+
     this.deps.logger.debug(
-      'Auth, Project, Task, TaskStatus, Note, View and Role IPC channels registered',
+      'Auth, Project, Task, TaskStatus, Note, View, Role e Database IPC channels registered',
       'IPC'
     )
   }

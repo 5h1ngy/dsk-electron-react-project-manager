@@ -3,6 +3,12 @@ import { UniqueConstraintError } from 'sequelize'
 import { Role } from '@main/models/Role'
 import { User } from '@main/models/User'
 import { UserRole } from '@main/models/UserRole'
+import { Project } from '@main/models/Project'
+import { ProjectMember } from '@main/models/ProjectMember'
+import { Task } from '@main/models/Task'
+import { Note } from '@main/models/Note'
+import { Comment } from '@main/models/Comment'
+import { View } from '@main/models/View'
 import { hashPassword, verifyPassword } from '@main/services/auth/password'
 import { SessionManager, SessionRecord } from '@main/services/auth/sessionManager'
 import { AuditService } from '@main/services/audit'
@@ -401,8 +407,42 @@ export class AuthService {
         }
       }
 
-      await UserRole.destroy({ where: { userId: user.id } })
-      await user.destroy()
+      const sequelize = User.sequelize
+      if (!sequelize) {
+        throw new AppError('ERR_INTERNAL', 'Connessione al database non disponibile')
+      }
+
+      const replacementUserId = context.user.id
+
+      await sequelize.transaction(async (transaction) => {
+        await ProjectMember.destroy({ where: { userId: user.id }, transaction })
+        await View.destroy({ where: { userId: user.id }, transaction })
+        await Comment.destroy({ where: { authorId: user.id }, transaction })
+
+        await Task.update(
+          { assigneeId: null },
+          { where: { assigneeId: user.id }, transaction }
+        )
+
+        await Task.update(
+          { ownerUserId: replacementUserId },
+          { where: { ownerUserId: user.id }, transaction }
+        )
+
+        await Note.update(
+          { ownerUserId: replacementUserId },
+          { where: { ownerUserId: user.id }, transaction }
+        )
+
+        await Project.update(
+          { createdBy: replacementUserId },
+          { where: { createdBy: user.id }, transaction }
+        )
+
+        await UserRole.destroy({ where: { userId: user.id }, transaction })
+        await user.destroy({ transaction })
+      })
+
       this.sessionManager.endSessionsForUser(user.id)
 
       await this.auditService.record(context.user.id, 'user', user.id, 'delete', {

@@ -1,6 +1,7 @@
 import {
   AppstoreOutlined,
   DashboardOutlined,
+  DatabaseOutlined,
   SafetyCertificateOutlined,
   SettingOutlined,
   TeamOutlined
@@ -45,6 +46,12 @@ const ROLE_MANAGEMENT_NAVIGATION: NavigationDefinition = {
   icon: <SafetyCertificateOutlined />
 }
 
+const DATABASE_MANAGEMENT_NAVIGATION: NavigationDefinition = {
+  path: '/admin/database',
+  labelKey: 'appShell.navigation.database',
+  icon: <DatabaseOutlined />
+}
+
 interface NavigationOptions {
   includeUserManagement?: boolean
 }
@@ -52,7 +59,13 @@ interface NavigationOptions {
 const buildNavigationDefinitions = (options?: NavigationOptions): NavigationDefinition[] => {
   const items = [...BASE_NAVIGATION]
   if (options?.includeUserManagement) {
-    items.splice(1, 0, USER_MANAGEMENT_NAVIGATION, ROLE_MANAGEMENT_NAVIGATION)
+    items.splice(
+      1,
+      0,
+      USER_MANAGEMENT_NAVIGATION,
+      ROLE_MANAGEMENT_NAVIGATION,
+      DATABASE_MANAGEMENT_NAVIGATION
+    )
   }
   return items
 }

@@ -191,15 +191,34 @@ class AppContext {
   noteService?: NoteService
   viewService?: ViewService
   roleService?: RoleService
+  private databasePath?: string
 
-  setDatabase(sequelize: Sequelize): void {
+  setDatabase(sequelize: Sequelize, storagePath: string): void {
     this.sequelize = sequelize
+    this.databasePath = storagePath
     this.projectService = new ProjectService(sequelize, this.auditService)
     this.taskStatusService = new TaskStatusService(sequelize, this.auditService)
     this.taskService = new TaskService(sequelize, this.auditService)
     this.noteService = new NoteService(sequelize, this.auditService)
     this.viewService = new ViewService(sequelize, this.auditService)
     this.roleService = new RoleService(sequelize, this.auditService)
+  }
+
+  getDatabasePath(): string | null {
+    return this.databasePath ?? null
+  }
+
+  async teardownDatabase(): Promise<void> {
+    if (this.sequelize) {
+      await this.sequelize.close()
+    }
+    this.sequelize = undefined
+    this.projectService = undefined
+    this.taskStatusService = undefined
+    this.taskService = undefined
+    this.noteService = undefined
+    this.viewService = undefined
+    this.roleService = undefined
   }
 }
 
