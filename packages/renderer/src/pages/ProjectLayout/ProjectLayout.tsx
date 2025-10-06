@@ -1,4 +1,4 @@
-import { ReloadOutlined } from '@ant-design/icons'
+import { ArrowLeftOutlined, ReloadOutlined } from '@ant-design/icons'
 import { Breadcrumb, Button, Space, Tabs } from 'antd'
 import { useCallback, useEffect, useMemo, type JSX } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -211,6 +211,11 @@ const ProjectLayout = (): JSX.Element => {
           >
             {t('details.refresh')}
           </Button>
+          {activeKey === 'tasks' ? (
+            <Button icon={<ArrowLeftOutlined />} onClick={() => navigate('/projects')}>
+              {t('details.backToList')}
+            </Button>
+          ) : null}
           <Breadcrumb items={emphasizedBreadcrumbItems} />
         </Space>
       </ShellHeaderPortal>

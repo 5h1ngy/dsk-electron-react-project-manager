@@ -244,9 +244,6 @@ const TaskDetailsPage = (): JSX.Element => {
     <>
       <ShellHeaderPortal>
         <Space align="center" size={12} wrap style={{ width: '100%' }}>
-          <Button icon={<ArrowLeftOutlined />} onClick={handleBack}>
-            {t('tasks.details.goBack')}
-          </Button>
           <Button
             icon={<ReloadOutlined />}
             onClick={handleRefresh}
@@ -254,6 +251,9 @@ const TaskDetailsPage = (): JSX.Element => {
             loading={projectLoading || tasksStatus === 'loading'}
           >
             {t('details.refresh')}
+          </Button>
+          <Button icon={<ArrowLeftOutlined />} onClick={handleBack}>
+            {t('tasks.details.goBack')}
           </Button>
           <Breadcrumb items={breadcrumbItems} />
         </Space>
