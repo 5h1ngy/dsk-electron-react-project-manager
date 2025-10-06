@@ -529,6 +529,7 @@ export class DatabaseMaintenanceService {
   private readonly storage: StorageController
   private readonly log: typeof logger
   private restartPending = false
+  private restartAuthorizedToken: string | null = null
 
   constructor(dependencies: DatabaseMaintenanceDependencies) {
     this.authService = dependencies.authService
@@ -690,6 +691,7 @@ export class DatabaseMaintenanceService {
         this.log.debug(detail, 'Database')
       }
       this.restartPending = true
+      this.restartAuthorizedToken = token
       this.log.success('Database importato con successo. Riavvio richiesto.', 'Database')
       reporter.emit('complete', 100)
     } catch (error) {
@@ -698,6 +700,7 @@ export class DatabaseMaintenanceService {
       } catch {
         /* noop */
       }
+      this.restartAuthorizedToken = null
       throw wrapError(error)
     }
   }
@@ -707,18 +710,22 @@ export class DatabaseMaintenanceService {
   }
 
   async restartApplication(token: string): Promise<void> {
-    await this.resolveAdminActor(token)
     if (!this.restartPending) {
       throw new AppError('ERR_INTERNAL', 'Nessun riavvio del database in attesa')
+    }
+    if (!this.restartAuthorizedToken || this.restartAuthorizedToken !== token) {
+      throw new AppError('ERR_PERMISSION', 'Token non autorizzato per il riavvio')
     }
 
     try {
       this.restartPending = false
+      this.restartAuthorizedToken = null
       this.log.info("Applicazione in riavvio su richiesta dell'utente", 'Database')
       this.app.relaunch()
       this.app.exit(0)
     } catch (error) {
       this.restartPending = true
+      this.restartAuthorizedToken = token
       throw wrapError(error)
     }
   }
