@@ -1,13 +1,12 @@
 import type { JSX } from 'react'
 import { useEffect, useMemo, useState } from 'react'
-import { Alert, Breadcrumb, Button, Space } from 'antd'
+import { Alert, Button, Space, Typography } from 'antd'
 import { ROLE_NAMES } from '@main/services/auth/constants'
 import { ReloadOutlined } from '@ant-design/icons'
-import { Navigate, useNavigate } from 'react-router-dom'
+import { Navigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 
 import { ShellHeaderPortal } from '@renderer/layout/Shell/ShellHeader.context'
-import { usePrimaryBreadcrumb } from '@renderer/layout/Shell/hooks/usePrimaryBreadcrumb'
 import { CreateUserModal } from '@renderer/pages/Dashboard/components/CreateUserModal'
 import { EditUserModal } from '@renderer/pages/Dashboard/components/EditUserModal'
 import { UserCardsGrid } from '@renderer/pages/Dashboard/components/UserCardsGrid'
@@ -28,7 +27,6 @@ const USER_LIST_PAGE_SIZE = 12
 
 const UserManagementPage = (): JSX.Element | null => {
   const { t } = useTranslation('dashboard')
-  const navigate = useNavigate()
   const currentUser = useAppSelector(selectCurrentUser)
   const dispatch = useAppDispatch()
   const token = useAppSelector(selectToken)
@@ -176,16 +174,6 @@ const UserManagementPage = (): JSX.Element | null => {
     }
   }, [filteredUsers.length, userListPage])
 
-  const breadcrumbItems = usePrimaryBreadcrumb([
-    {
-      title: t('appShell.navigation.dashboard', { ns: 'common' }),
-      onClick: () => navigate('/')
-    },
-    {
-      title: t('appShell.navigation.userManagement', { ns: 'common' })
-    }
-  ])
-
   if (!currentUser) {
     return null
   }
@@ -197,12 +185,7 @@ const UserManagementPage = (): JSX.Element | null => {
   return (
     <>
       <ShellHeaderPortal>
-        <Space
-          align="center"
-          size={12}
-          wrap
-          style={{ width: '100%', justifyContent: 'space-between' }}
-        >
+        <Space align="center" size={12} wrap style={{ width: '100%', justifyContent: 'space-between' }}>
           <Button
             icon={<ReloadOutlined />}
             onClick={refreshUsers}
@@ -211,7 +194,9 @@ const UserManagementPage = (): JSX.Element | null => {
           >
             {t('dashboard:actionBar.refresh')}
           </Button>
-          <Breadcrumb items={breadcrumbItems} />
+          <Typography.Title level={4} style={{ margin: 0 }}>
+            {t('appShell.navigation.userManagement', { ns: 'common' })}
+          </Typography.Title>
         </Space>
       </ShellHeaderPortal>
       <Space direction="vertical" size="large" style={{ width: '100%' }}>

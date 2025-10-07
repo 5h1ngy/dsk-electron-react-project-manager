@@ -2,8 +2,7 @@ import type { JSX } from 'react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   Alert,
-  Breadcrumb,
-  Button,
+    Button,
   Checkbox,
   Flex,
   Form,
@@ -17,14 +16,13 @@ import {
 } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
 import { PlusOutlined, ReloadOutlined } from '@ant-design/icons'
-import { Navigate, useNavigate } from 'react-router-dom'
+import { Navigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 
 import type { RoleSummary } from '@main/services/roles'
 import type { RolePermissionDefinition } from '@main/services/roles/constants'
 
 import { ShellHeaderPortal } from '@renderer/layout/Shell/ShellHeader.context'
-import { usePrimaryBreadcrumb } from '@renderer/layout/Shell/hooks/usePrimaryBreadcrumb'
 import { useAppDispatch, useAppSelector } from '@renderer/store/hooks'
 import { selectCurrentUser, selectToken, forceLogout } from '@renderer/store/slices/auth'
 import {
@@ -41,7 +39,6 @@ interface RoleFormValues {
 
 const RoleManagementPage = (): JSX.Element => {
   const { t } = useTranslation(['roles', 'common'])
-  const navigate = useNavigate()
   const dispatch = useAppDispatch()
   const currentUser = useAppSelector(selectCurrentUser)
   const token = useAppSelector(selectToken)
@@ -61,16 +58,6 @@ const RoleManagementPage = (): JSX.Element => {
   const [messageApi, messageContext] = message.useMessage()
   const [createForm] = Form.useForm<RoleFormValues>()
   const [editForm] = Form.useForm<RoleFormValues>()
-
-  const breadcrumbItems = usePrimaryBreadcrumb([
-    {
-      title: t('appShell.navigation.dashboard', { ns: 'common' }),
-      onClick: () => navigate('/')
-    },
-    {
-      title: t('appShell.navigation.roleManagement', { ns: 'common' })
-    }
-  ])
 
   const permissionMetadata = useMemo(() => {
     const map = new Map<string, { label: string; description: string }>()
@@ -347,7 +334,9 @@ const RoleManagementPage = (): JSX.Element => {
               {t('roles:actions.refresh')}
             </Button>
           </Space>
-          <Breadcrumb items={breadcrumbItems} />
+          <Typography.Title level={4} style={{ margin: 0 }}>
+            {t('appShell.navigation.roleManagement', { ns: 'common' })}
+          </Typography.Title>
         </Flex>
       </ShellHeaderPortal>
       <Space direction="vertical" size="large" style={{ width: '100%' }}>
