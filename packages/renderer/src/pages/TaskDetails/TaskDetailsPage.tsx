@@ -115,19 +115,6 @@ const TaskDetailsPage = (): JSX.Element => {
     [project?.members]
   )
 
-  const projectReference = useMemo(() => {
-    if (project) {
-      return t('tasks.details.projectReference', {
-        key: project.key,
-        name: project.name
-      })
-    }
-    if (projectLoading) {
-      return null
-    }
-    return t('tasks.details.projectUnknown')
-  }, [project, projectLoading, t])
-
   const commentsSelector = useMemo(
     () => selectTaskComments(taskId),
     [taskId]
@@ -454,9 +441,6 @@ const TaskDetailsPage = (): JSX.Element => {
               </Button>
             </Space>
           )}
-          {projectReference ? (
-            <Typography.Text type="secondary">{projectReference}</Typography.Text>
-          ) : null}
           {!isEditing ? tagsContent : null}
         </Space>
         <Row gutter={[12, 24]}>
