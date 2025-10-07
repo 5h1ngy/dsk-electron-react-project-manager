@@ -375,7 +375,9 @@
       "assigneeLabel": "Assegnatario",
       "createdAtLabel": "Creato il",
       "dueDateLabel": "Scadenza",
-      "updatedAtLabel": "Ultimo aggiornamento"
+      "updatedAtLabel": "Ultimo aggiornamento",
+      "projectReference": "Progetto: {{key}} - {{name}}",
+      "projectUnknown": "Progetto non disponibile"
     },
     "filterPanel": "Filtri",
     "actionsPanel": "Azioni"

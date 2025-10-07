@@ -375,7 +375,9 @@
       "assigneeLabel": "Assignee",
       "createdAtLabel": "Created on",
       "dueDateLabel": "Due date",
-      "updatedAtLabel": "Last updated on"
+      "updatedAtLabel": "Last updated on",
+      "projectReference": "Project: {{key}} - {{name}}",
+      "projectUnknown": "Project unavailable"
     },
     "filterPanel": "Filters",
     "actionsPanel": "Actions"
