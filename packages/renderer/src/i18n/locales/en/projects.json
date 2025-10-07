@@ -377,7 +377,8 @@
       "dueDateLabel": "Due date",
       "updatedAtLabel": "Last updated on",
       "projectReference": "Project: {{key}} - {{name}}",
-      "projectUnknown": "Project unavailable"
+      "projectUnknown": "Project unavailable",
+      "addNote": "Add note"
     },
     "filterPanel": "Filters",
     "actionsPanel": "Actions"

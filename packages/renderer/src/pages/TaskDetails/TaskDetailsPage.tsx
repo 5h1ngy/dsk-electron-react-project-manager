@@ -3,6 +3,7 @@ import {
   CalendarOutlined,
   EditOutlined,
   MessageOutlined,
+  PlusOutlined,
   ReloadOutlined,
   SaveOutlined,
   UserOutlined
@@ -227,6 +228,13 @@ const TaskDetailsPage = (): JSX.Element => {
     [navigate, projectId]
   )
 
+  const handleAddNote = useCallback(() => {
+    if (!task) {
+      return
+    }
+    navigate(`/projects/${projectId}/notes?createNote=${task.id}`)
+  }, [navigate, projectId, task])
+
   const handleSubmitComment = useCallback(async () => {
     if (!task) {
       return
@@ -437,9 +445,14 @@ const TaskDetailsPage = (): JSX.Element => {
               </Form.Item>
             </Form>
           ) : (
-            <Typography.Title level={3} style={{ marginBottom: 0 }}>
-              {task.title}
-            </Typography.Title>
+            <Space align="center" size={8} wrap>
+              <Typography.Title level={3} style={{ marginBottom: 0 }}>
+                {task.title}
+              </Typography.Title>
+              <Button icon={<PlusOutlined />} onClick={handleAddNote}>
+                {t('tasks.details.addNote')}
+              </Button>
+            </Space>
           )}
           {projectReference ? (
             <Typography.Text type="secondary">{projectReference}</Typography.Text>

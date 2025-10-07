@@ -377,7 +377,8 @@
       "dueDateLabel": "Scadenza",
       "updatedAtLabel": "Ultimo aggiornamento",
       "projectReference": "Progetto: {{key}} - {{name}}",
-      "projectUnknown": "Progetto non disponibile"
+      "projectUnknown": "Progetto non disponibile",
+      "addNote": "Aggiungi nota"
     },
     "filterPanel": "Filtri",
     "actionsPanel": "Azioni"
