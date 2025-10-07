@@ -300,71 +300,58 @@ const TaskDetailsPage = (): JSX.Element => {
       style={{
         width: '100%',
         display: 'flex',
-        flexDirection: 'column',
+        flexWrap: 'wrap',
+        alignItems: 'center',
         gap: 12
       }}
     >
-      <div
-        style={{
-          display: 'flex',
-          flexWrap: 'wrap',
-          alignItems: 'center',
-          gap: 12
-        }}
-      >
-        <Space align="center" size={12} wrap>
-          <Button
-            icon={<ReloadOutlined />}
-            onClick={handleRefresh}
-            disabled={projectLoading || tasksStatus === 'loading'}
-            loading={projectLoading || tasksStatus === 'loading'}
-          >
-            {t('details.refresh')}
-          </Button>
-          <Button icon={<ArrowLeftOutlined />} onClick={handleBack}>
-            {t('tasks.details.goBack')}
-          </Button>
-        </Space>
-        {task && canManageTasks ? (
-          <Space size={8} wrap style={{ marginLeft: 'auto' }}>
-            {isEditing ? (
-              <>
-                <Button
-                  type="primary"
-                  icon={<SaveOutlined />}
-                  onClick={() => submitEditForm(handleSaveTask)()}
-                  loading={updatingTask}
-                  disabled={updatingTask}
-                >
-                  {t('tasks.form.updateAction')}
-                </Button>
-                <Button
-                  onClick={() => {
-                    setIsEditing(false)
-                    resetEditForm(defaultEditValues)
-                  }}
-                  disabled={updatingTask}
-                >
-                  {t('tasks.actions.cancel')}
-                </Button>
-              </>
-            ) : (
-              <Button icon={<EditOutlined />} onClick={() => setIsEditing(true)}>
-                {t('tasks.actions.edit')}
+      <Breadcrumb
+        items={breadcrumbItems}
+        style={{ flex: '1 1 240px', minWidth: 200, marginRight: 12 }}
+      />
+      <Space align="center" size={12} wrap>
+        <Button
+          icon={<ReloadOutlined />}
+          onClick={handleRefresh}
+          disabled={projectLoading || tasksStatus === 'loading'}
+          loading={projectLoading || tasksStatus === 'loading'}
+        >
+          {t('details.refresh')}
+        </Button>
+        <Button icon={<ArrowLeftOutlined />} onClick={handleBack}>
+          {t('tasks.details.goBack')}
+        </Button>
+      </Space>
+      {task && canManageTasks ? (
+        <Space size={8} wrap style={{ marginLeft: 'auto' }}>
+          {isEditing ? (
+            <>
+              <Button
+                type="primary"
+                icon={<SaveOutlined />}
+                onClick={() => submitEditForm(handleSaveTask)()}
+                loading={updatingTask}
+                disabled={updatingTask}
+              >
+                {t('tasks.form.updateAction')}
               </Button>
-            )}
-          </Space>
-        ) : null}
-      </div>
-      <div
-        style={{
-          width: '100%',
-          display: 'flex',
-          justifyContent: 'flex-end'
-        }}
-      >
-        <Breadcrumb items={breadcrumbItems} />
-      </div>
+              <Button
+                onClick={() => {
+                  setIsEditing(false)
+                  resetEditForm(defaultEditValues)
+                }}
+                disabled={updatingTask}
+              >
+                {t('tasks.actions.cancel')}
+              </Button>
+            </>
+          ) : (
+            <Button icon={<EditOutlined />} onClick={() => setIsEditing(true)}>
+              {t('tasks.actions.edit')}
+            </Button>
+          )}
+        </Space>
+      ) : null}
     </div>
   )
 
