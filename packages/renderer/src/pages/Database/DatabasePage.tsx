@@ -1,10 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type JSX } from 'react'
-import { Breadcrumb, Button, Card, Form, Input, Modal, Progress, Space, Typography, message } from 'antd'
+import { Button, Card, Form, Input, Modal, Progress, Space, Typography, message } from 'antd'
 import { useTranslation } from 'react-i18next'
-import { Navigate, useNavigate } from 'react-router-dom'
+import { Navigate } from 'react-router-dom'
 
 import { ShellHeaderPortal } from '@renderer/layout/Shell/ShellHeader.context'
-import { usePrimaryBreadcrumb } from '@renderer/layout/Shell/hooks/usePrimaryBreadcrumb'
 import { useAppDispatch, useAppSelector } from '@renderer/store/hooks'
 import { selectCurrentUser, selectToken } from '@renderer/store/slices/auth/selectors'
 import { handleResponse, isSessionExpiredError, extractErrorMessage } from '@renderer/store/slices/auth/helpers'
@@ -51,7 +50,6 @@ const DatabasePage = (): JSX.Element => {
   const token = useAppSelector(selectToken)
   const currentUser = useAppSelector(selectCurrentUser)
   const dispatch = useAppDispatch()
-  const navigate = useNavigate()
   const [exporting, setExporting] = useState(false)
   const [importing, setImporting] = useState(false)
   const [restartModalVisible, setRestartModalVisible] = useState(false)
@@ -61,21 +59,6 @@ const DatabasePage = (): JSX.Element => {
     ...INITIAL_PROGRESS_STATE
   })
   const progressResetTimeout = useRef<NodeJS.Timeout | number | null>(null)
-
-  const breadcrumbItems = usePrimaryBreadcrumb(
-    useMemo(
-      () => [
-        {
-          title: t('appShell.navigation.dashboard', { ns: 'common' }),
-          onClick: () => navigate('/')
-        },
-        {
-          title: t('appShell.navigation.database', { ns: 'common' })
-        }
-      ],
-      [navigate, t]
-    )
-  )
 
   const isAdmin = currentUser?.roles?.includes('Admin') ?? false
 
@@ -435,7 +418,18 @@ const DatabasePage = (): JSX.Element => {
         </Space>
       </Modal>
       <ShellHeaderPortal>
-        <Breadcrumb items={breadcrumbItems} />
+        <div
+          style={{
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'flex-end',
+            alignItems: 'center'
+          }}
+        >
+          <Typography.Title level={4} style={{ margin: 0 }}>
+            {t('title')}
+          </Typography.Title>
+        </div>
       </ShellHeaderPortal>
       <Space direction="vertical" size={24} style={{ width: '100%' }}>
         <div>
