@@ -6,13 +6,11 @@ import dayjs from 'dayjs'
 import {
   AppstoreOutlined,
   ArrowRightOutlined,
-  PlusOutlined,
   SettingOutlined,
   TeamOutlined
 } from '@ant-design/icons'
 import {
   Breadcrumb,
-  Button,
   Card,
   Flex,
   Progress,
@@ -191,15 +189,6 @@ const Dashboard = (): JSX.Element | null => {
       <ShellHeaderPortal>
         <Space align="center" size={12} wrap style={{ width: '100%' }}>
           <Breadcrumb items={breadcrumbItems} />
-          <Button
-            type="primary"
-            size="large"
-            icon={<PlusOutlined />}
-            onClick={() => navigate('/projects')}
-            style={{ marginLeft: 'auto' }}
-          >
-            {t('quickLinks.create')}
-          </Button>
         </Space>
       </ShellHeaderPortal>
       <Space direction="vertical" size="large" style={{ width: '100%' }}>
@@ -333,3 +322,4 @@ Dashboard.displayName = 'Dashboard'
 
 export { Dashboard }
 export default Dashboard
+
