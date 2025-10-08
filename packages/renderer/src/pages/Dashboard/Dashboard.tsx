@@ -189,24 +189,17 @@ const Dashboard = (): JSX.Element | null => {
   return (
     <>
       <ShellHeaderPortal>
-        <Space direction="vertical" style={{ width: '100%' }}>
-          <Flex justify="space-between" align="center" wrap>
-            <Space direction="vertical" size={0}>
-              <Typography.Title level={4} style={{ marginBottom: 0 }}>
-                {t('overview.welcome', { name: currentUser.displayName })}
-              </Typography.Title>
-              <Typography.Text type="secondary">{t('overview.subtitle')}</Typography.Text>
-            </Space>
-            <Button
-              type="primary"
-              size="large"
-              icon={<PlusOutlined />}
-              onClick={() => navigate('/projects')}
-            >
-              {t('quickLinks.create')}
-            </Button>
-          </Flex>
+        <Space align="center" size={12} wrap style={{ width: '100%' }}>
           <Breadcrumb items={breadcrumbItems} />
+          <Button
+            type="primary"
+            size="large"
+            icon={<PlusOutlined />}
+            onClick={() => navigate('/projects')}
+            style={{ marginLeft: 'auto' }}
+          >
+            {t('quickLinks.create')}
+          </Button>
         </Space>
       </ShellHeaderPortal>
       <Space direction="vertical" size="large" style={{ width: '100%' }}>
