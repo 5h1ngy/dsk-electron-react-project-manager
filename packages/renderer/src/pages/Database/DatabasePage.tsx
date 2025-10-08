@@ -425,13 +425,6 @@ const DatabasePage = (): JSX.Element => {
         </Space>
       </ShellHeaderPortal>
       <Space direction="vertical" size={24} style={{ width: '100%' }}>
-        <div>
-          <Typography.Title level={3} style={{ marginBottom: 0 }}>
-            {t('title')}
-          </Typography.Title>
-          <Typography.Paragraph type="secondary">{t('description')}</Typography.Paragraph>
-        </div>
-
         <Card>
           <Space direction="vertical" size={16} style={{ width: '100%' }}>
             <div>
