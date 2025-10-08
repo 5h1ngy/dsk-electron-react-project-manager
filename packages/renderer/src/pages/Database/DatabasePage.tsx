@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type JSX } from 'react'
-import { Button, Card, Form, Input, Modal, Progress, Space, Typography, message } from 'antd'
+import { Breadcrumb, Button, Card, Form, Input, Modal, Progress, Space, Typography, message } from 'antd'
 import { useTranslation } from 'react-i18next'
 import { Navigate } from 'react-router-dom'
 
 import { ShellHeaderPortal } from '@renderer/layout/Shell/ShellHeader.context'
+import { usePrimaryBreadcrumb } from '@renderer/layout/Shell/hooks/usePrimaryBreadcrumb'
 import { useAppDispatch, useAppSelector } from '@renderer/store/hooks'
 import { selectCurrentUser, selectToken } from '@renderer/store/slices/auth/selectors'
 import { handleResponse, isSessionExpiredError, extractErrorMessage } from '@renderer/store/slices/auth/helpers'
@@ -45,6 +46,7 @@ interface ImportFormValues {
 
 const DatabasePage = (): JSX.Element => {
   const { t } = useTranslation(['database', 'common'])
+  const breadcrumbItems = usePrimaryBreadcrumb([{ title: t('title') }])
   const [exportForm] = Form.useForm<ExportFormValues>()
   const [importForm] = Form.useForm<ImportFormValues>()
   const token = useAppSelector(selectToken)
@@ -418,18 +420,9 @@ const DatabasePage = (): JSX.Element => {
         </Space>
       </Modal>
       <ShellHeaderPortal>
-        <div
-          style={{
-            width: '100%',
-            display: 'flex',
-            justifyContent: 'flex-end',
-            alignItems: 'center'
-          }}
-        >
-          <Typography.Title level={4} style={{ margin: 0 }}>
-            {t('title')}
-          </Typography.Title>
-        </div>
+        <Space align="center" size={12} wrap style={{ width: '100%' }}>
+          <Breadcrumb items={breadcrumbItems} />
+        </Space>
       </ShellHeaderPortal>
       <Space direction="vertical" size={24} style={{ width: '100%' }}>
         <div>

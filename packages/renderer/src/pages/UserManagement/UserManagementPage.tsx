@@ -1,12 +1,13 @@
 import type { JSX } from 'react'
 import { useEffect, useMemo, useState } from 'react'
-import { Alert, Button, Space, Typography } from 'antd'
+import { Alert, Breadcrumb, Button, Space } from 'antd'
 import { ROLE_NAMES } from '@main/services/auth/constants'
 import { ReloadOutlined } from '@ant-design/icons'
 import { Navigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 
 import { ShellHeaderPortal } from '@renderer/layout/Shell/ShellHeader.context'
+import { usePrimaryBreadcrumb } from '@renderer/layout/Shell/hooks/usePrimaryBreadcrumb'
 import { CreateUserModal } from '@renderer/pages/Dashboard/components/CreateUserModal'
 import { EditUserModal } from '@renderer/pages/Dashboard/components/EditUserModal'
 import { UserCardsGrid } from '@renderer/pages/Dashboard/components/UserCardsGrid'
@@ -27,6 +28,9 @@ const USER_LIST_PAGE_SIZE = 12
 
 const UserManagementPage = (): JSX.Element | null => {
   const { t } = useTranslation('dashboard')
+  const breadcrumbItems = usePrimaryBreadcrumb([
+    { title: t('appShell.navigation.userManagement', { ns: 'common' }) }
+  ])
   const currentUser = useAppSelector(selectCurrentUser)
   const dispatch = useAppDispatch()
   const token = useAppSelector(selectToken)
@@ -185,18 +189,17 @@ const UserManagementPage = (): JSX.Element | null => {
   return (
     <>
       <ShellHeaderPortal>
-        <Space align="center" size={12} wrap style={{ width: '100%', justifyContent: 'space-between' }}>
+        <Space align="center" size={12} wrap style={{ width: '100%' }}>
+          <Breadcrumb items={breadcrumbItems} />
           <Button
             icon={<ReloadOutlined />}
             onClick={refreshUsers}
             loading={loading}
             disabled={loading}
+            style={{ marginLeft: 'auto' }}
           >
             {t('dashboard:actionBar.refresh')}
           </Button>
-          <Typography.Title level={4} style={{ margin: 0 }}>
-            {t('appShell.navigation.userManagement', { ns: 'common' })}
-          </Typography.Title>
         </Space>
       </ShellHeaderPortal>
       <Space direction="vertical" size="large" style={{ width: '100%' }}>
