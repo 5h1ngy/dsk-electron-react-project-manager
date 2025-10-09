@@ -436,12 +436,6 @@ const DatabasePage = (): JSX.Element => {
       <Space direction="vertical" size={24} style={{ width: '100%' }}>
         <Card>
           <Space direction="vertical" size={16} style={{ width: '100%' }}>
-            <div>
-              <Typography.Title level={5} style={{ marginBottom: 4 }}>
-                {t('export.title')}
-              </Typography.Title>
-              <Typography.Text type="secondary">{t('export.subtitle')}</Typography.Text>
-            </div>
             <Form<ExportFormValues>
               layout="vertical"
               form={exportForm}
@@ -489,12 +483,6 @@ const DatabasePage = (): JSX.Element => {
 
         <Card>
           <Space direction="vertical" size={16} style={{ width: '100%' }}>
-            <div>
-              <Typography.Title level={5} style={{ marginBottom: 4 }}>
-                {t('import.title')}
-              </Typography.Title>
-              <Typography.Text type="secondary">{t('import.subtitle')}</Typography.Text>
-            </div>
             <Form<ImportFormValues>
               layout="vertical"
               form={importForm}
