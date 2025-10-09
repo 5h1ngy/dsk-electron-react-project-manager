@@ -189,14 +189,22 @@ const UserManagementPage = (): JSX.Element | null => {
   return (
     <>
       <ShellHeaderPortal>
-        <Space align="center" size={12} wrap style={{ width: '100%' }}>
+        <Space
+          size={12}
+          wrap
+          style={{
+            width: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'flex-start'
+          }}
+        >
           <Breadcrumb items={breadcrumbItems} />
           <Button
             icon={<ReloadOutlined />}
             onClick={refreshUsers}
             loading={loading}
             disabled={loading}
-            style={{ marginLeft: 'auto' }}
           >
             {t('dashboard:actionBar.refresh')}
           </Button>

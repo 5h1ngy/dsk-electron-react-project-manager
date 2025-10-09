@@ -420,7 +420,16 @@ const DatabasePage = (): JSX.Element => {
         </Space>
       </Modal>
       <ShellHeaderPortal>
-        <Space align="center" size={12} wrap style={{ width: '100%' }}>
+        <Space
+          size={12}
+          wrap
+          style={{
+            width: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'flex-start'
+          }}
+        >
           <Breadcrumb items={breadcrumbItems} />
         </Space>
       </ShellHeaderPortal>
