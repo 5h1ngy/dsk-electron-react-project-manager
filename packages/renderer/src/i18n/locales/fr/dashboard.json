@@ -136,7 +136,6 @@
   },
   "quickLinks": {
     "title": "Actions rapides",
-    "create": "Créer un projet",
     "projects": "Accéder à mes projets",
     "projectsDescription": "Passez en revue les initiatives actives et les tâches.",
     "settings": "Ouvrir les paramètres",
