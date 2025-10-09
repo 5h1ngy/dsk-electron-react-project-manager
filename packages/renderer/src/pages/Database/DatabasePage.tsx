@@ -5,6 +5,7 @@ import { Navigate } from 'react-router-dom'
 
 import { ShellHeaderPortal } from '@renderer/layout/Shell/ShellHeader.context'
 import { usePrimaryBreadcrumb } from '@renderer/layout/Shell/hooks/usePrimaryBreadcrumb'
+import { useBreadcrumbStyle } from '@renderer/layout/Shell/hooks/useBreadcrumbStyle'
 import { useAppDispatch, useAppSelector } from '@renderer/store/hooks'
 import { selectCurrentUser, selectToken } from '@renderer/store/slices/auth/selectors'
 import { handleResponse, isSessionExpiredError, extractErrorMessage } from '@renderer/store/slices/auth/helpers'
@@ -47,6 +48,7 @@ interface ImportFormValues {
 const DatabasePage = (): JSX.Element => {
   const { t } = useTranslation(['database', 'common'])
   const breadcrumbItems = usePrimaryBreadcrumb([{ title: t('title') }])
+  const breadcrumbStyle = useBreadcrumbStyle(breadcrumbItems)
   const [exportForm] = Form.useForm<ExportFormValues>()
   const [importForm] = Form.useForm<ImportFormValues>()
   const token = useAppSelector(selectToken)
@@ -430,7 +432,7 @@ const DatabasePage = (): JSX.Element => {
             justifyContent: 'flex-start'
           }}
         >
-          <Breadcrumb items={breadcrumbItems} />
+          <Breadcrumb items={breadcrumbItems} style={breadcrumbStyle} />
         </Space>
       </ShellHeaderPortal>
       <Space direction="vertical" size={24} style={{ width: '100%' }}>

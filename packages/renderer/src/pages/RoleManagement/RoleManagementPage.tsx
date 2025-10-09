@@ -25,6 +25,7 @@ import type { RolePermissionDefinition } from '@main/services/roles/constants'
 
 import { ShellHeaderPortal } from '@renderer/layout/Shell/ShellHeader.context'
 import { usePrimaryBreadcrumb } from '@renderer/layout/Shell/hooks/usePrimaryBreadcrumb'
+import { useBreadcrumbStyle } from '@renderer/layout/Shell/hooks/useBreadcrumbStyle'
 import { useAppDispatch, useAppSelector } from '@renderer/store/hooks'
 import { selectCurrentUser, selectToken, forceLogout } from '@renderer/store/slices/auth'
 import {
@@ -42,6 +43,7 @@ interface RoleFormValues {
 const RoleManagementPage = (): JSX.Element => {
   const { t } = useTranslation(['roles', 'common'])
   const breadcrumbItems = usePrimaryBreadcrumb([{ title: t('appShell.navigation.roleManagement', { ns: 'common' }) }])
+  const breadcrumbStyle = useBreadcrumbStyle(breadcrumbItems)
   const dispatch = useAppDispatch()
   const currentUser = useAppSelector(selectCurrentUser)
   const token = useAppSelector(selectToken)
@@ -328,7 +330,7 @@ const RoleManagementPage = (): JSX.Element => {
             justifyContent: 'flex-start'
           }}
         >
-          <Breadcrumb items={breadcrumbItems} />
+          <Breadcrumb items={breadcrumbItems} style={breadcrumbStyle} />
           <Space size={12} wrap>
             <Button
               type="primary"

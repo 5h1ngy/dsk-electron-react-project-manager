@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next'
 
 import { ShellHeaderPortal } from '@renderer/layout/Shell/ShellHeader.context'
 import { usePrimaryBreadcrumb } from '@renderer/layout/Shell/hooks/usePrimaryBreadcrumb'
+import { useBreadcrumbStyle } from '@renderer/layout/Shell/hooks/useBreadcrumbStyle'
 import { CreateUserModal } from '@renderer/pages/Dashboard/components/CreateUserModal'
 import { EditUserModal } from '@renderer/pages/Dashboard/components/EditUserModal'
 import { UserCardsGrid } from '@renderer/pages/Dashboard/components/UserCardsGrid'
@@ -31,6 +32,7 @@ const UserManagementPage = (): JSX.Element | null => {
   const breadcrumbItems = usePrimaryBreadcrumb([
     { title: t('appShell.navigation.userManagement', { ns: 'common' }) }
   ])
+  const breadcrumbStyle = useBreadcrumbStyle(breadcrumbItems)
   const currentUser = useAppSelector(selectCurrentUser)
   const dispatch = useAppDispatch()
   const token = useAppSelector(selectToken)
@@ -199,7 +201,7 @@ const UserManagementPage = (): JSX.Element | null => {
             justifyContent: 'flex-start'
           }}
         >
-          <Breadcrumb items={breadcrumbItems} />
+          <Breadcrumb items={breadcrumbItems} style={breadcrumbStyle} />
           <Button
             icon={<ReloadOutlined />}
             onClick={refreshUsers}

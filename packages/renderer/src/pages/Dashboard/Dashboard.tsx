@@ -25,6 +25,7 @@ import { HealthStatusCard } from '@renderer/components/HealthStatusCard'
 import { useDelayedLoading } from '@renderer/hooks/useDelayedLoading'
 import { ShellHeaderPortal } from '@renderer/layout/Shell/ShellHeader.context'
 import { usePrimaryBreadcrumb } from '@renderer/layout/Shell/hooks/usePrimaryBreadcrumb'
+import { useBreadcrumbStyle } from '@renderer/layout/Shell/hooks/useBreadcrumbStyle'
 import {
   renderProjectsList,
   selectRecentProjects
@@ -118,6 +119,7 @@ const Dashboard = (): JSX.Element | null => {
   const breadcrumbItems = usePrimaryBreadcrumb([
     { title: t('appShell.navigation.dashboard', { ns: 'common' }) }
   ])
+  const breadcrumbStyle = useBreadcrumbStyle(breadcrumbItems)
 
   const quickLinks = useMemo(() => {
     const items = [
@@ -197,7 +199,7 @@ const Dashboard = (): JSX.Element | null => {
             justifyContent: 'flex-start'
           }}
         >
-          <Breadcrumb items={breadcrumbItems} />
+          <Breadcrumb items={breadcrumbItems} style={breadcrumbStyle} />
         </Space>
       </ShellHeaderPortal>
       <Space direction="vertical" size="large" style={{ width: '100%' }}>

@@ -19,6 +19,7 @@ import type {
   ProjectTabKey
 } from '@renderer/pages/ProjectLayout/ProjectLayout.types'
 import { usePrimaryBreadcrumb } from '@renderer/layout/Shell/hooks/usePrimaryBreadcrumb'
+import { useBreadcrumbStyle } from '@renderer/layout/Shell/hooks/useBreadcrumbStyle'
 import { ShellHeaderPortal } from '@renderer/layout/Shell/ShellHeader.context'
 
 const ProjectLayout = (): JSX.Element => {
@@ -99,6 +100,7 @@ const ProjectLayout = (): JSX.Element => {
   )
 
   const emphasizedBreadcrumbItems = usePrimaryBreadcrumb(breadcrumbItems)
+  const breadcrumbStyle = useBreadcrumbStyle(emphasizedBreadcrumbItems)
 
   const refreshLoading = useMemo(() => {
     switch (activeKey) {
@@ -216,7 +218,7 @@ const ProjectLayout = (): JSX.Element => {
               {t('details.backToList')}
             </Button>
           ) : null}
-          <Breadcrumb items={emphasizedBreadcrumbItems} />
+          <Breadcrumb items={emphasizedBreadcrumbItems} style={breadcrumbStyle} />
         </Space>
       </ShellHeaderPortal>
       <Space direction="vertical" size={24} style={{ width: '100%' }}>
