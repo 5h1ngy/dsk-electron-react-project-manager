@@ -59,13 +59,10 @@ interface NavigationOptions {
 const buildNavigationDefinitions = (options?: NavigationOptions): NavigationDefinition[] => {
   const items = [...BASE_NAVIGATION]
   if (options?.includeUserManagement) {
-    items.splice(
-      1,
-      0,
-      USER_MANAGEMENT_NAVIGATION,
-      ROLE_MANAGEMENT_NAVIGATION,
-      DATABASE_MANAGEMENT_NAVIGATION
-    )
+    items.splice(1, 0, USER_MANAGEMENT_NAVIGATION, ROLE_MANAGEMENT_NAVIGATION)
+    const settingsIndex = items.findIndex((item) => item.path === '/settings')
+    const insertIndex = settingsIndex === -1 ? items.length : settingsIndex
+    items.splice(insertIndex, 0, DATABASE_MANAGEMENT_NAVIGATION)
   }
   return items
 }
