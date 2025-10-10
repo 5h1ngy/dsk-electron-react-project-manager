@@ -13,13 +13,12 @@ import {
   Breadcrumb,
   Button,
   Card,
-  Col,
   DatePicker,
   Divider,
+  Flex,
   Form,
   Input,
   List,
-  Row,
   Select,
   Skeleton,
   Space,
@@ -174,6 +173,16 @@ const TaskDetailsPage = (): JSX.Element => {
 
   const isLoading =
     projectLoading || tasksStatus === 'loading' || taskStatusesStatus === 'loading'
+
+  const projectReference = useMemo(() => {
+    if (project) {
+      return t('tasks.details.projectReference', {
+        key: project.key,
+        name: project.name
+      })
+    }
+    return t('tasks.details.projectUnknown')
+  }, [project, t])
 
   const breadcrumbItems = usePrimaryBreadcrumb(
     useMemo<BreadcrumbProps['items']>(() => {
@@ -443,15 +452,19 @@ const TaskDetailsPage = (): JSX.Element => {
               </Button>
             </Space>
           )}
+          <Typography.Text type="secondary">{projectReference}</Typography.Text>
           {!isEditing ? tagsContent : null}
         </Space>
-        <Row gutter={[12, 24]}>
-          <Col xs={24} lg={16}>
-            <Space direction="vertical" size={24} style={{ width: '100%' }}>
-              <Card title={t('tasks.details.description')}>
-                {isEditing ? (
-                  <Form layout="vertical" requiredMark={false}>
-                    <Form.Item label={t('tasks.form.fields.description')}>
+        <Flex wrap gap={16} align="stretch" style={{ width: '100%' }}>
+          <Flex
+            vertical
+            gap={24}
+            style={{ flex: '1 1 640px', minWidth: 280, width: '100%' }}
+          >
+            <Card title={t('tasks.details.description')}>
+              {isEditing ? (
+                <Form layout="vertical" requiredMark={false}>
+                  <Form.Item label={t('tasks.form.fields.description')}>
                       <Controller
                         control={editControl}
                         name="description"
@@ -568,10 +581,13 @@ const TaskDetailsPage = (): JSX.Element => {
                   </Form.Item>
                 </Form>
               </Card>
-            </Space>
-          </Col>
-          <Col xs={24} lg={8} style={{ paddingLeft: 4 }}>
-            <div style={{ position: 'sticky', top: 24 }}>
+          </Flex>
+          <Flex
+            vertical
+            gap={16}
+            style={{ flex: '1 1 320px', minWidth: 260, maxWidth: 420, width: '100%' }}
+          >
+            <div style={{ position: 'sticky', top: 24, width: '100%' }}>
               <Space direction="vertical" size={16} style={{ width: '100%' }}>
                 <Card title={t('tasks.details.propertiesTitle')}>
                   <Space direction="vertical" size={16} style={{ width: '100%' }}>
@@ -766,8 +782,8 @@ const TaskDetailsPage = (): JSX.Element => {
                 </Card>
               </Space>
             </div>
-          </Col>
-        </Row>
+          </Flex>
+        </Flex>
       </Space>
     </>
   )
