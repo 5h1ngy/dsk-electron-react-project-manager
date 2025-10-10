@@ -363,8 +363,22 @@
         "empty": "No comments yet",
         "addLabel": "Add a comment",
         "validation": "Please enter a comment",
-        "submit": "Post comment"
-      }
+        "submit": "Post comment",
+        "success": "Comment added"
+      },
+      "loadingTitle": "Task details",
+      "goBack": "Back to tasks",
+      "propertiesTitle": "Task properties",
+      "statusLabel": "Status",
+      "priorityLabel": "Priority",
+      "ownerLabel": "Owner",
+      "assigneeLabel": "Assignee",
+      "createdAtLabel": "Created on",
+      "dueDateLabel": "Due date",
+      "updatedAtLabel": "Last updated on",
+      "projectReference": "Project: {{key}} - {{name}}",
+      "projectUnknown": "Project unavailable",
+      "addNote": "Add note"
     },
     "filterPanel": "Filters",
     "actionsPanel": "Actions"

@@ -1,4 +1,3 @@
-import { Typography } from 'antd'
 import type { BreadcrumbProps, TabsProps } from 'antd'
 import type { TFunction } from 'i18next'
 import type { NavigateFunction } from 'react-router-dom'
@@ -13,6 +12,8 @@ interface BreadcrumbParams {
   activeKey: ProjectTabKey
   navigate: NavigateFunction
 }
+
+type BreadcrumbItem = NonNullable<BreadcrumbProps['items']>[number]
 
 export const resolveActiveTab = (pathname: string, basePath: string): ProjectTabKey => {
   if (pathname.startsWith(`${basePath}/notes`)) {
@@ -36,13 +37,6 @@ export const buildTabLabelMap = (t: TFunction<'projects'>): Record<ProjectTabKey
   notes: t('breadcrumbs.notes')
 })
 
-const renderBreadcrumbLink = (label: string, handler?: () => void) =>
-  handler ? (
-    <Typography.Link onClick={handler}>{label}</Typography.Link>
-  ) : (
-    <Typography.Text>{label}</Typography.Text>
-  )
-
 export const buildBreadcrumbItems = ({
   t,
   project,
@@ -50,21 +44,35 @@ export const buildBreadcrumbItems = ({
   activeKey,
   navigate
 }: BreadcrumbParams): BreadcrumbProps['items'] => {
-  const items: BreadcrumbProps['items'] = [
+  const items: BreadcrumbItem[] = [
     {
-      title: renderBreadcrumbLink(t('breadcrumbs.projects'), () => navigate('/projects'))
+      title: t('breadcrumbs.projects'),
+      onClick: () => navigate('/projects')
     }
   ]
 
   if (project) {
     items.push({
-      title: renderBreadcrumbLink(project.name, () => navigate(`/projects/${project.id}`))
+      title: project.name,
+      onClick: () => navigate(`/projects/${project.id}`)
     })
   }
 
-  items.push({
-    title: renderBreadcrumbLink(tabLabelMap[activeKey])
-  })
+  const tabItem: BreadcrumbItem = {
+    title: tabLabelMap[activeKey]
+  }
+
+  if (project) {
+    if (activeKey === 'tasks') {
+      tabItem.onClick = () => navigate(`/projects/${project.id}/tasks`)
+    } else if (activeKey === 'notes') {
+      tabItem.onClick = () => navigate(`/projects/${project.id}/notes`)
+    } else if (activeKey === 'overview') {
+      tabItem.onClick = () => navigate(`/projects/${project.id}`)
+    }
+  }
+
+  items.push(tabItem)
 
   return items
 }

@@ -20,6 +20,7 @@ import {
 import type { ProjectsPageProps } from '@renderer/pages/Projects/Projects.types'
 import { ShellHeaderPortal } from '@renderer/layout/Shell/ShellHeader.context'
 import { usePrimaryBreadcrumb } from '@renderer/layout/Shell/hooks/usePrimaryBreadcrumb'
+import { useBreadcrumbStyle } from '@renderer/layout/Shell/hooks/useBreadcrumbStyle'
 
 const ProjectsPage: FC<ProjectsPageProps> = () => {
   const { t } = useTranslation('projects')
@@ -81,6 +82,7 @@ const ProjectsPage: FC<ProjectsPageProps> = () => {
 
   const breadcrumbItems = useMemo(() => createProjectsBreadcrumb(t), [t])
   const emphasizedBreadcrumbItems = usePrimaryBreadcrumb(breadcrumbItems)
+  const breadcrumbStyle = useBreadcrumbStyle(emphasizedBreadcrumbItems)
 
   useEffect(() => {
     if (viewMode === 'cards') {
@@ -154,7 +156,7 @@ const ProjectsPage: FC<ProjectsPageProps> = () => {
           >
             {t('actions.refresh')}
           </Button>
-          <Breadcrumb items={emphasizedBreadcrumbItems} />
+          <Breadcrumb items={emphasizedBreadcrumbItems} style={breadcrumbStyle} />
         </Space>
       </ShellHeaderPortal>
       {messageContext}

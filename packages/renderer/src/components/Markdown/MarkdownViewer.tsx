@@ -26,9 +26,9 @@ export const MarkdownViewer = ({ value, emptyFallback }: MarkdownViewerProps) =>
   return (
     <Card
       size="small"
+      bordered={false}
       style={{
         background: token.colorBgContainer,
-        borderColor: token.colorBorder,
         boxShadow: 'none'
       }}
       styles={{

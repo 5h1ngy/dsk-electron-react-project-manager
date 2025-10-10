@@ -70,7 +70,10 @@ jobs:
         run: |
           mkdir -p artifacts/${{ matrix.id }}
           if [ -d dist ]; then
-            find dist -maxdepth 1 -type f -print0 | xargs -0 -I{} cp "{}" artifacts/${{ matrix.id }}/
+            find dist -maxdepth 1 -type f -print0 | while IFS= read -r -d '' file; do
+              base=$(basename "$file")
+              cp "$file" "artifacts/${{ matrix.id }}/${{ matrix.id }}-$base"
+            done
           fi
         shell: bash
 

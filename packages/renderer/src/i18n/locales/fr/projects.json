@@ -362,8 +362,19 @@
         "empty": "Aucun commentaire",
         "addLabel": "Ajouter un commentaire",
         "validation": "Saisissez un commentaire",
-        "submit": "Publier"
-      }
+        "submit": "Publier",
+        "success": "Commentaire ajouté"
+      },
+      "loadingTitle": "Détails de la tâche",
+      "goBack": "Retour aux tâches",
+      "propertiesTitle": "Propriétés de la tâche",
+      "statusLabel": "Statut",
+      "priorityLabel": "Priorité",
+      "ownerLabel": "Propriétaire",
+      "assigneeLabel": "Assigné à",
+      "createdAtLabel": "Créé le",
+      "dueDateLabel": "Date d'échéance",
+      "updatedAtLabel": "Dernière mise à jour"
     },
     "filterPanel": "Filtres",
     "actionsPanel": "Actions"

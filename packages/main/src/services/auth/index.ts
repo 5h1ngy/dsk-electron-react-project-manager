@@ -419,10 +419,7 @@ export class AuthService {
         await View.destroy({ where: { userId: user.id }, transaction })
         await Comment.destroy({ where: { authorId: user.id }, transaction })
 
-        await Task.update(
-          { assigneeId: null },
-          { where: { assigneeId: user.id }, transaction }
-        )
+        await Task.update({ assigneeId: null }, { where: { assigneeId: user.id }, transaction })
 
         await Task.update(
           { ownerUserId: replacementUserId },

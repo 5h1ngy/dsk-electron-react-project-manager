@@ -77,6 +77,7 @@ interface NoteEditorProps {
   tasks: TaskDetails[]
   onSubmit: (values: NoteFormValues) => Promise<void>
   onCancel: () => void
+  prefillLinkedTaskId?: string | null
 }
 
 interface NoteSearchDrawerProps {
@@ -203,6 +204,7 @@ const ProjectNotesPage = (): ReactElement => {
   const [searchParams, setSearchParams] = useSearchParams()
   const [filtersDrawerOpen, setFiltersDrawerOpen] = useState(false)
   const [viewMode, setViewMode] = useState<'list' | 'cards'>('list')
+  const [prefillLinkedTaskId, setPrefillLinkedTaskId] = useState<string | null>(null)
 
   const fetchCurrentNotes = useCallback(() => {
     if (!projectId) {
@@ -222,14 +224,16 @@ const ProjectNotesPage = (): ReactElement => {
     fetchCurrentNotes()
   }, [fetchCurrentNotes])
 
-  const handleCreateNote = () => {
+  const handleCreateNote = useCallback((linkedTaskId?: string) => {
     setEditorMode('create')
     setEditingNote(null)
+    setPrefillLinkedTaskId(linkedTaskId ?? null)
     setIsEditorOpen(true)
-  }
+  }, [])
 
   const handleEditNote = (note: NoteSummary | NoteDetails) => {
     setEditorMode('edit')
+    setPrefillLinkedTaskId(null)
     if ('body' in note) {
       setEditingNote(note)
       setIsEditorOpen(true)
@@ -261,6 +265,16 @@ const ProjectNotesPage = (): ReactElement => {
       setSearchParams(next, { replace: true })
     }
   }, [searchParams, setSearchParams, handleViewerOpen])
+
+  useEffect(() => {
+    const createNoteParam = searchParams.get('createNote')
+    if (createNoteParam) {
+      handleCreateNote(createNoteParam)
+      const next = new URLSearchParams(searchParams)
+      next.delete('createNote')
+      setSearchParams(next, { replace: true })
+    }
+  }, [handleCreateNote, searchParams, setSearchParams])
 
   const handleViewerClose = () => {
     setViewerNoteId(null)
@@ -303,6 +317,7 @@ const ProjectNotesPage = (): ReactElement => {
       }
       setIsEditorOpen(false)
       setEditingNote(null)
+      setPrefillLinkedTaskId(null)
       fetchCurrentNotes()
     } catch (error) {
       messageApi.error(extractErrorMessage(error))
@@ -467,7 +482,7 @@ const ProjectNotesPage = (): ReactElement => {
         <Flex align="center" gap={12} wrap style={{ width: '100%' }}>
           <Flex align="center" gap={12} wrap style={{ flex: '1 1 auto' }}>
             {canManageNotes ? (
-              <Button type="primary" icon={<PlusOutlined />} onClick={handleCreateNote}>
+              <Button type="primary" icon={<PlusOutlined />} onClick={() => handleCreateNote()}>
                 {t('notes.actions.create')}
               </Button>
             ) : null}
@@ -608,11 +623,13 @@ const ProjectNotesPage = (): ReactElement => {
         onCancel={() => {
           setIsEditorOpen(false)
           setEditingNote(null)
+          setPrefillLinkedTaskId(null)
           dispatch(clearNoteErrors(undefined))
         }}
         onSubmit={handleEditorSubmit}
         submitting={mutationStatus === 'loading'}
         tasks={tasks}
+        prefillLinkedTaskId={prefillLinkedTaskId}
       />
       <NoteDetailsModal
         open={Boolean(viewerNoteId)}
@@ -651,15 +668,17 @@ const noteDefaultValues = (
   notebook: note?.notebook ?? null
 })
 
-const NoteEditorModal = ({
-  open,
-  mode,
-  initialValues,
-  submitting,
-  tasks,
-  onSubmit,
-  onCancel
-}: NoteEditorProps): ReactElement => {
+const NoteEditorModal = (props: NoteEditorProps): ReactElement => {
+  const {
+    open,
+    mode,
+    initialValues,
+    submitting,
+    tasks,
+    onSubmit,
+    onCancel,
+    prefillLinkedTaskId = null
+  } = props
   const { t } = useTranslation('projects')
   const taskOptions = useMemo(() => buildTaskOptions(tasks), [tasks])
   const taskSuggestions = useMemo(() => buildTaskSuggestions(tasks), [tasks])
@@ -695,6 +714,12 @@ const NoteEditorModal = ({
     },
     [getValues, setValue]
   )
+
+  useEffect(() => {
+    if (open && mode === 'create' && prefillLinkedTaskId) {
+      ensureTaskLinked(prefillLinkedTaskId)
+    }
+  }, [ensureTaskLinked, mode, open, prefillLinkedTaskId])
 
   return (
     <Modal

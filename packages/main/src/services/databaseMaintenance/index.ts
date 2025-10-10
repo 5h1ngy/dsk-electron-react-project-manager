@@ -11,6 +11,7 @@ import { promisify } from 'node:util'
 import { gzip as gzipCallback, gunzip as gunzipCallback } from 'zlib'
 import sqlite3 from 'sqlite3'
 import type { App } from 'electron'
+import type { BinaryLike, ScryptOptions } from 'node:crypto'
 
 import type { AuthService } from '@main/services/auth'
 import type { AuditService } from '@main/services/audit'
@@ -18,15 +19,28 @@ import type { ServiceActor } from '@main/services/types'
 import type {
   DatabaseOperation,
   DatabaseOperationContext,
-  DatabaseProgressPhase,
-  DatabaseProgressUpdate
+  DatabaseProgressPhase
 } from '@main/services/databaseMaintenance/types'
 import { AppError, wrapError } from '@main/config/appError'
 import { logger } from '@main/config/logger'
 
-const scrypt = promisify(scryptCallback)
 const gzip = promisify(gzipCallback)
 const gunzip = promisify(gunzipCallback)
+const scrypt = (
+  password: BinaryLike,
+  salt: BinaryLike,
+  keyLength: number,
+  options: ScryptOptions
+): Promise<Buffer> =>
+  new Promise((resolve, reject) => {
+    scryptCallback(password, salt, keyLength, options, (error, derivedKey) => {
+      if (error) {
+        reject(error)
+        return
+      }
+      resolve(derivedKey)
+    })
+  })
 
 /**
  * File layout:
@@ -191,8 +205,7 @@ const finalizePrepared = async (statement: sqlite3.Statement): Promise<void> =>
     })
   })
 
-const quoteIdentifier = (identifier: string): string =>
-  `"${identifier.replace(/"/g, '""')}"`
+const quoteIdentifier = (identifier: string): string => `"${identifier.replace(/"/g, '""')}"`
 
 const isEncodedBlob = (value: unknown): value is { __type: 'blob'; data: string } =>
   Boolean(
@@ -402,8 +415,7 @@ const restoreDatabaseSnapshot = async (
     for (const table of snapshot.tables) {
       if (table.columns.length === 0 || table.rows.length === 0) {
         processedTables += 1
-        const percent =
-          60 + (processedTables / Math.max(totalTables, 1)) * 30
+        const percent = 60 + (processedTables / Math.max(totalTables, 1)) * 30
         reporter?.emit('restoreTable', percent, table.name, {
           current: processedTables,
           total: totalTables
@@ -427,8 +439,7 @@ const restoreDatabaseSnapshot = async (
       }
 
       processedTables += 1
-      const percent =
-        60 + (processedTables / Math.max(totalTables, 1)) * 30
+      const percent = 60 + (processedTables / Math.max(totalTables, 1)) * 30
       reporter?.emit('restoreTable', percent, table.name, {
         current: processedTables,
         total: totalTables
@@ -654,20 +665,18 @@ export class DatabaseMaintenanceService {
       decompressed = await gunzip(compressed)
       reporter.emit('decompress', 30)
     } catch (error) {
-      throw new AppError(
-        'ERR_PERMISSION',
-        'Password non valida o file di backup corrotto',
-        { cause: error }
-      )
+      throw new AppError('ERR_PERMISSION', 'Password non valida o file di backup corrotto', {
+        cause: error
+      })
     }
 
     let snapshot: DatabaseSnapshot
-   try {
-     snapshot = JSON.parse(decompressed.toString('utf-8')) as DatabaseSnapshot
+    try {
+      snapshot = JSON.parse(decompressed.toString('utf-8')) as DatabaseSnapshot
       reporter.emit('parse', 35)
-   } catch (error) {
-     throw new AppError('ERR_VALIDATION', 'Contenuto del backup non valido', { cause: error })
-   }
+    } catch (error) {
+      throw new AppError('ERR_VALIDATION', 'Contenuto del backup non valido', { cause: error })
+    }
 
     const tempPath = `${databasePath}.import-${randomUUID()}`
 
@@ -687,7 +696,9 @@ export class DatabaseMaintenanceService {
       } catch (auditError) {
         this.log.warn('Impossibile registrare audit dopo import database', 'Database')
         const detail =
-          auditError instanceof Error ? auditError.stack ?? auditError.message : String(auditError)
+          auditError instanceof Error
+            ? (auditError.stack ?? auditError.message)
+            : String(auditError)
         this.log.debug(detail, 'Database')
       }
       this.restartPending = true

@@ -364,8 +364,19 @@
         "empty": "Noch keine Kommentare",
         "addLabel": "Kommentar hinzufuegen",
         "validation": "Bitte einen Kommentar eingeben",
-        "submit": "Kommentar senden"
-      }
+        "submit": "Kommentar senden",
+        "success": "Kommentar hinzugefügt"
+      },
+      "loadingTitle": "Aufgabendetails",
+      "goBack": "Zurück zu den Aufgaben",
+      "propertiesTitle": "Aufgabeneigenschaften",
+      "statusLabel": "Status",
+      "priorityLabel": "Priorität",
+      "ownerLabel": "Eigentümer",
+      "assigneeLabel": "Zugewiesen an",
+      "createdAtLabel": "Erstellt am",
+      "dueDateLabel": "Fälligkeitsdatum",
+      "updatedAtLabel": "Zuletzt aktualisiert"
     },
     "filterPanel": "Filter",
     "actionsPanel": "Aktionen"
@@ -435,9 +446,8 @@
       "title": "Notiz",
       "linkedTasks": "Verknuepfte Aufgaben",
       "noLinks": "Keine verknuepften Aufgaben.",
-      "empty": "Waehl eine Notiz aus, um Details zu sehen",
-      "updatedBy": "Zuletzt aktualisiert {{date}} von {{user}}",
-      "empty": "Keine Notizen verfuegbar"
+      "empty": "Keine Notizen verfuegbar",
+      "updatedBy": "Zuletzt aktualisiert {{date}} von {{user}}"
     },
     "feedback": {
       "created": "Notiz erstellt",

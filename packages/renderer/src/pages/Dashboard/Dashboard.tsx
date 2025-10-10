@@ -6,27 +6,17 @@ import dayjs from 'dayjs'
 import {
   AppstoreOutlined,
   ArrowRightOutlined,
-  PlusOutlined,
   SettingOutlined,
   TeamOutlined
 } from '@ant-design/icons'
-import {
-  Breadcrumb,
-  Button,
-  Card,
-  Flex,
-  Progress,
-  Space,
-  Statistic,
-  Tag,
-  Typography
-} from 'antd'
+import { Breadcrumb, Card, Flex, Progress, Space, Statistic, Tag, Typography } from 'antd'
 
 import { LoadingSkeleton } from '@renderer/components/DataStates'
 import { HealthStatusCard } from '@renderer/components/HealthStatusCard'
 import { useDelayedLoading } from '@renderer/hooks/useDelayedLoading'
 import { ShellHeaderPortal } from '@renderer/layout/Shell/ShellHeader.context'
 import { usePrimaryBreadcrumb } from '@renderer/layout/Shell/hooks/usePrimaryBreadcrumb'
+import { useBreadcrumbStyle } from '@renderer/layout/Shell/hooks/useBreadcrumbStyle'
 import {
   renderProjectsList,
   selectRecentProjects
@@ -120,6 +110,7 @@ const Dashboard = (): JSX.Element | null => {
   const breadcrumbItems = usePrimaryBreadcrumb([
     { title: t('appShell.navigation.dashboard', { ns: 'common' }) }
   ])
+  const breadcrumbStyle = useBreadcrumbStyle(breadcrumbItems)
 
   const quickLinks = useMemo(() => {
     const items = [
@@ -189,33 +180,22 @@ const Dashboard = (): JSX.Element | null => {
   return (
     <>
       <ShellHeaderPortal>
-        <Space direction="vertical" style={{ width: '100%' }}>
-          <Flex justify="space-between" align="center" wrap>
-            <Space direction="vertical" size={0}>
-              <Typography.Title level={4} style={{ marginBottom: 0 }}>
-                {t('overview.welcome', { name: currentUser.displayName })}
-              </Typography.Title>
-              <Typography.Text type="secondary">{t('overview.subtitle')}</Typography.Text>
-            </Space>
-            <Button
-              type="primary"
-              size="large"
-              icon={<PlusOutlined />}
-              onClick={() => navigate('/projects')}
-            >
-              {t('quickLinks.create')}
-            </Button>
-          </Flex>
-          <Breadcrumb items={breadcrumbItems} />
+        <Space
+          size={12}
+          wrap
+          style={{
+            width: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'flex-start'
+          }}
+        >
+          <Breadcrumb items={breadcrumbItems} style={breadcrumbStyle} />
         </Space>
       </ShellHeaderPortal>
       <Space direction="vertical" size="large" style={{ width: '100%' }}>
         <Flex wrap gap={16} align="stretch" style={{ width: '100%' }}>
-          <Flex
-            vertical
-            gap={16}
-            style={{ flex: '1 1 640px', minWidth: 320 }}
-          >
+          <Flex vertical gap={16} style={{ flex: '1 1 640px', minWidth: 320 }}>
             <Flex wrap gap={16}>
               {summaryCards.map((card) => (
                 <Card key={card.key} style={{ flex: '1 1 200px', minWidth: 200 }}>
@@ -277,11 +257,7 @@ const Dashboard = (): JSX.Element | null => {
               )}
             </Card>
           </Flex>
-          <Flex
-            vertical
-            gap={16}
-            style={{ flex: '1 1 320px', minWidth: 280, maxWidth: 420 }}
-          >
+          <Flex vertical gap={16} style={{ flex: '1 1 320px', minWidth: 280, maxWidth: 420 }}>
             <Card title={t('profile.title')}>
               <Space direction="vertical" size={12} style={{ width: '100%' }}>
                 <Typography.Text>

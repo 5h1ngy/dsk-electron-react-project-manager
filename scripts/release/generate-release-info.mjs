@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+
 import { execSync } from 'node:child_process'
 import fs from 'node:fs'
 import path from 'node:path'

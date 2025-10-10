@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 
@@ -30,7 +32,9 @@ const readMessage = (filePath) => {
   try {
     return readFileSync(resolve(filePath), 'utf8')
   } catch (error) {
-    console.error(`[commit-msg] Unable to read commit message file: ${(error ?? '').message ?? error}`)
+    console.error(
+      `[commit-msg] Unable to read commit message file: ${(error ?? '').message ?? error}`
+    )
     process.exit(1)
   }
 }
@@ -71,6 +75,8 @@ if (!subject || subject.trim().length === 0) {
 }
 
 if (type === 'release' && !/^v?\d+\.\d+\.\d+/.test(subject)) {
-  console.error('[commit-msg] Release commits should reference the version (e.g., "release: v1.2.3").')
+  console.error(
+    '[commit-msg] Release commits should reference the version (e.g., "release: v1.2.3").'
+  )
   process.exit(1)
 }

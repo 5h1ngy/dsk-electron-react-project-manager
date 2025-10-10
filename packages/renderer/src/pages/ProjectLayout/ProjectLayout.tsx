@@ -1,4 +1,4 @@
-import { ReloadOutlined } from '@ant-design/icons'
+import { ArrowLeftOutlined, ReloadOutlined } from '@ant-design/icons'
 import { Breadcrumb, Button, Space, Tabs } from 'antd'
 import { useCallback, useEffect, useMemo, type JSX } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -8,7 +8,6 @@ import { EmptyState } from '@renderer/components/DataStates'
 import { useProjectDetails } from '@renderer/pages/Projects/hooks/useProjectDetails'
 import { useTaskModals } from '@renderer/pages/Projects/hooks/useTaskModals'
 import { TaskFormModal } from '@renderer/pages/Projects/components/TaskFormModal'
-import { TaskDetailsModal } from '@renderer/pages/Projects/components/TaskDetailsModal'
 import {
   buildBreadcrumbItems,
   buildTabItems,
@@ -20,6 +19,7 @@ import type {
   ProjectTabKey
 } from '@renderer/pages/ProjectLayout/ProjectLayout.types'
 import { usePrimaryBreadcrumb } from '@renderer/layout/Shell/hooks/usePrimaryBreadcrumb'
+import { useBreadcrumbStyle } from '@renderer/layout/Shell/hooks/useBreadcrumbStyle'
 import { ShellHeaderPortal } from '@renderer/layout/Shell/ShellHeader.context'
 
 const ProjectLayout = (): JSX.Element => {
@@ -67,10 +67,10 @@ const ProjectLayout = (): JSX.Element => {
 
     const located = tasks.find((task) => task.id === taskToFocus)
     if (located) {
-      taskModals.openDetail(located.id)
       const next = new URLSearchParams(searchParams)
       next.delete('task')
       setSearchParams(next, { replace: true })
+      navigate(`/projects/${projectId}/tasks/${located.id}`)
       return
     }
 
@@ -79,7 +79,7 @@ const ProjectLayout = (): JSX.Element => {
       next.delete('task')
       setSearchParams(next, { replace: true })
     }
-  }, [projectId, searchParams, setSearchParams, taskModals, tasks, tasksStatus])
+  }, [navigate, projectId, searchParams, setSearchParams, tasks, tasksStatus])
 
   const basePath = `/projects/${projectId ?? ''}`
   const activeKey = projectId ? resolveActiveTab(location.pathname, basePath) : 'overview'
@@ -100,6 +100,7 @@ const ProjectLayout = (): JSX.Element => {
   )
 
   const emphasizedBreadcrumbItems = usePrimaryBreadcrumb(breadcrumbItems)
+  const breadcrumbStyle = useBreadcrumbStyle(emphasizedBreadcrumbItems)
 
   const refreshLoading = useMemo(() => {
     switch (activeKey) {
@@ -111,6 +112,16 @@ const ProjectLayout = (): JSX.Element => {
         return projectLoading
     }
   }, [activeKey, projectLoading, tasksStatus, notesStatus])
+
+  const handleOpenTaskDetails = useCallback(
+    (taskId: string) => {
+      if (!projectId) {
+        return
+      }
+      navigate(`/projects/${projectId}/tasks/${taskId}`)
+    },
+    [navigate, projectId]
+  )
 
   const handleRefreshClick = useCallback(() => {
     if (!projectId) {
@@ -164,7 +175,7 @@ const ProjectLayout = (): JSX.Element => {
     refreshTasks,
     refreshTaskStatuses,
     canManageTasks,
-    openTaskDetails: taskModals.openDetail,
+    openTaskDetails: handleOpenTaskDetails,
     openTaskCreate: (options) => taskModals.openCreate(options),
     openTaskEdit: taskModals.openEdit,
     deleteTask: taskModals.deleteTask,
@@ -202,7 +213,12 @@ const ProjectLayout = (): JSX.Element => {
           >
             {t('details.refresh')}
           </Button>
-          <Breadcrumb items={emphasizedBreadcrumbItems} />
+          {activeKey === 'tasks' ? (
+            <Button icon={<ArrowLeftOutlined />} onClick={() => navigate('/projects')}>
+              {t('details.backToList')}
+            </Button>
+          ) : null}
+          <Breadcrumb items={emphasizedBreadcrumbItems} style={breadcrumbStyle} />
         </Space>
       </ShellHeaderPortal>
       <Space direction="vertical" size={24} style={{ width: '100%' }}>
@@ -215,19 +231,6 @@ const ProjectLayout = (): JSX.Element => {
         <Tabs activeKey={activeKey} items={tabItems} onChange={handleTabChange} destroyOnHidden />
         <Outlet context={contextValue} />
       </Space>
-      <TaskDetailsModal
-        open={taskModals.isDetailOpen}
-        task={taskModals.detailTask}
-        allowManage={canManageTasks}
-        onClose={taskModals.closeDetail}
-        onDelete={(task) => taskModals.deleteTask(task.id)}
-        deleting={
-          taskModals.deletingTaskId !== null &&
-          taskModals.deletingTaskId === taskModals.detailTask?.id
-        }
-        assigneeOptions={taskModals.assigneeOptions}
-        statusOptions={taskModals.statusOptions}
-      />
       <TaskFormModal
         open={taskModals.isEditorOpen}
         mode={taskModals.editorMode ?? 'create'}

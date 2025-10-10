@@ -363,8 +363,22 @@
         "empty": "Nessun commento",
         "addLabel": "Aggiungi un commento",
         "validation": "Inserisci un commento",
-        "submit": "Invia commento"
-      }
+        "submit": "Invia commento",
+        "success": "Commento aggiunto"
+      },
+      "loadingTitle": "Dettagli del task",
+      "goBack": "Torna ai task",
+      "propertiesTitle": "Proprieta del task",
+      "statusLabel": "Stato",
+      "priorityLabel": "Priorita",
+      "ownerLabel": "Proprietario",
+      "assigneeLabel": "Assegnatario",
+      "createdAtLabel": "Creato il",
+      "dueDateLabel": "Scadenza",
+      "updatedAtLabel": "Ultimo aggiornamento",
+      "projectReference": "Progetto: {{key}} - {{name}}",
+      "projectUnknown": "Progetto non disponibile",
+      "addNote": "Aggiungi nota"
     },
     "filterPanel": "Filtri",
     "actionsPanel": "Azioni"
@@ -415,7 +429,7 @@
         "title": "Titolo",
         "notebook": "Taccuino",
         "tags": "Tag",
-        "visibility": "VisibilitÃ ",
+        "visibility": "Visibilita",
         "body": "Contenuto Markdown",
         "linkedTasks": "Task collegati"
       },
@@ -443,12 +457,12 @@
       "deleted": "Nota eliminata"
     },
     "validation": {
-      "title": "Il titolo Ã¨ obbligatorio",
-      "titleMax": "Il titolo puÃ² contenere al massimo 160 caratteri",
-      "body": "Il contenuto Ã¨ obbligatorio",
-      "notebookMax": "Il nome del taccuino puÃ² avere al massimo 80 caratteri",
-      "tag": "Il tag non puÃ² essere vuoto",
-      "tagMax": "Il tag puÃ² avere al massimo 40 caratteri",
+      "title": "Il titolo e obbligatorio",
+      "titleMax": "Il titolo puo contenere al massimo 160 caratteri",
+      "body": "Il contenuto e obbligatorio",
+      "notebookMax": "Il nome del taccuino puo avere al massimo 80 caratteri",
+      "tag": "Il tag non puo essere vuoto",
+      "tagMax": "Il tag puo avere al massimo 40 caratteri",
       "tooManyTags": "Massimo 20 tag per nota",
       "tooManyLinks": "Massimo 20 task collegati"
     },

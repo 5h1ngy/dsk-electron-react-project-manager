@@ -1,13 +1,29 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type JSX } from 'react'
-import { Breadcrumb, Button, Card, Form, Input, Modal, Progress, Space, Typography, message } from 'antd'
+import {
+  Breadcrumb,
+  Button,
+  Card,
+  Form,
+  Input,
+  Modal,
+  Progress,
+  Space,
+  Typography,
+  message
+} from 'antd'
 import { useTranslation } from 'react-i18next'
-import { Navigate, useNavigate } from 'react-router-dom'
+import { Navigate } from 'react-router-dom'
 
 import { ShellHeaderPortal } from '@renderer/layout/Shell/ShellHeader.context'
 import { usePrimaryBreadcrumb } from '@renderer/layout/Shell/hooks/usePrimaryBreadcrumb'
+import { useBreadcrumbStyle } from '@renderer/layout/Shell/hooks/useBreadcrumbStyle'
 import { useAppDispatch, useAppSelector } from '@renderer/store/hooks'
 import { selectCurrentUser, selectToken } from '@renderer/store/slices/auth/selectors'
-import { handleResponse, isSessionExpiredError, extractErrorMessage } from '@renderer/store/slices/auth/helpers'
+import {
+  handleResponse,
+  isSessionExpiredError,
+  extractErrorMessage
+} from '@renderer/store/slices/auth/helpers'
 import { forceLogout } from '@renderer/store/slices/auth'
 import type { DatabaseProgressUpdate } from '@preload/types'
 
@@ -46,12 +62,13 @@ interface ImportFormValues {
 
 const DatabasePage = (): JSX.Element => {
   const { t } = useTranslation(['database', 'common'])
+  const breadcrumbItems = usePrimaryBreadcrumb([{ title: t('title') }])
+  const breadcrumbStyle = useBreadcrumbStyle(breadcrumbItems)
   const [exportForm] = Form.useForm<ExportFormValues>()
   const [importForm] = Form.useForm<ImportFormValues>()
   const token = useAppSelector(selectToken)
   const currentUser = useAppSelector(selectCurrentUser)
   const dispatch = useAppDispatch()
-  const navigate = useNavigate()
   const [exporting, setExporting] = useState(false)
   const [importing, setImporting] = useState(false)
   const [restartModalVisible, setRestartModalVisible] = useState(false)
@@ -61,21 +78,6 @@ const DatabasePage = (): JSX.Element => {
     ...INITIAL_PROGRESS_STATE
   })
   const progressResetTimeout = useRef<NodeJS.Timeout | number | null>(null)
-
-  const breadcrumbItems = usePrimaryBreadcrumb(
-    useMemo(
-      () => [
-        {
-          title: t('appShell.navigation.dashboard', { ns: 'common' }),
-          onClick: () => navigate('/')
-        },
-        {
-          title: t('appShell.navigation.database', { ns: 'common' })
-        }
-      ],
-      [navigate, t]
-    )
-  )
 
   const isAdmin = currentUser?.roles?.includes('Admin') ?? false
 
@@ -250,9 +252,7 @@ const DatabasePage = (): JSX.Element => {
       setExporting(true)
       startProgress('export')
       try {
-        const result = await handleResponse(
-          window.api.database.export(token, values.password)
-        )
+        const result = await handleResponse(window.api.database.export(token, values.password))
         if (result.canceled) {
           resetProgress()
           messageApi.info(t('export.cancelled'))
@@ -297,9 +297,7 @@ const DatabasePage = (): JSX.Element => {
       setImporting(true)
       startProgress('import')
       try {
-        const result = await handleResponse(
-          window.api.database.import(token, values.password)
-        )
+        const result = await handleResponse(window.api.database.import(token, values.password))
         if (result.canceled) {
           resetProgress()
           messageApi.info(t('import.cancelled'))
@@ -393,9 +391,7 @@ const DatabasePage = (): JSX.Element => {
               {t(`progress.description.${progressState.operation}`)}
             </Typography.Paragraph>
           ) : null}
-          <Typography.Text strong>
-            {progressState.message || t('progress.pending')}
-          </Typography.Text>
+          <Typography.Text strong>{progressState.message || t('progress.pending')}</Typography.Text>
           {progressState.total !== null && progressState.current !== null ? (
             <Typography.Text type="secondary">
               {t('progress.counter', {
@@ -418,12 +414,7 @@ const DatabasePage = (): JSX.Element => {
         centered
         title={t('restartModal.title')}
         footer={
-          <Button
-            type="primary"
-            danger
-            onClick={handleRestartConfirm}
-            loading={restarting}
-          >
+          <Button type="primary" danger onClick={handleRestartConfirm} loading={restarting}>
             {t('restartModal.confirm')}
           </Button>
         }
@@ -435,35 +426,29 @@ const DatabasePage = (): JSX.Element => {
         </Space>
       </Modal>
       <ShellHeaderPortal>
-        <Breadcrumb items={breadcrumbItems} />
+        <Space
+          size={12}
+          wrap
+          style={{
+            width: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'flex-start'
+          }}
+        >
+          <Breadcrumb items={breadcrumbItems} style={breadcrumbStyle} />
+        </Space>
       </ShellHeaderPortal>
       <Space direction="vertical" size={24} style={{ width: '100%' }}>
-        <div>
-          <Typography.Title level={3} style={{ marginBottom: 0 }}>
-            {t('title')}
-          </Typography.Title>
-          <Typography.Paragraph type="secondary">{t('description')}</Typography.Paragraph>
-        </div>
-
         <Card>
           <Space direction="vertical" size={16} style={{ width: '100%' }}>
-            <div>
-              <Typography.Title level={5} style={{ marginBottom: 4 }}>
-                {t('export.title')}
-              </Typography.Title>
-              <Typography.Text type="secondary">{t('export.subtitle')}</Typography.Text>
-            </div>
             <Form<ExportFormValues>
               layout="vertical"
               form={exportForm}
               onFinish={handleExport}
               requiredMark={false}
             >
-              <Form.Item
-                name="password"
-                label={t('export.passwordLabel')}
-                rules={passwordRules}
-              >
+              <Form.Item name="password" label={t('export.passwordLabel')} rules={passwordRules}>
                 <Input.Password autoComplete="new-password" />
               </Form.Item>
               <Form.Item
@@ -485,12 +470,7 @@ const DatabasePage = (): JSX.Element => {
                 <Input.Password autoComplete="new-password" />
               </Form.Item>
               <Form.Item>
-                <Button
-                  type="primary"
-                  htmlType="submit"
-                  loading={exporting}
-                  disabled={importing}
-                >
+                <Button type="primary" htmlType="submit" loading={exporting} disabled={importing}>
                   {t('export.submit')}
                 </Button>
               </Form.Item>
@@ -500,23 +480,13 @@ const DatabasePage = (): JSX.Element => {
 
         <Card>
           <Space direction="vertical" size={16} style={{ width: '100%' }}>
-            <div>
-              <Typography.Title level={5} style={{ marginBottom: 4 }}>
-                {t('import.title')}
-              </Typography.Title>
-              <Typography.Text type="secondary">{t('import.subtitle')}</Typography.Text>
-            </div>
             <Form<ImportFormValues>
               layout="vertical"
               form={importForm}
               onFinish={handleImport}
               requiredMark={false}
             >
-              <Form.Item
-                name="password"
-                label={t('import.passwordLabel')}
-                rules={passwordRules}
-              >
+              <Form.Item name="password" label={t('import.passwordLabel')} rules={passwordRules}>
                 <Input.Password autoComplete="current-password" />
               </Form.Item>
               <Form.Item>

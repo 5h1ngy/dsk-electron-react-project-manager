@@ -136,7 +136,6 @@
   },
   "quickLinks": {
     "title": "Quick actions",
-    "create": "Create project",
     "projects": "Go to my projects",
     "projectsDescription": "Review active initiatives and assignments.",
     "settings": "Open settings",

@@ -12,6 +12,7 @@ import SettingsPage from '@renderer/pages/Settings'
 import UserManagementPage from '@renderer/pages/UserManagement'
 import RoleManagementPage from '@renderer/pages/RoleManagement'
 import DatabasePage from '@renderer/pages/Database'
+import TaskDetailsPage from '@renderer/pages/TaskDetails'
 import { ProtectedRoute } from '@renderer/pages/ProtectedRoute'
 import { PublicRoute } from '@renderer/pages/PublicRoute'
 
@@ -33,6 +34,7 @@ export const AppRoutes = () => (
         <Route path="tasks" element={<ProjectTasksPage />} />
         <Route path="notes" element={<ProjectNotesPage />} />
       </Route>
+      <Route path="/projects/:projectId/tasks/:taskId" element={<TaskDetailsPage />} />
     </Route>
     <Route path="*" element={<Navigate to="/" replace />} />
   </Routes>

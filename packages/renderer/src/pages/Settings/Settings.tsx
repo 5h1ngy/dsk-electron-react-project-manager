@@ -6,15 +6,17 @@ import { LanguageSwitcher } from '@renderer/components/LanguageSwitcher'
 import { ThemeControls } from '@renderer/components/ThemeControls'
 import { ShellHeaderPortal } from '@renderer/layout/Shell/ShellHeader.context'
 import { usePrimaryBreadcrumb } from '@renderer/layout/Shell/hooks/usePrimaryBreadcrumb'
+import { useBreadcrumbStyle } from '@renderer/layout/Shell/hooks/useBreadcrumbStyle'
 
 const SettingsPage = (): JSX.Element => {
   const { t } = useTranslation('common')
   const breadcrumbItems = usePrimaryBreadcrumb([{ title: t('appShell.navigation.settings') }])
+  const breadcrumbStyle = useBreadcrumbStyle(breadcrumbItems)
 
   return (
     <>
       <ShellHeaderPortal>
-        <Breadcrumb items={breadcrumbItems} />
+        <Breadcrumb items={breadcrumbItems} style={breadcrumbStyle} />
       </ShellHeaderPortal>
       <Space direction="vertical" size={24} style={{ width: '100%' }}>
         <div>

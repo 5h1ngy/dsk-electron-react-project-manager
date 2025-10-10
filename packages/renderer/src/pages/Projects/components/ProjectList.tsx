@@ -122,11 +122,7 @@ export const ProjectList = ({
           return null
         }
         return (
-          <Space
-            size={4}
-            wrap
-            style={{ justifyContent: 'flex-end', width: '100%' }}
-          >
+          <Space size={4} wrap style={{ justifyContent: 'flex-end', width: '100%' }}>
             <Button
               type="text"
               icon={<EditOutlined />}
