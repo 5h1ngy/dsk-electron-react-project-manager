@@ -116,7 +116,11 @@ jobs:
       - name: Flatten artifact list
         id: files
         run: |
-          FILES=$(find release-assets -type f -print)
+          FILES=$(find release-assets -type f \( -iname '*portable*' \) -print)
+          if [ -z "$FILES" ]; then
+            echo "No portable artifacts found to attach to the release." >&2
+            exit 1
+          fi
           echo "list<<EOF" >> $GITHUB_OUTPUT
           echo "$FILES" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
@@ -125,6 +129,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           tag_name: v${{ needs.prepare.outputs.version }}
-          name: DSK Project Manager v${{ needs.prepare.outputs.version }}
-          body: ${{ needs.prepare.outputs.notes }}
+          name: v${{ needs.prepare.outputs.version }}
+          body: |
+            Portable package for DSK Project Manager v${{ needs.prepare.outputs.version }}.
           files: ${{ steps.files.outputs.list }}
