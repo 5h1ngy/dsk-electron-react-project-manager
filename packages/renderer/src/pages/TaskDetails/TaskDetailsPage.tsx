@@ -37,6 +37,7 @@ import { Navigate, useNavigate, useParams } from 'react-router-dom'
 
 import { ShellHeaderPortal } from '@renderer/layout/Shell/ShellHeader.context'
 import { usePrimaryBreadcrumb } from '@renderer/layout/Shell/hooks/usePrimaryBreadcrumb'
+import { useBreadcrumbStyle } from '@renderer/layout/Shell/hooks/useBreadcrumbStyle'
 import { EmptyState } from '@renderer/components/DataStates'
 import MarkdownViewer from '@renderer/components/Markdown/MarkdownViewer'
 import MarkdownEditor from '@renderer/components/Markdown/MarkdownEditor'
@@ -198,6 +199,7 @@ const TaskDetailsPage = (): JSX.Element => {
       return items
     }, [navigate, project, projectId, t, task])
   )
+  const breadcrumbStyle = useBreadcrumbStyle(breadcrumbItems)
 
   const handleBack = useCallback(() => {
     navigate(`/projects/${projectId}/tasks`)
@@ -300,11 +302,7 @@ const TaskDetailsPage = (): JSX.Element => {
         gap: 12
       }}
     >
-      <Breadcrumb
-        items={breadcrumbItems}
-        style={{ flex: '1 1 240px', minWidth: 200, marginRight: 12 }}
-      />
-      <Space align="center" size={12} wrap>
+      <Space size={12} wrap style={{ flex: '0 0 auto' }}>
         <Button
           icon={<ReloadOutlined />}
           onClick={handleRefresh}
@@ -317,6 +315,10 @@ const TaskDetailsPage = (): JSX.Element => {
           {t('tasks.details.goBack')}
         </Button>
       </Space>
+      <Breadcrumb
+        items={breadcrumbItems}
+        style={{ flex: '1 1 240px', minWidth: 200, ...breadcrumbStyle }}
+      />
       {task && canManageTasks ? (
         <Space size={8} wrap style={{ marginLeft: 'auto' }}>
           {isEditing ? (
