@@ -42,7 +42,9 @@ interface RoleFormValues {
 
 const RoleManagementPage = (): JSX.Element => {
   const { t } = useTranslation(['roles', 'common'])
-  const breadcrumbItems = usePrimaryBreadcrumb([{ title: t('appShell.navigation.roleManagement', { ns: 'common' }) }])
+  const breadcrumbItems = usePrimaryBreadcrumb([
+    { title: t('appShell.navigation.roleManagement', { ns: 'common' }) }
+  ])
   const breadcrumbStyle = useBreadcrumbStyle(breadcrumbItems)
   const dispatch = useAppDispatch()
   const currentUser = useAppSelector(selectCurrentUser)

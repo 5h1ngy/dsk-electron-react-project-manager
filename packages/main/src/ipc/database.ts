@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto'
 import { BrowserWindow, dialog } from 'electron'
+import type { OpenDialogOptions, SaveDialogOptions } from 'electron'
 
 import type { DatabaseMaintenanceService } from '@main/services/databaseMaintenance'
 import type { IpcChannelRegistrar } from '@main/ipc/utils'
@@ -88,12 +89,16 @@ export class DatabaseIpcRegistrar {
       'database:export',
       async (token: string, password: string): Promise<DatabaseExportResult> => {
         const browserWindow = resolveWindow(this.windowProvider)
-        const { canceled, filePath } = await dialog.showSaveDialog(browserWindow, {
+        const saveDialogOptions: SaveDialogOptions = {
           title: 'Esporta database cifrato',
           defaultPath: buildDefaultExportName(),
           filters: EXPORT_FILTERS,
           properties: ['showOverwriteConfirmation']
-        })
+        }
+
+        const { canceled, filePath } = browserWindow
+          ? await dialog.showSaveDialog(browserWindow, saveDialogOptions)
+          : await dialog.showSaveDialog(saveDialogOptions)
 
         if (canceled || !filePath) {
           return { canceled: true }
@@ -114,11 +119,15 @@ export class DatabaseIpcRegistrar {
       'database:import',
       async (token: string, password: string): Promise<DatabaseImportResult> => {
         const browserWindow = resolveWindow(this.windowProvider)
-        const { canceled, filePaths } = await dialog.showOpenDialog(browserWindow, {
+        const openDialogOptions: OpenDialogOptions = {
           title: 'Importa database cifrato',
           filters: IMPORT_FILTERS,
           properties: ['openFile']
-        })
+        }
+
+        const { canceled, filePaths } = browserWindow
+          ? await dialog.showOpenDialog(browserWindow, openDialogOptions)
+          : await dialog.showOpenDialog(openDialogOptions)
 
         if (canceled || !filePaths || filePaths.length === 0) {
           return { canceled: true }

@@ -1,5 +1,16 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type JSX } from 'react'
-import { Breadcrumb, Button, Card, Form, Input, Modal, Progress, Space, Typography, message } from 'antd'
+import {
+  Breadcrumb,
+  Button,
+  Card,
+  Form,
+  Input,
+  Modal,
+  Progress,
+  Space,
+  Typography,
+  message
+} from 'antd'
 import { useTranslation } from 'react-i18next'
 import { Navigate } from 'react-router-dom'
 
@@ -8,7 +19,11 @@ import { usePrimaryBreadcrumb } from '@renderer/layout/Shell/hooks/usePrimaryBre
 import { useBreadcrumbStyle } from '@renderer/layout/Shell/hooks/useBreadcrumbStyle'
 import { useAppDispatch, useAppSelector } from '@renderer/store/hooks'
 import { selectCurrentUser, selectToken } from '@renderer/store/slices/auth/selectors'
-import { handleResponse, isSessionExpiredError, extractErrorMessage } from '@renderer/store/slices/auth/helpers'
+import {
+  handleResponse,
+  isSessionExpiredError,
+  extractErrorMessage
+} from '@renderer/store/slices/auth/helpers'
 import { forceLogout } from '@renderer/store/slices/auth'
 import type { DatabaseProgressUpdate } from '@preload/types'
 
@@ -237,9 +252,7 @@ const DatabasePage = (): JSX.Element => {
       setExporting(true)
       startProgress('export')
       try {
-        const result = await handleResponse(
-          window.api.database.export(token, values.password)
-        )
+        const result = await handleResponse(window.api.database.export(token, values.password))
         if (result.canceled) {
           resetProgress()
           messageApi.info(t('export.cancelled'))
@@ -284,9 +297,7 @@ const DatabasePage = (): JSX.Element => {
       setImporting(true)
       startProgress('import')
       try {
-        const result = await handleResponse(
-          window.api.database.import(token, values.password)
-        )
+        const result = await handleResponse(window.api.database.import(token, values.password))
         if (result.canceled) {
           resetProgress()
           messageApi.info(t('import.cancelled'))
@@ -380,9 +391,7 @@ const DatabasePage = (): JSX.Element => {
               {t(`progress.description.${progressState.operation}`)}
             </Typography.Paragraph>
           ) : null}
-          <Typography.Text strong>
-            {progressState.message || t('progress.pending')}
-          </Typography.Text>
+          <Typography.Text strong>{progressState.message || t('progress.pending')}</Typography.Text>
           {progressState.total !== null && progressState.current !== null ? (
             <Typography.Text type="secondary">
               {t('progress.counter', {
@@ -405,12 +414,7 @@ const DatabasePage = (): JSX.Element => {
         centered
         title={t('restartModal.title')}
         footer={
-          <Button
-            type="primary"
-            danger
-            onClick={handleRestartConfirm}
-            loading={restarting}
-          >
+          <Button type="primary" danger onClick={handleRestartConfirm} loading={restarting}>
             {t('restartModal.confirm')}
           </Button>
         }
@@ -444,11 +448,7 @@ const DatabasePage = (): JSX.Element => {
               onFinish={handleExport}
               requiredMark={false}
             >
-              <Form.Item
-                name="password"
-                label={t('export.passwordLabel')}
-                rules={passwordRules}
-              >
+              <Form.Item name="password" label={t('export.passwordLabel')} rules={passwordRules}>
                 <Input.Password autoComplete="new-password" />
               </Form.Item>
               <Form.Item
@@ -470,12 +470,7 @@ const DatabasePage = (): JSX.Element => {
                 <Input.Password autoComplete="new-password" />
               </Form.Item>
               <Form.Item>
-                <Button
-                  type="primary"
-                  htmlType="submit"
-                  loading={exporting}
-                  disabled={importing}
-                >
+                <Button type="primary" htmlType="submit" loading={exporting} disabled={importing}>
                   {t('export.submit')}
                 </Button>
               </Form.Item>
@@ -491,11 +486,7 @@ const DatabasePage = (): JSX.Element => {
               onFinish={handleImport}
               requiredMark={false}
             >
-              <Form.Item
-                name="password"
-                label={t('import.passwordLabel')}
-                rules={passwordRules}
-              >
+              <Form.Item name="password" label={t('import.passwordLabel')} rules={passwordRules}>
                 <Input.Password autoComplete="current-password" />
               </Form.Item>
               <Form.Item>

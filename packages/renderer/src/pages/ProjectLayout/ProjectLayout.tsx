@@ -113,6 +113,16 @@ const ProjectLayout = (): JSX.Element => {
     }
   }, [activeKey, projectLoading, tasksStatus, notesStatus])
 
+  const handleOpenTaskDetails = useCallback(
+    (taskId: string) => {
+      if (!projectId) {
+        return
+      }
+      navigate(`/projects/${projectId}/tasks/${taskId}`)
+    },
+    [navigate, projectId]
+  )
+
   const handleRefreshClick = useCallback(() => {
     if (!projectId) {
       return
@@ -152,16 +162,6 @@ const ProjectLayout = (): JSX.Element => {
       </div>
     )
   }
-
-  const handleOpenTaskDetails = useCallback(
-    (taskId: string) => {
-      if (!projectId) {
-        return
-      }
-      navigate(`/projects/${projectId}/tasks/${taskId}`)
-    },
-    [navigate, projectId]
-  )
 
   const contextValue: ProjectRouteContext = {
     projectId: projectId ?? '',

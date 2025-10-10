@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+
 import { readFileSync, writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { execSync } from 'node:child_process'
@@ -36,7 +38,9 @@ const question = (prompt) =>
 const ensureCleanTree = () => {
   const status = execSync('git status --porcelain', { cwd: PROJECT_ROOT }).toString().trim()
   if (status) {
-    console.error('[version] Working tree not clean. Commit or stash changes before running the bump script.')
+    console.error(
+      '[version] Working tree not clean. Commit or stash changes before running the bump script.'
+    )
     process.exit(1)
   }
 }

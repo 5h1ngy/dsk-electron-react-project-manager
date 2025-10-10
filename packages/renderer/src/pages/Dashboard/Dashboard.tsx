@@ -9,16 +9,7 @@ import {
   SettingOutlined,
   TeamOutlined
 } from '@ant-design/icons'
-import {
-  Breadcrumb,
-  Card,
-  Flex,
-  Progress,
-  Space,
-  Statistic,
-  Tag,
-  Typography
-} from 'antd'
+import { Breadcrumb, Card, Flex, Progress, Space, Statistic, Tag, Typography } from 'antd'
 
 import { LoadingSkeleton } from '@renderer/components/DataStates'
 import { HealthStatusCard } from '@renderer/components/HealthStatusCard'
@@ -204,11 +195,7 @@ const Dashboard = (): JSX.Element | null => {
       </ShellHeaderPortal>
       <Space direction="vertical" size="large" style={{ width: '100%' }}>
         <Flex wrap gap={16} align="stretch" style={{ width: '100%' }}>
-          <Flex
-            vertical
-            gap={16}
-            style={{ flex: '1 1 640px', minWidth: 320 }}
-          >
+          <Flex vertical gap={16} style={{ flex: '1 1 640px', minWidth: 320 }}>
             <Flex wrap gap={16}>
               {summaryCards.map((card) => (
                 <Card key={card.key} style={{ flex: '1 1 200px', minWidth: 200 }}>
@@ -270,11 +257,7 @@ const Dashboard = (): JSX.Element | null => {
               )}
             </Card>
           </Flex>
-          <Flex
-            vertical
-            gap={16}
-            style={{ flex: '1 1 320px', minWidth: 280, maxWidth: 420 }}
-          >
+          <Flex vertical gap={16} style={{ flex: '1 1 320px', minWidth: 280, maxWidth: 420 }}>
             <Card title={t('profile.title')}>
               <Space direction="vertical" size={12} style={{ width: '100%' }}>
                 <Typography.Text>
@@ -333,4 +316,3 @@ Dashboard.displayName = 'Dashboard'
 
 export { Dashboard }
 export default Dashboard
-

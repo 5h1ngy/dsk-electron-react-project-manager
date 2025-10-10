@@ -224,15 +224,12 @@ const ProjectNotesPage = (): ReactElement => {
     fetchCurrentNotes()
   }, [fetchCurrentNotes])
 
-  const handleCreateNote = useCallback(
-    (linkedTaskId?: string) => {
-      setEditorMode('create')
-      setEditingNote(null)
-      setPrefillLinkedTaskId(linkedTaskId ?? null)
-      setIsEditorOpen(true)
-    },
-    []
-  )
+  const handleCreateNote = useCallback((linkedTaskId?: string) => {
+    setEditorMode('create')
+    setEditingNote(null)
+    setPrefillLinkedTaskId(linkedTaskId ?? null)
+    setIsEditorOpen(true)
+  }, [])
 
   const handleEditNote = (note: NoteSummary | NoteDetails) => {
     setEditorMode('edit')
@@ -672,7 +669,16 @@ const noteDefaultValues = (
 })
 
 const NoteEditorModal = (props: NoteEditorProps): ReactElement => {
-  const { open, mode, initialValues, submitting, tasks, onSubmit, onCancel, prefillLinkedTaskId = null } = props
+  const {
+    open,
+    mode,
+    initialValues,
+    submitting,
+    tasks,
+    onSubmit,
+    onCancel,
+    prefillLinkedTaskId = null
+  } = props
   const { t } = useTranslation('projects')
   const taskOptions = useMemo(() => buildTaskOptions(tasks), [tasks])
   const taskSuggestions = useMemo(() => buildTaskSuggestions(tasks), [tasks])
@@ -1217,4 +1223,3 @@ const HighlightSnippet = ({ highlight }: { highlight: string | null | undefined 
 
 export { ProjectNotesPage }
 export default ProjectNotesPage
-

@@ -18,8 +18,7 @@ export const databaseApi = {
     await invokeIpc<DatabaseExportResult>(CHANNELS.export, token, password),
   import: async (token: string, password: string) =>
     await invokeIpc<DatabaseImportResult>(CHANNELS.import, token, password),
-  restart: async (token: string) =>
-    await invokeIpc<DatabaseRestartResult>(CHANNELS.restart, token),
+  restart: async (token: string) => await invokeIpc<DatabaseRestartResult>(CHANNELS.restart, token),
   onExportProgress: (handler: (update: DatabaseProgressUpdate) => void) => {
     const listener = (_event: unknown, update: DatabaseProgressUpdate) => {
       handler(update)

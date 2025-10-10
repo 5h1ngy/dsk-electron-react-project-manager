@@ -2,9 +2,7 @@ import { useMemo } from 'react'
 import type { CSSProperties } from 'react'
 import type { BreadcrumbProps } from 'antd'
 
-export const useBreadcrumbStyle = (
-  items: BreadcrumbProps['items']
-): CSSProperties | undefined => {
+export const useBreadcrumbStyle = (items: BreadcrumbProps['items']): CSSProperties | undefined => {
   return useMemo(() => {
     if ((items?.length ?? 0) === 1) {
       return {
@@ -17,4 +15,3 @@ export const useBreadcrumbStyle = (
     return undefined
   }, [items])
 }
-

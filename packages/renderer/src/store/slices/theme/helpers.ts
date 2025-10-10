@@ -32,12 +32,7 @@ export const readInitialAccentColor = (): string => {
 
   const storedAccent = window.localStorage.getItem(THEME_ACCENT_STORAGE_KEY)
 
-  if (
-    storedAccent &&
-    ACCENT_PRESETS.includes(
-      storedAccent as (typeof ACCENT_PRESETS)[number]
-    )
-  ) {
+  if (storedAccent && ACCENT_PRESETS.includes(storedAccent as (typeof ACCENT_PRESETS)[number])) {
     return storedAccent
   }
 

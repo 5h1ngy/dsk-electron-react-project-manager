@@ -42,7 +42,10 @@ import MarkdownViewer from '@renderer/components/Markdown/MarkdownViewer'
 import MarkdownEditor from '@renderer/components/Markdown/MarkdownEditor'
 import { useAppDispatch, useAppSelector } from '@renderer/store/hooks'
 import { addComment, fetchComments, updateTask } from '@renderer/store/slices/tasks'
-import { selectTaskComments, selectTaskMutationStatus } from '@renderer/store/slices/tasks/selectors'
+import {
+  selectTaskComments,
+  selectTaskMutationStatus
+} from '@renderer/store/slices/tasks/selectors'
 import type { CommentDTO } from '@main/services/task/types'
 import type { TaskDetails } from '@renderer/store/slices/tasks/types'
 import { buildTags, formatDate } from '@renderer/pages/TaskDetails/TaskDetails.helpers'
@@ -54,18 +57,19 @@ const { TextArea } = Input
 
 const PRIORITY_ORDER: TaskDetails['priority'][] = ['low', 'medium', 'high', 'critical']
 
-const TaskDetailsPage = (): JSX.Element => {
-  const { projectId, taskId } = useParams<{ projectId: string; taskId: string }>()
+const TaskDetailsContent = ({
+  projectId,
+  taskId
+}: {
+  projectId: string
+  taskId: string
+}): JSX.Element => {
   const navigate = useNavigate()
   const { t, i18n } = useTranslation('projects')
   const dispatch = useAppDispatch()
   const [commentForm] = Form.useForm<{ body: string }>()
   const [commentSubmitting, setCommentSubmitting] = useState(false)
   const badgeTokens = useSemanticBadges()
-
-  if (!projectId || !taskId) {
-    return <Navigate to="/projects" replace />
-  }
 
   const {
     project,
@@ -115,15 +119,9 @@ const TaskDetailsPage = (): JSX.Element => {
     [project?.members]
   )
 
-  const commentsSelector = useMemo(
-    () => selectTaskComments(taskId),
-    [taskId]
-  )
+  const commentsSelector = useMemo(() => selectTaskComments(taskId), [taskId])
   const commentsState = useAppSelector(commentsSelector)
-  const comments: CommentDTO[] = useMemo(
-    () => commentsState?.items ?? [],
-    [commentsState?.items]
-  )
+  const comments: CommentDTO[] = useMemo(() => commentsState?.items ?? [], [commentsState?.items])
   const commentsLoading = commentsState?.status === 'loading'
   const commentsError = commentsState?.error ?? null
   const mutationStatus = useAppSelector(selectTaskMutationStatus)
@@ -134,7 +132,7 @@ const TaskDetailsPage = (): JSX.Element => {
     () => ({
       title: task?.title ?? '',
       description: task?.description ?? null,
-      status: task?.status ?? (taskStatuses[0]?.key ?? 'todo'),
+      status: task?.status ?? taskStatuses[0]?.key ?? 'todo',
       priority: task?.priority ?? 'medium',
       dueDate: task?.dueDate ?? null,
       assigneeId: task?.assignee?.id ?? null
@@ -171,8 +169,7 @@ const TaskDetailsPage = (): JSX.Element => {
     }
   }, [dispatch, taskId, commentsState?.status])
 
-  const isLoading =
-    projectLoading || tasksStatus === 'loading' || taskStatusesStatus === 'loading'
+  const isLoading = projectLoading || tasksStatus === 'loading' || taskStatusesStatus === 'loading'
 
   const projectReference = useMemo(() => {
     if (project) {
@@ -298,7 +295,7 @@ const TaskDetailsPage = (): JSX.Element => {
         message.error(messageText)
       }
     },
-    [dispatch, message, resetEditForm, t, task]
+    [dispatch, resetEditForm, t, task]
   )
 
   const headerContent = (
@@ -364,9 +361,7 @@ const TaskDetailsPage = (): JSX.Element => {
   if (isLoading && !task) {
     return (
       <>
-        <ShellHeaderPortal>
-          {headerContent}
-        </ShellHeaderPortal>
+        <ShellHeaderPortal>{headerContent}</ShellHeaderPortal>
         <Space direction="vertical" size={24} style={{ width: '100%' }}>
           <Skeleton active paragraph={{ rows: 6 }} />
         </Space>
@@ -377,9 +372,7 @@ const TaskDetailsPage = (): JSX.Element => {
   if (!task) {
     return (
       <>
-        <ShellHeaderPortal>
-          {headerContent}
-        </ShellHeaderPortal>
+        <ShellHeaderPortal>{headerContent}</ShellHeaderPortal>
         <Space direction="vertical" size={24} style={{ width: '100%' }}>
           <EmptyState
             title={t('tasks.details.empty')}
@@ -456,131 +449,120 @@ const TaskDetailsPage = (): JSX.Element => {
           {!isEditing ? tagsContent : null}
         </Space>
         <Flex wrap gap={16} align="stretch" style={{ width: '100%' }}>
-          <Flex
-            vertical
-            gap={24}
-            style={{ flex: '1 1 640px', minWidth: 280, width: '100%' }}
-          >
+          <Flex vertical gap={24} style={{ flex: '1 1 640px', minWidth: 280, width: '100%' }}>
             <Card title={t('tasks.details.description')}>
               {isEditing ? (
                 <Form layout="vertical" requiredMark={false}>
                   <Form.Item label={t('tasks.form.fields.description')}>
-                      <Controller
-                        control={editControl}
-                        name="description"
-                        render={({ field }) => (
-                          <MarkdownEditor value={field.value ?? ''} onChange={field.onChange} />
-                        )}
-                      />
-                    </Form.Item>
-                  </Form>
-                ) : (
-                  <MarkdownViewer
-                    value={task.description}
-                    emptyFallback={
-                      <Typography.Text type="secondary">
-                        {t('tasks.details.noDescription')}
-                      </Typography.Text>
-                    }
-                  />
-                )}
-                <Divider />
-                <Space direction="vertical" size="small" style={{ width: '100%' }}>
-                  <Typography.Text type="secondary">
-                    {t('tasks.details.linkedNotes')}
-                  </Typography.Text>
-                  {task.linkedNotes.length ? (
-                    <Space direction="vertical" size={4}>
-                      {task.linkedNotes.map((note) => (
-                        <Space key={note.id} size={6} wrap>
-                          <Button
-                            type="link"
-                            size="small"
-                            onClick={() => handleLinkedNoteOpen(note.id)}
-                          >
-                            {note.title}
-                          </Button>
-                          {note.isPrivate ? (
-                            <Tag
-                              bordered={false}
-                              style={buildBadgeStyle(badgeTokens.noteVisibility.private)}
-                            >
-                              {t('notes.labels.private')}
-                            </Tag>
-                          ) : null}
-                        </Space>
-                      ))}
-                    </Space>
-                  ) : (
-                    <Typography.Text type="secondary">
-                      {t('tasks.details.noLinkedNotes')}
-                    </Typography.Text>
-                  )}
-                </Space>
-              </Card>
-
-              <Card title={commentsHeader}>
-                {commentsError ? (
-                  <Alert
-                    type="error"
-                    showIcon
-                    style={{ marginBottom: 16 }}
-                    message={commentsError}
-                  />
-                ) : null}
-                <List<CommentDTO>
-                  dataSource={comments}
-                  loading={commentsLoading}
-                  locale={{ emptyText: t('tasks.details.comments.empty') }}
-                  renderItem={(comment) => (
-                    <List.Item key={comment.id}>
-                      <Space direction="vertical" size={2} style={{ width: '100%' }}>
-                        <Space align="center" size={8}>
-                          <UserOutlined aria-hidden />
-                          <Typography.Text strong>
-                            {comment.author?.displayName ?? comment.author?.username ?? '—'}
-                          </Typography.Text>
-                          <Typography.Text type="secondary">
-                            {formatDate(comment.createdAt, i18n.language)}
-                          </Typography.Text>
-                        </Space>
-                        <Typography.Paragraph style={{ marginBottom: 0 }}>
-                          {comment.body}
-                        </Typography.Paragraph>
-                      </Space>
-                    </List.Item>
-                  )}
-                />
-                <Divider />
-                <Form
-                  form={commentForm}
-                  layout="vertical"
-                  onFinish={() => void handleSubmitComment()}
-                >
-                  <Form.Item
-                    label={t('tasks.details.comments.addLabel')}
-                    name="body"
-                    rules={[
-                      {
-                        required: true,
-                        message: t('tasks.details.comments.validation')
-                      }
-                    ]}
-                  >
-                    <TextArea rows={4} autoSize={{ minRows: 4, maxRows: 6 }} />
-                  </Form.Item>
-                  <Form.Item style={{ marginBottom: 0 }}>
-                    <Button
-                      type="primary"
-                      htmlType="submit"
-                      loading={commentSubmitting}
-                      disabled={commentSubmitting}
-                    >
-                      {t('tasks.details.comments.submit')}
-                    </Button>
+                    <Controller
+                      control={editControl}
+                      name="description"
+                      render={({ field }) => (
+                        <MarkdownEditor value={field.value ?? ''} onChange={field.onChange} />
+                      )}
+                    />
                   </Form.Item>
                 </Form>
-              </Card>
+              ) : (
+                <MarkdownViewer
+                  value={task.description}
+                  emptyFallback={
+                    <Typography.Text type="secondary">
+                      {t('tasks.details.noDescription')}
+                    </Typography.Text>
+                  }
+                />
+              )}
+              <Divider />
+              <Space direction="vertical" size="small" style={{ width: '100%' }}>
+                <Typography.Text type="secondary">{t('tasks.details.linkedNotes')}</Typography.Text>
+                {task.linkedNotes.length ? (
+                  <Space direction="vertical" size={4}>
+                    {task.linkedNotes.map((note) => (
+                      <Space key={note.id} size={6} wrap>
+                        <Button
+                          type="link"
+                          size="small"
+                          onClick={() => handleLinkedNoteOpen(note.id)}
+                        >
+                          {note.title}
+                        </Button>
+                        {note.isPrivate ? (
+                          <Tag
+                            bordered={false}
+                            style={buildBadgeStyle(badgeTokens.noteVisibility.private)}
+                          >
+                            {t('notes.labels.private')}
+                          </Tag>
+                        ) : null}
+                      </Space>
+                    ))}
+                  </Space>
+                ) : (
+                  <Typography.Text type="secondary">
+                    {t('tasks.details.noLinkedNotes')}
+                  </Typography.Text>
+                )}
+              </Space>
+            </Card>
+
+            <Card title={commentsHeader}>
+              {commentsError ? (
+                <Alert type="error" showIcon style={{ marginBottom: 16 }} message={commentsError} />
+              ) : null}
+              <List<CommentDTO>
+                dataSource={comments}
+                loading={commentsLoading}
+                locale={{ emptyText: t('tasks.details.comments.empty') }}
+                renderItem={(comment) => (
+                  <List.Item key={comment.id}>
+                    <Space direction="vertical" size={2} style={{ width: '100%' }}>
+                      <Space align="center" size={8}>
+                        <UserOutlined aria-hidden />
+                        <Typography.Text strong>
+                          {comment.author?.displayName ?? comment.author?.username ?? '—'}
+                        </Typography.Text>
+                        <Typography.Text type="secondary">
+                          {formatDate(comment.createdAt, i18n.language)}
+                        </Typography.Text>
+                      </Space>
+                      <Typography.Paragraph style={{ marginBottom: 0 }}>
+                        {comment.body}
+                      </Typography.Paragraph>
+                    </Space>
+                  </List.Item>
+                )}
+              />
+              <Divider />
+              <Form
+                form={commentForm}
+                layout="vertical"
+                onFinish={() => void handleSubmitComment()}
+              >
+                <Form.Item
+                  label={t('tasks.details.comments.addLabel')}
+                  name="body"
+                  rules={[
+                    {
+                      required: true,
+                      message: t('tasks.details.comments.validation')
+                    }
+                  ]}
+                >
+                  <TextArea rows={4} autoSize={{ minRows: 4, maxRows: 6 }} />
+                </Form.Item>
+                <Form.Item style={{ marginBottom: 0 }}>
+                  <Button
+                    type="primary"
+                    htmlType="submit"
+                    loading={commentSubmitting}
+                    disabled={commentSubmitting}
+                  >
+                    {t('tasks.details.comments.submit')}
+                  </Button>
+                </Form.Item>
+              </Form>
+            </Card>
           </Flex>
           <Flex
             vertical
@@ -787,6 +769,16 @@ const TaskDetailsPage = (): JSX.Element => {
       </Space>
     </>
   )
+}
+
+const TaskDetailsPage = (): JSX.Element => {
+  const { projectId, taskId } = useParams<{ projectId: string; taskId: string }>()
+
+  if (!projectId || !taskId) {
+    return <Navigate to="/projects" replace />
+  }
+
+  return <TaskDetailsContent projectId={projectId} taskId={taskId} />
 }
 
 TaskDetailsPage.displayName = 'TaskDetailsPage'
