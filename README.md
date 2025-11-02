@@ -1,124 +1,193 @@
-# Project Manager
+# DSK Electron React Project Manager
 
-A modern project management desktop application built with Electron, React, and Node.js. This application integrates task management with a Jira-style board, note taking capabilities, and project statistics.
+[![Electron Shield][electron-shield]][electron-link]
+[![React Shield][react-shield]][react-link]
+[![SQLite Shield][sqlite-shield]][sqlite-link]
+[![TypeScript Shield][typescript-shield]][typescript-link]
+[![Jest Shield][jest-shield]][jest-link]
 
-## Features
+![Application preview](assets/preview.png)
 
-- **Multi-user support** with authentication
-- **Project Management Dashboard** with card, table, and list views
-- **Task Board** with drag and drop functionality (Jira-style)
-- **Notes & File Management** with Google Drive-style folder structure
-- **Statistics** for project and task metrics
-- **Dark & Light Mode** with customizable color palettes
-- **SQLite Database** for local storage
-- **Import/Export Database** functionality
+> Release 0.44.11 - Modern desktop project manager with a hardened Electron main process, a typed preload bridge, and a polished React/Redux experience.
+
+---
+
+## Table of Contents
+
+- [Feature Highlights](#feature-highlights)
+- [Tech Stack](#tech-stack)
+- [Project Structure](#project-structure)
+- [Architecture Overview](#architecture-overview)
+- [Quick Start](#quick-start)
+- [Scripts & Tooling](#scripts--tooling)
+- [Database & Seeding](#database--seeding)
+- [Testing Strategy](#testing-strategy)
+- [window.api Contract](#windowapi-contract)
+- [Configuration](#configuration)
+- [Security](#security)
+- [Troubleshooting](#troubleshooting)
+- [Contributing](#contributing)
+
+---
+
+## Feature Highlights
+
+- Hardened Electron main process with single instance lock, security hooks, and structured logging.
+- Domain-driven services for auth, projects, tasks, notes, and auditing backed by Sequelize.
+- Strongly typed preload bridge exposing the `window.api` contract with runtime validation.
+- Rich React 19 renderer using Ant Design 5, Redux Toolkit, i18next, and dynamic accent theming.
+- Comprehensive testing setup spanning Jest, Testing Library, and ts-jest across processes.
+- Faker-powered seeders that bootstrap realistic demo data for local development.
+
+---
 
 ## Tech Stack
 
-- **Frontend**: React, Redux Toolkit, React Router, styled-components
-- **Backend**: Node.js, Sequelize (ORM)
-- **Database**: SQLite
-- **UI/UX**: Ant Design-inspired components with custom theming
-- **Forms**: React Hook Form with Zod validation
-- **Desktop**: Electron
+| Layer    | Highlights                                                                                                     |
+| -------- | -------------------------------------------------------------------------------------------------------------- |
+| Runtime  | Electron 38, Node 22                                                                                           |
+| Renderer | React 19, React Router 6, Ant Design 5, Redux Toolkit, React Hook Form, i18next                                |
+| Domain   | SQLite, Sequelize (TypeScript), Zod, @node-rs/argon2                                                           |
+| Tooling  | electron-vite, ts-node + tsconfig-paths, Jest + ts-jest, Testing Library, ESLint 9, Prettier 3, TypeScript 5.7 |
 
-## Installation
-
-### Prerequisites
-
-- Node.js (v16 or higher)
-- npm (v7 or higher)
-
-### Steps
-
-1. Clone the repository
-   ```bash
-   git clone https://github.com/yourusername/electron-project-manager.git
-   cd electron-project-manager
-   ```
-
-2. Install dependencies
-   ```bash
-   npm install
-   ```
-
-3. Start the development server
-   ```bash
-   npm run dev
-   ```
-
-4. In a separate terminal, start the Electron app
-   ```bash
-   npm start
-   ```
-
-## Build and Distribution
-
-To build the application for distribution:
-
-```bash
-# Build for current platform
-npm run dist
-
-# Build portable version
-npm run pack
-```
+---
 
 ## Project Structure
 
+```text
+dsk-electron-react-project-manager
+|- packages
+|  |- main        # Electron main process, IPC registrars, services, Sequelize models
+|  |- preload     # Typed context bridge defining window.api
+|  \- renderer    # React/Redux UI, routes, layout, theme system, i18n
+|- seeding        # Seeder entry points and dataset builders
+|- resources      # Icons and extra assets for packaging
+|- test           # Jest configuration, mocks, and helpers
+|- assets         # Static resources (preview, logos, etc.)
+\- build/out/dist # Generated artifacts
 ```
-electron-project-manager/
- electron/                # Electron specific code
-    main/                # Main process (Node.js backend)
-       database/        # Database models and configuration
-       handlers/        # IPC event handlers
-       utils/           # Utilities for the main process
-    preload/             # Preload scripts for renderer process
-    shared/              # Shared types and utilities
- src/                     # Frontend React application
-    components/          # Reusable UI components
-    features/            # Feature-specific components
-    hooks/               # Custom React hooks
-    layouts/             # Layout components
-    pages/               # Page components
-    store/               # Redux store configuration
-       slices/          # Redux slices
-    themes/              # Theme configuration
-    utils/               # Utility functions
- public/                  # Static assets
- vite.config.ts           # Vite configuration
-```
+
+---
+
+## Architecture Overview
+
+See `docs/architecture-overview.md` for a deeper walkthrough of the Electron lifecycle, IPC surface, renderer composition, and data flow between layers. The document is kept alongside this README so the implementation notes evolve with the codebase.
+
+---
+
+## Quick Start
+
+1. Install dependencies: `npm install`
+2. Launch the app in development: `npm run dev`
+3. Run the renderer preview in a browser-only context: `npm start`
+4. Build production assets: `npm run build`
+5. Package the desktop app: `npm run build:win` (or `build:mac`, `build:linux`)
+
+All commands assume a recent Node 22 environment. The Electron app automatically seeds sane defaults on first launch.
+
+---
+
+## Scripts & Tooling
+
+| Command                          | Purpose                                                   |
+| -------------------------------- | --------------------------------------------------------- |
+| `npm run format`                 | Prettier formatting across the repo                       |
+| `npm run lint`                   | ESLint with caching                                       |
+| `npm run typecheck`              | Aggregated TypeScript checks for Node and web             |
+| `npm test`, `npm run test:watch` | Jest multi-project test runner                            |
+| `npm run db:seed`                | Execute `DevelopmentSeeder` via ts-node with path aliases |
+
+### Versioning & Releases
+
+- Esegui `npm run version:bump` per impostare manualmente la nuova versione: lo script aggiorna `.env`, `package.json`, `package-lock.json`, la riga "Release ..." nel README e crea automaticamente il commit `chore: bump version to X.Y.Z`.
+- La versione applicativa e' dichiarata in `.env` (`APP_VERSION`) e deve rimanere allineata con `package.json`; il comando precedente garantisce l'aggiornamento coerente dei file.
+- Su `develop` sono ammessi solo branch `feature/`, `feat/`, `bugfix/`, `bug/`, `fix/`; su `main` soltanto `release/` e `hotfix/`. I merge non conformi vengono bloccati sia in locale sia in CI.
+- La pipeline `Release` su GitHub si limita a buildare i pacchetti (portable per Win/macOS/Linux) e a pubblicare tag+release partendo dalla versione presente nel repository.
+- Dopo il clone esegui `npm run setup:hooks` (o `npm install`) per configurare i githook che applicano i controlli sui prefissi e i Conventional Commit.
+
+---
+
+## Database & Seeding
+
+Set `DB_STORAGE_PATH` to override the default SQLite location (Electron `app.getPath('userData')`). Run `npm run db:seed` to populate the database with roles, users, projects, Kanban boards, notes, comments, and audit logs. Seeders log progress to the console so large batches remain traceable.
+
+---
+
+## Testing Strategy
+
+- Jest multi-project setup covers both Node (main/preload) and jsdom (renderer) environments.
+- Testing Library exercises UI components, hooks, and flows relevant to routing and theming.
+- ts-jest respects the repo's TypeScript configuration, enabling decorators and module aliases without extra setup.
+- Coverage targets `packages/**/*.{ts,tsx}` and seeding modules while excluding generated code and declaration files.
+
+---
+
+## window.api Contract
+
+The preload script exposes a single `window.api` namespace typed in `packages/preload/src/types.ts`. Every action resolves to an `IpcResponse<T>` discriminated union. Available modules include:
+
+- `health.check()`
+- `auth.login`, `auth.logout`, `auth.session`, `auth.listUsers`, `auth.createUser`, `auth.updateUser`
+- `project.list`, `project.get`, `project.create`, `project.update`, `project.remove`, `project.addMember`, `project.removeMember`
+- `task.list`, `task.get`, `task.create`, `task.update`, `task.move`, `task.remove`, `task.listComments`, `task.addComment`, `task.search`
+- `note.list`, `note.get`, `note.create`, `note.update`, `note.remove`, `note.attachTask`, `note.detachTask`
+
+Utility helpers unwrap the union inside the renderer and trigger session recovery or logout flows on failure.
+
+---
 
 ## Configuration
 
-### Environment Variables
+| Variable                  | Default               | Description                                                                  |
+| ------------------------- | --------------------- | ---------------------------------------------------------------------------- |
+| `LOG_LEVEL`               | `info`                | Adjusts the structured logger verbosity                                      |
+| `SESSION_TIMEOUT_MINUTES` | `60`                  | Overrides the default auth session TTL (also persisted in `system_settings`) |
+| `DB_STORAGE_PATH`         | Electron app data dir | Custom database location for runtime and seeding                             |
+| `ELECTRON_START_URL`      | auto                  | Dev server URL, injected by electron-vite during `npm run dev`               |
+| `ENABLE_DEVTOOLS`         | auto                  | `true` forces DevTools on, `false` blocks them regardless of environment     |
 
-Create `.env.development` or `.env.production` files in the root directory to configure environment-specific settings:
+Use `.env` or per-machine environment variables to customize settings; see `.env.example` for guidance.
 
-```
-# Development Settings
-NODE_ENV=development
-VITE_APP_TITLE=Project Manager (Dev)
-```
+---
 
-### Mock Mode
+## Security
 
-For development without a real database, enable mock mode in `.env.development`:
+- BrowserWindow instances disable `nodeIntegration`, enforce `contextIsolation`, and apply a strict content security policy.
+- Navigation and new window requests are denied unless explicitly whitelisted.
+- Network access defaults to offline-only with optional localhost allowances in development.
+- Session lifecycle management prunes expired tokens on an interval to reduce attack surface.
+- Console noise is filtered and re-routed through the structured logger for easier diagnostics.
 
-```
-VITE_USE_MOCK_DATA=true
-```
+---
 
-The mock mode uses in-memory data instead of SQLite, which is useful for testing UI components without setting up a database.
+## Troubleshooting
+
+- **Missing `@main/*` imports in scripts**: Always execute CLIs via `npm run` so `tsconfig-paths/register` is loaded.
+- **SQLite build issues on Windows**: Install Visual Studio Build Tools with the "Desktop development with C++" workload.
+- **Renderer fails to load in dev**: Restart `npm run dev` to refresh the electron-vite dev server and ports.
+- **React Router warnings in tests**: Future-facing flags are enabled; re-run tests after clearing Jest cache if warnings persist.
+
+---
 
 ## Contributing
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+1. Clone the repository and install dependencies.
+2. Branch off `main` before starting work.
+3. Keep imports aligned with the configured path aliases (`@main/*`, `@preload/*`, `@renderer/*`).
+4. Add or update tests alongside code changes.
+5. Validate with `npm run lint && npm run typecheck && npm test`.
 
-## License
+No explicit OSS license is bundled; coordinate internally before distributing binaries.
 
-This project is licensed under the ISC License.
+---
+
+[electron-shield]: https://img.shields.io/badge/electron-38.3-47848f?logo=electron&logoColor=white
+[electron-link]: https://www.electronjs.org/
+[react-shield]: https://img.shields.io/badge/react-19-61dafb?logo=react&logoColor=white
+[react-link]: https://react.dev/
+[sqlite-shield]: https://img.shields.io/badge/sqlite-3-blue?logo=sqlite&logoColor=white
+[sqlite-link]: https://www.sqlite.org/
+[typescript-shield]: https://img.shields.io/badge/typescript-5.7-3178c6?logo=typescript&logoColor=white
+[typescript-link]: https://www.typescriptlang.org/
+[jest-shield]: https://img.shields.io/badge/tests-jest%2029-99425b?logo=jest&logoColor=white
+[jest-link]: https://jestjs.io/

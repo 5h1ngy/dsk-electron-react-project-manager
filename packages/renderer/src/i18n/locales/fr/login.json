@@ -1,0 +1,22 @@
+{
+  "title": "Connexion",
+  "header": "SDK",
+  "usernameLabel": "Nom d\u0027utilisateur",
+  "usernamePlaceholder": "Saisissez le nom d\u0027utilisateur",
+  "passwordLabel": "Mot de passe",
+  "passwordPlaceholder": "Saisissez le mot de passe",
+  "submitLabel": "Se connecter",
+  "errorTitle": "chec de la connexion",
+  "defaultCredentials": "Utilisez les identifiants par dfaut admin / changeme! lors du premier dmarrage et changez le mot de passe ds que possible.",
+  "validation": {
+    "usernameRequired": "Veuillez saisir au moins 3 caractres",
+    "usernameMin": "Veuillez saisir au moins 3 caractres",
+    "usernameMax": "Maximum 32 caractres autoriss",
+    "usernamePattern": "Format du nom d\u0027utilisateur invalide",
+    "passwordRequired": "Le mot de passe doit contenir au moins 8 caractres",
+    "passwordMin": "Le mot de passe doit contenir au moins 8 caractres",
+    "passwordMax": "Maximum 128 caractres autoriss"
+  },
+  "registerPrompt": "Vous navez pas de compte ?",
+  "registerLink": "Inscrivez-vous"
+}

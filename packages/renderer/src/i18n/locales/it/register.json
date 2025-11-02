@@ -1,0 +1,28 @@
+{
+  "header": "Crea il tuo account",
+  "title": "Registrati",
+  "displayNameLabel": "Nome completo",
+  "displayNamePlaceholder": "Inserisci il tuo nome completo",
+  "usernameLabel": "Username",
+  "usernamePlaceholder": "Scegli uno username",
+  "passwordLabel": "Password",
+  "passwordPlaceholder": "Scegli una password",
+  "confirmPasswordLabel": "Conferma password",
+  "confirmPasswordPlaceholder": "Ripeti la password",
+  "submitLabel": "Crea account",
+  "errorTitle": "Registrazione non riuscita",
+  "loginPrompt": "Hai gi un account?",
+  "loginLink": "Accedi",
+  "validation": {
+    "usernameRequired": "Inserisci almeno 3 caratteri",
+    "usernameMin": "Inserisci almeno 3 caratteri",
+    "usernameMax": "Massimo 32 caratteri",
+    "usernamePattern": "Formato username non valido",
+    "displayNameRequired": "Inserisci il tuo nome",
+    "displayNameMax": "Massimo 64 caratteri",
+    "passwordRequired": "La password deve contenere almeno 8 caratteri",
+    "passwordMin": "La password deve contenere almeno 8 caratteri",
+    "confirmPasswordRequired": "Conferma la password",
+    "confirmPasswordMatch": "Le password devono coincidere"
+  }
+}

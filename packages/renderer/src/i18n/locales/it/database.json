@@ -1,0 +1,70 @@
+{
+  "title": "Database cifrato",
+  "description": "Esporta o importa il database cifrato dell'ambiente di lavoro. Conserva la password in un luogo sicuro.",
+  "export": {
+    "title": "Esporta database cifrato",
+    "subtitle": "Scegli una password robusta e conserva il file cifrato in modo sicuro.",
+    "passwordLabel": "Password di cifratura",
+    "confirmPasswordLabel": "Conferma password",
+    "submit": "Esporta database",
+    "success": "Database cifrato salvato in {{path}}",
+    "cancelled": "Esportazione annullata"
+  },
+  "import": {
+    "title": "Importa database cifrato",
+    "subtitle": "Inserisci la password di un backup cifrato esistente. Ti verr richiesto di riavviare dopo l'import riuscito.",
+    "passwordLabel": "Password di decifratura",
+    "submit": "Importa database",
+    "success": "Database importato correttamente. Utilizza la finestra per chiudere e riavviare l'applicazione.",
+    "cancelled": "Import annullato"
+  },
+  "errors": {
+    "passwordRequired": "La password è obbligatoria",
+    "passwordTooShort": "La password deve contenere almeno {{length}} caratteri",
+    "passwordMismatch": "Le password non coincidono"
+  },
+  "restartModal": {
+    "title": "Riavvio richiesto",
+    "description": "Il database cifrato  stato importato. Chiudi l'applicazione per applicare le modifiche.",
+    "confirm": "Chiudi applicazione"
+  },
+  "progress": {
+    "title": {
+      "export": "Export del database cifrato",
+      "import": "Import del database cifrato"
+    },
+    "description": {
+      "export": "Stiamo preparando l'archivio cifrato. Non chiudere l'applicazione.",
+      "import": "Stiamo ripristinando l'archivio cifrato. Non chiudere l'applicazione."
+    },
+    "pending": "Avvio operazione…",
+    "generic": "Avanzamento {{percent}}%",
+    "complete": "Operazione completata",
+    "counter": "{{current}} di {{total}} elementi",
+    "phases": {
+      "export": {
+        "prepare": "Preparazione export",
+        "snapshotSchema": "Raccolta metadata dello schema",
+        "snapshotTable": "Lettura tabella {{table}} ({{current}}/{{total}})",
+        "snapshotSequences": "Acquisizione valori delle sequenze",
+        "serialize": "Serializzazione snapshot",
+        "compress": "Compressione dati",
+        "encrypt": "Cifratura payload",
+        "write": "Scrittura archivio cifrato",
+        "complete": "Export completato"
+      },
+      "import": {
+        "prepare": "Preparazione import",
+        "decrypt": "Decifratura archivio",
+        "decompress": "Decompressione dati",
+        "parse": "Validazione snapshot",
+        "restoreSchema": "Ricostruzione schema",
+        "restoreTable": "Ripristino tabella {{table}} ({{current}}/{{total}})",
+        "restoreIndexes": "Ricostruzione indici e viste",
+        "restoreSequences": "Ripristino valori sequenza",
+        "finalize": "Finalizzazione import",
+        "complete": "Import completato"
+      }
+    }
+  }
+}

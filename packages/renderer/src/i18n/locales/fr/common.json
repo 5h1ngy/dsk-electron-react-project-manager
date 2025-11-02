@@ -1,0 +1,62 @@
+{
+  "language": {
+    "ariaLabel": "Choisir la langue",
+    "options": {
+      "it": "Italien",
+      "en": "Anglais",
+      "de": "Allemand",
+      "fr": "Français"
+    }
+  },
+  "theme": {
+    "switchToDark": "Passer au thème sombre",
+    "switchToLight": "Passer au thème clair",
+    "ariaLabel": "Changer de thème"
+  },
+  "appShell": {
+    "title": "DSK Project Manager",
+    "welcome": "Bienvenue, {{name}}",
+    "logout": "Se déconnecter",
+    "navigation": {
+      "dashboard": "Tableau de bord",
+      "projects": "Projets",
+      "settings": "Paramètres",
+      "userManagement": "Gestion des utilisateurs",
+      "roleManagement": "Gestion des rôles",
+      "database": "Base de données"
+    },
+    "collapseSidebar": "Réduire la navigation",
+    "expandSidebar": "Développer la navigation",
+    "searchPlaceholder": "Rechercher dans les fichiers et projets",
+    "quickCreate": "Nouveau",
+    "help": "Aide et support",
+    "notifications": "Notifications",
+    "settings": "Paramètres",
+    "theme": {
+      "title": "Apparence",
+      "mode": "Mode sombre",
+      "accent": "Couleur secondaire"
+    },
+    "accent": {
+      "ariaLabel": "Choisir la couleur secondaire",
+      "option": "Option couleur {{index}}"
+    }
+  },
+  "roles": {
+    "Admin": "Administrateur",
+    "Maintainer": "Mainteneur",
+    "Contributor": "Contributeur",
+    "Viewer": "Lecteur"
+  },
+  "settingsPage": {
+    "title": "Paramètres de l'espace de travail",
+    "appearance": {
+      "title": "Apparence",
+      "description": "Choisissez le mode d'affichage et la couleur d'accent que vous préférez."
+    },
+    "language": {
+      "title": "Langue",
+      "description": "Sélectionnez la langue utilisée dans l'application."
+    }
+  }
+}

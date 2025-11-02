@@ -1,0 +1,452 @@
+import { randomUUID } from 'node:crypto'
+import { UniqueConstraintError } from 'sequelize'
+import { Role } from '@main/models/Role'
+import { User } from '@main/models/User'
+import { UserRole } from '@main/models/UserRole'
+import { Project } from '@main/models/Project'
+import { ProjectMember } from '@main/models/ProjectMember'
+import { Task } from '@main/models/Task'
+import { Note } from '@main/models/Note'
+import { Comment } from '@main/models/Comment'
+import { View } from '@main/models/View'
+import { hashPassword, verifyPassword } from '@main/services/auth/password'
+import { SessionManager, SessionRecord } from '@main/services/auth/sessionManager'
+import { AuditService } from '@main/services/audit'
+import { AppError, wrapError } from '@main/config/appError'
+import {
+  LoginSchema,
+  CreateUserSchema,
+  UpdateUserSchema,
+  RegisterUserSchema,
+  type LoginInput,
+  type CreateUserInput,
+  type UpdateUserInput,
+  type RegisterUserInput
+} from '@main/services/auth/schemas'
+import type { RoleName } from '@main/services/auth/constants'
+import { logger } from '@main/config/logger'
+import type { ServiceActor } from '@main/services/types'
+
+export interface SessionPayload {
+  token: string
+  user: UserDTO
+}
+
+export interface UserDTO {
+  id: string
+  username: string
+  displayName: string
+  isActive: boolean
+  roles: RoleName[]
+  lastLoginAt: Date | null
+  createdAt: Date
+  updatedAt: Date
+}
+
+interface AuthContext {
+  session: SessionRecord
+  user: User
+  roles: RoleName[]
+}
+
+const sanitizeUser = (user: User, roles: RoleName[]): UserDTO => ({
+  id: user.id,
+  username: user.username,
+  displayName: user.displayName,
+  isActive: user.isActive,
+  roles,
+  lastLoginAt: user.lastLoginAt ?? null,
+  createdAt: user.createdAt!,
+  updatedAt: user.updatedAt!
+})
+
+const extractRoleNames = (user: User): RoleName[] =>
+  (user.userRoles ?? [])
+    .map((userRole) => userRole.role?.name)
+    .filter((name): name is RoleName => typeof name === 'string' && name.trim().length > 0)
+
+export class AuthService {
+  constructor(
+    private readonly sessionManager: SessionManager,
+    private readonly auditService: AuditService
+  ) {}
+
+  private async findUserByUsernameWithPassword(username: string): Promise<User | null> {
+    return await User.scope('withPassword').findOne({
+      where: { username },
+      include: [{ model: UserRole, include: [Role] }]
+    })
+  }
+
+  private async ensureRolesExist(roleNames: RoleName[]): Promise<Role[]> {
+    const roles = await Role.findAll({ where: { name: roleNames } })
+    if (roles.length !== roleNames.length) {
+      throw new AppError('ERR_VALIDATION', 'Uno o piu ruoli non sono validi')
+    }
+    return roles
+  }
+
+  private requireAdmin(roles: RoleName[]): void {
+    if (!roles.includes('Admin')) {
+      throw new AppError('ERR_PERMISSION', 'Operazione consentita solo agli amministratori')
+    }
+  }
+
+  private async getContext(token: string, options: { touch?: boolean } = {}): Promise<AuthContext> {
+    const session = options.touch
+      ? this.sessionManager.touchSession(token)
+      : this.sessionManager.getSession(token)
+    if (!session) {
+      throw new AppError('ERR_PERMISSION', 'Sessione non valida o scaduta')
+    }
+
+    const user = await User.findOne({
+      where: { id: session.userId },
+      include: [{ model: UserRole, include: [Role] }]
+    })
+
+    if (!user) {
+      this.sessionManager.endSession(token)
+      throw new AppError('ERR_NOT_FOUND', 'Utente associato alla sessione non trovato')
+    }
+
+    const roles = extractRoleNames(user)
+
+    return { session, user, roles }
+  }
+
+  async login(payload: unknown): Promise<SessionPayload> {
+    let input: LoginInput
+    try {
+      input = LoginSchema.parse(payload)
+    } catch (error) {
+      throw new AppError('ERR_VALIDATION', 'Credenziali non valide', { cause: error })
+    }
+
+    const user = await this.findUserByUsernameWithPassword(input.username)
+    if (!user) {
+      throw new AppError('ERR_VALIDATION', 'Credenziali non valide')
+    }
+
+    if (!user.isActive) {
+      throw new AppError('ERR_PERMISSION', 'Account disattivato')
+    }
+
+    const passwordMatches = await verifyPassword(user.passwordHash, input.password)
+    if (!passwordMatches) {
+      await this.auditService.record(user.id, 'auth', user.id, 'login_failed', {
+        username: input.username
+      })
+      throw new AppError('ERR_VALIDATION', 'Credenziali non valide')
+    }
+
+    const roles = extractRoleNames(user)
+    const session = this.sessionManager.createSession(user.id, roles)
+
+    user.lastLoginAt = new Date()
+    await user.save()
+
+    await this.auditService.record(user.id, 'auth', user.id, 'login', { username: user.username })
+    logger.success(`Login eseguito per ${user.username}`, 'AuthService')
+
+    return {
+      token: session.token,
+      user: sanitizeUser(user, roles)
+    }
+  }
+
+  async logout(token: string): Promise<void> {
+    const session = this.sessionManager.getSession(token)
+    if (!session) {
+      return
+    }
+
+    this.sessionManager.endSession(token)
+    await this.auditService.record(session.userId, 'auth', session.userId, 'logout', null)
+  }
+
+  async currentSession(token: string): Promise<UserDTO | null> {
+    const session = this.sessionManager.touchSession(token)
+    if (!session) {
+      return null
+    }
+
+    const user = await User.findOne({
+      where: { id: session.userId },
+      include: [{ model: UserRole, include: [Role] }]
+    })
+
+    if (!user) {
+      this.sessionManager.endSession(token)
+      return null
+    }
+
+    const roles = extractRoleNames(user)
+    return sanitizeUser(user, roles)
+  }
+
+  async resolveActor(token: string, options: { touch?: boolean } = {}): Promise<ServiceActor> {
+    const context = await this.getContext(token, options)
+    return {
+      userId: context.user.id,
+      roles: context.roles
+    }
+  }
+
+  async listUsers(token: string): Promise<UserDTO[]> {
+    const context = await this.getContext(token, { touch: true })
+    this.requireAdmin(context.roles)
+
+    const users = await User.findAll({ include: [{ model: UserRole, include: [Role] }] })
+    return users.map((user) => sanitizeUser(user, extractRoleNames(user)))
+  }
+
+  async register(payload: unknown): Promise<SessionPayload> {
+    let input: RegisterUserInput
+    try {
+      input = RegisterUserSchema.parse(payload)
+    } catch (error) {
+      throw new AppError('ERR_VALIDATION', 'Dati registrazione non validi', { cause: error })
+    }
+
+    const viewerRoles = await this.ensureRolesExist(['Viewer'])
+
+    try {
+      const passwordHash = await hashPassword(input.password)
+      const user = await User.create({
+        id: randomUUID(),
+        username: input.username,
+        displayName: input.displayName,
+        passwordHash,
+        isActive: true,
+        lastLoginAt: null
+      })
+
+      await Promise.all(
+        viewerRoles.map((role) =>
+          UserRole.create({
+            userId: user.id,
+            roleId: role.id
+          })
+        )
+      )
+
+      const reloaded = await User.findOne({
+        where: { id: user.id },
+        include: [{ model: UserRole, include: [Role] }]
+      })
+
+      const userWithRoles = reloaded ?? user
+      const roles = extractRoleNames(userWithRoles)
+      const session = this.sessionManager.createSession(userWithRoles.id, roles)
+
+      await this.auditService.record(user.id, 'user', user.id, 'register', {
+        username: input.username
+      })
+      logger.success(`Registrazione completata per ${input.username}`, 'AuthService')
+
+      return {
+        token: session.token,
+        user: sanitizeUser(userWithRoles, roles)
+      }
+    } catch (error) {
+      if (error instanceof UniqueConstraintError) {
+        throw new AppError('ERR_CONFLICT', 'Username gia in uso')
+      }
+      throw wrapError(error)
+    }
+  }
+
+  async createUser(token: string, payload: unknown): Promise<UserDTO> {
+    const context = await this.getContext(token, { touch: true })
+    this.requireAdmin(context.roles)
+
+    let input: CreateUserInput
+    try {
+      input = CreateUserSchema.parse(payload)
+    } catch (error) {
+      throw new AppError('ERR_VALIDATION', 'Dati utente non validi', { cause: error })
+    }
+
+    const roles = await this.ensureRolesExist(input.roles)
+
+    try {
+      const passwordHash = await hashPassword(input.password)
+      const user = await User.create({
+        id: randomUUID(),
+        username: input.username,
+        displayName: input.displayName,
+        passwordHash,
+        isActive: input.isActive,
+        lastLoginAt: null
+      })
+
+      await Promise.all(
+        roles.map((role) =>
+          UserRole.create({
+            userId: user.id,
+            roleId: role.id
+          })
+        )
+      )
+
+      const reloaded = await User.findOne({
+        where: { id: user.id },
+        include: [{ model: UserRole, include: [Role] }]
+      })
+
+      await this.auditService.record(context.user.id, 'user', user.id, 'create', {
+        username: input.username,
+        roles: input.roles
+      })
+
+      return sanitizeUser(reloaded ?? user, extractRoleNames(reloaded ?? user))
+    } catch (error) {
+      if (error instanceof UniqueConstraintError) {
+        throw new AppError('ERR_CONFLICT', 'Username gia in uso')
+      }
+      throw wrapError(error)
+    }
+  }
+
+  async updateUser(token: string, userId: string, payload: unknown): Promise<UserDTO> {
+    const context = await this.getContext(token, { touch: true })
+    this.requireAdmin(context.roles)
+
+    let input: UpdateUserInput
+    try {
+      input = UpdateUserSchema.parse(payload)
+    } catch (error) {
+      throw new AppError('ERR_VALIDATION', 'Dati aggiornamento non validi', { cause: error })
+    }
+
+    const user = await User.scope('withPassword').findOne({
+      where: { id: userId },
+      include: [{ model: UserRole, include: [Role] }]
+    })
+
+    if (!user) {
+      throw new AppError('ERR_NOT_FOUND', 'Utente non trovato')
+    }
+
+    const originalSnapshot = sanitizeUser(user, extractRoleNames(user))
+
+    if (input.displayName !== undefined) {
+      user.displayName = input.displayName
+    }
+    if (input.isActive !== undefined) {
+      user.isActive = input.isActive
+    }
+    if (input.password) {
+      const hashedPassword = await hashPassword(input.password)
+      user.setDataValue('passwordHash', hashedPassword)
+      user.changed('passwordHash', true)
+      this.sessionManager.endSessionsForUser(user.id)
+    }
+
+    if (input.roles) {
+      const roles = await this.ensureRolesExist(input.roles)
+      await UserRole.destroy({ where: { userId: user.id } })
+      await Promise.all(
+        roles.map((role) =>
+          UserRole.create({
+            userId: user.id,
+            roleId: role.id
+          })
+        )
+      )
+    }
+
+    await user.save()
+
+    const updated = await User.findOne({
+      where: { id: user.id },
+      include: [{ model: UserRole, include: [Role] }]
+    })
+
+    const updatedDto = sanitizeUser(updated ?? user, extractRoleNames(updated ?? user))
+
+    await this.auditService.record(context.user.id, 'user', user.id, 'update', {
+      before: originalSnapshot,
+      after: updatedDto
+    })
+
+    return updatedDto
+  }
+
+  async deleteUser(token: string, userId: string): Promise<void> {
+    const context = await this.getContext(token, { touch: true })
+    this.requireAdmin(context.roles)
+
+    if (context.user.id === userId) {
+      throw new AppError('ERR_PERMISSION', 'Non è possibile eliminare il proprio account')
+    }
+
+    try {
+      const user = await User.findOne({
+        where: { id: userId },
+        include: [{ model: UserRole, include: [Role] }]
+      })
+
+      if (!user) {
+        throw new AppError('ERR_NOT_FOUND', 'Utente non trovato')
+      }
+
+      const userRoles = extractRoleNames(user)
+
+      if (userRoles.includes('Admin')) {
+        const adminRole = await Role.findOne({ where: { name: 'Admin' } })
+        if (adminRole) {
+          const remainingAdmins = await UserRole.count({ where: { roleId: adminRole.id } })
+          if (remainingAdmins <= 1) {
+            throw new AppError(
+              'ERR_PERMISSION',
+              "Non è possibile eliminare l'ultimo amministratore del sistema"
+            )
+          }
+        }
+      }
+
+      const sequelize = User.sequelize
+      if (!sequelize) {
+        throw new AppError('ERR_INTERNAL', 'Connessione al database non disponibile')
+      }
+
+      const replacementUserId = context.user.id
+
+      await sequelize.transaction(async (transaction) => {
+        await ProjectMember.destroy({ where: { userId: user.id }, transaction })
+        await View.destroy({ where: { userId: user.id }, transaction })
+        await Comment.destroy({ where: { authorId: user.id }, transaction })
+
+        await Task.update({ assigneeId: null }, { where: { assigneeId: user.id }, transaction })
+
+        await Task.update(
+          { ownerUserId: replacementUserId },
+          { where: { ownerUserId: user.id }, transaction }
+        )
+
+        await Note.update(
+          { ownerUserId: replacementUserId },
+          { where: { ownerUserId: user.id }, transaction }
+        )
+
+        await Project.update(
+          { createdBy: replacementUserId },
+          { where: { createdBy: user.id }, transaction }
+        )
+
+        await UserRole.destroy({ where: { userId: user.id }, transaction })
+        await user.destroy({ transaction })
+      })
+
+      this.sessionManager.endSessionsForUser(user.id)
+
+      await this.auditService.record(context.user.id, 'user', user.id, 'delete', {
+        username: user.username
+      })
+    } catch (error) {
+      throw wrapError(error)
+    }
+  }
+}

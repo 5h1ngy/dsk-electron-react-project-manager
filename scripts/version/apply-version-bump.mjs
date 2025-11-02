@@ -1,0 +1,146 @@
+#!/usr/bin/env node
+
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+
+import { readFileSync, writeFileSync } from 'node:fs'
+import { resolve } from 'node:path'
+import { execSync } from 'node:child_process'
+import readline from 'node:readline'
+
+const PROJECT_ROOT = process.cwd()
+const VERSION_FILES = ['package.json', 'package-lock.json', '.env', 'README.md']
+const args = process.argv.slice(2)
+
+const getCliVersion = () => {
+  const idx = args.findIndex((value) => value === '--version' || value === '-v')
+  if (idx === -1) {
+    return undefined
+  }
+  if (idx === args.length - 1) {
+    console.error('[version] Missing value after --version flag.')
+    process.exit(1)
+  }
+  return args[idx + 1].trim()
+}
+
+const question = (prompt) =>
+  new Promise((resolveAnswer) => {
+    const rl = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout
+    })
+    rl.question(prompt, (answer) => {
+      rl.close()
+      resolveAnswer(answer.trim())
+    })
+  })
+
+const ensureCleanTree = () => {
+  const status = execSync('git status --porcelain', { cwd: PROJECT_ROOT }).toString().trim()
+  if (status) {
+    console.error(
+      '[version] Working tree not clean. Commit or stash changes before running the bump script.'
+    )
+    process.exit(1)
+  }
+}
+
+const readJson = (relativePath) => {
+  const filePath = resolve(PROJECT_ROOT, relativePath)
+  const raw = readFileSync(filePath, 'utf8')
+  return { filePath, data: JSON.parse(raw) }
+}
+
+const writeJson = (filePath, data) => {
+  writeFileSync(filePath, `${JSON.stringify(data, null, 2)}\n`, 'utf8')
+}
+
+const updatePackageJson = (version) => {
+  const pkg = readJson('package.json')
+  pkg.data.version = version
+  writeJson(pkg.filePath, pkg.data)
+}
+
+const updatePackageLock = (version) => {
+  const lock = readJson('package-lock.json')
+  lock.data.version = version
+  if (lock.data.packages?.['']) {
+    lock.data.packages[''].version = version
+  }
+  writeJson(lock.filePath, lock.data)
+}
+
+const updateEnvFile = (version) => {
+  const envPath = resolve(PROJECT_ROOT, '.env')
+  const raw = readFileSync(envPath, 'utf8')
+  if (!/^APP_VERSION=/m.test(raw)) {
+    throw new Error('APP_VERSION entry is missing in .env')
+  }
+  const next = raw.replace(/^APP_VERSION=.*$/m, `APP_VERSION=${version}`)
+  writeFileSync(envPath, next, 'utf8')
+}
+
+const updateReadme = (version) => {
+  const readmePath = resolve(PROJECT_ROOT, 'README.md')
+  const raw = readFileSync(readmePath, 'utf8')
+  if (!/> Release \d+\.\d+\.\d+ -/m.test(raw)) {
+    throw new Error('Unable to locate the Release heading in README.md')
+  }
+  const next = raw.replace(/> Release \d+\.\d+\.\d+ -/, `> Release ${version} -`)
+  writeFileSync(readmePath, next, 'utf8')
+}
+
+const validateSemver = (value) => /^\d+\.\d+\.\d+$/.test(value)
+
+const getCurrentVersion = () => {
+  const pkg = readJson('package.json')
+  return pkg.data.version
+}
+
+const stageFiles = () => {
+  execSync(`git add ${VERSION_FILES.join(' ')}`, {
+    cwd: PROJECT_ROOT,
+    stdio: 'inherit'
+  })
+}
+
+const commitVersion = (version) => {
+  execSync(`git commit -m "chore: bump version to ${version}"`, {
+    cwd: PROJECT_ROOT,
+    stdio: 'inherit'
+  })
+}
+
+const main = async () => {
+  ensureCleanTree()
+
+  const currentVersion = getCurrentVersion()
+  console.log(`[version] Current version: ${currentVersion}`)
+
+  const provided = getCliVersion()
+  const input = provided ?? (await question('Enter the new version (x.y.z): '))
+  if (!validateSemver(input)) {
+    console.error('[version] Invalid semantic version. Expected format x.y.z (e.g., 1.2.3)')
+    process.exit(1)
+  }
+
+  if (input === currentVersion) {
+    console.error('[version] New version matches the current version. Nothing to do.')
+    process.exit(1)
+  }
+
+  updatePackageJson(input)
+  updatePackageLock(input)
+  updateEnvFile(input)
+  updateReadme(input)
+
+  stageFiles()
+  commitVersion(input)
+
+  console.log(`[version] Bumped project version to ${input} and created commit.`)
+}
+
+main().catch((error) => {
+  console.error('[version] Failed to bump version:', error.message ?? error)
+  process.exit(1)
+})

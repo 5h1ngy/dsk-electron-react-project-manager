@@ -1,0 +1,28 @@
+{
+  "header": "Erstelle dein Konto",
+  "title": "Registrieren",
+  "displayNameLabel": "Vollstndiger Name",
+  "displayNamePlaceholder": "Gib deinen vollstndigen Namen ein",
+  "usernameLabel": "Benutzername",
+  "usernamePlaceholder": "Whle einen Benutzernamen",
+  "passwordLabel": "Passwort",
+  "passwordPlaceholder": "Whle ein Passwort",
+  "confirmPasswordLabel": "Passwort besttigen",
+  "confirmPasswordPlaceholder": "Wiederhole dein Passwort",
+  "submitLabel": "Konto erstellen",
+  "errorTitle": "Registrierung fehlgeschlagen",
+  "loginPrompt": "Du hast bereits ein Konto?",
+  "loginLink": "Anmelden",
+  "validation": {
+    "usernameRequired": "Bitte mindestens 3 Zeichen eingeben",
+    "usernameMin": "Bitte mindestens 3 Zeichen eingeben",
+    "usernameMax": "Maximal 32 Zeichen erlaubt",
+    "usernamePattern": "Ungltiges Benutzernamenformat",
+    "displayNameRequired": "Bitte gib deinen Namen ein",
+    "displayNameMax": "Maximal 64 Zeichen erlaubt",
+    "passwordRequired": "Das Passwort muss mindestens 8 Zeichen enthalten",
+    "passwordMin": "Das Passwort muss mindestens 8 Zeichen enthalten",
+    "confirmPasswordRequired": "Bitte besttige dein Passwort",
+    "confirmPasswordMatch": "Die Passwrter mssen bereinstimmen"
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "title": "Verschlüsselte Datenbank",
+  "description": "Exportieren oder importieren Sie die verschlüsselte Workspace-Datenbank. Bewahren Sie das Kennwort sicher auf.",
+  "export": {
+    "title": "Verschlüsselte Datenbank exportieren",
+    "subtitle": "Wählen Sie ein starkes Kennwort und speichern Sie die verschlüsselte Datei sicher.",
+    "passwordLabel": "Verschlüsselungskennwort",
+    "confirmPasswordLabel": "Kennwort bestätigen",
+    "submit": "Datenbank exportieren",
+    "success": "Verschlüsselte Datenbank gespeichert unter {{path}}",
+    "cancelled": "Export abgebrochen"
+  },
+  "import": {
+    "title": "Verschlüsselte Datenbank importieren",
+    "subtitle": "Geben Sie das Kennwort eines vorhandenen verschlsselten Backups ein. Nach erfolgreichem Import werden Sie zum Neustart aufgefordert.",
+    "passwordLabel": "Entschlüsselungskennwort",
+    "submit": "Datenbank importieren",
+    "success": "Datenbank erfolgreich importiert. Verwenden Sie den Dialog, um die Anwendung zu schlieen und neu zu starten.",
+    "cancelled": "Import abgebrochen"
+  },
+  "errors": {
+    "passwordRequired": "Kennwort ist erforderlich",
+    "passwordTooShort": "Das Kennwort muss mindestens {{length}} Zeichen enthalten",
+    "passwordMismatch": "Kennwörter stimmen nicht überein"
+  },
+  "restartModal": {
+    "title": "Neustart erforderlich",
+    "description": "Die verschlsselte Datenbank wurde importiert. Schlieen Sie die Anwendung, um die nderungen anzuwenden.",
+    "confirm": "Anwendung schlieen"
+  },
+  "progress": {
+    "title": {
+      "export": "Verschlüsselte Datenbank exportieren",
+      "import": "Verschlüsselte Datenbank importieren"
+    },
+    "description": {
+      "export": "Das verschlüsselte Archiv wird vorbereitet. Bitte Anwendung geöffnet lassen.",
+      "import": "Das verschlüsselte Archiv wird wiederhergestellt. Bitte Anwendung geöffnet lassen."
+    },
+    "pending": "Vorgang wird gestartet…",
+    "generic": "Fortschritt {{percent}}%",
+    "complete": "Vorgang abgeschlossen",
+    "counter": "{{current}} von {{total}} Elementen",
+    "phases": {
+      "export": {
+        "prepare": "Export vorbereiten",
+        "snapshotSchema": "Schemadaten sammeln",
+        "snapshotTable": "Tabelle {{table}} wird gelesen ({{current}}/{{total}})",
+        "snapshotSequences": "Sequenzwerte erfassen",
+        "serialize": "Snapshot serialisieren",
+        "compress": "Daten komprimieren",
+        "encrypt": "Payload verschlüsseln",
+        "write": "Verschlüsseltes Archiv schreiben",
+        "complete": "Export abgeschlossen"
+      },
+      "import": {
+        "prepare": "Import vorbereiten",
+        "decrypt": "Archiv entschlüsseln",
+        "decompress": "Daten dekomprimieren",
+        "parse": "Snapshot validieren",
+        "restoreSchema": "Schema wiederherstellen",
+        "restoreTable": "Tabelle {{table}} wird wiederhergestellt ({{current}}/{{total}})",
+        "restoreIndexes": "Indizes und Sichten neu aufbauen",
+        "restoreSequences": "Sequenzwerte wiederherstellen",
+        "finalize": "Import abschließen",
+        "complete": "Import abgeschlossen"
+      }
+    }
+  }
+}

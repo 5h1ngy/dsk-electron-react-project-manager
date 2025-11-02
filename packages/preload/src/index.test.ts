@@ -1,0 +1,39 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+const exposeMock = jest.fn()
+
+jest.mock('electron', () => ({
+  contextBridge: {
+    exposeInMainWorld: exposeMock
+  }
+}))
+
+describe('preload entry point', () => {
+  afterEach(() => {
+    exposeMock.mockClear()
+    jest.resetModules()
+  })
+
+  it('exposes the preload api when context isolation is enabled', async () => {
+    ;(process as any).contextIsolated = true
+    const module = await import('@preload/index')
+    expect(exposeMock).toHaveBeenCalledWith(
+      'api',
+      expect.objectContaining({ auth: expect.any(Object), health: expect.any(Object) })
+    )
+    expect(module).toBeDefined()
+  })
+
+  it('assigns api on window when context isolation is disabled', async () => {
+    ;(process as any).contextIsolated = false
+    const originalWindow = (global as any).window
+    try {
+      ;(global as any).window = {} as Record<string, unknown>
+      await import('@preload/index')
+      expect((global as any).window.api).toEqual(
+        expect.objectContaining({ auth: expect.any(Object), health: expect.any(Object) })
+      )
+    } finally {
+      ;(global as any).window = originalWindow
+    }
+  })
+})

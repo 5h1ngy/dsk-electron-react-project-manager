@@ -1,0 +1,135 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.release_info.outputs.version }}
+      notes: ${{ steps.release_info.outputs.notes }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Generate release information
+        id: release_info
+        run: node scripts/release/generate-release-info.mjs
+
+  build:
+    needs: prepare
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            id: linux
+            build: npm run build:linux
+          - os: macos-latest
+            id: mac
+            build: npm run build:mac
+          - os: windows-latest
+            id: windows
+            build: npm run build:win
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build project
+        run: ${{ matrix.build }}
+
+      - name: Collect artifacts
+        run: |
+          mkdir -p artifacts/${{ matrix.id }}
+          if [ -d dist ]; then
+            find dist -maxdepth 1 -type f -print0 | while IFS= read -r -d '' file; do
+              base=$(basename "$file")
+              cp "$file" "artifacts/${{ matrix.id }}/${{ matrix.id }}-$base"
+            done
+          fi
+        shell: bash
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.id }}
+          path: artifacts/${{ matrix.id }}
+          if-no-files-found: error
+
+  release:
+    needs:
+      - prepare
+      - build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: release-assets
+
+      - name: Create version tag
+        run: |
+          VERSION=${{ needs.prepare.outputs.version }}
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if git rev-parse "v$VERSION" >/dev/null 2>&1; then
+            echo "Tag v$VERSION already exists. Skipping tag creation."
+          else
+            git tag -a "v$VERSION" -m "Release v$VERSION"
+            git push origin "v$VERSION"
+          fi
+
+      - name: Flatten artifact list
+        id: files
+        run: |
+          FILES=$(find release-assets -type f \( -iname '*portable*' \) -print)
+          if [ -z "$FILES" ]; then
+            echo "No portable artifacts found to attach to the release." >&2
+            exit 1
+          fi
+          echo "list<<EOF" >> $GITHUB_OUTPUT
+          echo "$FILES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Publish GitHub release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ needs.prepare.outputs.version }}
+          name: v${{ needs.prepare.outputs.version }}
+          body: |
+            Portable package for DSK Project Manager v${{ needs.prepare.outputs.version }}.
+          files: ${{ steps.files.outputs.list }}

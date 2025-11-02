@@ -1,0 +1,70 @@
+{
+  "title": "Base de données chiffrée",
+  "description": "Exportez ou importez la base de données chiffrée de l'espace de travail. Conservez le mot de passe en lieu sûr.",
+  "export": {
+    "title": "Exporter la base chiffrée",
+    "subtitle": "Choisissez un mot de passe robuste et stockez le fichier chiffré en toute sécurité.",
+    "passwordLabel": "Mot de passe de chiffrement",
+    "confirmPasswordLabel": "Confirmez le mot de passe",
+    "submit": "Exporter la base",
+    "success": "Base de données chiffrée enregistrée dans {{path}}",
+    "cancelled": "Export annulé"
+  },
+  "import": {
+    "title": "Importer la base chiffrée",
+    "subtitle": "Saisissez le mot de passe d'une sauvegarde chiffre existante. Vous serez invit  redmarrer aprs un import russi.",
+    "passwordLabel": "Mot de passe de déchiffrement",
+    "submit": "Importer la base",
+    "success": "Base de donnes importe avec succs. Utilisez la fentre pour fermer et relancer l'application.",
+    "cancelled": "Import annulé"
+  },
+  "errors": {
+    "passwordRequired": "Le mot de passe est requis",
+    "passwordTooShort": "Le mot de passe doit contenir au moins {{length}} caractères",
+    "passwordMismatch": "Les mots de passe ne correspondent pas"
+  },
+  "restartModal": {
+    "title": "Redmarrage requis",
+    "description": "La base de donnes chiffre a t importe. Fermez l'application pour appliquer les modifications.",
+    "confirm": "Fermer l'application"
+  },
+  "progress": {
+    "title": {
+      "export": "Exporter la base chiffrée",
+      "import": "Importer la base chiffrée"
+    },
+    "description": {
+      "export": "Préparation de l’archive chiffrée. Merci de laisser l’application ouverte.",
+      "import": "Restauration de l’archive chiffrée. Merci de laisser l’application ouverte."
+    },
+    "pending": "Démarrage de l’opération…",
+    "generic": "Progression {{percent}} %",
+    "complete": "Opération terminée",
+    "counter": "{{current}} sur {{total}} éléments",
+    "phases": {
+      "export": {
+        "prepare": "Préparation de l’export",
+        "snapshotSchema": "Collecte du schéma",
+        "snapshotTable": "Lecture de la table {{table}} ({{current}}/{{total}})",
+        "snapshotSequences": "Capture des valeurs de séquence",
+        "serialize": "Sérialisation de l’instantané",
+        "compress": "Compression des données",
+        "encrypt": "Chiffrement du contenu",
+        "write": "Écriture de l’archive chiffrée",
+        "complete": "Export terminé"
+      },
+      "import": {
+        "prepare": "Préparation de l’import",
+        "decrypt": "Déchiffrement de l’archive",
+        "decompress": "Décompression des données",
+        "parse": "Validation de l’instantané",
+        "restoreSchema": "Recréation du schéma",
+        "restoreTable": "Restauration de la table {{table}} ({{current}}/{{total}})",
+        "restoreIndexes": "Reconstruction des index et vues",
+        "restoreSequences": "Restauration des valeurs de séquence",
+        "finalize": "Finalisation de l’import",
+        "complete": "Import terminé"
+      }
+    }
+  }
+}

@@ -1,0 +1,93 @@
+import type { ChangeEvent, FC } from 'react'
+import { Alert, Button, Card, Form, Input, Typography } from 'antd'
+import { Controller } from 'react-hook-form'
+import { Link } from 'react-router-dom'
+
+import {
+  LOGIN_CARD_STYLE,
+  INFO_TEXT_STYLE,
+  SECONDARY_INFO_STYLE
+} from '@renderer/pages/Login/Login.helpers'
+import type { LoginProps } from '@renderer/pages/Login/Login.types'
+import { useLoginForm } from '@renderer/pages/Login/hooks/useLoginForm'
+
+const Login: FC<LoginProps> = () => {
+  const { t, status, error, clearError, control, errors, handleSubmit, onSubmit } = useLoginForm()
+
+  return (
+    <Card title={t('login:title')} style={LOGIN_CARD_STYLE}>
+      <Form data-testid="login-form" layout="vertical" onFinish={handleSubmit(onSubmit)}>
+        <Form.Item
+          label={t('login:usernameLabel')}
+          validateStatus={errors.username ? 'error' : undefined}
+          help={errors.username?.message}
+        >
+          <Controller
+            control={control}
+            name="username"
+            render={({ field }) => (
+              <Input
+                {...field}
+                value={field.value ?? ''}
+                onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                  field.onChange(event.target.value)
+                }
+                autoComplete="username"
+                autoFocus
+                aria-label={t('login:usernameLabel')}
+                placeholder={t('login:usernamePlaceholder')}
+              />
+            )}
+          />
+        </Form.Item>
+        <Form.Item
+          label={t('login:passwordLabel')}
+          validateStatus={errors.password ? 'error' : undefined}
+          help={errors.password?.message}
+        >
+          <Controller
+            control={control}
+            name="password"
+            render={({ field }) => (
+              <Input.Password
+                {...field}
+                value={field.value ?? ''}
+                onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                  field.onChange(event.target.value)
+                }
+                autoComplete="current-password"
+                aria-label={t('login:passwordLabel')}
+                placeholder={t('login:passwordPlaceholder')}
+              />
+            )}
+          />
+        </Form.Item>
+        {error && (
+          <Alert
+            type="error"
+            showIcon
+            message={t('login:errorTitle')}
+            description={error}
+            style={{ marginBottom: 16 }}
+            closable
+            onClose={clearError}
+          />
+        )}
+        <Button type="primary" htmlType="submit" block loading={status === 'loading'}>
+          {t('login:submitLabel')}
+        </Button>
+        <Typography.Paragraph type="secondary" style={INFO_TEXT_STYLE}>
+          {t('login:defaultCredentials')}
+        </Typography.Paragraph>
+        <Typography.Paragraph type="secondary" style={SECONDARY_INFO_STYLE}>
+          {t('login:registerPrompt')} <Link to="/register">{t('login:registerLink')}</Link>
+        </Typography.Paragraph>
+      </Form>
+    </Card>
+  )
+}
+
+Login.displayName = 'Login'
+
+export { Login }
+export default Login

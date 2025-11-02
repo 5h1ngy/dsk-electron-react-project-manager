@@ -1,0 +1,28 @@
+{
+  "header": "Create your account",
+  "title": "Register",
+  "displayNameLabel": "Full name",
+  "displayNamePlaceholder": "Enter your full name",
+  "usernameLabel": "Username",
+  "usernamePlaceholder": "Choose a username",
+  "passwordLabel": "Password",
+  "passwordPlaceholder": "Choose a password",
+  "confirmPasswordLabel": "Confirm password",
+  "confirmPasswordPlaceholder": "Repeat your password",
+  "submitLabel": "Create account",
+  "errorTitle": "Registration failed",
+  "loginPrompt": "Already have an account?",
+  "loginLink": "Sign in",
+  "validation": {
+    "usernameRequired": "Please enter at least 3 characters",
+    "usernameMin": "Please enter at least 3 characters",
+    "usernameMax": "Maximum 32 characters allowed",
+    "usernamePattern": "Username format is invalid",
+    "displayNameRequired": "Please enter your name",
+    "displayNameMax": "Maximum 64 characters allowed",
+    "passwordRequired": "Password must contain at least 8 characters",
+    "passwordMin": "Password must contain at least 8 characters",
+    "confirmPasswordRequired": "Please confirm your password",
+    "confirmPasswordMatch": "Passwords must match"
+  }
+}

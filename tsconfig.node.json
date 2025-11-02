@@ -1,10 +1,28 @@
 {
-  "compilerOptions": {
-    "composite": true,
-    "skipLibCheck": true,
-    "module": "ESNext",
-    "moduleResolution": "bundler",
-    "allowSyntheticDefaultImports": true
-  },
-  "include": ["vite.config.ts"]
+    "extends":  "@electron-toolkit/tsconfig/tsconfig.node.json",
+    "include":  [
+        "electron.vite.config.*",
+        "packages/main/src/**/*",
+        "packages/preload/src/**/*",
+        "seeding/**/*"
+    ],
+    "compilerOptions":  {
+        "composite":  true,
+        "types":  [
+            "electron-vite/node",
+            "jest"
+        ],
+        "strict":  true,
+        "baseUrl":  ".",
+        "experimentalDecorators":  true,
+        "emitDecoratorMetadata":  true,
+        "paths":  {
+            "@main/*":  [
+                "packages/main/src/*"
+            ],
+            "@preload/*":  [
+                "packages/preload/src/*"
+            ]
+        }
+    }
 }
