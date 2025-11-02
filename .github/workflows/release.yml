@@ -33,20 +33,7 @@ jobs:
 
   build:
     needs: prepare
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - os: ubuntu-latest
-            id: linux
-            build: npm run build:linux
-          - os: macos-latest
-            id: mac
-            build: npm run build:mac
-          - os: windows-latest
-            id: windows
-            build: npm run build:win
+    runs-on: windows-latest
 
     steps:
       - name: Checkout
@@ -64,15 +51,15 @@ jobs:
         run: npm ci
 
       - name: Build project
-        run: ${{ matrix.build }}
+        run: npm run build:win
 
       - name: Collect artifacts
         run: |
-          mkdir -p artifacts/${{ matrix.id }}
+          mkdir -p artifacts/windows
           if [ -d dist ]; then
             find dist -maxdepth 1 -type f -print0 | while IFS= read -r -d '' file; do
               base=$(basename "$file")
-              cp "$file" "artifacts/${{ matrix.id }}/${{ matrix.id }}-$base"
+              cp "$file" "artifacts/windows/windows-$base"
             done
           fi
         shell: bash
@@ -80,8 +67,8 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.id }}
-          path: artifacts/${{ matrix.id }}
+          name: windows
+          path: artifacts/windows
           if-no-files-found: error
 
   release:

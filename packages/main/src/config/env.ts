@@ -1,4 +1,4 @@
-import { existsSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import dotenv from 'dotenv'
 
@@ -26,7 +26,7 @@ export class EnvConfig {
     }
     return new EnvConfig({
       logLevel: EnvConfig.parseLogLevel(process.env.LOG_LEVEL),
-      appVersion: EnvConfig.requireVersion(process.env.APP_VERSION)
+      appVersion: EnvConfig.resolveAppVersion(process.env.APP_VERSION)
     })
   }
 
@@ -63,13 +63,81 @@ export class EnvConfig {
     }
   }
 
-  private static requireVersion(value?: string): string {
+  private static resolveAppVersion(value?: string): string {
+    const normalized = EnvConfig.normalizeVersion(value)
+    if (normalized) {
+      return normalized
+    }
+
+    const fallback =
+      EnvConfig.tryGetVersionFromElectron() ?? EnvConfig.tryGetVersionFromPackageFiles()
+    if (fallback) {
+      return fallback
+    }
+
+    throw new Error('APP_VERSION is required in the environment')
+  }
+
+  private static normalizeVersion(value?: string): string | undefined {
     const normalized = value?.trim()
     if (!normalized || normalized === 'undefined' || normalized === 'null') {
-      throw new Error('APP_VERSION is required in the environment')
+      return undefined
     }
     return normalized
   }
+
+  private static tryGetVersionFromElectron(): string | undefined {
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-var-requires, global-require
+      const { app } = require('electron') as typeof import('electron')
+      const version = EnvConfig.normalizeVersion(app?.getVersion?.())
+      return version ?? undefined
+    } catch {
+      return undefined
+    }
+  }
+
+  private static tryGetVersionFromPackageFiles(): string | undefined {
+    const candidates = EnvConfig.versionFileCandidates()
+    for (const candidate of candidates) {
+      const version = EnvConfig.readVersionFromFile(candidate)
+      if (version) {
+        return version
+      }
+    }
+    return undefined
+  }
+
+  private static versionFileCandidates(): string[] {
+    const candidates = [join(process.cwd(), 'package.json')]
+
+    const resourcesPath = process.resourcesPath
+    if (resourcesPath) {
+      candidates.push(
+        join(resourcesPath, 'app.asar', 'package.json'),
+        join(resourcesPath, 'app', 'package.json')
+      )
+    }
+
+    return candidates
+  }
+
+  private static readVersionFromFile(path: string): string | undefined {
+    try {
+      if (!existsSync(path)) {
+        return undefined
+      }
+      const raw = readFileSync(path, 'utf8')
+      const pkg = JSON.parse(raw) as { version?: unknown }
+      if (typeof pkg.version === 'string') {
+        return EnvConfig.normalizeVersion(pkg.version)
+      }
+    } catch {
+      return undefined
+    }
+    return undefined
+  }
+
 }
 
 export const env = EnvConfig.load().toObject()

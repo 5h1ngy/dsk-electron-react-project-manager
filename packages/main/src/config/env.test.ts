@@ -1,4 +1,4 @@
-import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { tmpdir } from 'node:os'
 
@@ -53,10 +53,11 @@ describe('EnvConfig', () => {
     expect(config.appVersion).toBe('1.0.0')
   })
 
-  it('throws when APP_VERSION is missing', () => {
+  it('falls back to the package version when APP_VERSION is missing', () => {
     resetAppVersion(undefined)
-    expect(() => EnvConfig.load(join(tmpdir(), 'missing.env'))).toThrow(
-      'APP_VERSION is required in the environment'
-    )
+    const config = EnvConfig.load(join(tmpdir(), 'missing.env'))
+    const pkgPath = join(__dirname, '..', '..', '..', '..', 'package.json')
+    const pkg = JSON.parse(readFileSync(pkgPath, 'utf8')) as { version?: string }
+    expect(config.appVersion).toBe(pkg.version)
   })
 })

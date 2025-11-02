@@ -8,7 +8,7 @@
 
 ![Application preview](assets/preview.png)
 
-> Release 0.44.11 - Modern desktop project manager with a hardened Electron main process, a typed preload bridge, and a polished React/Redux experience.
+> Release 0.44.12 - Modern desktop project manager with a hardened Electron main process, a typed preload bridge, and a polished React/Redux experience.
 
 ---
 
@@ -81,7 +81,7 @@ See `docs/architecture-overview.md` for a deeper walkthrough of the Electron lif
 2. Launch the app in development: `npm run dev`
 3. Run the renderer preview in a browser-only context: `npm start`
 4. Build production assets: `npm run build`
-5. Package the desktop app: `npm run build:win` (or `build:mac`, `build:linux`)
+5. Package the desktop app: `npm run build:win`
 
 All commands assume a recent Node 22 environment. The Electron app automatically seeds sane defaults on first launch.
 
@@ -102,7 +102,7 @@ All commands assume a recent Node 22 environment. The Electron app automatically
 - Esegui `npm run version:bump` per impostare manualmente la nuova versione: lo script aggiorna `.env`, `package.json`, `package-lock.json`, la riga "Release ..." nel README e crea automaticamente il commit `chore: bump version to X.Y.Z`.
 - La versione applicativa e' dichiarata in `.env` (`APP_VERSION`) e deve rimanere allineata con `package.json`; il comando precedente garantisce l'aggiornamento coerente dei file.
 - Su `develop` sono ammessi solo branch `feature/`, `feat/`, `bugfix/`, `bug/`, `fix/`; su `main` soltanto `release/` e `hotfix/`. I merge non conformi vengono bloccati sia in locale sia in CI.
-- La pipeline `Release` su GitHub si limita a buildare i pacchetti (portable per Win/macOS/Linux) e a pubblicare tag+release partendo dalla versione presente nel repository.
+- La pipeline `Release` su GitHub genera esclusivamente il pacchetto Windows portable e pubblica tag+release partendo dalla versione presente nel repository.
 - Dopo il clone esegui `npm run setup:hooks` (o `npm install`) per configurare i githook che applicano i controlli sui prefissi e i Conventional Commit.
 
 ---
