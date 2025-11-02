@@ -21,23 +21,6 @@ win:
 portable:
   artifactName: ${name}-${version}-portable-win.${ext}
   requestExecutionLevel: user
-mac:
-  target:
-    - zip
-  entitlementsInherit: build/entitlements.mac.plist
-  extendInfo:
-    - NSCameraUsageDescription: Application requests access to the device's camera.
-    - NSMicrophoneUsageDescription: Application requests access to the device's microphone.
-    - NSDocumentsFolderUsageDescription: Application requests access to the user's Documents folder.
-    - NSDownloadsFolderUsageDescription: Application requests access to the user's Downloads folder.
-  notarize: false
-  artifactName: ${name}-${version}-portable-mac.${ext}
-linux:
-  target:
-    - AppImage
-  maintainer: electronjs.org
-  category: Utility
-  artifactName: ${name}-${version}-portable-linux.${ext}
 npmRebuild: false
 publish:
   provider: generic
