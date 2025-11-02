@@ -10,8 +10,8 @@ try {
 }
 
 try {
-  execSync('git config core.hooksPath githooks', { stdio: 'inherit' })
-  console.log('[hooks] Git hooks path configured to "githooks/".')
+  execSync('git config core.hooksPath scripts/git', { stdio: 'inherit' })
+  console.log('[hooks] Git hooks path configured to "scripts/git/".')
 } catch (error) {
   console.error(`[hooks] Failed to configure git hooks: ${(error ?? '').message ?? error}`)
   process.exit(1)
