@@ -90,6 +90,8 @@ export const TaskFiltersBar = ({
     ]
   )
 
+  const isCompact = !screens.md
+
   const dueRangeValue = useMemo<[Dayjs | null, Dayjs | null] | null>(() => {
     if (!filters.dueDateRange) {
       return null
@@ -104,7 +106,7 @@ export const TaskFiltersBar = ({
         label: (
           <Space size={6} style={{ color: 'inherit' }}>
             <TableOutlined />
-            <span>{t('viewSwitcher.table')}</span>
+            {!isCompact ? <span>{t('viewSwitcher.table')}</span> : null}
           </Space>
         ),
         value: 'table'
@@ -113,7 +115,7 @@ export const TaskFiltersBar = ({
         label: (
           <Space size={6} style={{ color: 'inherit' }}>
             <BarsOutlined />
-            <span>{t('viewSwitcher.list')}</span>
+            {!isCompact ? <span>{t('viewSwitcher.list')}</span> : null}
           </Space>
         ),
         value: 'list'
@@ -122,7 +124,7 @@ export const TaskFiltersBar = ({
         label: (
           <Space size={6} style={{ color: 'inherit' }}>
             <ColumnWidthOutlined />
-            <span>{t('viewSwitcher.board')}</span>
+            {!isCompact ? <span>{t('viewSwitcher.board')}</span> : null}
           </Space>
         ),
         value: 'board'
@@ -131,19 +133,17 @@ export const TaskFiltersBar = ({
         label: (
           <Space size={6} style={{ color: 'inherit' }}>
             <AppstoreOutlined />
-            <span>{t('viewSwitcher.cards')}</span>
+            {!isCompact ? <span>{t('viewSwitcher.cards')}</span> : null}
           </Space>
         ),
         value: 'cards'
       }
     ],
-    [t]
+    [isCompact, t]
   )
 
   const selectOption = (options: SelectOption[]): Option =>
     options.map((option) => ({ label: option.label, value: option.value }))
-
-  const isCompact = !screens.md
 
   const segmentedStyle = useMemo(
     () => ({
