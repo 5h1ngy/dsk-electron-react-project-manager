@@ -25,7 +25,10 @@ export interface TaskModalsState {
   submitting: boolean
   editorTask: TaskDetails | null
   deletingTaskId: string | null
-  deleteTask: (taskId: string) => Promise<void>
+  deleteConfirmTask: TaskDetails | null
+  openDeleteConfirm: (taskId: string) => void
+  closeDeleteConfirm: () => void
+  confirmDelete: () => Promise<void>
   assigneeOptions: Array<{ label: string; value: string }>
   statusOptions: Array<{ label: string; value: string }>
   taskMessageContext: React.ReactNode
@@ -56,6 +59,7 @@ export const useTaskModals = ({
     taskId?: string
   } | null>(null)
   const [deletingTaskId, setDeletingTaskId] = useState<string | null>(null)
+  const [deleteTarget, setDeleteTarget] = useState<TaskDetails | null>(null)
   const [submitting, setSubmitting] = useState(false)
 
   const statusMap = useMemo(
@@ -226,27 +230,19 @@ export const useTaskModals = ({
     }
   })
 
-  const deleteTaskById = useCallback(
-    async (taskId: string) => {
+  const performDeleteTask = useCallback(
+    async (task: TaskDetails): Promise<boolean> => {
       if (!projectId) {
-        return
+        return false
       }
-      if (!canManageTasks) {
-        messageApi.warning(t('permissions.tasksUpdateDenied'))
-        return
-      }
-      const task = tasks.find((item) => item.id === taskId)
-      if (!task) {
-        messageApi.error(t('tasks.messages.notFound', { defaultValue: 'Task non trovato' }))
-        return
-      }
-      setDeletingTaskId(taskId)
+      setDeletingTaskId(task.id)
       try {
-        await dispatch(deleteTask({ projectId, taskId })).unwrap()
+        await dispatch(deleteTask({ projectId, taskId: task.id })).unwrap()
         messageApi.success(t('tasks.messages.deleteSuccess'))
-        if (detailTaskId === taskId) {
+        if (detailTaskId === task.id) {
           setDetailTaskId(null)
         }
+        return true
       } catch (error) {
         const messageText =
           typeof error === 'string'
@@ -255,12 +251,46 @@ export const useTaskModals = ({
               ? error.message
               : t('errors.generic', { defaultValue: 'Operazione non riuscita' })
         messageApi.error(messageText)
+        return false
       } finally {
         setDeletingTaskId(null)
       }
     },
-    [canManageTasks, detailTaskId, dispatch, messageApi, projectId, t, tasks]
+    [detailTaskId, dispatch, messageApi, projectId, t]
   )
+
+  const openDeleteConfirm = useCallback(
+    (taskId: string) => {
+      if (!canManageTasks) {
+        messageApi.warning(t('permissions.tasksUpdateDenied'))
+        return
+      }
+      const target = tasks.find((item) => item.id === taskId)
+      if (!target) {
+        messageApi.error(t('tasks.messages.notFound', { defaultValue: 'Task non trovato' }))
+        return
+      }
+      setDeleteTarget(target)
+    },
+    [canManageTasks, messageApi, t, tasks]
+  )
+
+  const closeDeleteConfirm = useCallback(() => {
+    if (deletingTaskId) {
+      return
+    }
+    setDeleteTarget(null)
+  }, [deletingTaskId])
+
+  const confirmDelete = useCallback(async () => {
+    if (!deleteTarget) {
+      return
+    }
+    const success = await performDeleteTask(deleteTarget)
+    if (success) {
+      setDeleteTarget(null)
+    }
+  }, [deleteTarget, performDeleteTask])
 
   const submitEditor = useCallback(() => {
     void handleEditorSubmit()
@@ -281,7 +311,10 @@ export const useTaskModals = ({
     submitting,
     editorTask,
     deletingTaskId,
-    deleteTask: deleteTaskById,
+    deleteConfirmTask: deleteTarget,
+    openDeleteConfirm,
+    closeDeleteConfirm,
+    confirmDelete,
     assigneeOptions,
     statusOptions,
     taskMessageContext

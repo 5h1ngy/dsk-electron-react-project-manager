@@ -5,7 +5,7 @@ import {
   MessageOutlined,
   UserOutlined
 } from '@ant-design/icons'
-import { Button, Card, Col, Pagination, Popconfirm, Row, Space, Tag, Typography, theme } from 'antd'
+import { Button, Card, Col, Pagination, Row, Space, Tag, Typography, theme } from 'antd'
 import { useMemo, type JSX } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -30,7 +30,7 @@ export interface ProjectTasksCardGridProps {
   onPageChange: (page: number) => void
   onSelect: (task: TaskDetails) => void
   onEdit: (task: TaskDetails) => void
-  onDelete: (task: TaskDetails) => Promise<void> | void
+  onDeleteRequest: (task: TaskDetails) => void
   canManage: boolean
   deletingTaskId?: string | null
   statusLabels?: Record<string, string>
@@ -44,7 +44,7 @@ export const ProjectTasksCardGrid = ({
   onPageChange,
   onSelect,
   onEdit,
-  onDelete,
+  onDeleteRequest,
   canManage,
   deletingTaskId,
   statusLabels = {}
@@ -92,35 +92,29 @@ export const ProjectTasksCardGrid = ({
               }
               extra={
                 canManage ? (
-                  <Space size={4}>
-                    <Button
-                      type="text"
-                      icon={<EditOutlined />}
-                      onClick={(event) => {
-                        event.stopPropagation()
-                        onEdit(task)
-                      }}
-                    >
-                      {t('tasks.actions.edit')}
-                    </Button>
-                    <Popconfirm
-                      title={t('tasks.actions.deleteTitle')}
-                      description={t('tasks.actions.deleteDescription', { title: task.title })}
-                      okText={t('tasks.actions.deleteConfirm')}
-                      cancelText={t('tasks.actions.cancel')}
-                      onConfirm={async () => await onDelete(task)}
-                      okButtonProps={{ loading: deletingTaskId === task.id }}
-                    >
-                      <Button
-                        type="text"
-                        danger
-                        icon={<DeleteOutlined />}
-                        loading={deletingTaskId === task.id}
-                        onClick={(event) => event.stopPropagation()}
-                      >
-                        {t('tasks.actions.delete')}
-                      </Button>
-                    </Popconfirm>
+                <Space size={4}>
+                  <Button
+                    type="text"
+                    icon={<EditOutlined />}
+                    onClick={(event) => {
+                      event.stopPropagation()
+                      onEdit(task)
+                    }}
+                  >
+                    {t('tasks.actions.edit')}
+                  </Button>
+                  <Button
+                    type="text"
+                    danger
+                    icon={<DeleteOutlined />}
+                    loading={deletingTaskId === task.id}
+                    onClick={(event) => {
+                      event.stopPropagation()
+                      onDeleteRequest(task)
+                    }}
+                  >
+                    {t('tasks.actions.delete')}
+                  </Button>
                   </Space>
                 ) : undefined
               }

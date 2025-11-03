@@ -275,6 +275,13 @@
       "modalTitle": "Sélectionnez les champs optionnels",
       "description": "Choisissez les champs supplémentaires à afficher dans la vue tableau."
     },
+    "deleteModal": {
+      "title": "Supprimer la tâche",
+      "message": "La suppression de « {{title}} » supprimera définitivement la tâche, ses commentaires et tous les liens vers les notes.",
+      "warning": "Cette action est irréversible.",
+      "confirm": "Supprimer la tâche",
+      "cancel": "Annuler"
+    },
     "statusManager": {
       "manageButton": "GÃ©rer les statuts",
       "title": "Statuts des tÃ¢ches",

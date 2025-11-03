@@ -23,7 +23,10 @@ export interface ProjectRouteContext {
     priority?: TaskDetails['priority']
   }) => void
   openTaskEdit: (taskId: string) => void
-  deleteTask: (taskId: string) => Promise<void>
+  deleteConfirmTask: TaskDetails | null
+  openDeleteConfirm: (taskId: string) => void
+  closeDeleteConfirm: () => void
+  confirmDelete: () => Promise<void>
   deletingTaskId: string | null
   notes: NoteSummary[]
   notesStatus: string

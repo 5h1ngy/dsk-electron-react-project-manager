@@ -277,6 +277,13 @@
       "modalTitle": "Optionale Felder auswählen",
       "description": "Wählen Sie die zusätzlichen Felder, die in der Tabellenansicht angezeigt werden sollen."
     },
+    "deleteModal": {
+      "title": "Aufgabe löschen",
+      "message": "Durch das Löschen von \"{{title}}\" werden die Aufgabe, alle Kommentare und alle Notizverknüpfungen dauerhaft entfernt.",
+      "warning": "Dieser Vorgang kann nicht rückgängig gemacht werden.",
+      "confirm": "Aufgabe löschen",
+      "cancel": "Abbrechen"
+    },
     "statusManager": {
       "manageButton": "Status verwalten",
       "title": "Aufgabenstatus",

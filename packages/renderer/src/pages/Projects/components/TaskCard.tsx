@@ -1,4 +1,4 @@
-import { Button, Card, Popconfirm, Space, Tag, Typography } from 'antd'
+import { Button, Card, Space, Tag, Typography } from 'antd'
 import type { DragEvent, JSX } from 'react'
 import { useTranslation } from 'react-i18next'
 import { DeleteOutlined, EditOutlined, MessageOutlined } from '@ant-design/icons'
@@ -11,7 +11,7 @@ export interface TaskCardProps {
   onSelect: () => void
   onDragStart: (taskId: string, event: DragEvent<HTMLDivElement>) => void
   onEdit: () => void
-  onDelete: () => Promise<void> | void
+  onDeleteRequest: () => void
   deleting?: boolean
   draggable?: boolean
 }
@@ -21,7 +21,7 @@ export const TaskCard = ({
   onSelect,
   onDragStart,
   onEdit,
-  onDelete,
+  onDeleteRequest,
   deleting = false,
   draggable = true
 }: TaskCardProps): JSX.Element => {
@@ -57,24 +57,18 @@ export const TaskCard = ({
             >
               {t('tasks.actions.edit')}
             </Button>
-            <Popconfirm
-              title={t('tasks.actions.deleteTitle')}
-              description={t('tasks.actions.deleteDescription', { title: task.title })}
-              okText={t('tasks.actions.deleteConfirm')}
-              cancelText={t('tasks.actions.cancel')}
-              onConfirm={async () => onDelete()}
-              okButtonProps={{ loading: deleting }}
+            <Button
+              type="text"
+              danger
+              icon={<DeleteOutlined />}
+              loading={deleting}
+              onClick={(event) => {
+                event.stopPropagation()
+                onDeleteRequest()
+              }}
             >
-              <Button
-                type="text"
-                danger
-                icon={<DeleteOutlined />}
-                loading={deleting}
-                onClick={(event) => event.stopPropagation()}
-              >
-                {t('tasks.actions.delete')}
-              </Button>
-            </Popconfirm>
+              {t('tasks.actions.delete')}
+            </Button>
           </Space>
         ) : undefined
       }

@@ -1,5 +1,5 @@
 import type { JSX } from 'react'
-import { Form, Input, Modal, Space } from 'antd'
+import { Form, Input, Modal, Space, Typography } from 'antd'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -65,7 +65,10 @@ const ProjectTasksPage = (): JSX.Element => {
     openTaskDetails,
     openTaskCreate,
     openTaskEdit,
-    deleteTask,
+    deleteConfirmTask,
+    openDeleteConfirm,
+    closeDeleteConfirm,
+    confirmDelete,
     deletingTaskId
   } = useProjectRouteContext()
   const { t } = useTranslation('projects')
@@ -339,7 +342,7 @@ const ProjectTasksPage = (): JSX.Element => {
     openTaskEdit(taskId)
   }
 
-  const handleTaskDelete = (taskId: string) => deleteTask(taskId)
+  const handleTaskDelete = (taskId: string) => openDeleteConfirm(taskId)
 
   if (!project && !projectLoading) {
     return (
@@ -383,7 +386,7 @@ const ProjectTasksPage = (): JSX.Element => {
             loading={loading || projectLoading}
             onSelect={(task) => handleTaskSelect(task.id)}
             onEdit={(task) => handleTaskEdit(task.id)}
-            onDelete={(task) => handleTaskDelete(task.id)}
+            onDeleteRequest={(task) => handleTaskDelete(task.id)}
             canManage={canManageTasks}
             deletingTaskId={deletingTaskId}
             statusLabels={statusLabelMap}
@@ -411,7 +414,7 @@ const ProjectTasksPage = (): JSX.Element => {
             onPageChange={setCardPage}
             onSelect={(task) => handleTaskSelect(task.id)}
             onEdit={(task) => handleTaskEdit(task.id)}
-            onDelete={(task) => handleTaskDelete(task.id)}
+            onDeleteRequest={(task) => handleTaskDelete(task.id)}
             canManage={canManageTasks}
             deletingTaskId={deletingTaskId}
             statusLabels={statusLabelMap}
@@ -426,18 +429,18 @@ const ProjectTasksPage = (): JSX.Element => {
             onPageChange={setListPage}
             onSelect={(task) => handleTaskSelect(task.id)}
             onEdit={(task) => handleTaskEdit(task.id)}
-            onDelete={(task) => handleTaskDelete(task.id)}
+            onDeleteRequest={(task) => handleTaskDelete(task.id)}
             canManage={canManageTasks}
             deletingTaskId={deletingTaskId}
             statusLabels={statusLabelMap}
           />
         ) : null}
         {viewMode === 'board' ? (
-          <ProjectBoard
-            projectId={projectId}
-            statuses={taskStatuses}
-            tasks={filteredTasks}
-            isLoading={loading || projectLoading}
+      <ProjectBoard
+        projectId={projectId}
+        statuses={taskStatuses}
+        tasks={filteredTasks}
+        isLoading={loading || projectLoading}
             canManageTasks={canManageTasks}
             onTaskSelect={(task) => handleTaskSelect(task.id)}
             onTaskEdit={(task) => handleTaskEdit(task.id)}
@@ -446,6 +449,41 @@ const ProjectTasksPage = (): JSX.Element => {
           />
         ) : null}
       </Space>
+      <Modal
+        open={Boolean(deleteConfirmTask)}
+        title={t('tasks.deleteModal.title', { defaultValue: 'Elimina task' })}
+        onCancel={closeDeleteConfirm}
+        onOk={() => {
+          void confirmDelete()
+        }}
+        okText={t('tasks.deleteModal.confirm', { defaultValue: 'Elimina' })}
+        cancelText={t('tasks.deleteModal.cancel', { defaultValue: 'Annulla' })}
+        okButtonProps={{
+          danger: true,
+          loading: Boolean(deleteConfirmTask && deletingTaskId === deleteConfirmTask.id),
+          disabled: Boolean(!deleteConfirmTask)
+        }}
+        cancelButtonProps={{
+          disabled: Boolean(deleteConfirmTask && deletingTaskId === deleteConfirmTask.id)
+        }}
+        maskClosable={false}
+        destroyOnClose
+      >
+        <Space direction="vertical" size="small">
+          <Typography.Paragraph style={{ marginBottom: 0 }}>
+            {t('tasks.deleteModal.message', {
+              title: deleteConfirmTask?.title ?? '',
+              defaultValue:
+                'Eliminando il task "{title}" saranno rimossi definitivamente tutti i commenti e i collegamenti alle note.'
+            })}
+          </Typography.Paragraph>
+          <Typography.Text type="secondary">
+            {t('tasks.deleteModal.warning', {
+              defaultValue: 'L’operazione è irreversibile.'
+            })}
+          </Typography.Text>
+        </Space>
+      </Modal>
       <Modal
         open={isSaveModalOpen}
         title={t('tasks.savedViews.modalTitle')}

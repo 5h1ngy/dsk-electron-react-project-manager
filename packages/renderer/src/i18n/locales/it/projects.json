@@ -276,6 +276,13 @@
       "modalTitle": "Seleziona i campi opzionali",
       "description": "Scegli i campi aggiuntivi da mostrare nella vista tabellare."
     },
+    "deleteModal": {
+      "title": "Elimina task",
+      "message": "Eliminando \"{{title}}\" verranno rimossi definitivamente il task, i commenti e i collegamenti alle note.",
+      "warning": "L'operazione è irreversibile.",
+      "confirm": "Elimina task",
+      "cancel": "Annulla"
+    },
     "statusManager": {
       "manageButton": "Gestisci stati",
       "title": "Stati dei task",

@@ -276,6 +276,13 @@
       "modalTitle": "Select optional fields",
       "description": "Select the additional fields to display in the table view."
     },
+    "deleteModal": {
+      "title": "Delete task",
+      "message": "Deleting \"{{title}}\" permanently removes the task, its comments, and any note links.",
+      "warning": "This action cannot be undone.",
+      "confirm": "Delete task",
+      "cancel": "Cancel"
+    },
     "statusManager": {
       "manageButton": "Manage statuses",
       "title": "Task statuses",

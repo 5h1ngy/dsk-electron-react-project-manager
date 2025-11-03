@@ -1,4 +1,4 @@
-import { Button, Popconfirm, Space, Table, Tag, Typography, theme } from 'antd'
+import { Button, Space, Table, Tag, Typography, theme } from 'antd'
 import type { ColumnsType, TablePaginationConfig } from 'antd/es/table'
 import { useTranslation } from 'react-i18next'
 import { DeleteOutlined, EditOutlined, MessageOutlined } from '@ant-design/icons'
@@ -17,7 +17,7 @@ export interface ProjectTasksTableProps {
   loading: boolean
   onSelect: (task: TaskDetails) => void
   onEdit: (task: TaskDetails) => void
-  onDelete: (task: TaskDetails) => Promise<void> | void
+  onDeleteRequest: (task: TaskDetails) => void
   canManage: boolean
   deletingTaskId?: string | null
   pagination?: TablePaginationConfig | false
@@ -30,7 +30,7 @@ export const ProjectTasksTable = ({
   loading,
   onSelect,
   onEdit,
-  onDelete,
+  onDeleteRequest,
   canManage,
   deletingTaskId,
   pagination,
@@ -153,24 +153,18 @@ export const ProjectTasksTable = ({
           >
             {t('tasks.actions.edit')}
           </Button>
-          <Popconfirm
-            title={t('tasks.actions.deleteTitle')}
-            description={t('tasks.actions.deleteDescription', { title: record.title })}
-            okText={t('tasks.actions.deleteConfirm')}
-            cancelText={t('tasks.actions.cancel')}
-            onConfirm={async () => await onDelete(record)}
-            okButtonProps={{ loading: deletingTaskId === record.id }}
+          <Button
+            type="text"
+            danger
+            icon={<DeleteOutlined />}
+            loading={deletingTaskId === record.id}
+            onClick={(event) => {
+              event.stopPropagation()
+              onDeleteRequest(record)
+            }}
           >
-            <Button
-              type="text"
-              danger
-              icon={<DeleteOutlined />}
-              loading={deletingTaskId === record.id}
-              onClick={(event) => event.stopPropagation()}
-            >
-              {t('tasks.actions.delete')}
-            </Button>
-          </Popconfirm>
+            {t('tasks.actions.delete')}
+          </Button>
         </Space>
       ) : null
   })

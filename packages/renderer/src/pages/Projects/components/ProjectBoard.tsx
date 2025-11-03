@@ -17,7 +17,7 @@ export interface ProjectBoardProps {
   canManageTasks: boolean
   onTaskSelect: (task: TaskDetails) => void
   onTaskEdit: (task: TaskDetails) => void
-  onTaskDelete: (task: TaskDetails) => Promise<void> | void
+  onTaskDelete: (task: TaskDetails) => void
   deletingTaskId?: string | null
 }
 
