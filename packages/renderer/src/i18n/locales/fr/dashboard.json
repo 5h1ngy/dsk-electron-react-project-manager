@@ -74,6 +74,25 @@
       }
     }
   },
+  "validation": {
+    "createUser": {
+      "usernameRequired": "Le nom d'utilisateur est requis",
+      "usernameMin": "Le nom d'utilisateur doit contenir au moins 3 caracteres",
+      "usernameMax": "Le nom d'utilisateur ne doit pas depasser 32 caracteres",
+      "usernamePattern": "Utilisez uniquement des lettres, chiffres, points, tirets ou underscores",
+      "displayNameRequired": "Le nom est requis",
+      "displayNameMax": "Le nom ne doit pas depasser 64 caracteres",
+      "passwordRequired": "Le mot de passe est requis",
+      "passwordMin": "Le mot de passe doit contenir au moins 8 caracteres",
+      "rolesRequired": "Selectionnez au moins un role"
+    },
+    "updateUser": {
+      "displayNameRequired": "Le nom est requis",
+      "displayNameMax": "Le nom ne doit pas depasser 64 caracteres",
+      "passwordMin": "Si vous definissez un nouveau mot de passe, il doit contenir au moins 8 caracteres",
+      "rolesRequired": "Selectionnez au moins un role"
+    }
+  },
   "messages": {
     "createSuccess": "Utilisateur cree avec succes",
     "createErrorFallback": "Impossible de creer l'utilisateur",

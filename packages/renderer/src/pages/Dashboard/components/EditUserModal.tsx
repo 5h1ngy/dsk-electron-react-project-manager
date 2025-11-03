@@ -90,7 +90,13 @@ export const EditUserModal = ({
                 {...field}
                 value={field.value ?? ''}
                 onChange={(event) => field.onChange(event.target.value)}
-                onBlur={(event) => field.onChange(event.target.value.trim())}
+                onBlur={(event) => {
+                  const trimmed = event.target.value.trim()
+                  if (trimmed !== field.value) {
+                    field.onChange(trimmed)
+                  }
+                  field.onBlur()
+                }}
                 autoComplete="off"
               />
             )}
@@ -110,6 +116,7 @@ export const EditUserModal = ({
                 {...field}
                 value={field.value ?? ''}
                 onChange={(event) => field.onChange(event.target.value || undefined)}
+                onBlur={field.onBlur}
                 autoComplete="new-password"
                 allowClear
               />

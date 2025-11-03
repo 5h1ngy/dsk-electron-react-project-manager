@@ -1,10 +1,8 @@
 import { z } from 'zod'
-import { PASSWORD_POLICY } from '@main/services/auth/constants'
-
-const usernameRegex = /^[a-zA-Z0-9_.-]+$/
+import { PASSWORD_POLICY, USERNAME_REGEX } from '@main/services/auth/constants'
 
 export const LoginSchema = z.object({
-  username: z.string().min(3).max(32).regex(usernameRegex, 'Formato username non valido'),
+  username: z.string().min(3).max(32).regex(USERNAME_REGEX, 'Formato username non valido'),
   password: z.string().min(PASSWORD_POLICY.minLength)
 })
 
@@ -12,7 +10,7 @@ export type LoginInput = z.infer<typeof LoginSchema>
 
 export const CreateUserSchema = z
   .object({
-    username: z.string().min(3).max(32).regex(usernameRegex, 'Formato username non valido'),
+    username: z.string().min(3).max(32).regex(USERNAME_REGEX, 'Formato username non valido'),
     password: z.string().min(PASSWORD_POLICY.minLength),
     displayName: z.string().min(1).max(64),
     isActive: z.boolean().default(true),
@@ -24,7 +22,7 @@ export type CreateUserInput = z.infer<typeof CreateUserSchema>
 
 export const RegisterUserSchema = z
   .object({
-    username: z.string().min(3).max(32).regex(usernameRegex, 'Formato username non valido'),
+    username: z.string().min(3).max(32).regex(USERNAME_REGEX, 'Formato username non valido'),
     password: z.string().min(PASSWORD_POLICY.minLength),
     displayName: z.string().min(1).max(64)
   })

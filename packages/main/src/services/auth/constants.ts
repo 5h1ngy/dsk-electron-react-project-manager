@@ -10,3 +10,5 @@ export const SESSION_TOKEN_BYTES = 32
 export const PASSWORD_POLICY = {
   minLength: 8
 }
+
+export const USERNAME_REGEX = /^[a-zA-Z0-9_.-]+$/
