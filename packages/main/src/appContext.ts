@@ -1,6 +1,7 @@
-import { BrowserWindow } from 'electron'
+import { app, BrowserWindow } from 'electron'
 import type { Session, WebContents } from 'electron'
 import { join } from 'node:path'
+import { existsSync } from 'node:fs'
 import type { Sequelize } from 'sequelize-typescript'
 
 import { logger, shouldSuppressDevtoolsMessage } from '@main/config/logger'
@@ -377,6 +378,27 @@ export class MainWindowManager {
   }
 
   private async installReduxDevtools(session: Session): Promise<void> {
+    const localExtensionPath = join(app.getAppPath(), 'extensions/redux-devtools')
+
+    if (existsSync(localExtensionPath)) {
+      try {
+        const extension = await session.loadExtension(localExtensionPath, {
+          allowFileAccess: true
+        })
+        this.reduxDevtoolsInstalled = true
+        this.logger.info(`Redux DevTools extension ready (${extension.name}) [local]`, 'DevTools')
+        return
+      } catch (error) {
+        this.logger.warn('Unable to load local Redux DevTools extension', 'DevTools')
+        this.logger.debug(this.describeError(error), 'DevTools')
+      }
+    } else {
+      this.logger.debug(
+        `Local Redux DevTools extension missing at: ${localExtensionPath}`,
+        'DevTools'
+      )
+    }
+
     try {
       const { default: installExtension, REDUX_DEVTOOLS } = await import(
         'electron-devtools-installer'
@@ -387,7 +409,10 @@ export class MainWindowManager {
         forceDownload: false
       })
       this.reduxDevtoolsInstalled = true
-      this.logger.info(`Redux DevTools extension ready (${extension.name})`, 'DevTools')
+      this.logger.info(
+        `Redux DevTools extension ready (${extension.name}) [downloaded]`,
+        'DevTools'
+      )
     } catch (error) {
       this.logger.warn('Unable to install Redux DevTools extension', 'DevTools')
       this.logger.debug(this.describeError(error), 'DevTools')
@@ -411,14 +436,12 @@ export class MainWindowManager {
         if (devtools.isDestroyed()) {
           return
         }
-        void devtools
-          .executeJavaScript(FOCUS_REDUX_PANEL_SCRIPT, true)
-          .catch((error) => {
-            this.logger.debug(
-              `Redux DevTools auto-focus script failed: ${this.describeError(error)}`,
-              'DevTools'
-            )
-          })
+        void devtools.executeJavaScript(FOCUS_REDUX_PANEL_SCRIPT, true).catch((error) => {
+          this.logger.debug(
+            `Redux DevTools auto-focus script failed: ${this.describeError(error)}`,
+            'DevTools'
+          )
+        })
       }
 
       if (devtools.isLoadingMainFrame()) {
