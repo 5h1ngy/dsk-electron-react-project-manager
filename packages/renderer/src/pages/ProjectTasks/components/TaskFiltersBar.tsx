@@ -245,9 +245,23 @@ export const TaskFiltersBar = ({
     </Flex>
   )
 
+  const isCompact = !screens.md
+
   const actionsContent = (
-    <Flex align="center" wrap gap={12} style={{ width: '100%' }}>
-      <Flex align="center" gap={12} wrap style={{ flex: '1 1 auto' }}>
+    <Flex
+      vertical={isCompact}
+      align={isCompact ? 'stretch' : 'center'}
+      wrap={!isCompact}
+      gap={12}
+      style={{ width: '100%' }}
+    >
+      <Flex
+        align={isCompact ? 'stretch' : 'center'}
+        vertical={isCompact}
+        gap={12}
+        wrap={!isCompact}
+        style={{ flex: '1 1 auto' }}
+      >
         {secondaryActions ? (
           <Space size="small" wrap>
             {secondaryActions}
@@ -259,7 +273,13 @@ export const TaskFiltersBar = ({
           </Button>
         ) : null}
       </Flex>
-      <Flex align="center" gap={12} wrap style={{ justifyContent: 'flex-end', flexShrink: 0 }}>
+      <Flex
+        align={isCompact ? 'stretch' : 'center'}
+        vertical={isCompact}
+        gap={12}
+        wrap={!isCompact}
+        style={{ justifyContent: 'flex-end', flexShrink: 0 }}
+      >
         <Segmented
           size="large"
           value={viewMode}
