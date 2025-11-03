@@ -1,5 +1,6 @@
-import { useMemo, useState, type JSX } from 'react'
+import { useEffect, useMemo, useState, type JSX } from 'react'
 import {
+  AppstoreAddOutlined,
   AppstoreOutlined,
   BarsOutlined,
   ColumnWidthOutlined,
@@ -16,7 +17,8 @@ import {
   Segmented,
   Select,
   Space,
-  theme
+  theme,
+  Modal
 } from 'antd'
 import type { SelectProps } from 'antd'
 import type { ReactNode } from 'react'
@@ -44,6 +46,11 @@ export interface TaskFiltersBarProps {
   canCreate?: boolean
   secondaryActions?: ReactNode
   savedViewsControls?: ReactNode
+  optionalFieldControls?: {
+    content: ReactNode
+    hasOptions: boolean
+    disabled?: boolean
+  }
 }
 
 export const TaskFiltersBar = ({
@@ -57,10 +64,12 @@ export const TaskFiltersBar = ({
   onCreate,
   canCreate = true,
   secondaryActions,
-  savedViewsControls
+  savedViewsControls,
+  optionalFieldControls
 }: TaskFiltersBarProps): JSX.Element => {
   const { t } = useTranslation('projects')
   const [filtersOpen, setFiltersOpen] = useState(false)
+  const [optionalFieldsOpen, setOptionalFieldsOpen] = useState(false)
   const screens = Grid.useBreakpoint()
   const { token } = theme.useToken()
   const toolbarSegmentedStyle = useMemo(
@@ -150,6 +159,18 @@ export const TaskFiltersBar = ({
       ]
     })
   }
+
+  useEffect(() => {
+    if (!optionalFieldControls?.hasOptions && optionalFieldsOpen) {
+      setOptionalFieldsOpen(false)
+    }
+  }, [optionalFieldControls?.hasOptions, optionalFieldsOpen])
+
+  useEffect(() => {
+    if (optionalFieldControls?.disabled && optionalFieldsOpen) {
+      setOptionalFieldsOpen(false)
+    }
+  }, [optionalFieldControls?.disabled, optionalFieldsOpen])
 
   const filterContent = (
     <Flex vertical gap={16}>
@@ -245,6 +266,20 @@ export const TaskFiltersBar = ({
           options={viewSegmentedOptions}
           style={toolbarSegmentedStyle}
         />
+        {optionalFieldControls && optionalFieldControls.hasOptions ? (
+          <Button
+            icon={<AppstoreAddOutlined />}
+            size="large"
+            disabled={optionalFieldControls.disabled}
+            onClick={() => {
+              if (!optionalFieldControls.disabled) {
+                setOptionalFieldsOpen(true)
+              }
+            }}
+          >
+            {t('tasks.optionalColumns.button', { defaultValue: 'Optional fields' })}
+          </Button>
+        ) : null}
         <Button icon={<FilterOutlined />} size="large" onClick={() => setFiltersOpen(true)}>
           {t('tasks.openFilters')}
         </Button>
@@ -306,6 +341,27 @@ export const TaskFiltersBar = ({
       >
         {filterContent}
       </Drawer>
+      {optionalFieldControls && optionalFieldControls.hasOptions ? (
+        <Modal
+          open={optionalFieldsOpen}
+          title={t('tasks.optionalColumns.modalTitle', { defaultValue: 'Optional fields' })}
+          onCancel={() => setOptionalFieldsOpen(false)}
+          footer={null}
+          closable
+          destroyOnClose={false}
+          centered
+          styles={{
+            body: {
+              paddingTop: token.paddingLG,
+              display: 'flex',
+              flexDirection: 'column',
+              gap: token.marginLG
+            }
+          }}
+        >
+          {optionalFieldControls.content}
+        </Modal>
+      ) : null}
     </>
   )
 }

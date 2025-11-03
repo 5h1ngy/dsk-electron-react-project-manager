@@ -1,4 +1,4 @@
-{
+﻿{
   "title": "Projets",
   "viewSwitcher": {
     "table": "Vue tableau",
@@ -32,7 +32,7 @@
     },
     "ownedOptions": {
       "all": "Tous les projets",
-      "mine": "CrÃ©Ã©s par moi"
+      "mine": "CrÃƒÂ©ÃƒÂ©s par moi"
     },
     "panelTitle": "Filtres"
   },
@@ -270,40 +270,42 @@
       "actions": "Actions"
     },
     "optionalColumns": {
-      "label": "Champs optionnels"
+      "label": "Champs optionnels",
+      "button": "Champs optionnels",
+      "modalTitle": "Sélectionnez les champs optionnels"
     },
     "statusManager": {
-      "manageButton": "Gérer les statuts",
-      "title": "Statuts des tâches",
+      "manageButton": "GÃ©rer les statuts",
+      "title": "Statuts des tÃ¢ches",
       "add": "Ajouter un statut",
-      "empty": "Aucun statut défini",
+      "empty": "Aucun statut dÃ©fini",
       "messages": {
-        "created": "Statut créé",
-        "updated": "Statut mis à jour",
-        "deleted": "Statut supprimé",
-        "reordered": "Ordre mis à jour",
-        "error": "Opération échouée"
+        "created": "Statut crÃ©Ã©",
+        "updated": "Statut mis Ã  jour",
+        "deleted": "Statut supprimÃ©",
+        "reordered": "Ordre mis Ã  jour",
+        "error": "OpÃ©ration Ã©chouÃ©e"
       },
       "deleteTitle": "Supprimer le statut",
-      "deleteDescription": "Voulez-vous supprimer « {{status}} » ?",
-      "deletePrompt": "La suppression de « {{status}} » déplacera les tâches vers le statut de secours.",
+      "deleteDescription": "Voulez-vous supprimer Â« {{status}} Â» ?",
+      "deletePrompt": "La suppression de Â« {{status}} Â» dÃ©placera les tÃ¢ches vers le statut de secours.",
       "confirm": "Confirmer",
       "cancel": "Annuler",
-      "createTitle": "Créer un statut",
+      "createTitle": "CrÃ©er un statut",
       "editTitle": "Modifier le statut",
       "fields": {
-        "label": "Libellé",
+        "label": "LibellÃ©",
         "fallback": "Statut de secours"
       },
       "validation": {
-        "labelRequired": "Saisissez un libellé",
-        "labelMax": "80 caractères maximum",
-        "fallbackRequired": "Sélectionnez un statut de secours"
+        "labelRequired": "Saisissez un libellÃ©",
+        "labelMax": "80 caractÃ¨res maximum",
+        "fallbackRequired": "SÃ©lectionnez un statut de secours"
       }
     },
     "savedViews": {
-      "placeholder": "Vues enregistrÃƒÂ©es",
-      "panelTitle": "Vues enregistrÃƒÂ©es",
+      "placeholder": "Vues enregistrÃƒÆ’Ã‚Â©es",
+      "panelTitle": "Vues enregistrÃƒÆ’Ã‚Â©es",
       "saveButton": "Enregistrer la vue",
       "deleteButton": "Supprimer",
       "modalTitle": "Enregistrer la vue actuelle",
@@ -352,8 +354,8 @@
       "assignee": "Assigne : {{assignee}}",
       "createdAt": "Cree le {{date}}",
       "dueDate": "Echeance le {{date}}",
-      "linkedNotes": "Notes liÃƒÂ©es",
-      "noLinkedNotes": "Aucune note liÃƒÂ©e",
+      "linkedNotes": "Notes liÃƒÆ’Ã‚Â©es",
+      "noLinkedNotes": "Aucune note liÃƒÆ’Ã‚Â©e",
       "empty": "Aucune tache selectionnee",
       "comments": {
         "title": "Commentaires",
@@ -363,18 +365,18 @@
         "addLabel": "Ajouter un commentaire",
         "validation": "Saisissez un commentaire",
         "submit": "Publier",
-        "success": "Commentaire ajout�"
+        "success": "Commentaire ajouté"
       },
-      "loadingTitle": "D�tails de la t�che",
-      "goBack": "Retour aux t�ches",
-      "propertiesTitle": "Propri�t�s de la t�che",
+      "loadingTitle": "Détails de la tâche",
+      "goBack": "Retour aux tâches",
+      "propertiesTitle": "Propriétés de la tâche",
       "statusLabel": "Statut",
-      "priorityLabel": "Priorit�",
-      "ownerLabel": "Propri�taire",
-      "assigneeLabel": "Assign� �",
-      "createdAtLabel": "Cr�� le",
-      "dueDateLabel": "Date d'�ch�ance",
-      "updatedAtLabel": "Derni�re mise � jour"
+      "priorityLabel": "Priorité",
+      "ownerLabel": "Propriétaire",
+      "assigneeLabel": "Assigné à",
+      "createdAtLabel": "Créé le",
+      "dueDateLabel": "Date d'échéance",
+      "updatedAtLabel": "Dernière mise à jour"
     },
     "filterPanel": "Filtres",
     "actionsPanel": "Actions"
@@ -425,7 +427,7 @@
         "title": "Titre",
         "notebook": "Carnet",
         "tags": "Tags",
-        "visibility": "VisibilitÃƒÂ©",
+        "visibility": "VisibilitÃƒÆ’Ã‚Â©",
         "body": "Contenu Markdown",
         "linkedTasks": "Taches liees"
       },
@@ -478,13 +480,13 @@
     "openTask": "Ouvrir"
   },
   "views": {
-    "placeholder": "Vues enregistrées",
-    "panelTitle": "Vues enregistrées",
+    "placeholder": "Vues enregistrÃ©es",
+    "panelTitle": "Vues enregistrÃ©es",
     "saveButton": "Enregistrer la vue",
     "deleteButton": "Supprimer",
-    "saveSuccess": "Vue enregistrée",
+    "saveSuccess": "Vue enregistrÃ©e",
     "saveError": "Impossible d'enregistrer la vue",
-    "deleteSuccess": "Vue supprimée",
+    "deleteSuccess": "Vue supprimÃ©e",
     "modal": {
       "title": "Enregistrer une vue projet",
       "save": "Enregistrer",
@@ -494,3 +496,4 @@
     }
   }
 }
+

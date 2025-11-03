@@ -1,4 +1,4 @@
-{
+﻿{
   "title": "Projekte",
   "viewSwitcher": {
     "table": "Tabellenansicht",
@@ -205,8 +205,8 @@
       "timing": "Zeitplan",
       "createdAt": "Erstellt am {{date}}",
       "dueDate": "Faellig am {{date}}",
-      "linkedNotes": "Verknüpfte Notizen",
-      "noLinkedNotes": "Keine verknüpften Notizen",
+      "linkedNotes": "VerknÃ¼pfte Notizen",
+      "noLinkedNotes": "Keine verknÃ¼pften Notizen",
       "empty": "Aufgabe auswaehlen, um Details zu sehen"
     },
     "missingId": "Projekt-ID fehlt",
@@ -272,12 +272,14 @@
       "actions": "Aktionen"
     },
     "optionalColumns": {
-      "label": "Optionale Felder"
+      "label": "Optionale Felder",
+      "button": "Optionale Felder",
+      "modalTitle": "Optionale Felder auswählen"
     },
     "statusManager": {
       "manageButton": "Status verwalten",
       "title": "Aufgabenstatus",
-      "add": "Status hinzufügen",
+      "add": "Status hinzufÃ¼gen",
       "empty": "Keine Status definiert",
       "messages": {
         "created": "Status erstellt",
@@ -289,7 +291,7 @@
       "deleteTitle": "Status entfernen",
       "deleteDescription": "\"{{status}}\" wirklich entfernen?",
       "deletePrompt": "Durch das Entfernen von \"{{status}}\" werden vorhandene Aufgaben dem Ersatzstatus zugewiesen.",
-      "confirm": "Bestätigen",
+      "confirm": "BestÃ¤tigen",
       "cancel": "Abbrechen",
       "createTitle": "Status erstellen",
       "editTitle": "Status bearbeiten",
@@ -300,14 +302,14 @@
       "validation": {
         "labelRequired": "Bezeichnung angeben",
         "labelMax": "Maximal 80 Zeichen",
-        "fallbackRequired": "Ersatzstatus auswählen"
+        "fallbackRequired": "Ersatzstatus auswÃ¤hlen"
       }
     },
     "savedViews": {
       "placeholder": "Gespeicherte Ansichten",
       "panelTitle": "Gespeicherte Ansichten",
       "saveButton": "Ansicht speichern",
-      "deleteButton": "Löschen",
+      "deleteButton": "LÃ¶schen",
       "modalTitle": "Aktuelle Ansicht speichern",
       "nameLabel": "Name",
       "nameRequired": "Bitte einen Namen eingeben"
@@ -354,8 +356,8 @@
       "assignee": "Zustaendig: {{assignee}}",
       "createdAt": "Erstellt am {{date}}",
       "dueDate": "Faellig am {{date}}",
-      "linkedNotes": "Verknüpfte Notizen",
-      "noLinkedNotes": "Keine verknüpften Notizen",
+      "linkedNotes": "VerknÃ¼pfte Notizen",
+      "noLinkedNotes": "Keine verknÃ¼pften Notizen",
       "empty": "Kein Task ausgewaehlt",
       "comments": {
         "title": "Kommentare",
@@ -365,17 +367,17 @@
         "addLabel": "Kommentar hinzufuegen",
         "validation": "Bitte einen Kommentar eingeben",
         "submit": "Kommentar senden",
-        "success": "Kommentar hinzugef�gt"
+        "success": "Kommentar hinzugefügt"
       },
       "loadingTitle": "Aufgabendetails",
-      "goBack": "Zur�ck zu den Aufgaben",
+      "goBack": "Zurück zu den Aufgaben",
       "propertiesTitle": "Aufgabeneigenschaften",
       "statusLabel": "Status",
-      "priorityLabel": "Priorit�t",
-      "ownerLabel": "Eigent�mer",
+      "priorityLabel": "Priorität",
+      "ownerLabel": "Eigentümer",
       "assigneeLabel": "Zugewiesen an",
       "createdAtLabel": "Erstellt am",
-      "dueDateLabel": "F�lligkeitsdatum",
+      "dueDateLabel": "Fälligkeitsdatum",
       "updatedAtLabel": "Zuletzt aktualisiert"
     },
     "filterPanel": "Filter",
@@ -483,10 +485,10 @@
     "placeholder": "Gespeicherte Ansichten",
     "panelTitle": "Gespeicherte Ansichten",
     "saveButton": "Ansicht speichern",
-    "deleteButton": "Löschen",
+    "deleteButton": "LÃ¶schen",
     "saveSuccess": "Ansicht gespeichert",
     "saveError": "Ansicht konnte nicht gespeichert werden",
-    "deleteSuccess": "Ansicht gelöscht",
+    "deleteSuccess": "Ansicht gelÃ¶scht",
     "modal": {
       "title": "Projektansicht speichern",
       "save": "Speichern",
@@ -496,3 +498,4 @@
     }
   }
 }
+

@@ -271,7 +271,9 @@
       "actions": "Actions"
     },
     "optionalColumns": {
-      "label": "Optional fields"
+      "label": "Optional fields",
+      "button": "Optional fields",
+      "modalTitle": "Select optional fields"
     },
     "statusManager": {
       "manageButton": "Manage statuses",

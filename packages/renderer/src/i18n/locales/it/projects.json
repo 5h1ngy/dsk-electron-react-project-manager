@@ -271,7 +271,9 @@
       "actions": "Azioni"
     },
     "optionalColumns": {
-      "label": "Campi opzionali"
+      "label": "Campi opzionali",
+      "button": "Campi opzionali",
+      "modalTitle": "Seleziona i campi opzionali"
     },
     "statusManager": {
       "manageButton": "Gestisci stati",
