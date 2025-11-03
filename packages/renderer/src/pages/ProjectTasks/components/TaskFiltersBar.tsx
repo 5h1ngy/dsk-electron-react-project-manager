@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type JSX } from 'react'
+import { useEffect, useMemo, useState, type JSX, type CSSProperties } from 'react'
 import {
   AppstoreAddOutlined,
   AppstoreOutlined,
@@ -143,6 +143,23 @@ export const TaskFiltersBar = ({
   const selectOption = (options: SelectOption[]): Option =>
     options.map((option) => ({ label: option.label, value: option.value }))
 
+  const isCompact = !screens.md
+
+  const segmentedStyle = useMemo(
+    () => ({
+      ...toolbarSegmentedStyle,
+      width: isCompact ? '100%' : undefined,
+      display: 'flex',
+      justifyContent: 'space-between'
+    }),
+    [toolbarSegmentedStyle, isCompact]
+  )
+
+  const buttonFullWidthStyle = useMemo<CSSProperties | undefined>(
+    () => (isCompact ? { width: '100%' } : undefined),
+    [isCompact]
+  )
+
   const handleRangeChange = (dates: [Dayjs | null, Dayjs | null] | null) => {
     if (!dates) {
       onChange({ dueDateRange: null })
@@ -245,16 +262,8 @@ export const TaskFiltersBar = ({
     </Flex>
   )
 
-  const isCompact = !screens.md
-
   const actionsContent = (
-    <Flex
-      vertical={isCompact}
-      align={isCompact ? 'stretch' : 'center'}
-      wrap={!isCompact}
-      gap={12}
-      style={{ width: '100%' }}
-    >
+    <Flex vertical={isCompact} align={isCompact ? 'stretch' : 'center'} gap={12} style={{ width: '100%' }}>
       <Flex
         align={isCompact ? 'stretch' : 'center'}
         vertical={isCompact}
@@ -268,7 +277,13 @@ export const TaskFiltersBar = ({
           </Space>
         ) : null}
         {onCreate ? (
-          <Button type="primary" icon={<PlusOutlined />} onClick={onCreate} disabled={!canCreate}>
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            onClick={onCreate}
+            disabled={!canCreate}
+            style={buttonFullWidthStyle}
+          >
             {t('tasks.actions.create')}
           </Button>
         ) : null}
@@ -277,7 +292,6 @@ export const TaskFiltersBar = ({
         align={isCompact ? 'stretch' : 'center'}
         vertical={isCompact}
         gap={12}
-        wrap={!isCompact}
         style={{ justifyContent: 'flex-end', flexShrink: 0 }}
       >
         <Segmented
@@ -285,7 +299,8 @@ export const TaskFiltersBar = ({
           value={viewMode}
           onChange={(next) => onViewModeChange(next as 'table' | 'list' | 'cards' | 'board')}
           options={viewSegmentedOptions}
-          style={toolbarSegmentedStyle}
+          block={isCompact}
+          style={segmentedStyle}
         />
         {optionalFieldControls && optionalFieldControls.hasOptions ? (
           <Button
@@ -297,11 +312,17 @@ export const TaskFiltersBar = ({
                 setOptionalFieldsOpen(true)
               }
             }}
+            style={buttonFullWidthStyle}
           >
             {t('tasks.optionalColumns.button', { defaultValue: 'Optional fields' })}
           </Button>
         ) : null}
-        <Button icon={<FilterOutlined />} size="large" onClick={() => setFiltersOpen(true)}>
+        <Button
+          icon={<FilterOutlined />}
+          size="large"
+          onClick={() => setFiltersOpen(true)}
+          style={buttonFullWidthStyle}
+        >
           {t('tasks.openFilters')}
         </Button>
       </Flex>
