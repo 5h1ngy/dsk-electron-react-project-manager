@@ -1,4 +1,4 @@
-{
+﻿{
   "title": "Progetti",
   "viewSwitcher": {
     "table": "Vista tabella",
@@ -273,7 +273,8 @@
     "optionalColumns": {
       "label": "Campi opzionali",
       "button": "Campi opzionali",
-      "modalTitle": "Seleziona i campi opzionali"
+      "modalTitle": "Seleziona i campi opzionali",
+      "description": "Scegli i campi aggiuntivi da mostrare nella vista tabellare."
     },
     "statusManager": {
       "manageButton": "Gestisci stati",
@@ -289,7 +290,7 @@
       },
       "deleteTitle": "Rimuovi stato",
       "deleteDescription": "Vuoi davvero rimuovere \"{{status}}\"?",
-      "deletePrompt": "La rimozione di \"{{status}}\" sposterà i task nello stato di fallback.",
+      "deletePrompt": "La rimozione di \"{{status}}\" sposterÃ  i task nello stato di fallback.",
       "confirm": "Conferma",
       "cancel": "Annulla",
       "createTitle": "Crea stato",
@@ -500,3 +501,4 @@
     }
   }
 }
+

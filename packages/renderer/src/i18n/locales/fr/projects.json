@@ -272,7 +272,8 @@
     "optionalColumns": {
       "label": "Champs optionnels",
       "button": "Champs optionnels",
-      "modalTitle": "Sélectionnez les champs optionnels"
+      "modalTitle": "Sélectionnez les champs optionnels",
+      "description": "Choisissez les champs supplémentaires à afficher dans la vue tableau."
     },
     "statusManager": {
       "manageButton": "GÃ©rer les statuts",
@@ -496,4 +497,5 @@
     }
   }
 }
+
 

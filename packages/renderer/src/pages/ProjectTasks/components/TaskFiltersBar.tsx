@@ -18,7 +18,8 @@ import {
   Select,
   Space,
   theme,
-  Modal
+  Modal,
+  Typography
 } from 'antd'
 import type { SelectProps } from 'antd'
 import type { ReactNode } from 'react'
@@ -355,11 +356,20 @@ export const TaskFiltersBar = ({
               paddingTop: token.paddingLG,
               display: 'flex',
               flexDirection: 'column',
-              gap: token.marginLG
+              gap: token.marginLG,
+              paddingBottom: token.paddingLG
             }
           }}
         >
-          {optionalFieldControls.content}
+          <Flex vertical gap={token.marginMD}>
+            <Typography.Paragraph style={{ marginBottom: 0 }}>
+              {t('tasks.optionalColumns.description', {
+                defaultValue:
+                  'Select the additional fields you want to show in the table view.'
+              })}
+            </Typography.Paragraph>
+            {optionalFieldControls.content}
+          </Flex>
         </Modal>
       ) : null}
     </>

@@ -1,4 +1,4 @@
-{
+﻿{
   "title": "Projects",
   "viewSwitcher": {
     "table": "Table view",
@@ -273,7 +273,8 @@
     "optionalColumns": {
       "label": "Optional fields",
       "button": "Optional fields",
-      "modalTitle": "Select optional fields"
+      "modalTitle": "Select optional fields",
+      "description": "Select the additional fields to display in the table view."
     },
     "statusManager": {
       "manageButton": "Manage statuses",
@@ -500,3 +501,4 @@
     }
   }
 }
+

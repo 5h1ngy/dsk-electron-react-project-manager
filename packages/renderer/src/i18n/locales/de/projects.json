@@ -274,7 +274,8 @@
     "optionalColumns": {
       "label": "Optionale Felder",
       "button": "Optionale Felder",
-      "modalTitle": "Optionale Felder auswählen"
+      "modalTitle": "Optionale Felder auswählen",
+      "description": "Wählen Sie die zusätzlichen Felder, die in der Tabellenansicht angezeigt werden sollen."
     },
     "statusManager": {
       "manageButton": "Status verwalten",
@@ -498,4 +499,5 @@
     }
   }
 }
+
 
