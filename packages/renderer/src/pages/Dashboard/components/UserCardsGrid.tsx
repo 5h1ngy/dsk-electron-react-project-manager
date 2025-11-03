@@ -1,4 +1,4 @@
-import { Button, Card, Pagination, Popconfirm, Space, Tag, Typography, theme } from 'antd'
+import { Button, Card, Pagination, Space, Tag, Typography, theme } from 'antd'
 import { useSemanticBadges, buildBadgeStyle } from '@renderer/theme/hooks/useSemanticBadges'
 import {
   DeleteOutlined,
@@ -44,6 +44,8 @@ export interface UserCardsGridProps {
   onPageChange: (page: number) => void
   onEdit: (user: UserDTO) => void
   onDelete: (user: UserDTO) => void
+  isDeleting: (userId: string) => boolean
+  deleteDisabled?: boolean
 }
 
 export const UserCardsGrid = ({
@@ -54,7 +56,9 @@ export const UserCardsGrid = ({
   pageSize,
   onPageChange,
   onEdit,
-  onDelete
+  onDelete,
+  isDeleting,
+  deleteDisabled = false
 }: UserCardsGridProps): JSX.Element => {
   const { t } = useTranslation('dashboard')
   const showSkeleton = useDelayedLoading(loading && !hasLoaded)
@@ -95,22 +99,19 @@ export const UserCardsGrid = ({
                 >
                   {t('actions.edit')}
                 </Button>
-                <Popconfirm
-                  title={t('actions.deleteTitle')}
-                  description={t('actions.deleteDescription', { username: user.username })}
-                  okText={t('actions.confirmDelete')}
-                  cancelText={t('actions.cancel')}
-                  onConfirm={() => onDelete(user)}
+                <Button
+                  type="text"
+                  danger
+                  icon={<DeleteOutlined />}
+                  onClick={(event) => {
+                    event.stopPropagation()
+                    onDelete(user)
+                  }}
+                  loading={isDeleting(user.id)}
+                  disabled={deleteDisabled && !isDeleting(user.id)}
                 >
-                  <Button
-                    type="text"
-                    danger
-                    icon={<DeleteOutlined />}
-                    onClick={(event) => event.stopPropagation()}
-                  >
-                    {t('actions.delete')}
-                  </Button>
-                </Popconfirm>
+                  {t('actions.delete')}
+                </Button>
               </Space>
             }
           >

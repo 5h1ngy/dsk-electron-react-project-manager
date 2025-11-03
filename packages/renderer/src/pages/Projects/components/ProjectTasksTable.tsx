@@ -1,4 +1,5 @@
 import { Button, Space, Table, Tag, Typography, theme } from 'antd'
+import type { TableProps } from 'antd'
 import type { ColumnsType, TablePaginationConfig } from 'antd/es/table'
 import { useTranslation } from 'react-i18next'
 import { DeleteOutlined, EditOutlined, MessageOutlined } from '@ant-design/icons'
@@ -23,6 +24,7 @@ export interface ProjectTasksTableProps {
   pagination?: TablePaginationConfig | false
   columns?: ReadonlyArray<TaskTableColumn>
   statusLabels?: Record<string, string>
+  rowSelection?: TableProps<TaskDetails>['rowSelection']
 }
 
 export const ProjectTasksTable = ({
@@ -35,7 +37,8 @@ export const ProjectTasksTable = ({
   deletingTaskId,
   pagination,
   columns = VIEW_COLUMN_VALUES,
-  statusLabels = {}
+  statusLabels = {},
+  rowSelection
 }: ProjectTasksTableProps) => {
   const { t, i18n } = useTranslation('projects')
   const showSkeleton = useDelayedLoading(loading)
@@ -178,6 +181,7 @@ export const ProjectTasksTable = ({
       rowKey="id"
       columns={resolvedColumns}
       dataSource={tasks}
+      rowSelection={rowSelection}
       pagination={pagination}
       size="middle"
       scroll={{ x: 'max-content' }}

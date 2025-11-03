@@ -327,7 +327,8 @@
       "deleteTitle": "Supprimer la tache",
       "deleteDescription": "Voulez-vous vraiment supprimer \"{{title}}\" ?",
       "deleteConfirm": "Supprimer",
-      "cancel": "Annuler"
+      "cancel": "Annuler",
+      "deleteSelected": "Supprimer la selection ({{count}})"
     },
     "form": {
       "createTitle": "Nouvelle tache",
@@ -353,7 +354,9 @@
       "createSuccess": "Tache creee",
       "updateSuccess": "Tache mise a jour",
       "deleteSuccess": "Tache supprimee",
-      "notFound": "Tache introuvable"
+      "notFound": "Tache introuvable",
+      "deleteBulkSuccess": "{{count}} taches supprimees",
+      "deleteOwnerWarning": "{{count}} taches selectionnees ne peuvent pas etre supprimees car vous n'etes pas proprietaire."
     },
     "details": {
       "description": "Description",
@@ -387,7 +390,14 @@
       "updatedAtLabel": "Dernière mise à jour"
     },
     "filterPanel": "Filtres",
-    "actionsPanel": "Actions"
+    "actionsPanel": "Actions",
+    "bulkDelete": {
+      "title": "Supprimer {{count}} taches",
+      "description": "Supprimer ces taches retirera commentaires, historique et liens vers les notes.",
+      "warning": "Cette action est definitive.",
+      "confirm": "Supprimer les taches",
+      "cancel": "Annuler"
+    }
   },
   "notes": {
     "title": "Notes du projet",
@@ -414,7 +424,8 @@
       "panelTitle": "Actions",
       "openFilters": "Filtres",
       "resetFilters": "Rinitialiser les filtres",
-      "closeFilters": "Fermer"
+      "closeFilters": "Fermer",
+      "deleteSelected": "Supprimer la selection ({{count}})"
     },
     "view": {
       "list": "Vue liste",
@@ -460,7 +471,9 @@
     "feedback": {
       "created": "Note creee",
       "updated": "Note mise a jour",
-      "deleted": "Note supprimee"
+      "deleted": "Note supprimee",
+      "bulkDeleted": "{{count}} notes supprimees",
+      "deleteOwnerWarning": "{{count}} notes selectionnees ne peuvent pas etre supprimees car vous n'etes pas proprietaire."
     },
     "validation": {
       "title": "Le titre est obligatoire",
@@ -477,6 +490,13 @@
       "empty": "Aucune note trouvee",
       "open": "Ouvrir la note",
       "noHighlight": "Aucune previsualisation disponible"
+    },
+    "bulkDelete": {
+      "title": "Supprimer {{count}} notes",
+      "description": "Supprimer ces notes retirera leur contenu et les liens vers les taches.",
+      "warning": "Cette action est definitive.",
+      "confirm": "Supprimer les notes",
+      "cancel": "Annuler"
     }
   },
   "search": {
@@ -504,5 +524,3 @@
     }
   }
 }
-
-

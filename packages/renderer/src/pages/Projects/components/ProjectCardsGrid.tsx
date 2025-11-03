@@ -1,5 +1,5 @@
 import { CalendarOutlined, DeleteOutlined, EditOutlined, TeamOutlined } from '@ant-design/icons'
-import { Button, Card, Col, Pagination, Popconfirm, Row, Space, Tag, Typography, theme } from 'antd'
+import { Button, Card, Col, Pagination, Row, Space, Tag, Typography, theme } from 'antd'
 import { useMemo, type JSX } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -25,7 +25,9 @@ export interface ProjectCardsGridProps {
   onPageChange: (page: number) => void
   onEdit?: (project: ProjectSummary) => void
   onDelete?: (project: ProjectSummary) => void
-  deletingProjectId?: string | null
+  canManage: boolean
+  isDeleting: (projectId: string) => boolean
+  deleteDisabled?: boolean
 }
 
 export const ProjectCardsGrid = ({
@@ -37,7 +39,9 @@ export const ProjectCardsGrid = ({
   onPageChange,
   onEdit,
   onDelete,
-  deletingProjectId
+  canManage,
+  isDeleting,
+  deleteDisabled = false
 }: ProjectCardsGridProps): JSX.Element => {
   const { t, i18n } = useTranslation('projects')
   const showSkeleton = useDelayedLoading(loading)
@@ -93,7 +97,7 @@ export const ProjectCardsGrid = ({
                   </Space>
                 }
                 extra={
-                  project.role === 'admin' ? (
+                  canManage && project.role === 'admin' ? (
                     <Space size={4}>
                       <Button
                         type="text"
@@ -105,24 +109,19 @@ export const ProjectCardsGrid = ({
                       >
                         {t('actions.edit')}
                       </Button>
-                      <Popconfirm
-                        title={t('actions.deleteTitle')}
-                        description={t('actions.deleteDescription', { name: project.name })}
-                        okText={t('actions.deleteConfirm')}
-                        cancelText={t('actions.cancel')}
-                        okButtonProps={{ loading: deletingProjectId === project.id }}
-                        onConfirm={async () => await onDelete?.(project)}
-                        disabled={!onDelete}
+                      <Button
+                        type="text"
+                        danger
+                        icon={<DeleteOutlined />}
+                        onClick={(event) => {
+                          event.stopPropagation()
+                          onDelete?.(project)
+                        }}
+                        loading={isDeleting(project.id)}
+                        disabled={!onDelete || (deleteDisabled && !isDeleting(project.id))}
                       >
-                        <Button
-                          type="text"
-                          danger
-                          icon={<DeleteOutlined />}
-                          onClick={(event) => event.stopPropagation()}
-                        >
-                          {t('actions.delete')}
-                        </Button>
-                      </Popconfirm>
+                        {t('actions.delete')}
+                      </Button>
                     </Space>
                   ) : undefined
                 }

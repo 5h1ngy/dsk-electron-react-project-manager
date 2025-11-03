@@ -329,7 +329,8 @@
       "deleteTitle": "Task entfernen",
       "deleteDescription": "Moechten Sie \"{{title}}\" wirklich entfernen?",
       "deleteConfirm": "Entfernen",
-      "cancel": "Abbrechen"
+      "cancel": "Abbrechen",
+      "deleteSelected": "Auswahl loeschen ({{count}})"
     },
     "form": {
       "createTitle": "Neuer Task",
@@ -355,7 +356,9 @@
       "createSuccess": "Task erstellt",
       "updateSuccess": "Task aktualisiert",
       "deleteSuccess": "Task entfernt",
-      "notFound": "Task nicht gefunden"
+      "notFound": "Task nicht gefunden",
+      "deleteBulkSuccess": "{{count}} Aufgaben geloescht",
+      "deleteOwnerWarning": "{{count}} ausgewaehlte Aufgaben koennen nicht geloescht werden, weil Sie nicht der Besitzer sind."
     },
     "details": {
       "description": "Beschreibung",
@@ -389,7 +392,14 @@
       "updatedAtLabel": "Zuletzt aktualisiert"
     },
     "filterPanel": "Filter",
-    "actionsPanel": "Aktionen"
+    "actionsPanel": "Aktionen",
+    "bulkDelete": {
+      "title": "{{count}} Aufgaben loeschen",
+      "description": "Beim Loeschen dieser Aufgaben werden Kommentare, Verlauf und Notizverknuepfungen entfernt.",
+      "warning": "Dieser Vorgang kann nicht rueckgaengig gemacht werden.",
+      "confirm": "Aufgaben loeschen",
+      "cancel": "Abbrechen"
+    }
   },
   "notes": {
     "title": "Projektnotizen",
@@ -416,7 +426,8 @@
       "panelTitle": "Aktionen",
       "openFilters": "Filter",
       "resetFilters": "Filter zurcksetzen",
-      "closeFilters": "Schlieen"
+      "closeFilters": "Schlieen",
+      "deleteSelected": "Auswahl loeschen ({{count}})"
     },
     "view": {
       "list": "Listenansicht",
@@ -462,7 +473,9 @@
     "feedback": {
       "created": "Notiz erstellt",
       "updated": "Notiz aktualisiert",
-      "deleted": "Notiz geloescht"
+      "deleted": "Notiz geloescht",
+      "bulkDeleted": "{{count}} Notizen geloescht",
+      "deleteOwnerWarning": "{{count}} ausgewaehlte Notizen koennen nicht geloescht werden, weil Sie nicht der Besitzer sind."
     },
     "validation": {
       "title": "Titel ist erforderlich",
@@ -479,6 +492,13 @@
       "empty": "Keine Notizen gefunden",
       "open": "Notiz oeffnen",
       "noHighlight": "Keine Vorschau verfuegbar"
+    },
+    "bulkDelete": {
+      "title": "{{count}} Notizen loeschen",
+      "description": "Beim Loeschen dieser Notizen werden Inhalte und Verknuepfungen zu Aufgaben entfernt.",
+      "warning": "Dieser Vorgang kann nicht rueckgaengig gemacht werden.",
+      "confirm": "Notizen loeschen",
+      "cancel": "Abbrechen"
     }
   },
   "search": {
@@ -506,5 +526,3 @@
     }
   }
 }
-
-

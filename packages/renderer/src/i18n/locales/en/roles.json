@@ -3,7 +3,8 @@
     "create": "Create role",
     "refresh": "Refresh",
     "edit": "Edit",
-    "delete": "Delete"
+    "delete": "Delete",
+    "deleteSelected": "Delete selected ({{count}})"
   },
   "table": {
     "name": "Name",
@@ -31,7 +32,9 @@
   "messages": {
     "createSuccess": "Role created successfully",
     "updateSuccess": "Role updated successfully",
-    "deleteSuccess": "Role \"{{name}}\" deleted"
+    "deleteSuccess": "Role \"{{name}}\" deleted",
+    "deleteBulkSuccess": "Deleted {{count}} roles",
+    "deletePartialWarning": "{{count}} selected roles cannot be removed because they are protected or still assigned."
   },
   "errors": {
     "title": "Unable to load roles",
@@ -46,6 +49,17 @@
     "title": "Edit {{name}}",
     "confirm": "Save changes",
     "cancel": "Cancel"
+  },
+  "modals": {
+    "delete": {
+      "title": "Delete role {{name}}",
+      "bulkTitle": "Delete {{count}} roles",
+      "description": "Removing this role will revoke associated permissions. Make sure it is no longer assigned.",
+      "bulkDescription": "Removing these roles will revoke their permissions across the workspace.",
+      "warning": "This action cannot be undone.",
+      "confirm": "Delete",
+      "cancel": "Cancel"
+    }
   },
   "emptyState": "No roles have been created yet",
   "loadingState": "Loading roles...",

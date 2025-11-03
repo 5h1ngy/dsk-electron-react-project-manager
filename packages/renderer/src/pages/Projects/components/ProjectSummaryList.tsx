@@ -1,4 +1,4 @@
-import { Button, List, Popconfirm, Space, Tag, Typography, theme } from 'antd'
+import { Button, List, Space, Tag, Typography, theme } from 'antd'
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons'
 import { useMemo, type JSX } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -14,10 +14,12 @@ export interface ProjectSummaryListProps {
   onSelect: (projectId: string) => void
   onEdit?: (project: ProjectSummary) => void
   onDelete?: (project: ProjectSummary) => void
-  deletingProjectId?: string | null
   page: number
   pageSize: number
   onPageChange: (page: number) => void
+  canManage: boolean
+  isDeleting: (projectId: string) => boolean
+  deleteDisabled?: boolean
 }
 
 const formatDate = (value: Date | string, locale: string): string =>
@@ -33,10 +35,12 @@ export const ProjectSummaryList = ({
   onSelect,
   onEdit,
   onDelete,
-  deletingProjectId,
   page,
   pageSize,
-  onPageChange
+  onPageChange,
+  canManage,
+  isDeleting,
+  deleteDisabled = false
 }: ProjectSummaryListProps): JSX.Element => {
   const { t, i18n } = useTranslation('projects')
   const { token } = theme.useToken()
@@ -81,7 +85,7 @@ export const ProjectSummaryList = ({
             onClick={handleItemClick}
             style={{ cursor: 'pointer', paddingInline: token.paddingLG }}
             actions={
-              project.role === 'admin' && (onEdit || onDelete)
+              canManage && project.role === 'admin' && (onEdit || onDelete)
                 ? [
                     <Button
                       key="edit"
@@ -94,24 +98,20 @@ export const ProjectSummaryList = ({
                     >
                       {t('actions.edit')}
                     </Button>,
-                    <Popconfirm
+                    <Button
                       key="delete"
-                      title={t('actions.deleteTitle')}
-                      description={t('actions.deleteDescription', { name: project.name })}
-                      okText={t('actions.deleteConfirm')}
-                      cancelText={t('actions.cancel')}
-                      okButtonProps={{ loading: deletingProjectId === project.id }}
-                      onConfirm={() => onDelete?.(project)}
+                      type="text"
+                      danger
+                      icon={<DeleteOutlined />}
+                      onClick={(event) => {
+                        event.stopPropagation()
+                        onDelete?.(project)
+                      }}
+                      loading={isDeleting(project.id)}
+                      disabled={!onDelete || (deleteDisabled && !isDeleting(project.id))}
                     >
-                      <Button
-                        type="text"
-                        danger
-                        icon={<DeleteOutlined />}
-                        onClick={(event) => event.stopPropagation()}
-                      >
-                        {t('actions.delete')}
-                      </Button>
-                    </Popconfirm>
+                      {t('actions.delete')}
+                    </Button>
                   ]
                 : undefined
             }

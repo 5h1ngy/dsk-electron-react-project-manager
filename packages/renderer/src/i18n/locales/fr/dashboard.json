@@ -46,6 +46,7 @@
     "deleteDescription": "Voulez-vous vraiment supprimer {{username}} ?",
     "confirmDelete": "Supprimer",
     "cancel": "Annuler",
+    "deleteSelected": "Supprimer la selection",
     "panelTitle": "Actions"
   },
   "modals": {
@@ -72,6 +73,15 @@
         "rolesPlaceholder": "Selectionnez les roles",
         "active": "Actif"
       }
+    },
+    "deleteUser": {
+      "title": "Supprimer l'utilisateur {{username}}",
+      "bulkTitle": "Supprimer {{count}} utilisateurs",
+      "description": "Vous etes sur le point de supprimer {{user}} et toutes les donnees associees.",
+      "bulkDescription": "Vous etes sur le point de supprimer {{count}} utilisateurs et toutes leurs donnees associees.",
+      "warning": "Les appartenances aux projets, vues enregistrees, commentaires et autres donnees liees seront supprimees ou reassignees. Cette action est irreversible.",
+      "confirm": "Supprimer",
+      "cancel": "Annuler"
     }
   },
   "validation": {
@@ -99,6 +109,7 @@
     "updateSuccess": "Utilisateur mis a jour avec succes",
     "updateErrorFallback": "Impossible de mettre a jour l'utilisateur",
     "deleteSuccess": "Utilisateur supprime avec succes",
+    "deleteBulkSuccess": "Suppression reussie de {{count}} utilisateurs",
     "deleteErrorFallback": "Impossible de supprimer l'utilisateur",
     "deleteSelfWarning": "Vous ne pouvez pas supprimer votre propre compte"
   },

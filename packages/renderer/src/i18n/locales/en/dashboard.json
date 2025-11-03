@@ -46,6 +46,7 @@
     "deleteDescription": "Do you really want to remove {{username}}?",
     "confirmDelete": "Remove",
     "cancel": "Cancel",
+    "deleteSelected": "Delete selected",
     "panelTitle": "Actions"
   },
   "modals": {
@@ -72,6 +73,15 @@
         "rolesPlaceholder": "Select roles",
         "active": "Active"
       }
+    },
+    "deleteUser": {
+      "title": "Remove user {{username}}",
+      "bulkTitle": "Remove {{count}} users",
+      "description": "You are about to remove {{user}} and all related records.",
+      "bulkDescription": "You are about to remove {{count}} users and all of their related records.",
+      "warning": "Project memberships, saved views, comments, and other linked data will be removed or reassigned. This action cannot be undone.",
+      "confirm": "Remove",
+      "cancel": "Cancel"
     }
   },
   "validation": {
@@ -99,6 +109,7 @@
     "updateSuccess": "User updated successfully",
     "updateErrorFallback": "Unable to update user",
     "deleteSuccess": "User removed successfully",
+    "deleteBulkSuccess": "Removed {{count}} users successfully",
     "deleteErrorFallback": "Unable to remove user",
     "deleteSelfWarning": "You cannot remove your own account"
   },

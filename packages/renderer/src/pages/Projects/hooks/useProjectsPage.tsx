@@ -65,7 +65,7 @@ export interface UseProjectsPageResult {
   isEditModalOpen: boolean
   handleUpdateSubmit: () => Promise<void>
   updateForm: ReturnType<typeof useProjectForms>['updateForm']
-  handleDeleteProject: (project: ProjectSummary) => Promise<void>
+  handleDeleteProject: (project: ProjectSummary) => Promise<boolean>
   deletingProjectId: string | null
   canManageProjects: boolean
   refreshProjects: () => void
@@ -418,8 +418,9 @@ export const useProjectsPage = (options?: UseProjectsPageOptions): UseProjectsPa
             defaultValue: 'Solo gli amministratori del progetto possono eliminarlo.'
           })
         )
-        return
+        return false
       }
+      let success = false
       try {
         setActiveMutation('delete')
         setDeletingProjectId(project.id)
@@ -428,12 +429,14 @@ export const useProjectsPage = (options?: UseProjectsPageOptions): UseProjectsPa
         if (editingProject?.id === project.id) {
           closeEditModal()
         }
+        success = true
       } catch (err) {
         messageApi.error(resolveErrorMessage(err))
       } finally {
         setActiveMutation(null)
         setDeletingProjectId(null)
       }
+      return success
     },
     [closeEditModal, dispatch, editingProject?.id, messageApi, resolveErrorMessage, t]
   )

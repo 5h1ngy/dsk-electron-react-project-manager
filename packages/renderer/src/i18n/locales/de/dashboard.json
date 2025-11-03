@@ -46,6 +46,7 @@
     "deleteDescription": "Moechten Sie {{username}} wirklich entfernen?",
     "confirmDelete": "Entfernen",
     "cancel": "Abbrechen",
+    "deleteSelected": "Auswahl entfernen",
     "panelTitle": "Aktionen"
   },
   "modals": {
@@ -72,6 +73,15 @@
         "rolesPlaceholder": "Rollen auswaehlen",
         "active": "Aktiv"
       }
+    },
+    "deleteUser": {
+      "title": "Benutzer {{username}} entfernen",
+      "bulkTitle": "{{count}} Benutzer entfernen",
+      "description": "Sie sind dabei, {{user}} samt aller verknuepften Daten zu entfernen.",
+      "bulkDescription": "Sie sind dabei, {{count}} Benutzer und alle verknuepften Daten zu entfernen.",
+      "warning": "Projektzuordnungen, gespeicherte Ansichten, Kommentare und weitere verknuepfte Daten werden entfernt oder neu zugewiesen. Dieser Vorgang kann nicht rueckgaengig gemacht werden.",
+      "confirm": "Entfernen",
+      "cancel": "Abbrechen"
     }
   },
   "validation": {
@@ -99,6 +109,7 @@
     "updateSuccess": "Benutzer erfolgreich aktualisiert",
     "updateErrorFallback": "Benutzer konnte nicht aktualisiert werden",
     "deleteSuccess": "Benutzer erfolgreich entfernt",
+    "deleteBulkSuccess": "Erfolgreich {{count}} Benutzer entfernt",
     "deleteErrorFallback": "Benutzer konnte nicht entfernt werden",
     "deleteSelfWarning": "Sie koennen Ihr eigenes Konto nicht entfernen"
   },

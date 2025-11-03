@@ -1,11 +1,12 @@
-import type { JSX } from 'react'
-import { Form, Input, Modal, Space, Typography } from 'antd'
+import type { JSX, Key } from 'react'
+import { Button, Form, Input, Modal, Space, Typography, message } from 'antd'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { EmptyState } from '@renderer/components/DataStates'
 import { ProjectTasksTable } from '@renderer/pages/Projects/components/ProjectTasksTable'
 import { ProjectBoard } from '@renderer/pages/Projects/components/ProjectBoard'
+import { DeleteOutlined } from '@ant-design/icons'
 import { useProjectRouteContext } from '@renderer/pages/ProjectLayout'
 import {
   buildPriorityOptions,
@@ -37,6 +38,9 @@ import {
 } from '@renderer/store/slices/views'
 import type { SavedView } from '@renderer/store/slices/views/types'
 import type { LoadStatus } from '@renderer/store/slices/tasks/types'
+import { deleteTask, type TaskDetails } from '@renderer/store/slices/tasks'
+import { selectCurrentUser } from '@renderer/store/slices/auth/selectors'
+import { extractErrorMessage } from '@renderer/store/slices/auth/helpers'
 import { VIEW_COLUMN_VALUES } from '@main/services/view/schemas'
 
 const TABLE_PAGE_SIZE = 10
@@ -86,6 +90,12 @@ const ProjectTasksPage = (): JSX.Element => {
   const [cardPage, setCardPage] = useState(1)
   const [listPage, setListPage] = useState(1)
   const dispatch = useAppDispatch()
+  const currentUser = useAppSelector(selectCurrentUser)
+  const userId = currentUser?.id ?? null
+  const [bulkMessageApi, bulkMessageContext] = message.useMessage()
+  const [selectedTaskIds, setSelectedTaskIds] = useState<string[]>([])
+  const [deleteTargets, setDeleteTargets] = useState<TaskDetails[] | null>(null)
+  const [deleteLoading, setDeleteLoading] = useState(false)
   const [isSaveModalOpen, setIsSaveModalOpen] = useState(false)
   const [viewForm] = Form.useForm<{ name: string }>()
   const lastAppliedViewId = useRef<string | null>(null)
@@ -122,7 +132,28 @@ const ProjectTasksPage = (): JSX.Element => {
   const assigneeOptions = useMemo(() => buildAssigneeOptions(tasks, t), [tasks, t])
 
   const filteredTasks = useMemo(() => filterTasks(tasks, filters), [tasks, filters])
+  const selectedTasks = useMemo(
+    () =>
+      tasks.filter(
+        (task) => selectedTaskIds.includes(task.id) && task.owner.id === userId
+      ),
+    [selectedTaskIds, tasks, userId]
+  )
   const tableColumns = useMemo(() => getColumnsForView(visibleColumns), [visibleColumns])
+  const tableRowSelection = useMemo(() => {
+    if (!canManageTasks || !userId) {
+      return undefined
+    }
+    return {
+      selectedRowKeys: selectedTaskIds,
+      onChange: (keys: Key[]) => {
+        setSelectedTaskIds(keys.map((key) => String(key)))
+      },
+      getCheckboxProps: (record: TaskDetails) => ({
+        disabled: deleteLoading || record.owner.id !== userId
+      })
+    }
+  }, [canManageTasks, deleteLoading, selectedTaskIds, userId])
 
   const applyFiltersFromView = useCallback(
     (view: SavedView) => {
@@ -226,6 +257,78 @@ const ProjectTasksPage = (): JSX.Element => {
     [dispatch, projectId, selectedViewId]
   )
 
+  const openBulkDeleteModal = useCallback(() => {
+    if (!canManageTasks || deleteLoading) {
+      return
+    }
+    if (selectedTasks.length === 0) {
+      if (selectedTaskIds.length > 0) {
+        bulkMessageApi.warning(
+          t('tasks.messages.deleteOwnerWarning', {
+            count: selectedTaskIds.length,
+            defaultValue:
+              selectedTaskIds.length === 1
+                ? 'You can only bulk delete tasks you own.'
+                : '{{count}} selected tasks cannot be deleted because you are not the owner.'
+          })
+        )
+      }
+      return
+    }
+    const skipped = selectedTaskIds.length - selectedTasks.length
+    if (skipped > 0) {
+      bulkMessageApi.warning(
+        t('tasks.messages.deleteOwnerWarning', {
+          count: skipped,
+          defaultValue:
+            skipped === 1
+              ? '1 selected task cannot be deleted because you are not the owner.'
+              : '{{count}} selected tasks cannot be deleted because you are not the owner.'
+        })
+      )
+    }
+    setDeleteTargets(selectedTasks)
+  }, [bulkMessageApi, canManageTasks, deleteLoading, selectedTaskIds, selectedTasks, t])
+
+  const closeBulkDeleteModal = useCallback(() => {
+    if (deleteLoading) {
+      return
+    }
+    setDeleteTargets(null)
+  }, [deleteLoading])
+
+  const confirmBulkDelete = useCallback(async () => {
+    if (!deleteTargets || deleteTargets.length === 0) {
+      return
+    }
+    if (!projectId) {
+      setDeleteTargets(null)
+      return
+    }
+    setDeleteLoading(true)
+    const removedIds: string[] = []
+    for (const task of deleteTargets) {
+      try {
+        await dispatch(deleteTask({ projectId, taskId: task.id })).unwrap()
+        removedIds.push(task.id)
+      } catch (error) {
+        bulkMessageApi.error(
+          extractErrorMessage(error) ??
+            t('errors.generic', { defaultValue: 'Operation failed' })
+        )
+      }
+    }
+    if (removedIds.length > 0) {
+      bulkMessageApi.success(
+        t('tasks.messages.deleteBulkSuccess', { count: removedIds.length })
+      )
+      setSelectedTaskIds((prev) => prev.filter((id) => !removedIds.includes(id)))
+      refreshTasks()
+    }
+    setDeleteLoading(false)
+    setDeleteTargets(null)
+  }, [bulkMessageApi, deleteTargets, dispatch, projectId, refreshTasks, t])
+
   useEffect(() => {
     if (!projectId || viewsStatus !== 'idle') {
       return
@@ -291,6 +394,25 @@ const ProjectTasksPage = (): JSX.Element => {
     }
   }, [viewMode])
 
+  useEffect(() => {
+    if (viewMode !== 'table' && selectedTaskIds.length > 0) {
+      setSelectedTaskIds([])
+    }
+  }, [selectedTaskIds.length, viewMode])
+
+  useEffect(() => {
+    if (selectedTaskIds.length === 0) {
+      return
+    }
+    const validIds = new Set(
+      tasks.filter((task) => task.owner.id === userId).map((task) => task.id)
+    )
+    const cleaned = selectedTaskIds.filter((id) => validIds.has(id))
+    if (cleaned.length !== selectedTaskIds.length) {
+      setSelectedTaskIds(cleaned)
+    }
+  }, [selectedTaskIds, tasks, userId])
+
   const savedViewsControls = projectId ? (
     <TaskSavedViewsControls
       views={savedViews}
@@ -355,6 +477,7 @@ const ProjectTasksPage = (): JSX.Element => {
   return (
     <>
       <Space direction="vertical" size={24} style={{ width: '100%' }}>
+        {bulkMessageContext}
         <TaskFiltersBar
           filters={filters}
           statusOptions={statusOptions}
@@ -381,29 +504,51 @@ const ProjectTasksPage = (): JSX.Element => {
           savedViewsControls={savedViewsControls}
         />
         {viewMode === 'table' ? (
-          <ProjectTasksTable
-            tasks={filteredTasks}
-            loading={loading || projectLoading}
-            onSelect={(task) => handleTaskSelect(task.id)}
-            onEdit={(task) => handleTaskEdit(task.id)}
-            onDeleteRequest={(task) => handleTaskDelete(task.id)}
-            canManage={canManageTasks}
-            deletingTaskId={deletingTaskId}
-            statusLabels={statusLabelMap}
-            columns={tableColumns}
-            pagination={{
-              current: tablePage,
-              pageSize: tablePageSize,
-              showSizeChanger: true,
-              pageSizeOptions: ['10', '20', '50', '100'],
-              onChange: (page, size) => {
-                setTablePage(page)
-                if (typeof size === 'number' && size !== tablePageSize) {
-                  setTablePageSize(size)
+          <Space direction="vertical" size="small" style={{ width: '100%' }}>
+            {canManageTasks ? (
+              <div style={{ display: 'flex', justifyContent: 'flex-end', width: '100%' }}>
+                <Button
+                  icon={<DeleteOutlined />}
+                  danger
+                  onClick={openBulkDeleteModal}
+                  disabled={selectedTasks.length === 0 || deleteLoading}
+                  loading={deleteLoading}
+                >
+                  {t('tasks.actions.deleteSelected', {
+                    count: selectedTasks.length,
+                    defaultValue:
+                      selectedTasks.length > 0
+                        ? `Delete selected (${selectedTasks.length})`
+                        : 'Delete selected'
+                  })}
+                </Button>
+              </div>
+            ) : null}
+            <ProjectTasksTable
+              tasks={filteredTasks}
+              loading={loading || projectLoading}
+              onSelect={(task) => handleTaskSelect(task.id)}
+              onEdit={(task) => handleTaskEdit(task.id)}
+              onDeleteRequest={(task) => handleTaskDelete(task.id)}
+              canManage={canManageTasks}
+              deletingTaskId={deletingTaskId}
+              statusLabels={statusLabelMap}
+              columns={tableColumns}
+              rowSelection={tableRowSelection}
+              pagination={{
+                current: tablePage,
+                pageSize: tablePageSize,
+                showSizeChanger: true,
+                pageSizeOptions: ['10', '20', '50', '100'],
+                onChange: (page, size) => {
+                  setTablePage(page)
+                  if (typeof size === 'number' && size !== tablePageSize) {
+                    setTablePageSize(size)
+                  }
                 }
-              }
-            }}
-          />
+              }}
+            />
+          </Space>
         ) : null}
         {viewMode === 'cards' ? (
           <ProjectTasksCardGrid
@@ -449,6 +594,48 @@ const ProjectTasksPage = (): JSX.Element => {
           />
         ) : null}
       </Space>
+      <Modal
+        open={Boolean(deleteTargets && deleteTargets.length > 0)}
+        title={
+          deleteTargets && deleteTargets.length > 0
+            ? t('tasks.bulkDelete.title', { count: deleteTargets.length })
+            : ''
+        }
+        onCancel={closeBulkDeleteModal}
+        onOk={() => {
+          void confirmBulkDelete()
+        }}
+        okText={t('tasks.bulkDelete.confirm')}
+        cancelText={t('tasks.bulkDelete.cancel')}
+        okButtonProps={{
+          danger: true,
+          loading: deleteLoading,
+          disabled: !deleteTargets || deleteTargets.length === 0
+        }}
+        cancelButtonProps={{ disabled: deleteLoading }}
+        maskClosable={false}
+        destroyOnHidden
+      >
+        <Space direction="vertical" size={8} style={{ width: '100%' }}>
+          <Typography.Paragraph style={{ marginBottom: 0 }}>
+            {t('tasks.bulkDelete.description')}
+          </Typography.Paragraph>
+          {deleteTargets && deleteTargets.length > 0 ? (
+            <ul style={{ paddingLeft: 18, margin: 0 }}>
+              {deleteTargets.map((task) => (
+                <li key={task.id}>
+                  <Typography.Text>
+                    {task.key ? `${task.key} — ${task.title}` : task.title}
+                  </Typography.Text>
+                </li>
+              ))}
+            </ul>
+          ) : null}
+          <Typography.Text type="danger">
+            {t('tasks.bulkDelete.warning')}
+          </Typography.Text>
+        </Space>
+      </Modal>
       <Modal
         open={Boolean(deleteConfirmTask)}
         title={t('tasks.deleteModal.title', { defaultValue: 'Elimina task' })}
