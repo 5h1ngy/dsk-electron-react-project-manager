@@ -29,6 +29,8 @@ export const createTaskSchema = z.object({
       },
       { message: 'Data non valida' }
     )
+}).extend({
+  ownerId: z.string().trim().min(1).max(36).optional()
 })
 
 export type CreateTaskValues = z.infer<typeof createTaskSchema>
@@ -81,13 +83,20 @@ const assigneeInputSchema = z
     return value
   })
 
+const ownerInputSchema = z
+  .string()
+  .trim()
+  .min(1, 'Il proprietario è obbligatorio')
+  .max(36, 'Identificativo proprietario non valido')
+
 export const taskFormSchema = z.object({
   title: z.string().trim().min(1, 'Il titolo è obbligatorio').max(160, 'Massimo 160 caratteri'),
   description: normalizeDescription,
   status: taskStatusSchema,
   priority: taskPrioritySchema,
   dueDate: dueDateInputSchema,
-  assigneeId: assigneeInputSchema
+  assigneeId: assigneeInputSchema,
+  ownerId: ownerInputSchema
 })
 
 export type TaskFormValues = z.infer<typeof taskFormSchema>

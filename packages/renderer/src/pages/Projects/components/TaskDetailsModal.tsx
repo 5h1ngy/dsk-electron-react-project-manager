@@ -58,17 +58,23 @@ export interface TaskDetailsModalProps {
   deleting?: boolean
   assigneeOptions?: Array<{ label: string; value: string }>
   statusOptions?: Array<{ label: string; value: string }>
+  ownerOptions?: Array<{ label: string; value: string }>
 }
 
 const PRIORITY_ORDER: TaskDetails['priority'][] = ['low', 'medium', 'high', 'critical']
 
-const buildEditValues = (task: TaskDetails | null, fallbackStatus: string): TaskFormValues => ({
+const buildEditValues = (
+  task: TaskDetails | null,
+  fallbackStatus: string,
+  fallbackOwnerId: string
+): TaskFormValues => ({
   title: task?.title ?? '',
   description: task?.description ?? null,
   status: task?.status ?? fallbackStatus,
   priority: task?.priority ?? 'medium',
   dueDate: task?.dueDate ?? null,
-  assigneeId: task?.assignee?.id ?? null
+  assigneeId: task?.assignee?.id ?? null,
+  ownerId: task?.owner?.id ?? fallbackOwnerId
 })
 
 export const TaskDetailsModal = ({
@@ -80,7 +86,8 @@ export const TaskDetailsModal = ({
   onDelete,
   deleting = false,
   assigneeOptions = [],
-  statusOptions = []
+  statusOptions = [],
+  ownerOptions = []
 }: TaskDetailsModalProps): JSX.Element => {
   const { t, i18n } = useTranslation('projects')
   const { token } = theme.useToken()
@@ -102,9 +109,19 @@ export const TaskDetailsModal = ({
   const mutationStatus = useAppSelector(selectTaskMutationStatus)
   const updating = isEditing && mutationStatus === 'loading'
 
+  const resolvedOwnerOptions = useMemo(
+    () => (ownerOptions.length ? ownerOptions : assigneeOptions),
+    [assigneeOptions, ownerOptions]
+  )
+
+  const defaultOwnerId = useMemo(
+    () => task?.owner?.id ?? resolvedOwnerOptions[0]?.value ?? '',
+    [resolvedOwnerOptions, task?.owner?.id]
+  )
+
   const defaultEditValues = useMemo(
-    () => buildEditValues(task, defaultStatusKey),
-    [task, defaultStatusKey]
+    () => buildEditValues(task, defaultStatusKey, defaultOwnerId),
+    [defaultOwnerId, defaultStatusKey, task]
   )
 
   const editForm = useForm<TaskFormValues>({
@@ -136,9 +153,9 @@ export const TaskDetailsModal = ({
       commentForm.resetFields()
       setSubmitting(false)
       setIsEditing(false)
-      editForm.reset(buildEditValues(null, defaultStatusKey))
+      editForm.reset(buildEditValues(null, defaultStatusKey, defaultOwnerId))
     }
-  }, [open, commentForm, editForm, defaultStatusKey])
+  }, [open, commentForm, editForm, defaultOwnerId, defaultStatusKey])
 
   useEffect(() => {
     if (!task || !open || isEditing) {
@@ -211,7 +228,8 @@ export const TaskDetailsModal = ({
             status: values.status,
             priority: values.priority,
             dueDate: values.dueDate ?? null,
-            assigneeId: values.assigneeId ?? null
+            assigneeId: values.assigneeId ?? null,
+            ownerId: values.ownerId
           }
         })
       ).unwrap()
@@ -548,6 +566,29 @@ export const TaskDetailsModal = ({
                         showSearch
                         optionFilterProp="label"
                         disabled={updating}
+                      />
+                    )}
+                  />
+                </Form.Item>
+                <Form.Item
+                  label={t('tasks.form.fields.owner')}
+                  style={{ flex: 1, minWidth: 200 }}
+                  required
+                  validateStatus={editErrors.ownerId ? 'error' : ''}
+                  help={editErrors.ownerId?.toString()}
+                >
+                  <Controller
+                    control={editControl}
+                    name="ownerId"
+                    render={({ field }) => (
+                      <Select
+                        value={field.value}
+                        placeholder={t('tasks.form.placeholders.owner')}
+                        options={resolvedOwnerOptions}
+                        onChange={(value) => field.onChange(value)}
+                        showSearch
+                        optionFilterProp="label"
+                        disabled={updating || resolvedOwnerOptions.length === 0}
                       />
                     )}
                   />

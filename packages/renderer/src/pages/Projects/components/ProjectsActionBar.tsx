@@ -1,6 +1,7 @@
-import { useMemo, useState, type JSX, type ReactNode, type CSSProperties } from 'react'
+import { useEffect, useMemo, useState, type JSX, type ReactNode, type CSSProperties } from 'react'
 import {
   AppstoreOutlined,
+  AppstoreAddOutlined,
   BarsOutlined,
   FilterOutlined,
   PlusOutlined,
@@ -16,9 +17,11 @@ import {
   Flex,
   Grid,
   Input,
+  Modal,
   Segmented,
   Select,
   Space,
+  Typography,
   theme
 } from 'antd'
 import type { ChangeEvent } from 'react'
@@ -53,6 +56,11 @@ export interface ProjectsActionBarProps {
   onCreatedBetweenChange: (range: CreatedRange) => void
   secondaryActions?: ReactNode
   savedViewsControls?: ReactNode
+  optionalFieldControls?: {
+    content: ReactNode
+    hasOptions: boolean
+    disabled: boolean
+  }
 }
 
 export const ProjectsActionBar = ({
@@ -73,10 +81,12 @@ export const ProjectsActionBar = ({
   createdBetween,
   onCreatedBetweenChange,
   secondaryActions,
-  savedViewsControls
+  savedViewsControls,
+  optionalFieldControls
 }: ProjectsActionBarProps): JSX.Element => {
   const { t } = useTranslation('projects')
   const [filtersOpen, setFiltersOpen] = useState(false)
+  const [optionalFieldsOpen, setOptionalFieldsOpen] = useState(false)
   const screens = Grid.useBreakpoint()
   const { token } = theme.useToken()
   const toolbarSegmentedStyle = useMemo(
@@ -104,6 +114,18 @@ export const ProjectsActionBar = ({
   }, [createdBetween])
 
   const isCompact = !screens.md
+
+  useEffect(() => {
+    if (!optionalFieldControls?.hasOptions && optionalFieldsOpen) {
+      setOptionalFieldsOpen(false)
+    }
+  }, [optionalFieldControls?.hasOptions, optionalFieldsOpen])
+
+  useEffect(() => {
+    if (optionalFieldControls?.disabled && optionalFieldsOpen) {
+      setOptionalFieldsOpen(false)
+    }
+  }, [optionalFieldControls?.disabled, optionalFieldsOpen])
 
   const viewSegmentedOptions = useMemo(
     () => [
@@ -306,6 +328,21 @@ export const ProjectsActionBar = ({
           block={isCompact}
           style={segmentedStyle}
         />
+        {optionalFieldControls && optionalFieldControls.hasOptions ? (
+          <Button
+            icon={<AppstoreAddOutlined />}
+            size="large"
+            disabled={optionalFieldControls.disabled}
+            onClick={() => {
+              if (!optionalFieldControls.disabled) {
+                setOptionalFieldsOpen(true)
+              }
+            }}
+            style={buttonFullWidthStyle}
+          >
+            {t('optionalColumns.button', { defaultValue: 'Optional fields' })}
+          </Button>
+        ) : null}
         <Button
           icon={<FilterOutlined />}
           onClick={() => setFiltersOpen(true)}
@@ -372,6 +409,34 @@ export const ProjectsActionBar = ({
       >
         {filterContent}
       </Drawer>
+      {optionalFieldControls && optionalFieldControls.hasOptions ? (
+        <Modal
+          open={optionalFieldsOpen}
+          title={t('optionalColumns.modalTitle', { defaultValue: 'Optional fields' })}
+          onCancel={() => setOptionalFieldsOpen(false)}
+          footer={null}
+          destroyOnClose={false}
+          centered
+          styles={{
+            body: {
+              paddingTop: token.paddingLG,
+              paddingBottom: token.paddingLG,
+              display: 'flex',
+              flexDirection: 'column',
+              gap: token.marginLG
+            }
+          }}
+        >
+          <Flex vertical gap={token.marginMD}>
+            <Typography.Paragraph style={{ marginBottom: 0 }}>
+              {t('optionalColumns.description', {
+                defaultValue: 'Select the additional fields to display in the table view.'
+              })}
+            </Typography.Paragraph>
+            {optionalFieldControls.content}
+          </Flex>
+        </Modal>
+      ) : null}
     </>
   )
 }

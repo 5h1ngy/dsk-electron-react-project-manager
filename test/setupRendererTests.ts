@@ -1,11 +1,8 @@
 import '@testing-library/jest-dom'
 import React from 'react'
 
-jest.mock('react-markdown', () => ({
+jest.mock('@uiw/react-markdown-preview', () => ({
   __esModule: true,
-  default: ({ children }: { children?: React.ReactNode }) =>
-    React.createElement('div', { 'data-testid': 'react-markdown' }, children)
+  default: ({ source }: { source?: string }) =>
+    React.createElement('div', { 'data-testid': 'markdown-preview' }, source)
 }))
-
-jest.mock('remark-gfm', () => ({ __esModule: true, default: () => null }))
-jest.mock('rehype-sanitize', () => ({ __esModule: true, default: () => null }))

@@ -69,6 +69,7 @@
     "columns": {
       "key": "Key",
       "name": "Nome",
+      "owner": "Proprietario",
       "tags": "Tag",
       "role": "Ruolo",
       "members": "Membri",
@@ -133,6 +134,10 @@
         "title": "Task in ritardo",
         "empty": "Nessun task in ritardo"
       },
+      "customizeButton": "Personalizza panoramica",
+      "customizeTitle": "Personalizza panoramica",
+      "customizeDescription": "Scegli quali schede mostrare nella panoramica.",
+      "customizeMinimum": "Seleziona almeno una scheda.",
       "taskItem": {
         "due": "Scadenza {{date}}",
         "priority": "Priorita: {{priority}}"
@@ -180,8 +185,10 @@
     "summary": {
       "title": "Riepilogo progetto",
       "empty": "Seleziona un progetto per vedere i dettagli",
+      "owner": "Proprietario",
       "createdOn": "Creato",
       "createdBy": "{{date}} da {{user}}",
+      "editProject": "Modifica progetto",
       "description": "Descrizione",
       "noDescription": "Nessuna descrizione disponibile",
       "tags": "Tag",
@@ -230,6 +237,12 @@
       "titlePlaceholder": "Titolo del task",
       "descriptionPlaceholder": "Descrizione (opzionale)",
       "submit": "Aggiungi task"
+    },
+    "taskCount_one": "{{count}} task",
+    "taskCount_other": "{{count}} task",
+    "emptyColumn": "Nessun task in questa colonna",
+    "summary": {
+      "total": "Totale task"
     }
   },
   "notifications": {
@@ -343,12 +356,14 @@
         "status": "Stato",
         "priority": "Priorita",
         "assignee": "Assegnatario",
+        "owner": "Proprietario",
         "dueDate": "Scadenza"
       },
       "placeholders": {
         "title": "Titolo del task",
         "description": "Descrizione (opzionale)",
         "assignee": "Seleziona assegnatario",
+        "owner": "Seleziona proprietario",
         "dueDate": "Seleziona la scadenza"
       }
     },

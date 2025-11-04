@@ -16,7 +16,12 @@ describe('projects slice', () => {
     updatedAt: now,
     role: 'admin',
     memberCount: 1,
-    tags: ['alpha']
+    tags: ['alpha'],
+    owner: {
+      id: 'admin',
+      username: 'admin',
+      displayName: 'Administrator'
+    }
   }
 
   const details: ProjectDetails = {

@@ -68,6 +68,7 @@
     "columns": {
       "key": "Key",
       "name": "Name",
+      "owner": "Eigentuemer",
       "tags": "Tags",
       "role": "Rolle",
       "members": "Mitglieder",
@@ -132,6 +133,10 @@
         "title": "Ueberfaellige Aufgaben",
         "empty": "Keine ueberfaelligen Aufgaben"
       },
+      "customizeButton": "Uebersicht anpassen",
+      "customizeTitle": "Uebersicht anpassen",
+      "customizeDescription": "Waehlen Sie aus, welche Karten in der Uebersicht angezeigt werden sollen.",
+      "customizeMinimum": "Waehlen Sie mindestens eine Karte aus.",
       "taskItem": {
         "due": "Faellig am {{date}}",
         "priority": "Prioritaet: {{priority}}"
@@ -179,8 +184,10 @@
     "summary": {
       "title": "Projektuebersicht",
       "empty": "Projekt auswaehlen, um Details zu sehen",
+      "owner": "Eigentuemer",
       "createdOn": "Erstellt",
       "createdBy": "{{date}} von {{user}}",
+      "editProject": "Projekt bearbeiten",
       "description": "Beschreibung",
       "noDescription": "Keine Beschreibung verfuegbar",
       "tags": "Tags",
@@ -231,6 +238,12 @@
       "titlePlaceholder": "Titel der Aufgabe",
       "descriptionPlaceholder": "Beschreibung (optional)",
       "submit": "Aufgabe hinzufuegen"
+    },
+    "taskCount_one": "{{count}} Aufgabe",
+    "taskCount_other": "{{count}} Aufgaben",
+    "emptyColumn": "Keine Aufgaben in dieser Spalte",
+    "summary": {
+      "total": "Alle Aufgaben"
     }
   },
   "notifications": {
@@ -344,12 +357,14 @@
         "status": "Status",
         "priority": "Prioritaet",
         "assignee": "Zustaendig",
+        "owner": "Eigentuemer",
         "dueDate": "Faellig am"
       },
       "placeholders": {
         "title": "Titel des Tasks",
         "description": "Beschreibung (optional)",
         "assignee": "Zustaendigen auswaehlen",
+        "owner": "Eigentuemer auswaehlen",
         "dueDate": "Faelligkeitsdatum waehlen"
       }
     },

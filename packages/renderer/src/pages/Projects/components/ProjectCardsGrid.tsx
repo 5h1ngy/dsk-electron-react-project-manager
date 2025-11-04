@@ -1,4 +1,10 @@
-import { CalendarOutlined, DeleteOutlined, EditOutlined, TeamOutlined } from '@ant-design/icons'
+import {
+  CalendarOutlined,
+  DeleteOutlined,
+  EditOutlined,
+  IdcardOutlined,
+  TeamOutlined
+} from '@ant-design/icons'
 import { Button, Card, Col, Pagination, Row, Space, Tag, Typography, theme } from 'antd'
 import { useMemo, type JSX } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -148,6 +154,12 @@ export const ProjectCardsGrid = ({
                     ) : (
                       <Typography.Text type="secondary">{t('list.noTags')}</Typography.Text>
                     )}
+                  </Space>
+                  <Space size={6} align="center">
+                    <IdcardOutlined style={{ color: token.colorWarning }} aria-hidden />
+                    <Typography.Text type="secondary">
+                      {project.owner.displayName ?? project.owner.username}
+                    </Typography.Text>
                   </Space>
                   <Space size={6} align="center">
                     <TeamOutlined style={{ color: token.colorPrimary }} aria-hidden />

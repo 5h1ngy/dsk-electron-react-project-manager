@@ -142,6 +142,10 @@ export class ProjectService {
             {
               model: ProjectTag,
               required: false
+            },
+            {
+              model: User,
+              as: 'creator'
             }
           ],
           order: [['createdAt', 'ASC']]
@@ -177,6 +181,10 @@ export class ProjectService {
           {
             model: ProjectTag,
             required: false
+          },
+          {
+            model: User,
+            as: 'creator'
           }
         ],
         order: [['createdAt', 'ASC']]
@@ -205,6 +213,10 @@ export class ProjectService {
           },
           {
             model: ProjectTag
+          },
+          {
+            model: User,
+            as: 'creator'
           }
         ]
       })

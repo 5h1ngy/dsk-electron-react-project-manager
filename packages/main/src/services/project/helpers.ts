@@ -5,8 +5,10 @@ import type { ProjectTag } from '@main/models/ProjectTag'
 import type {
   ProjectDetailsDTO,
   ProjectMemberDTO,
-  ProjectSummaryDTO
+  ProjectSummaryDTO,
+  ProjectOwnerDTO
 } from '@main/services/project/types'
+import type { User } from '@main/models/User'
 
 const collectTags = (project: Project & { tags?: ProjectTag[] }): string[] =>
   (project.tags ?? []).map((tag) => tag.tag)
@@ -26,8 +28,24 @@ export const mapProjectMember = (member: ProjectMember): ProjectMemberDTO => {
   }
 }
 
+const resolveOwner = (project: Project & { creator?: User | null }): ProjectOwnerDTO => {
+  const creator = project.creator ?? null
+  if (creator) {
+    return {
+      id: creator.id,
+      username: creator.username,
+      displayName: creator.displayName ?? creator.username
+    }
+  }
+  return {
+    id: project.createdBy,
+    username: project.createdBy,
+    displayName: project.createdBy
+  }
+}
+
 export const mapProjectSummary = (
-  project: Project & { tags?: ProjectTag[] },
+  project: Project & { tags?: ProjectTag[]; creator?: User | null },
   role: ProjectMembershipRole,
   memberCount: number
 ): ProjectSummaryDTO => ({
@@ -40,11 +58,12 @@ export const mapProjectSummary = (
   updatedAt: project.updatedAt!,
   role,
   memberCount,
-  tags: collectTags(project)
+  tags: collectTags(project),
+  owner: resolveOwner(project)
 })
 
 export const mapProjectDetails = (
-  project: Project & { tags?: ProjectTag[] },
+  project: Project & { tags?: ProjectTag[]; creator?: User | null },
   role: ProjectMembershipRole,
   memberCount: number,
   members: ProjectMember[]

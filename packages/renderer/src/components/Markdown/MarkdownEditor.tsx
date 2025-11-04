@@ -10,12 +10,10 @@ import {
   EditOutlined
 } from '@ant-design/icons'
 import type { SegmentedValue } from 'antd/es/segmented'
-import ReactMarkdown from 'react-markdown'
-import remarkGfm from 'remark-gfm'
-import rehypeSanitize from 'rehype-sanitize'
 import type { TextAreaRef } from 'antd/es/input/TextArea'
+import MarkdownPreview from '@uiw/react-markdown-preview'
+import '@uiw/react-markdown-preview/dist/markdown.css'
 import { useThemeTokens } from '@renderer/theme/hooks/useThemeTokens'
-import { buildMarkdownComponents } from '@renderer/components/Markdown/markdownRenderers'
 
 export interface MarkdownEditorProps {
   value: string
@@ -58,7 +56,17 @@ export const MarkdownEditor = ({
   const [query, setQuery] = useState<string>('')
   const [isSuggestOpen, setIsSuggestOpen] = useState(false)
   const [activeSuggestion, setActiveSuggestion] = useState(0)
-  const markdownComponents = useMemo(() => buildMarkdownComponents(token), [token])
+  const colorMode = useMemo(() => {
+    const hex = token.colorBgBase?.replace('#', '')
+    if (!hex || hex.length < 6) {
+      return 'light'
+    }
+    const r = parseInt(hex.slice(0, 2), 16)
+    const g = parseInt(hex.slice(2, 4), 16)
+    const b = parseInt(hex.slice(4, 6), 16)
+    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255
+    return luminance > 0.5 ? 'light' : 'dark'
+  }, [token.colorBgBase])
 
   const emitCursorChange = () => {
     if (!onCursorChange) {
@@ -395,13 +403,16 @@ export const MarkdownEditor = ({
           }}
         >
           {value.trim() ? (
-            <ReactMarkdown
-              remarkPlugins={[remarkGfm]}
-              rehypePlugins={[rehypeSanitize]}
-              components={markdownComponents}
-            >
-              {value}
-            </ReactMarkdown>
+            <MarkdownPreview
+              source={value}
+              wrapperElement={{ 'data-color-mode': colorMode }}
+              style={{
+                background: 'transparent',
+                color: token.colorText,
+                fontFamily: token.fontFamily,
+                fontSize: token.fontSize
+              }}
+            />
           ) : (
             <Typography.Text type="secondary">Nessun contenuto da mostrare</Typography.Text>
           )}

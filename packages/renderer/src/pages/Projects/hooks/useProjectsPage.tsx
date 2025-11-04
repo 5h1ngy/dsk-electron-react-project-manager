@@ -78,7 +78,15 @@ export interface UseProjectsPageResult {
 }
 
 const matchesSearch = (project: ProjectSummary, needle: string): boolean => {
-  const haystacks = [project.name, project.key, ...(project.tags ?? [])]
+  const ownerDisplay = project.owner?.displayName ?? ''
+  const ownerUsername = project.owner?.username ?? ''
+  const haystacks = [
+    project.name,
+    project.key,
+    ownerDisplay,
+    ownerUsername,
+    ...(project.tags ?? [])
+  ]
   return haystacks.some((value) => value.toLowerCase().includes(needle))
 }
 
@@ -253,7 +261,7 @@ export const useProjectsPage = (options?: UseProjectsPageOptions): UseProjectsPa
       if (roleFilter !== 'all' && project.role !== roleFilter) {
         return false
       }
-      if (ownedOnly && project.createdBy !== currentUser?.id) {
+      if (ownedOnly && project.owner?.id !== currentUser?.id) {
         return false
       }
       if (createdBetween) {

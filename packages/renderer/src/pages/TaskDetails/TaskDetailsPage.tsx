@@ -32,7 +32,7 @@ import { Controller, useForm, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useCallback, useEffect, useMemo, useState, type JSX } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Navigate, useNavigate, useParams } from 'react-router-dom'
+import { Navigate, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 
 import { ShellHeaderPortal } from '@renderer/layout/Shell/ShellHeader.context'
 import { usePrimaryBreadcrumb } from '@renderer/layout/Shell/hooks/usePrimaryBreadcrumb'
@@ -52,6 +52,7 @@ import { buildTags, formatDate } from '@renderer/pages/TaskDetails/TaskDetails.h
 import { buildBadgeStyle, useSemanticBadges } from '@renderer/theme/hooks/useSemanticBadges'
 import { useProjectDetails } from '@renderer/pages/Projects/hooks/useProjectDetails'
 import { taskFormSchema, type TaskFormValues } from '@renderer/pages/Projects/schemas/taskSchemas'
+import { selectCurrentUser } from '@renderer/store/slices/auth/selectors'
 
 const { TextArea } = Input
 
@@ -83,6 +84,8 @@ const TaskDetailsContent = ({
     canManageTasks,
     messageContext: projectMessageContext
   } = useProjectDetails(projectId)
+  const currentUser = useAppSelector(selectCurrentUser)
+  const [searchParams, setSearchParams] = useSearchParams()
 
   const task: TaskDetails | null = useMemo(
     () => tasks.find((item) => item.id === taskId) ?? null,
@@ -108,16 +111,36 @@ const TaskDetailsContent = ({
 
   const tags = useMemo(() => buildTags(task, t), [task, t])
 
-  const assigneeOptions = useMemo(
-    () =>
-      (project?.members ?? [])
-        .filter((member) => member.isActive)
-        .map((member) => ({
-          value: member.userId,
-          label: member.displayName || member.username || member.userId
-        })),
+  const activeMembers = useMemo(
+    () => (project?.members ?? []).filter((member) => member.isActive),
     [project?.members]
   )
+
+  const assigneeOptions = useMemo(
+    () =>
+      activeMembers.map((member) => ({
+        value: member.userId,
+        label: member.displayName || member.username || member.userId
+      })),
+    [activeMembers]
+  )
+
+  const ownerOptions = useMemo(() => {
+    const options = activeMembers.map((member) => ({
+      value: member.userId,
+      label: member.displayName || member.username || member.userId
+    }))
+    if (currentUser?.id) {
+      const exists = options.some((option) => option.value === currentUser.id)
+      if (!exists) {
+        options.push({
+          value: currentUser.id,
+          label: currentUser.displayName || currentUser.username || currentUser.id
+        })
+      }
+    }
+    return options
+  }, [activeMembers, currentUser?.displayName, currentUser?.id, currentUser?.username])
 
   const commentsSelector = useMemo(() => selectTaskComments(taskId), [taskId])
   const commentsState = useAppSelector(commentsSelector)
@@ -135,9 +158,10 @@ const TaskDetailsContent = ({
       status: task?.status ?? taskStatuses[0]?.key ?? 'todo',
       priority: task?.priority ?? 'medium',
       dueDate: task?.dueDate ?? null,
-      assigneeId: task?.assignee?.id ?? null
+      assigneeId: task?.assignee?.id ?? null,
+      ownerId: task?.owner?.id ?? currentUser?.id ?? ownerOptions[0]?.value ?? ''
     }),
-    [task, taskStatuses]
+    [currentUser?.id, ownerOptions, task, taskStatuses]
   )
 
   const editForm = useForm<TaskFormValues>({
@@ -158,6 +182,27 @@ const TaskDetailsContent = ({
       resetEditForm(defaultEditValues)
     }
   }, [defaultEditValues, isEditing, resetEditForm])
+
+  useEffect(() => {
+    const mode = searchParams.get('mode')
+    if (!mode) {
+      return
+    }
+    const next = new URLSearchParams(searchParams)
+    next.delete('mode')
+    setSearchParams(next, { replace: true })
+    if (mode === 'edit') {
+      if (canManageTasks) {
+        setIsEditing(true)
+      } else {
+        message.warning(
+          t('permissions.tasksUpdateDenied', {
+            defaultValue: 'Non hai i permessi per modificare questo task.'
+          })
+        )
+      }
+    }
+  }, [canManageTasks, searchParams, setSearchParams, t])
 
   useEffect(() => {
     if (!taskId) {
@@ -278,7 +323,8 @@ const TaskDetailsContent = ({
               status: values.status,
               priority: values.priority,
               dueDate: values.dueDate,
-              assigneeId: values.assigneeId
+              assigneeId: values.assigneeId,
+              ownerId: values.ownerId
             }
           })
         ).unwrap()
@@ -659,6 +705,28 @@ const TaskDetailsContent = ({
                                 showSearch
                                 optionFilterProp="label"
                                 disabled={updatingTask}
+                              />
+                            )}
+                          />
+                        </Form.Item>
+                        <Form.Item
+                          label={t('tasks.form.fields.owner')}
+                          required
+                          validateStatus={editFormState.errors.ownerId ? 'error' : undefined}
+                          help={editFormState.errors.ownerId?.toString()}
+                        >
+                          <Controller
+                            control={editControl}
+                            name="ownerId"
+                            render={({ field }) => (
+                              <Select
+                                value={field.value}
+                                placeholder={t('tasks.form.placeholders.owner')}
+                                options={ownerOptions}
+                                onChange={(value) => field.onChange(value)}
+                                showSearch
+                                optionFilterProp="label"
+                                disabled={updatingTask || ownerOptions.length === 0}
                               />
                             )}
                           />

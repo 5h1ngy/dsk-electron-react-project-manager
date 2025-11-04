@@ -61,7 +61,8 @@ export const createTaskSchema = z.object({
   status: taskStatusSchema.optional(),
   priority: taskPrioritySchema.default('medium'),
   dueDate: optionalDueDateSchema,
-  assigneeId: nullableIdentifierSchema.optional()
+  assigneeId: nullableIdentifierSchema.optional(),
+  ownerId: identifierSchema.optional()
 })
 
 export const updateTaskSchema = z
@@ -77,7 +78,8 @@ export const updateTaskSchema = z
     priority: taskPrioritySchema.optional(),
     dueDate: optionalDueDateSchema,
     assigneeId: nullableIdentifierSchema.optional(),
-    parentId: nullableIdentifierSchema.optional()
+    parentId: nullableIdentifierSchema.optional(),
+    ownerId: identifierSchema.optional()
   })
   .refine(
     (value) => Object.keys(value).length > 0,

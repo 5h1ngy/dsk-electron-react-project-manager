@@ -3,6 +3,12 @@ import type { ServiceActor } from '@main/services/types'
 
 export type ProjectActor = ServiceActor
 
+export interface ProjectOwnerDTO {
+  id: string
+  username: string
+  displayName: string | null
+}
+
 export interface ProjectSummaryDTO {
   id: string
   key: string
@@ -14,6 +20,7 @@ export interface ProjectSummaryDTO {
   role: ProjectMembershipRole
   memberCount: number
   tags: string[]
+  owner: ProjectOwnerDTO
 }
 
 export interface ProjectMemberDTO {

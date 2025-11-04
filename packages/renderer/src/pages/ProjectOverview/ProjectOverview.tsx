@@ -1,8 +1,11 @@
 import type { FC } from 'react'
 import {
+  Button,
   Card,
   Col,
+  Checkbox,
   List,
+  Modal,
   Progress,
   Row,
   Skeleton,
@@ -10,10 +13,12 @@ import {
   Statistic,
   Typography,
   Flex,
-  theme
+  theme,
+  message
 } from 'antd'
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { SettingOutlined, EditOutlined } from '@ant-design/icons'
 import dayjs from 'dayjs'
 
 import { EmptyState } from '@renderer/components/DataStates'
@@ -25,12 +30,47 @@ import type {
   DistributionItem,
   ProjectOverviewPageProps
 } from '@renderer/pages/ProjectOverview/ProjectOverview.types'
+import { useAppDispatch } from '@renderer/store/hooks'
+import { updateProject } from '@renderer/store/slices/projects'
+import { useProjectForms } from '@renderer/pages/Projects/hooks/useProjectForms'
+import { EditProjectModal } from '@renderer/pages/Projects/components/EditProjectModal'
+import { extractErrorMessage } from '@renderer/store/slices/auth/helpers'
+
+type OverviewCardKey =
+  | 'metrics'
+  | 'status'
+  | 'priority'
+  | 'assignee'
+  | 'trend'
+  | 'upcoming'
+  | 'overdue'
+
+const DEFAULT_VISIBLE_OVERVIEW_CARDS: OverviewCardKey[] = [
+  'metrics',
+  'status',
+  'priority',
+  'assignee',
+  'trend',
+  'upcoming',
+  'overdue'
+]
+
+const OVERVIEW_CARDS_STORAGE_KEY = 'projects:overviewCards'
 
 const ProjectOverviewPage: FC<ProjectOverviewPageProps> = () => {
-  const { project, projectLoading, tasks, taskStatuses } = useProjectRouteContext()
+  const { project, projectLoading, tasks, taskStatuses, refresh } = useProjectRouteContext()
   const { t } = useTranslation('projects')
   const { token } = theme.useToken()
   const showSkeleton = useDelayedLoading(projectLoading)
+  const dispatch = useAppDispatch()
+  const { updateForm } = useProjectForms()
+  const [visibleOverviewCards, setVisibleOverviewCards] = useState<OverviewCardKey[]>(
+    DEFAULT_VISIBLE_OVERVIEW_CARDS
+  )
+  const [customizeOpen, setCustomizeOpen] = useState(false)
+  const [editModalOpen, setEditModalOpen] = useState(false)
+  const [editLoading, setEditLoading] = useState(false)
+  const hasWindow = typeof window !== 'undefined'
 
   const insights = useMemo(() => calculateProjectInsights(tasks), [tasks])
   const statusOrder = useMemo(() => taskStatuses.map((status) => status.key), [taskStatuses])
@@ -82,6 +122,114 @@ const ProjectOverviewPage: FC<ProjectOverviewPageProps> = () => {
       return indexA - indexB
     })
   }, [insights.priorityDistribution])
+
+  useEffect(() => {
+    if (!hasWindow) {
+      return
+    }
+    try {
+      const stored = window.localStorage.getItem(OVERVIEW_CARDS_STORAGE_KEY)
+      if (!stored) {
+        return
+      }
+      const parsed = JSON.parse(stored)
+      if (Array.isArray(parsed)) {
+        const valid = parsed.filter((item): item is OverviewCardKey =>
+          DEFAULT_VISIBLE_OVERVIEW_CARDS.includes(item as OverviewCardKey)
+        )
+        if (valid.length > 0) {
+          setVisibleOverviewCards(valid)
+        }
+      }
+    } catch {
+      // ignore stored value errors
+    }
+  }, [hasWindow])
+
+  useEffect(() => {
+    if (!hasWindow) {
+      return
+    }
+    try {
+      window.localStorage.setItem(
+        OVERVIEW_CARDS_STORAGE_KEY,
+        JSON.stringify(visibleOverviewCards)
+      )
+    } catch {
+      // ignore persistence errors
+    }
+  }, [hasWindow, visibleOverviewCards])
+
+  const overviewCardOptions = useMemo(
+    () => [
+      { value: 'metrics', label: t('details.overview.metrics.title') },
+      { value: 'status', label: t('details.overview.statusCard.title') },
+      { value: 'priority', label: t('details.overview.priorityCard.title') },
+      { value: 'assignee', label: t('details.overview.assigneeCard.title') },
+      { value: 'trend', label: t('details.overview.trendCard.title') },
+      { value: 'upcoming', label: t('details.overview.upcoming.title') },
+      { value: 'overdue', label: t('details.overview.overdue.title') }
+    ],
+    [t]
+  )
+
+  const visibleCardsSet = useMemo(() => new Set(visibleOverviewCards), [visibleOverviewCards])
+  const canEditProject = project?.role === 'admin'
+
+  const handleOverviewCardsChange = (values: string[]) => {
+    if (values.length === 0) {
+      message.warning(
+        t('details.overview.customizeMinimum', {
+          defaultValue: 'Select at least one card.'
+        })
+      )
+      return
+    }
+    setVisibleOverviewCards(values as OverviewCardKey[])
+  }
+
+  const handleOpenEdit = () => {
+    if (!project) {
+      return
+    }
+    if (!canEditProject) {
+      message.warning(
+        t('permissions.updateDenied', {
+          defaultValue: 'Only administrators or maintainers can update projects.'
+        })
+      )
+      return
+    }
+    updateForm.reset({
+      name: project.name,
+      description: project.description ?? null,
+      tags: project.tags ?? []
+    })
+    setEditModalOpen(true)
+  }
+
+  const handleCloseEdit = () => {
+    setEditModalOpen(false)
+    updateForm.reset()
+  }
+
+  const handleEditSubmit = updateForm.handleSubmit(async (values) => {
+    if (!project) {
+      return
+    }
+    try {
+      setEditLoading(true)
+      await dispatch(updateProject({ projectId: project.id, input: values })).unwrap()
+      message.success(t('update.success', { defaultValue: 'Project updated' }))
+      setEditModalOpen(false)
+      updateForm.reset(values)
+      refresh()
+    } catch (error) {
+      message.error(extractErrorMessage(error))
+    } finally {
+      setEditLoading(false)
+    }
+  })
 
   const metricCards = useMemo(
     () => [
@@ -233,191 +381,246 @@ const ProjectOverviewPage: FC<ProjectOverviewPageProps> = () => {
   }
 
   return (
-    <Row gutter={[16, 32]} style={{ width: '100%' }}>
-      <Col xs={24} lg={12} xl={6}>
-        <ProjectDetailsCard
-          project={project ?? null}
-          loading={projectLoading}
-          style={{ height: '100%' }}
-        />
-      </Col>
-      <Col xs={24} lg={12} xl={18}>
-        <Card title={t('details.overview.metrics.title')} style={{ height: '100%' }}>
-          {showSkeleton ? (
-            <Skeleton active paragraph={{ rows: 3 }} title={false} />
-          ) : (
-            <div style={metricsGridStyle}>
-              {metricCards.map((metric) => (
-                <Card variant="borderless" key={metric.key} style={{ height: '100%' }}>
-                  <Statistic
-                    title={metric.title}
-                    value={metric.value}
-                    valueStyle={{ fontSize: 28, color: metric.color }}
-                  />
-                </Card>
-              ))}
-            </div>
-          )}
-        </Card>
-      </Col>
-      <Col xs={24} md={12} xl={8}>
-        <Card title={t('details.overview.statusCard.title')} style={{ height: '100%' }}>
-          {showSkeleton ? (
-            <Skeleton active paragraph={{ rows: 4 }} title={false} />
-          ) : (
-            renderDistribution(
-              orderedStatusDistribution,
-              insights.totals.total,
-              (status) =>
-                statusLabelMap.get(status) ??
-                t(`details.status.${status}`, { defaultValue: status })
-            )
-          )}
-        </Card>
-      </Col>
-      <Col xs={24} md={12} xl={8}>
-        <Card title={t('details.overview.priorityCard.title')} style={{ height: '100%' }}>
-          {showSkeleton ? (
-            <Skeleton active paragraph={{ rows: 4 }} title={false} />
-          ) : (
-            renderDistribution(orderedPriorityDistribution, insights.totals.total, (priority) =>
-              t(`details.priority.${priority}`, { defaultValue: priority })
-            )
-          )}
-        </Card>
-      </Col>
-      <Col xs={24} md={12} xl={8}>
-        <Card title={t('details.overview.assigneeCard.title')} style={{ height: '100%' }}>
-          {showSkeleton ? (
-            <Skeleton active paragraph={{ rows: 4 }} title={false} />
-          ) : insights.assigneeWorkload.length === 0 ? (
-            <Typography.Text type="secondary">{t('details.overview.empty')}</Typography.Text>
-          ) : (
-            <Space direction="vertical" size={12} style={{ width: '100%' }}>
-              {insights.assigneeWorkload.map((entry) => {
-                const percent =
-                  insights.totals.total === 0
-                    ? 0
-                    : Number(((entry.count / insights.totals.total) * 100).toFixed(1))
-                const label = entry.isUnassigned
-                  ? t('details.overview.assigneeCard.unassigned')
-                  : entry.name
-                return (
-                  <Flex key={entry.id} align="center" gap={12} wrap style={{ width: '100%' }}>
-                    <Typography.Text style={{ flex: '1 1 180px', minWidth: 140 }}>
-                      {label}
-                    </Typography.Text>
-                    <Progress
-                      percent={percent}
-                      showInfo
-                      format={() => String(entry.count)}
-                      style={{ flex: '1 1 200px', minWidth: 160 }}
-                    />
-                  </Flex>
+    <Space direction="vertical" size={16} style={{ width: '100%' }}>
+      <Flex justify="flex-end" align="center" gap={8} wrap>
+        {canEditProject ? (
+          <Button icon={<EditOutlined />} onClick={handleOpenEdit} disabled={!project}>
+            {t('details.summary.editProject', { defaultValue: 'Edit project' })}
+          </Button>
+        ) : null}
+        <Button icon={<SettingOutlined />} onClick={() => setCustomizeOpen(true)}>
+          {t('details.overview.customizeButton', { defaultValue: 'Customize overview' })}
+        </Button>
+      </Flex>
+      <Row gutter={[16, 32]} style={{ width: '100%' }}>
+        <Col xs={24} lg={12} xl={6}>
+          <ProjectDetailsCard
+            project={project ?? null}
+            loading={projectLoading}
+            style={{ height: '100%' }}
+          />
+        </Col>
+        {visibleCardsSet.has('metrics') ? (
+          <Col xs={24} lg={12} xl={18}>
+            <Card title={t('details.overview.metrics.title')} style={{ height: '100%' }}>
+              {showSkeleton ? (
+                <Skeleton active paragraph={{ rows: 3 }} title={false} />
+              ) : (
+                <div style={metricsGridStyle}>
+                  {metricCards.map((metric) => (
+                    <Card variant="borderless" key={metric.key} style={{ height: '100%' }}>
+                      <Statistic
+                        title={metric.title}
+                        value={metric.value}
+                        valueStyle={{ fontSize: 28, color: metric.color }}
+                      />
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </Card>
+          </Col>
+        ) : null}
+        {visibleCardsSet.has('status') ? (
+          <Col xs={24} md={12} xl={8}>
+            <Card title={t('details.overview.statusCard.title')} style={{ height: '100%' }}>
+              {showSkeleton ? (
+                <Skeleton active paragraph={{ rows: 4 }} title={false} />
+              ) : (
+                renderDistribution(
+                  orderedStatusDistribution,
+                  insights.totals.total,
+                  (status) =>
+                    statusLabelMap.get(status) ??
+                    t(`details.status.${status}`, { defaultValue: status })
                 )
-              })}
-            </Space>
-          )}
-        </Card>
-      </Col>
-      <Col xs={24} lg={16} xl={16}>
-        <Card title={t('details.overview.trendCard.title')} style={{ height: '100%' }}>
-          {showSkeleton ? <Skeleton active paragraph={{ rows: 4 }} title={false} /> : renderTrend()}
-        </Card>
-      </Col>
-      <Col xs={24} lg={8} xl={8}>
-        <Card title={t('details.overview.upcoming.title')} style={{ height: '100%' }}>
-          {showSkeleton ? (
-            <Skeleton active paragraph={{ rows: 4 }} title={false} />
-          ) : insights.upcomingTasks.length === 0 ? (
-            <Typography.Text type="secondary">
-              {t('details.overview.upcoming.empty')}
-            </Typography.Text>
-          ) : (
-            <List
-              split={false}
-              dataSource={insights.upcomingTasks}
-              renderItem={(task) => (
-                <List.Item key={task.id} style={{ paddingInline: 0 }}>
-                  <Flex
-                    justify="space-between"
-                    align="center"
-                    wrap
-                    gap={8}
-                    style={{ width: '100%' }}
-                  >
-                    <div style={{ flex: '1 1 60%' }}>
-                      <Typography.Text strong>{task.title}</Typography.Text>
-                      <Typography.Paragraph type="secondary" style={{ marginBottom: 0 }}>
-                        {task.key}
-                      </Typography.Paragraph>
-                    </div>
-                    <Flex vertical align="flex-end" gap={4}>
-                      <Typography.Text style={{ color: token.colorWarning }}>
-                        {t('details.overview.taskItem.due', { date: dateLabel(task.dueDate) })}
-                      </Typography.Text>
-                      <Typography.Text type="secondary">
-                        {t('details.overview.taskItem.priority', {
-                          priority: t(`details.priority.${task.priority}`, {
-                            defaultValue: task.priority
-                          })
-                        })}
-                      </Typography.Text>
-                    </Flex>
-                  </Flex>
-                </List.Item>
               )}
-            />
-          )}
-        </Card>
-      </Col>
-      <Col xs={24} lg={12} xl={12}>
-        <Card title={t('details.overview.overdue.title')} style={{ height: '100%' }}>
-          {showSkeleton ? (
-            <Skeleton active paragraph={{ rows: 4 }} title={false} />
-          ) : insights.overdueTasks.length === 0 ? (
-            <Typography.Text type="secondary">
-              {t('details.overview.overdue.empty')}
-            </Typography.Text>
-          ) : (
-            <List
-              split={false}
-              dataSource={insights.overdueTasks}
-              renderItem={(task) => (
-                <List.Item key={task.id} style={{ paddingInline: 0 }}>
-                  <Flex
-                    justify="space-between"
-                    align="center"
-                    wrap
-                    gap={8}
-                    style={{ width: '100%' }}
-                  >
-                    <div style={{ flex: '1 1 60%' }}>
-                      <Typography.Text strong>{task.title}</Typography.Text>
-                      <Typography.Paragraph type="secondary" style={{ marginBottom: 0 }}>
-                        {task.key}
-                      </Typography.Paragraph>
-                    </div>
-                    <Flex vertical align="flex-end" gap={4}>
-                      <Typography.Text style={{ color: token.colorError }}>
-                        {t('details.overview.taskItem.due', { date: dateLabel(task.dueDate) })}
-                      </Typography.Text>
-                      <Typography.Text type="secondary">
-                        {t('details.overview.taskItem.priority', {
-                          priority: t(`details.priority.${task.priority}`, {
-                            defaultValue: task.priority
-                          })
-                        })}
-                      </Typography.Text>
-                    </Flex>
-                  </Flex>
-                </List.Item>
+            </Card>
+          </Col>
+        ) : null}
+        {visibleCardsSet.has('priority') ? (
+          <Col xs={24} md={12} xl={8}>
+            <Card title={t('details.overview.priorityCard.title')} style={{ height: '100%' }}>
+              {showSkeleton ? (
+                <Skeleton active paragraph={{ rows: 4 }} title={false} />
+              ) : (
+                renderDistribution(orderedPriorityDistribution, insights.totals.total, (priority) =>
+                  t(`details.priority.${priority}`, { defaultValue: priority })
+                )
               )}
-            />
-          )}
-        </Card>
-      </Col>
-    </Row>
+            </Card>
+          </Col>
+        ) : null}
+        {visibleCardsSet.has('assignee') ? (
+          <Col xs={24} md={12} xl={8}>
+            <Card title={t('details.overview.assigneeCard.title')} style={{ height: '100%' }}>
+              {showSkeleton ? (
+                <Skeleton active paragraph={{ rows: 4 }} title={false} />
+              ) : insights.assigneeWorkload.length === 0 ? (
+                <Typography.Text type="secondary">{t('details.overview.empty')}</Typography.Text>
+              ) : (
+                <Space direction="vertical" size={12} style={{ width: '100%' }}>
+                  {insights.assigneeWorkload.map((entry) => {
+                    const percent =
+                      insights.totals.total === 0
+                        ? 0
+                        : Number(((entry.count / insights.totals.total) * 100).toFixed(1))
+                    const label = entry.isUnassigned
+                      ? t('details.overview.assigneeCard.unassigned')
+                      : entry.name
+                    return (
+                      <Flex key={entry.id} align="center" gap={12} wrap style={{ width: '100%' }}>
+                        <Typography.Text style={{ flex: '1 1 180px', minWidth: 140 }}>
+                          {label}
+                        </Typography.Text>
+                        <Progress
+                          percent={percent}
+                          showInfo
+                          format={() => String(entry.count)}
+                          style={{ flex: '1 1 200px', minWidth: 160 }}
+                        />
+                      </Flex>
+                    )
+                  })}
+                </Space>
+              )}
+            </Card>
+          </Col>
+        ) : null}
+        {visibleCardsSet.has('trend') ? (
+          <Col xs={24} lg={16} xl={16}>
+            <Card title={t('details.overview.trendCard.title')} style={{ height: '100%' }}>
+              {showSkeleton ? <Skeleton active paragraph={{ rows: 4 }} title={false} /> : renderTrend()}
+            </Card>
+          </Col>
+        ) : null}
+        {visibleCardsSet.has('upcoming') ? (
+          <Col xs={24} lg={8} xl={8}>
+            <Card title={t('details.overview.upcoming.title')} style={{ height: '100%' }}>
+              {showSkeleton ? (
+                <Skeleton active paragraph={{ rows: 4 }} title={false} />
+              ) : insights.upcomingTasks.length === 0 ? (
+                <Typography.Text type="secondary">
+                  {t('details.overview.upcoming.empty')}
+                </Typography.Text>
+              ) : (
+                <List
+                  split={false}
+                  dataSource={insights.upcomingTasks}
+                  renderItem={(task) => (
+                    <List.Item key={task.id} style={{ paddingInline: 0 }}>
+                      <Flex
+                        justify="space-between"
+                        align="center"
+                        wrap
+                        gap={8}
+                        style={{ width: '100%' }}
+                      >
+                        <div style={{ flex: '1 1 60%' }}>
+                          <Typography.Text strong>{task.title}</Typography.Text>
+                          <Typography.Paragraph type="secondary" style={{ marginBottom: 0 }}>
+                            {task.key}
+                          </Typography.Paragraph>
+                        </div>
+                        <Flex vertical align="flex-end" gap={4}>
+                          <Typography.Text style={{ color: token.colorWarning }}>
+                            {t('details.overview.taskItem.due', { date: dateLabel(task.dueDate) })}
+                          </Typography.Text>
+                          <Typography.Text type="secondary">
+                            {t('details.overview.taskItem.priority', {
+                              priority: t(`details.priority.${task.priority}`, {
+                                defaultValue: task.priority
+                              })
+                            })}
+                          </Typography.Text>
+                        </Flex>
+                      </Flex>
+                    </List.Item>
+                  )}
+                />
+              )}
+            </Card>
+          </Col>
+        ) : null}
+        {visibleCardsSet.has('overdue') ? (
+          <Col xs={24} lg={12} xl={12}>
+            <Card title={t('details.overview.overdue.title')} style={{ height: '100%' }}>
+              {showSkeleton ? (
+                <Skeleton active paragraph={{ rows: 4 }} title={false} />
+              ) : insights.overdueTasks.length === 0 ? (
+                <Typography.Text type="secondary">
+                  {t('details.overview.overdue.empty')}
+                </Typography.Text>
+              ) : (
+                <List
+                  split={false}
+                  dataSource={insights.overdueTasks}
+                  renderItem={(task) => (
+                    <List.Item key={task.id} style={{ paddingInline: 0 }}>
+                      <Flex
+                        justify="space-between"
+                        align="center"
+                        wrap
+                        gap={8}
+                        style={{ width: '100%' }}
+                      >
+                        <div style={{ flex: '1 1 60%' }}>
+                          <Typography.Text strong>{task.title}</Typography.Text>
+                          <Typography.Paragraph type="secondary" style={{ marginBottom: 0 }}>
+                            {task.key}
+                          </Typography.Paragraph>
+                        </div>
+                        <Flex vertical align="flex-end" gap={4}>
+                          <Typography.Text style={{ color: token.colorError }}>
+                            {t('details.overview.taskItem.due', { date: dateLabel(task.dueDate) })}
+                          </Typography.Text>
+                          <Typography.Text type="secondary">
+                            {t('details.overview.taskItem.priority', {
+                              priority: t(`details.priority.${task.priority}`, {
+                                defaultValue: task.priority
+                              })
+                            })}
+                          </Typography.Text>
+                        </Flex>
+                      </Flex>
+                    </List.Item>
+                  )}
+                />
+              )}
+            </Card>
+          </Col>
+        ) : null}
+      </Row>
+      <Modal
+        open={customizeOpen}
+        title={t('details.overview.customizeTitle', { defaultValue: 'Customize overview' })}
+        onCancel={() => setCustomizeOpen(false)}
+        footer={null}
+        destroyOnClose={false}
+      >
+        <Space direction="vertical" size={16} style={{ width: '100%' }}>
+          <Typography.Paragraph type="secondary" style={{ marginBottom: 0 }}>
+            {t('details.overview.customizeDescription', {
+              defaultValue: 'Choose which cards to display on the overview.'
+            })}
+          </Typography.Paragraph>
+          <Checkbox.Group
+            options={overviewCardOptions}
+            value={visibleOverviewCards}
+            onChange={handleOverviewCardsChange}
+          />
+        </Space>
+      </Modal>
+      <EditProjectModal
+        open={editModalOpen}
+        onCancel={handleCloseEdit}
+        onSubmit={() => void handleEditSubmit()}
+        form={updateForm}
+        submitting={editLoading}
+        projectName={project?.name}
+        projectKey={project?.key}
+      />
+    </Space>
   )
 }
 

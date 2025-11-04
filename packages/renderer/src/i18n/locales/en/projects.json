@@ -69,6 +69,7 @@
     "columns": {
       "key": "Key",
       "name": "Name",
+      "owner": "Owner",
       "tags": "Tags",
       "role": "Role",
       "members": "Members",
@@ -133,6 +134,10 @@
         "title": "Overdue tasks",
         "empty": "No overdue tasks"
       },
+      "customizeButton": "Customize overview",
+      "customizeTitle": "Customize overview",
+      "customizeDescription": "Choose which cards to display on the overview.",
+      "customizeMinimum": "Select at least one card.",
       "taskItem": {
         "due": "Due {{date}}",
         "priority": "Priority: {{priority}}"
@@ -180,8 +185,10 @@
     "summary": {
       "title": "Project overview",
       "empty": "Select a project to view details",
+      "owner": "Owner",
       "createdOn": "Created",
       "createdBy": "{{date}} by {{user}}",
+      "editProject": "Edit project",
       "description": "Description",
       "noDescription": "No description available",
       "tags": "Tags",
@@ -230,6 +237,12 @@
       "titlePlaceholder": "Task title",
       "descriptionPlaceholder": "Description (optional)",
       "submit": "Add task"
+    },
+    "taskCount_one": "{{count}} task",
+    "taskCount_other": "{{count}} tasks",
+    "emptyColumn": "No tasks in this column",
+    "summary": {
+      "total": "All tasks"
     }
   },
   "notifications": {
@@ -343,12 +356,14 @@
         "status": "Status",
         "priority": "Priority",
         "assignee": "Assignee",
+        "owner": "Owner",
         "dueDate": "Due date"
       },
       "placeholders": {
         "title": "Task title",
         "description": "Description (optional)",
         "assignee": "Select assignee",
+        "owner": "Select owner",
         "dueDate": "Select due date"
       }
     },

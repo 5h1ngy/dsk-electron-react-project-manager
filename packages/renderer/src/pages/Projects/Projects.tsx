@@ -1,12 +1,12 @@
 import type { FC, Key } from 'react'
-import { Breadcrumb, Button, Form, Input, Modal, Space, Typography } from 'antd'
+import { Breadcrumb, Button, Checkbox, Form, Input, Modal, Space, Typography } from 'antd'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { DeleteOutlined, ReloadOutlined } from '@ant-design/icons'
 import { ProjectsActionBar } from '@renderer/pages/Projects/components/ProjectsActionBar'
-import { ProjectList } from '@renderer/pages/Projects/components/ProjectList'
+import { ProjectList, type ProjectOptionalColumn } from '@renderer/pages/Projects/components/ProjectList'
 import { ProjectCardsGrid } from '@renderer/pages/Projects/components/ProjectCardsGrid'
 import { ProjectSummaryList } from '@renderer/pages/Projects/components/ProjectSummaryList'
 import { CreateProjectModal } from '@renderer/pages/Projects/components/CreateProjectModal'
@@ -22,6 +22,9 @@ import type { ProjectSummary } from '@renderer/store/slices/projects'
 import { ShellHeaderPortal } from '@renderer/layout/Shell/ShellHeader.context'
 import { usePrimaryBreadcrumb } from '@renderer/layout/Shell/hooks/usePrimaryBreadcrumb'
 import { useBreadcrumbStyle } from '@renderer/layout/Shell/hooks/useBreadcrumbStyle'
+
+const OPTIONAL_PROJECT_COLUMNS: ProjectOptionalColumn[] = ['owner']
+const OPTIONAL_COLUMNS_STORAGE_KEY = 'projects:optionalColumns'
 
 const ProjectsPage: FC<ProjectsPageProps> = () => {
   const { t } = useTranslation('projects')
@@ -79,6 +82,71 @@ const ProjectsPage: FC<ProjectsPageProps> = () => {
   const [selectedProjectIds, setSelectedProjectIds] = useState<string[]>([])
   const [deleteTargets, setDeleteTargets] = useState<ProjectSummary[] | null>(null)
   const [deleteLoading, setDeleteLoading] = useState(false)
+  const hasWindow = typeof window !== 'undefined'
+  const hasOptionalColumns = OPTIONAL_PROJECT_COLUMNS.length > 0
+  const [visibleOptionalColumns, setVisibleOptionalColumns] =
+    useState<ProjectOptionalColumn[]>(OPTIONAL_PROJECT_COLUMNS)
+
+  useEffect(() => {
+    if (!hasWindow) {
+      return
+    }
+    try {
+      const stored = window.localStorage.getItem(OPTIONAL_COLUMNS_STORAGE_KEY)
+      if (!stored) {
+        return
+      }
+      const parsed = JSON.parse(stored)
+      if (Array.isArray(parsed)) {
+        const valid = parsed.filter((item): item is ProjectOptionalColumn =>
+          OPTIONAL_PROJECT_COLUMNS.includes(item as ProjectOptionalColumn)
+        )
+        if (valid.length > 0) {
+          setVisibleOptionalColumns(valid)
+        }
+      }
+    } catch {
+      // ignore stored value errors
+    }
+  }, [hasWindow])
+
+  useEffect(() => {
+    if (!hasWindow) {
+      return
+    }
+    try {
+      window.localStorage.setItem(
+        OPTIONAL_COLUMNS_STORAGE_KEY,
+        JSON.stringify(visibleOptionalColumns)
+      )
+    } catch {
+      // ignore persistence errors
+    }
+  }, [hasWindow, visibleOptionalColumns])
+
+  const optionalColumnOptions = useMemo(
+    () =>
+      OPTIONAL_PROJECT_COLUMNS.map((column) => ({
+        label: column === 'owner' ? t('list.columns.owner') : column,
+        value: column
+      })),
+    [t]
+  )
+
+  const optionalFieldControls = useMemo(
+    () => ({
+      content: (
+        <Checkbox.Group
+          options={optionalColumnOptions}
+          value={visibleOptionalColumns}
+          onChange={(values) => setVisibleOptionalColumns(values as ProjectOptionalColumn[])}
+        />
+      ),
+      hasOptions: hasOptionalColumns,
+      disabled: viewMode !== 'table'
+    }),
+    [hasOptionalColumns, optionalColumnOptions, visibleOptionalColumns, viewMode]
+  )
 
   const handleOpenProject = (projectId: string) => {
     navigate(`/projects/${projectId}`)
@@ -320,6 +388,7 @@ const ProjectsPage: FC<ProjectsPageProps> = () => {
           createdBetween={createdBetween}
           onCreatedBetweenChange={setCreatedBetween}
           savedViewsControls={savedViewControls}
+          optionalFieldControls={optionalFieldControls}
         />
       </div>
       {viewMode === 'table' ? (
@@ -353,6 +422,7 @@ const ProjectsPage: FC<ProjectsPageProps> = () => {
             isDeleting={isProjectDeleting}
             deleteDisabled={deleteLoading}
             rowSelection={tableRowSelection}
+            visibleOptionalColumns={visibleOptionalColumns}
             pagination={{
               current: tablePage,
               pageSize: tablePageSize,
