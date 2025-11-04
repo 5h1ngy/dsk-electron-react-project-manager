@@ -12,7 +12,7 @@ import {
 import type { SegmentedValue } from 'antd/es/segmented'
 import type { TextAreaRef } from 'antd/es/input/TextArea'
 import MarkdownPreview from '@uiw/react-markdown-preview'
-import '@uiw/react-markdown-preview/dist/markdown.css'
+import '@uiw/react-markdown-preview/markdown.css'
 import { useThemeTokens } from '@renderer/theme/hooks/useThemeTokens'
 
 export interface MarkdownEditorProps {
