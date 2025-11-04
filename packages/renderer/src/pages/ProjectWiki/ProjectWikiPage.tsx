@@ -383,7 +383,7 @@ const ProjectWikiPage = (): JSX.Element => {
             <Flex justify="center" align="center" vertical style={{ padding: 24 }}>
               <Empty
                 description={t('wiki.emptyState', {
-                  defaultValue: 'La wiki del progetto  -  vuota.'
+                  defaultValue: 'La wiki del progetto è vuota.'
                 })}
               >
                 {canEdit ? (

@@ -185,7 +185,7 @@ export const ProjectList = ({
   }
 
   if (showSkeleton) {
-    return <LoadingSkeleton variant="table" />
+    return <LoadingSkeleton layout="stack" items={6} />
   }
 
   return (

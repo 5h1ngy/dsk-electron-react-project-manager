@@ -48,7 +48,7 @@ export const ProjectTasksList = ({
   }, [page, pageSize, tasks])
 
   if (showSkeleton) {
-    return <LoadingSkeleton variant="list" />
+    return <LoadingSkeleton layout="stack" />
   }
 
   if (tasks.length === 0) {

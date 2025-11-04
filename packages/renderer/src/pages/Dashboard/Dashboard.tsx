@@ -251,7 +251,7 @@ const Dashboard = (): JSX.Element | null => {
             </Card>
             <Card title={t('recentProjects.title')}>
               {projectsSkeleton ? (
-                <LoadingSkeleton variant="list" />
+                <LoadingSkeleton layout="stack" />
               ) : (
                 renderProjectsList(recentProjects, t, badgeTokens)
               )}

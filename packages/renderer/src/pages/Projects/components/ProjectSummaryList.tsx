@@ -53,7 +53,7 @@ export const ProjectSummaryList = ({
   }, [page, pageSize, projects])
 
   if (showSkeleton) {
-    return <LoadingSkeleton variant="list" />
+    return <LoadingSkeleton layout="stack" />
   }
 
   if (projects.length === 0) {

@@ -65,7 +65,7 @@ export const ProjectCardsGrid = ({
   }, [page, pageSize, projects])
 
   if (showSkeleton) {
-    return <LoadingSkeleton variant="cards" />
+    return <LoadingSkeleton layout="grid" />
   }
 
   if (projects.length === 0) {

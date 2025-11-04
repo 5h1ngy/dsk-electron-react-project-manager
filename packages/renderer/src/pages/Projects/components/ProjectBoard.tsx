@@ -1,4 +1,4 @@
-import { Alert, Col, Row, Space, theme } from 'antd'
+import { Alert, Space, theme } from 'antd'
 import type { JSX } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -57,41 +57,38 @@ export const ProjectBoard = ({
         />
       ) : null}
       {showSkeleton ? (
-        <LoadingSkeleton variant="cards" items={Math.max(columns.length, 4)} />
+        <LoadingSkeleton
+          layout="columns"
+          items={Math.max(columns.length, 4)}
+          minHeight={420}
+        />
       ) : hasTasks ? (
-        <div style={{ width: '100%', overflowX: 'auto', paddingBottom: token.paddingSM }}>
-          <Row
-            gutter={16}
-            wrap={false}
-            align="stretch"
+        <div style={{ width: '100%', overflowX: 'auto' }}>
+          <div
             style={{
-              flexWrap: 'nowrap',
-              alignItems: 'stretch',
-              width: 'max-content',
-              minWidth: '100%'
+              display: 'grid',
+              gridAutoFlow: 'column',
+              gridAutoColumns: 'minmax(280px, 320px)',
+              gap: token.marginLG,
+              paddingBottom: token.paddingSM
             }}
           >
             {columns.map((column) => (
-              <Col
+              <KanbanColumn
                 key={column.status}
-                flex="0 0 320px"
-                style={{ maxWidth: 320, display: 'flex' }}
-              >
-                <KanbanColumn
-                  status={column.status}
-                  label={column.label}
-                  tasks={column.tasks}
-                  onTaskDrop={handleMoveTask}
-                  onTaskSelect={onTaskSelect}
-                  onTaskEdit={onTaskEdit}
-                  onTaskDelete={onTaskDelete}
-                  deletingTaskId={deletingTaskId}
-                  canManage={canManageTasks}
-                  canDeleteTask={canDeleteTask}
-                />
-              </Col>
+                status={column.status}
+                label={column.label}
+                tasks={column.tasks}
+                onTaskDrop={handleMoveTask}
+                onTaskSelect={onTaskSelect}
+                onTaskEdit={onTaskEdit}
+                onTaskDelete={onTaskDelete}
+                deletingTaskId={deletingTaskId}
+                canManage={canManageTasks}
+                canDeleteTask={canDeleteTask}
+              />
             ))}
-          </Row>
+          </div>
         </div>
       ) : (
         <Space

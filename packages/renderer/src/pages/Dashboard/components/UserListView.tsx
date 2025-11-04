@@ -44,7 +44,7 @@ export const UserListView = ({
   }, [page, pageSize, users])
 
   if (showSkeleton) {
-    return <LoadingSkeleton variant="list" />
+    return <LoadingSkeleton layout="stack" />
   }
 
   if (users.length === 0) {

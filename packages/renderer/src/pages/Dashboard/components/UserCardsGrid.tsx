@@ -71,7 +71,7 @@ export const UserCardsGrid = ({
   }, [page, pageSize, users])
 
   if (showSkeleton) {
-    return <LoadingSkeleton variant="cards" />
+    return <LoadingSkeleton layout="grid" />
   }
 
   if (users.length === 0) {
