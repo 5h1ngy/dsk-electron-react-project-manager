@@ -56,6 +56,7 @@ export const TaskBoardStatusPanel = ({
 
   const panelHeight = 110
   const stickyTop = `calc(100vh - ${panelHeight + marginLg}px)`
+  const overlayOffset = panelHeight + marginMd * 2
 
   return (
     <div
@@ -65,9 +66,15 @@ export const TaskBoardStatusPanel = ({
         top: stickyTop,
         zIndex: 5,
         marginTop: marginMd,
-        pointerEvents: 'auto'
+        marginBottom: -overlayOffset,
+        pointerEvents: 'none'
       }}
     >
+      <div
+        style={{
+          pointerEvents: 'auto'
+        }}
+      >
       <Card
         size="small"
         style={{
@@ -151,6 +158,7 @@ export const TaskBoardStatusPanel = ({
           })}
         </Flex>
       </Card>
+      </div>
     </div>
   )
 }
