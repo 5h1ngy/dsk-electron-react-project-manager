@@ -20,8 +20,8 @@ export const TaskBoardStatusPanel = ({
 }: TaskBoardStatusPanelProps) => {
   const { token } = theme.useToken()
   const { t, i18n } = useTranslation('projects')
+  const marginMd = token.marginMD ?? 12
   const marginLg = token.marginLG ?? 16
-  const stickyOffset = marginLg + 48
 
   const distribution = useMemo(() => {
     const map = new Map<string, { label: string; count: number }>()
@@ -59,9 +59,9 @@ export const TaskBoardStatusPanel = ({
       style={{
         width: '100%',
         position: 'sticky',
-        top: stickyOffset,
+        bottom: marginLg,
         zIndex: 2,
-        marginBottom: marginLg
+        marginTop: marginLg
       }}
     >
       <Card
@@ -69,14 +69,15 @@ export const TaskBoardStatusPanel = ({
         style={{
           width: '100%',
           borderRadius: token.borderRadiusLG,
-          boxShadow: token.boxShadowSecondary
+          background: token.colorBgContainer,
+          boxShadow: token.boxShadowTertiary
         }}
         styles={{
           body: {
             display: 'flex',
             flexDirection: 'column',
-            gap: marginLg,
-            padding: marginLg
+            gap: marginMd,
+            padding: marginMd
           }
         }}
       >
@@ -84,16 +85,16 @@ export const TaskBoardStatusPanel = ({
           align="center"
           justify="space-between"
           wrap
-          gap={12}
+          gap={marginMd}
           style={{ width: '100%' }}
         >
-          <Space direction="vertical" size={4}>
+          <Space direction="vertical" size={0}>
             <Typography.Text type="secondary">
               {t('board.statusPanel.title', { defaultValue: 'Stato kanban' })}
             </Typography.Text>
-            <Typography.Title level={4} style={{ margin: 0 }}>
+            <Typography.Text strong style={{ fontSize: 16 }}>
               {t('board.taskCount', { count: totalTasks })}
-            </Typography.Title>
+            </Typography.Text>
           </Space>
           <Button
             size="small"
@@ -106,31 +107,31 @@ export const TaskBoardStatusPanel = ({
         <Flex
           align="stretch"
           wrap
-          gap={marginLg}
+          gap={marginMd}
           style={{ width: '100%' }}
         >
           {distribution.map((entry) => {
             const percent =
               totalTasks === 0 ? 0 : Math.round((entry.count / totalTasks) * 100 * 10) / 10
             return (
-              <Card
+              <div
                 key={entry.key}
-                size="small"
                 style={{
-                  flex: '1 1 220px',
-                  minWidth: 180,
-                  borderRadius: token.borderRadius,
-                  background: token.colorFillSecondary
-                }}
-                bodyStyle={{
+                  flex: '1 1 160px',
+                  minWidth: 140,
+                  background: token.colorFillSecondary,
+                  borderRadius: token.borderRadiusLG,
+                  padding: token.paddingXS,
                   display: 'flex',
                   flexDirection: 'column',
-                  gap: token.paddingXS
+                  gap: token.paddingXXS
                 }}
               >
-                <Flex justify="space-between" align="center">
-                  <Typography.Text strong>{entry.label}</Typography.Text>
-                  <Typography.Text type="secondary">
+                <Flex justify="space-between" align="center" style={{ width: '100%' }}>
+                  <Typography.Text style={{ fontWeight: 600, fontSize: 12 }}>
+                    {entry.label}
+                  </Typography.Text>
+                  <Typography.Text type="secondary" style={{ fontSize: 12 }}>
                     {new Intl.NumberFormat(i18n.language).format(entry.count)}
                   </Typography.Text>
                 </Flex>
@@ -139,8 +140,9 @@ export const TaskBoardStatusPanel = ({
                   showInfo={false}
                   strokeColor={token.colorPrimary}
                   trailColor={token.colorFillQuaternary}
+                  strokeWidth={6}
                 />
-              </Card>
+              </div>
             )
           })}
         </Flex>
