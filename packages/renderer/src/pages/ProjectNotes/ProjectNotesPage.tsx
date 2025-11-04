@@ -175,6 +175,7 @@ const ProjectNotesPage = (): ReactElement => {
   const [messageApi, contextHolder] = message.useMessage()
   const [bulkMessageApi, bulkMessageContext] = message.useMessage()
   const screens = Grid.useBreakpoint()
+  const isCompact = !screens.md
   const { token } = theme.useToken()
   const toolbarSegmentedStyle = useMemo(
     () => ({
@@ -513,6 +514,30 @@ const ProjectNotesPage = (): ReactElement => {
     ],
     [t]
   )
+
+  const bulkDeleteButton = useMemo(() => {
+    if (!canManageNotes) {
+      return null
+    }
+    return (
+      <Button
+        key="bulk-delete-notes"
+        icon={<DeleteOutlined />}
+        danger
+        onClick={openBulkDeleteModal}
+        disabled={selectedNotes.length === 0 || bulkDeleteLoading}
+        loading={bulkDeleteLoading}
+      >
+        {t('notes.actions.deleteSelected', {
+          count: selectedNotes.length,
+          defaultValue:
+            selectedNotes.length > 0
+              ? `Delete selected (${selectedNotes.length})`
+              : 'Delete selected'
+        })}
+      </Button>
+    )
+  }, [bulkDeleteLoading, canManageNotes, openBulkDeleteModal, selectedNotes.length, t])
   const includePrivateOptions = useMemo(
     () => [
       {
@@ -639,6 +664,9 @@ const ProjectNotesPage = (): ReactElement => {
                 {t('notes.actions.create')}
               </Button>
             ) : null}
+            {bulkDeleteButton ? (
+              <div style={isCompact ? { width: '100%' } : undefined}>{bulkDeleteButton}</div>
+            ) : null}
           </Flex>
           <Flex align="center" gap={12} wrap style={{ justifyContent: 'flex-end', flexShrink: 0 }}>
             <Segmented
@@ -695,25 +723,6 @@ const ProjectNotesPage = (): ReactElement => {
       >
         {filtersContent}
       </Drawer>
-      {canManageNotes ? (
-        <Flex justify="flex-end" style={{ width: '100%' }}>
-          <Button
-            icon={<DeleteOutlined />}
-            danger
-            onClick={openBulkDeleteModal}
-            disabled={selectedNotes.length === 0 || bulkDeleteLoading}
-            loading={bulkDeleteLoading}
-          >
-            {t('notes.actions.deleteSelected', {
-              count: selectedNotes.length,
-              defaultValue:
-                selectedNotes.length > 0
-                  ? `Delete selected (${selectedNotes.length})`
-                  : 'Delete selected'
-            })}
-          </Button>
-        </Flex>
-      ) : null}
       {viewMode === 'cards' ? (
         <Spin spinning={noteLoading} style={{ width: '100%' }}>
           {notes.length ? (

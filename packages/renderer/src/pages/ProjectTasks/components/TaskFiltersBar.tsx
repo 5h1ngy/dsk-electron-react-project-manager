@@ -56,6 +56,7 @@ export interface TaskFiltersBarProps {
   onToggleStatusPanel?: () => void
   statusPanelVisible?: boolean
   statusPanelDisabled?: boolean
+  primaryActions?: ReactNode[]
 }
 
 export const TaskFiltersBar = ({
@@ -73,7 +74,8 @@ export const TaskFiltersBar = ({
   optionalFieldControls,
   onToggleStatusPanel,
   statusPanelVisible = false,
-  statusPanelDisabled = false
+  statusPanelDisabled = false,
+  primaryActions = []
 }: TaskFiltersBarProps): JSX.Element => {
   const { t } = useTranslation('projects')
   const [filtersOpen, setFiltersOpen] = useState(false)
@@ -294,6 +296,13 @@ export const TaskFiltersBar = ({
             {t('tasks.actions.create')}
           </Button>
         ) : null}
+        {primaryActions.length
+          ? primaryActions.map((action, index) => (
+              <div key={`primary-action-${index}`} style={buttonFullWidthStyle}>
+                {action}
+              </div>
+            ))
+          : null}
       </Flex>
       <Flex
         align={isCompact ? 'stretch' : 'center'}

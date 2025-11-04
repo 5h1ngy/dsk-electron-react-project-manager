@@ -212,6 +212,26 @@ const UserManagementPage = (): JSX.Element | null => {
     openDeleteConfirm(selectedUsers)
   }, [openDeleteConfirm, selectedUsers])
 
+  const bulkDeleteButton = useMemo(() => {
+    if (!isAdmin) {
+      return null
+    }
+    return (
+      <Button
+        key="bulk-delete-users"
+        icon={<DeleteOutlined />}
+        danger
+        onClick={handleBulkDelete}
+        disabled={selectedUsers.length === 0 || deleteLoading}
+        loading={deleteLoading && selectedUsers.length > 0}
+      >
+        {t('dashboard:actions.deleteSelected', {
+          count: selectedUsers.length
+        })}
+      </Button>
+    )
+  }, [deleteLoading, handleBulkDelete, isAdmin, selectedUsers.length, t])
+
   const handleUserFiltersChange = (patch: Partial<UserFiltersValue>) => {
     setUserFilters((prev) => ({
       ...prev,
@@ -319,6 +339,7 @@ const UserManagementPage = (): JSX.Element | null => {
           onViewModeChange={(mode) => {
             setUserViewMode(mode)
           }}
+          primaryActions={bulkDeleteButton ? [bulkDeleteButton] : []}
         />
         {error ? (
           <Alert
@@ -331,19 +352,6 @@ const UserManagementPage = (): JSX.Element | null => {
         ) : null}
         {userViewMode === 'table' ? (
           <Space direction="vertical" size="small" style={{ width: '100%' }}>
-            <div style={{ display: 'flex', justifyContent: 'flex-end', width: '100%' }}>
-              <Button
-                icon={<DeleteOutlined />}
-                danger
-                onClick={handleBulkDelete}
-                disabled={selectedUsers.length === 0 || deleteLoading}
-                loading={deleteLoading && selectedUsers.length > 0}
-              >
-                {t('dashboard:actions.deleteSelected', {
-                  count: selectedUsers.length
-                })}
-              </Button>
-            </div>
             <UserTable
               columns={columns}
               users={filteredUsers}

@@ -225,24 +225,6 @@ const ProjectsPage: FC<ProjectsPageProps> = () => {
     }
   }
 
-  const selectedProjects = useMemo(
-    () =>
-      filteredProjects.filter(
-        (project) => selectedProjectIds.includes(project.id) && project.role === 'admin'
-      ),
-    [filteredProjects, selectedProjectIds]
-  )
-
-  const savedViewControls = (
-    <ProjectSavedViewsControls
-      views={savedViews}
-      selectedViewId={selectedSavedViewId}
-      onSelect={selectSavedView}
-      onCreate={handleOpenSaveViewModal}
-      onDelete={deleteSavedView}
-    />
-  )
-
   const openProjectDeleteConfirm = useCallback(
     (targets: ProjectSummary | ProjectSummary[]) => {
       if (!canManageProjects || deleteLoading) {
@@ -283,6 +265,48 @@ const ProjectsPage: FC<ProjectsPageProps> = () => {
       setSelectedProjectIds((prev) => prev.filter((id) => !removedIds.includes(id)))
     }
   }, [deleteTargets, handleDeleteProject])
+
+  const selectedProjects = useMemo(
+    () =>
+      filteredProjects.filter(
+        (project) => selectedProjectIds.includes(project.id) && project.role === 'admin'
+      ),
+    [filteredProjects, selectedProjectIds]
+  )
+
+  const bulkDeleteButton = useMemo(() => {
+    if (!canManageProjects || viewMode !== 'table') {
+      return null
+    }
+    return (
+      <Button
+        key="bulk-delete-projects"
+        icon={<DeleteOutlined />}
+        danger
+        onClick={() => openProjectDeleteConfirm(selectedProjects)}
+        disabled={selectedProjects.length === 0 || deleteLoading}
+        loading={deleteLoading}
+      >
+        {t('actions.deleteSelected', {
+          count: selectedProjects.length,
+          defaultValue:
+            selectedProjects.length > 0
+              ? `Delete selected (${selectedProjects.length})`
+              : 'Delete selected'
+        })}
+      </Button>
+    )
+  }, [canManageProjects, viewMode, openProjectDeleteConfirm, selectedProjects, deleteLoading, t])
+
+  const savedViewControls = (
+    <ProjectSavedViewsControls
+      views={savedViews}
+      selectedViewId={selectedSavedViewId}
+      onSelect={selectSavedView}
+      onCreate={handleOpenSaveViewModal}
+      onDelete={deleteSavedView}
+    />
+  )
 
   const isProjectDeleting = useCallback(
     (projectId: string) =>
@@ -389,29 +413,11 @@ const ProjectsPage: FC<ProjectsPageProps> = () => {
           onCreatedBetweenChange={setCreatedBetween}
           savedViewsControls={savedViewControls}
           optionalFieldControls={optionalFieldControls}
+          primaryActions={bulkDeleteButton ? [bulkDeleteButton] : []}
         />
       </div>
       {viewMode === 'table' ? (
         <Space direction="vertical" size="small" style={{ width: '100%' }}>
-          {canManageProjects ? (
-            <div style={{ display: 'flex', justifyContent: 'flex-end', width: '100%' }}>
-              <Button
-                icon={<DeleteOutlined />}
-                danger
-                onClick={() => openProjectDeleteConfirm(selectedProjects)}
-                disabled={selectedProjects.length === 0 || deleteLoading}
-                loading={deleteLoading}
-              >
-                {t('actions.deleteSelected', {
-                  count: selectedProjects.length,
-                  defaultValue:
-                    selectedProjects.length > 0
-                      ? `Delete selected (${selectedProjects.length})`
-                      : 'Delete selected'
-                })}
-              </Button>
-            </div>
-          ) : null}
           <ProjectList
             projects={filteredProjects}
             loading={isLoading}

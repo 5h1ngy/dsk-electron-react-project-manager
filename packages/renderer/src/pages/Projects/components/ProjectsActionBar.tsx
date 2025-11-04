@@ -61,6 +61,7 @@ export interface ProjectsActionBarProps {
     hasOptions: boolean
     disabled: boolean
   }
+  primaryActions?: ReactNode[]
 }
 
 export const ProjectsActionBar = ({
@@ -82,7 +83,8 @@ export const ProjectsActionBar = ({
   onCreatedBetweenChange,
   secondaryActions,
   savedViewsControls,
-  optionalFieldControls
+  optionalFieldControls,
+  primaryActions = []
 }: ProjectsActionBarProps): JSX.Element => {
   const { t } = useTranslation('projects')
   const [filtersOpen, setFiltersOpen] = useState(false)
@@ -313,6 +315,13 @@ export const ProjectsActionBar = ({
         >
           {t('actions.create')}
         </Button>
+        {primaryActions.length
+          ? primaryActions.map((action, index) => (
+              <div key={`primary-action-${index}`} style={buttonFullWidthStyle}>
+                {action}
+              </div>
+            ))
+          : null}
       </Flex>
       <Flex
         align={isCompact ? 'stretch' : 'center'}
