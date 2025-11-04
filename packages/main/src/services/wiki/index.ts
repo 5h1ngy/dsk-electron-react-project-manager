@@ -38,7 +38,7 @@ const slugify = (value: string): string => {
 }
 
 export class WikiService {
-  private readonly maxTransactionAttempts = 5
+private readonly maxTransactionAttempts = 10
 
   constructor(
     private readonly sequelize: Sequelize,
@@ -57,7 +57,7 @@ export class WikiService {
     } catch (error) {
       await transaction.rollback()
       if (this.shouldRetryBusy(error, attempt)) {
-        await delay(150 * (attempt + 1))
+        await delay(200 * (attempt + 1))
         return await this.withTransaction(handler, attempt + 1)
       }
       throw error
@@ -71,8 +71,12 @@ export class WikiService {
     if (!error || typeof error !== 'object') {
       return false
     }
-    const candidate = error as { code?: string }
-    return candidate.code === 'SQLITE_BUSY'
+    const candidate = error as { code?: string; message?: string; original?: { code?: string; message?: string } }
+    if (candidate.code === 'SQLITE_BUSY' || candidate.original?.code === 'SQLITE_BUSY') {
+      return true
+    }
+    const message = candidate.message ?? candidate.original?.message
+    return typeof message === 'string' && message.toLowerCase().includes('sqlite_busy')
   }
 
   private async loadMembership(

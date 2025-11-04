@@ -424,7 +424,7 @@ export const ProjectsActionBar = ({
           title={t('optionalColumns.modalTitle', { defaultValue: 'Optional fields' })}
           onCancel={() => setOptionalFieldsOpen(false)}
           footer={null}
-          destroyOnClose={false}
+          destroyOnHidden
           centered
           styles={{
             body: {

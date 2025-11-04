@@ -82,6 +82,8 @@ const ProjectWikiPage = (): JSX.Element => {
 
   const safeProjectId = projectId ?? ''
 
+  const [messageApi, messageContext] = message.useMessage()
+
   const pages = useAppSelector(selectWikiPages(safeProjectId))
   const pagesStatus = useAppSelector(selectWikiStatus(safeProjectId))
 
@@ -162,7 +164,9 @@ const ProjectWikiPage = (): JSX.Element => {
     try {
       const values = await createForm.validateFields()
       if (!createContent.trim()) {
-        message.warning(t('wiki.validation.contentRequired', { defaultValue: 'Inserisci il contenuto della pagina.' }))
+        messageApi.warning(
+          t('wiki.validation.contentRequired', { defaultValue: 'Inserisci il contenuto della pagina.' })
+        )
         return
       }
       const result = await dispatch(
@@ -175,9 +179,9 @@ const ProjectWikiPage = (): JSX.Element => {
       ).unwrap()
       setCreateModalOpen(false)
       setSelectedPageId(result.page.id)
-      message.success(t('wiki.feedback.created', { defaultValue: 'Pagina creata.' }))
+      messageApi.success(t('wiki.feedback.created', { defaultValue: 'Pagina creata.' }))
     } catch (error) {
-      message.error(resolveErrorMessage(error))
+      messageApi.error(resolveErrorMessage(error))
     }
   }
 
@@ -188,7 +192,9 @@ const ProjectWikiPage = (): JSX.Element => {
     try {
       const values = await editForm.validateFields()
       if (!editorContent.trim()) {
-        message.warning(t('wiki.validation.contentRequired', { defaultValue: 'Inserisci il contenuto della pagina.' }))
+        messageApi.warning(
+          t('wiki.validation.contentRequired', { defaultValue: 'Inserisci il contenuto della pagina.' })
+        )
         return
       }
       await dispatch(
@@ -201,9 +207,9 @@ const ProjectWikiPage = (): JSX.Element => {
         })
       ).unwrap()
       setIsEditing(false)
-      message.success(t('wiki.feedback.updated', { defaultValue: 'Pagina aggiornata.' }))
+      messageApi.success(t('wiki.feedback.updated', { defaultValue: 'Pagina aggiornata.' }))
     } catch (error) {
-      message.error(resolveErrorMessage(error))
+      messageApi.error(resolveErrorMessage(error))
     }
   }
 
@@ -226,9 +232,9 @@ const ProjectWikiPage = (): JSX.Element => {
             const remaining = pages.filter((page) => page.id !== pageId)
             setSelectedPageId(remaining.length ? remaining[0].id : null)
           }
-          message.success(t('wiki.feedback.deleted', { defaultValue: 'Pagina eliminata.' }))
+          messageApi.success(t('wiki.feedback.deleted', { defaultValue: 'Pagina eliminata.' }))
         } catch (error) {
-          message.error(resolveErrorMessage(error))
+          messageApi.error(resolveErrorMessage(error))
         }
       }
     })
@@ -252,10 +258,10 @@ const ProjectWikiPage = (): JSX.Element => {
       await dispatch(
         restoreWikiRevision({ projectId, pageId: selectedPageId, revisionId: revision.id })
       ).unwrap()
-      message.success(t('wiki.feedback.restored', { defaultValue: 'Revisione ripristinata.' }))
+      messageApi.success(t('wiki.feedback.restored', { defaultValue: 'Revisione ripristinata.' }))
       setRevisionModalOpen(false)
     } catch (error) {
-      message.error(resolveErrorMessage(error))
+      messageApi.error(resolveErrorMessage(error))
     }
   }
 
@@ -311,6 +317,7 @@ const ProjectWikiPage = (): JSX.Element => {
 
   return (
     <Space direction="vertical" size={16} style={{ width: '100%' }}>
+      {messageContext}
       <Flex align="center" justify="space-between" wrap>
         <Typography.Title level={3} style={{ margin: 0 }}>
           {t('wiki.title', { defaultValue: 'Wiki' })}
@@ -325,7 +332,10 @@ const ProjectWikiPage = (): JSX.Element => {
         </Space>
       </Flex>
       <Flex gap={16} align="stretch" wrap style={{ width: '100%' }}>
-        <Card style={{ flex: '0 0 280px', maxWidth: 320, minWidth: 240 }} bodyStyle={{ padding: 0 }}>
+        <Card
+          style={{ flex: '0 0 280px', maxWidth: 320, minWidth: 240 }}
+          styles={{ body: { padding: 0 } }}
+        >
           {isListLoading ? (
             <Flex justify="center" align="center" style={{ padding: 24 }}>
               <Spin />
@@ -385,7 +395,10 @@ const ProjectWikiPage = (): JSX.Element => {
             </Flex>
           )}
         </Card>
-        <Card style={{ flex: 1, minWidth: 320 }} bodyStyle={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <Card
+          style={{ flex: 1, minWidth: 320 }}
+          styles={{ body: { display: 'flex', flexDirection: 'column', gap: 16 } }}
+        >
           {pageHeader}
           {isPageLoading ? (
             <Flex justify="center" style={{ padding: 48 }}>
@@ -436,7 +449,7 @@ const ProjectWikiPage = (): JSX.Element => {
         okText={t('wiki.actions.create', { defaultValue: 'Crea' })}
         onOk={handleCreatePage}
         width={720}
-        destroyOnClose
+        destroyOnHidden
       >
         <Space direction="vertical" size={16} style={{ width: '100%' }}>
           <Form form={createForm} layout="vertical">
@@ -465,7 +478,7 @@ const ProjectWikiPage = (): JSX.Element => {
         onCancel={() => setRevisionModalOpen(false)}
         footer={null}
         width={720}
-        destroyOnClose
+        destroyOnHidden
       >
         {revisionsState.status === 'loading' ? (
           <Flex justify="center" style={{ padding: 24 }}>
