@@ -1,4 +1,4 @@
-import { Alert, Col, Row, Space, theme } from 'antd'
+import { Alert, Card, Col, Row, Space, Typography, theme } from 'antd'
 import type { JSX } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -44,6 +44,7 @@ export const ProjectBoard = ({
   )
   const showSkeleton = useDelayedLoading(isLoading)
   const hasTasks = columns.some((column) => column.tasks.length > 0)
+  const totalTasks = columns.reduce((sum, column) => sum + column.tasks.length, 0)
 
   return (
     <Space direction="vertical" size={16} style={{ width: '100%' }}>
@@ -55,6 +56,36 @@ export const ProjectBoard = ({
           message={t('board.permissions.title')}
           description={t('board.permissions.description')}
         />
+      ) : null}
+      {!showSkeleton && columns.length ? (
+        <Space size={12} wrap>
+          <Card
+            key="board-summary-total"
+            size="small"
+            bodyStyle={{ padding: 12 }}
+            style={{ minWidth: 180, borderRadius: token.borderRadiusLG }}
+          >
+            <Typography.Text type="secondary">
+              {t('board.summary.total')}
+            </Typography.Text>
+            <Typography.Title level={5} style={{ margin: 0 }}>
+              {t('board.taskCount', { count: totalTasks })}
+            </Typography.Title>
+          </Card>
+          {columns.map((column) => (
+            <Card
+              key={`board-summary-${column.status}`}
+              size="small"
+              bodyStyle={{ padding: 12 }}
+              style={{ minWidth: 160, borderRadius: token.borderRadiusLG }}
+            >
+              <Typography.Text type="secondary">{column.label}</Typography.Text>
+              <Typography.Title level={5} style={{ margin: 0 }}>
+                {t('board.taskCount', { count: column.tasks.length })}
+              </Typography.Title>
+            </Card>
+          ))}
+        </Space>
       ) : null}
       {showSkeleton ? (
         <LoadingSkeleton variant="cards" items={Math.max(columns.length, 4)} />

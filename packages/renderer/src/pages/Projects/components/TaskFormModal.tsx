@@ -18,6 +18,7 @@ export interface TaskFormModalProps {
   form: UseFormReturn<TaskFormValues>
   submitting: boolean
   assigneeOptions: Array<{ label: string; value: string }>
+  ownerOptions: Array<{ label: string; value: string }>
   statusOptions: Array<{ label: string; value: string }>
   taskTitle?: string
 }
@@ -30,6 +31,7 @@ export const TaskFormModal = ({
   form,
   submitting,
   assigneeOptions,
+  ownerOptions,
   statusOptions,
   taskTitle
 }: TaskFormModalProps): JSX.Element => {
@@ -172,6 +174,30 @@ export const TaskFormModal = ({
                   onChange={(value) => field.onChange(value ?? null)}
                   showSearch
                   optionFilterProp="label"
+                />
+              )}
+            />
+          </Form.Item>
+
+          <Form.Item
+            label={t('tasks.form.fields.owner')}
+            style={{ flex: 1, minWidth: 200 }}
+            validateStatus={form.formState.errors.ownerId ? 'error' : ''}
+            help={form.formState.errors.ownerId?.toString()}
+            required
+          >
+            <Controller
+              control={form.control}
+              name="ownerId"
+              render={({ field }) => (
+                <Select
+                  value={field.value}
+                  placeholder={t('tasks.form.placeholders.owner')}
+                  options={ownerOptions}
+                  onChange={(value) => field.onChange(value)}
+                  showSearch
+                  optionFilterProp="label"
+                  disabled={ownerOptions.length === 0}
                 />
               )}
             />

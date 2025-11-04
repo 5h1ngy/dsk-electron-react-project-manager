@@ -68,6 +68,7 @@
     "columns": {
       "key": "Cle",
       "name": "Nom",
+      "owner": "Proprietaire",
       "tags": "Tags",
       "role": "Role",
       "members": "Membres",
@@ -132,6 +133,10 @@
         "title": "Taches en retard",
         "empty": "Aucune tache en retard"
       },
+      "customizeButton": "Personnaliser la vue",
+      "customizeTitle": "Personnaliser la vue",
+      "customizeDescription": "Choisissez les cartes a afficher dans la vue d'ensemble.",
+      "customizeMinimum": "Selectionnez au moins une carte.",
       "taskItem": {
         "due": "Echeance {{date}}",
         "priority": "Priorite : {{priority}}"
@@ -179,8 +184,10 @@
     "summary": {
       "title": "Resume du projet",
       "empty": "Selectionnez un projet pour voir les details",
+      "owner": "Proprietaire",
       "createdOn": "Cree",
       "createdBy": "{{date}} par {{user}}",
+      "editProject": "Modifier le projet",
       "description": "Description",
       "noDescription": "Aucune description disponible",
       "tags": "Tags",
@@ -229,6 +236,12 @@
       "titlePlaceholder": "Titre de la tache",
       "descriptionPlaceholder": "Description (optionnelle)",
       "submit": "Ajouter la tache"
+    },
+    "taskCount_one": "{{count}} tache",
+    "taskCount_other": "{{count}} taches",
+    "emptyColumn": "Aucune tache dans cette colonne",
+    "summary": {
+      "total": "Toutes les taches"
     }
   },
   "notifications": {
@@ -342,12 +355,14 @@
         "status": "Statut",
         "priority": "Priorite",
         "assignee": "Assignation",
+        "owner": "Proprietaire",
         "dueDate": "Date limite"
       },
       "placeholders": {
         "title": "Titre de la tache",
         "description": "Description (optionnelle)",
         "assignee": "Selectionnez un responsable",
+        "owner": "Selectionnez un proprietaire",
         "dueDate": "Choisir la date limite"
       }
     },

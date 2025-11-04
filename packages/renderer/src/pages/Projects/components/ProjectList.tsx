@@ -10,6 +10,7 @@ import type { ProjectSummary } from '@renderer/store/slices/projects'
 import { useSemanticBadges, buildBadgeStyle } from '@renderer/theme/hooks/useSemanticBadges'
 
 type ProjectRow = ProjectSummary
+export type ProjectOptionalColumn = 'owner'
 
 export interface ProjectListProps {
   projects: ProjectRow[]
@@ -22,6 +23,7 @@ export interface ProjectListProps {
   isDeleting: (projectId: string) => boolean
   deleteDisabled?: boolean
   rowSelection?: TableProps<ProjectRow>['rowSelection']
+  visibleOptionalColumns?: ProjectOptionalColumn[]
 }
 
 const formatDate = (value: Date | string, locale: string): string => {
@@ -43,11 +45,13 @@ export const ProjectList = ({
   canManage,
   isDeleting,
   deleteDisabled = false,
-  rowSelection
+  rowSelection,
+  visibleOptionalColumns = []
 }: ProjectListProps) => {
   const { t, i18n } = useTranslation('projects')
   const showSkeleton = useDelayedLoading(loading)
   const badgeTokens = useSemanticBadges()
+  const includeOwner = visibleOptionalColumns.includes('owner')
 
   const columns: ColumnsType<ProjectRow> = [
     {
@@ -158,6 +162,27 @@ export const ProjectList = ({
       }
     }
   ]
+
+  if (includeOwner) {
+    columns.splice(2, 0, {
+      title: t('list.columns.owner'),
+      dataIndex: ['owner', 'displayName'],
+      key: 'owner',
+      width: 200,
+      render: (_value: unknown, record) => {
+        const display = record.owner?.displayName ?? record.owner?.username ?? '—'
+        const username = record.owner?.username
+        return (
+          <Space direction="vertical" size={2}>
+            <Typography.Text>{display}</Typography.Text>
+            {username && username !== display ? (
+              <Typography.Text type="secondary">{username}</Typography.Text>
+            ) : null}
+          </Space>
+        )
+      }
+    })
+  }
 
   if (showSkeleton) {
     return <LoadingSkeleton variant="table" />

@@ -141,6 +141,9 @@ export const ProjectSummaryList = ({
                     )}
                   </Space>
                   <Typography.Text type="secondary">
+                    {t('list.columns.owner')}: {project.owner.displayName ?? project.owner.username}
+                  </Typography.Text>
+                  <Typography.Text type="secondary">
                     {t('list.createdOn', { date: formatDate(project.createdAt, i18n.language) })}
                   </Typography.Text>
                   <Typography.Text type="secondary">

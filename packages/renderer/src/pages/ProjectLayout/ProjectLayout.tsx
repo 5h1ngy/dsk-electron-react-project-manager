@@ -1,5 +1,5 @@
 import { ArrowLeftOutlined, ReloadOutlined } from '@ant-design/icons'
-import { Breadcrumb, Button, Space, Tabs } from 'antd'
+import { Breadcrumb, Button, Space, Tabs, message } from 'antd'
 import { useCallback, useEffect, useMemo, type JSX } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Outlet, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
@@ -142,6 +142,24 @@ const ProjectLayout = (): JSX.Element => {
     [navigate, projectId]
   )
 
+  const handleOpenTaskEdit = useCallback(
+    (taskId: string) => {
+      if (!projectId) {
+        return
+      }
+      if (!canManageTasks) {
+        message.warning(
+          t('permissions.tasksUpdateDenied', {
+            defaultValue: 'Non hai i permessi per modificare questo task.'
+          })
+        )
+        return
+      }
+      navigate(`/projects/${projectId}/tasks/${taskId}?mode=edit`)
+    },
+    [canManageTasks, navigate, projectId, t]
+  )
+
   const handleRefreshClick = useCallback(() => {
     if (!projectId) {
       return
@@ -197,7 +215,7 @@ const ProjectLayout = (): JSX.Element => {
     canDeleteTask,
     openTaskDetails: handleOpenTaskDetails,
     openTaskCreate: (options) => taskModals.openCreate(options),
-    openTaskEdit: taskModals.openEdit,
+    openTaskEdit: handleOpenTaskEdit,
     deleteConfirmTask: taskModals.deleteConfirmTask,
     openDeleteConfirm: taskModals.openDeleteConfirm,
     closeDeleteConfirm: taskModals.closeDeleteConfirm,
@@ -260,6 +278,7 @@ const ProjectLayout = (): JSX.Element => {
         form={taskModals.editorForm}
         submitting={taskModals.submitting}
         assigneeOptions={taskModals.assigneeOptions}
+        ownerOptions={taskModals.ownerOptions}
         statusOptions={taskModals.statusOptions}
         taskTitle={taskModals.editorTask?.title}
       />

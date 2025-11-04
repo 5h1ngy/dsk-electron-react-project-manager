@@ -119,6 +119,31 @@ export class TaskService {
     }
   }
 
+  private async ensureOwner(
+    actor: ServiceActor,
+    projectId: string,
+    ownerId: string,
+    transaction?: Transaction
+  ): Promise<void> {
+    const user = await User.findByPk(ownerId, { transaction })
+    if (!user) {
+      throw new AppError('ERR_NOT_FOUND', 'Utente proprietario non trovato')
+    }
+
+    if (ownerId === actor.userId && isSystemAdmin(actor)) {
+      return
+    }
+
+    const membership = await ProjectMember.findOne({
+      where: { projectId, userId: ownerId },
+      transaction
+    })
+
+    if (!membership) {
+      throw new AppError('ERR_VALIDATION', 'Il proprietario deve essere membro del progetto')
+    }
+  }
+
   private async loadTask(taskId: string): Promise<Task & { project: Project }> {
     const task = await Task.findByPk(taskId, {
       include: [
@@ -281,6 +306,8 @@ export class TaskService {
       const task = await this.withTransaction(async (transaction) => {
         await this.ensureAssignee(project.id, input.assigneeId ?? null, transaction)
         await this.ensureParentTask(project.id, input.parentId ?? null, transaction)
+        const ownerId = input.ownerId ?? actor.userId
+        await this.ensureOwner(actor, project.id, ownerId, transaction)
 
         const key = await this.generateTaskKey(project, transaction)
         const statusKey = await this.resolveStatusKey(project.id, input.status ?? null, transaction)
@@ -297,7 +324,7 @@ export class TaskService {
             priority: input.priority ?? 'medium',
             dueDate: input.dueDate ?? null,
             assigneeId: input.assigneeId ?? null,
-            ownerUserId: actor.userId
+            ownerUserId: ownerId
           },
           { transaction }
         )
@@ -355,6 +382,11 @@ export class TaskService {
         if (input.parentId !== undefined) {
           await this.ensureParentTask(task.projectId, input.parentId ?? null, transaction)
           task.parentId = input.parentId ?? null
+        }
+
+        if (input.ownerId !== undefined) {
+          await this.ensureOwner(actor, task.projectId, input.ownerId, transaction)
+          task.ownerUserId = input.ownerId
         }
 
         if (input.title !== undefined) {

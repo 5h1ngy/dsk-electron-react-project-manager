@@ -717,15 +717,25 @@ const ProjectNotesPage = (): ReactElement => {
       {viewMode === 'cards' ? (
         <Spin spinning={noteLoading} style={{ width: '100%' }}>
           {notes.length ? (
-            <Flex gap={16} wrap style={{ width: '100%' }}>
+            <Flex
+              gap={16}
+              wrap
+              style={{
+                width: '100%',
+                alignItems: 'stretch'
+              }}
+            >
               {notes.map((note) => {
                 const ownedByUser = note.owner.id === userId
                 const checked = selectedNoteIds.includes(note.id)
+                const cardFlexStyles = screens.md
+                  ? { flex: '1 1 320px', minWidth: 280, maxWidth: 420 }
+                  : { flex: '1 1 100%', minWidth: '100%' }
                 return (
                   <Card
                     key={note.id}
                     actions={buildNoteActions(note, 'card')}
-                    style={{ flex: '1 1 320px', minWidth: 280, maxWidth: 420 }}
+                    style={cardFlexStyles}
                     styles={{ body: { display: 'flex', flexDirection: 'column', gap: 8 } }}
                     extra={
                       canManageNotes ? (
@@ -775,8 +785,8 @@ const ProjectNotesPage = (): ReactElement => {
               const ownedByUser = note.owner.id === userId
               const checked = selectedNoteIds.includes(note.id)
               return (
-                <List.Item key={note.id} actions={buildNoteActions(note, 'list')}>
-                  <Space align="start" size={12} style={{ width: '100%' }}>
+                <List.Item key={note.id}>
+                  <Flex align="flex-start" gap={12} style={{ width: '100%' }}>
                     {canManageNotes ? (
                       <Checkbox
                         checked={checked}
@@ -784,35 +794,42 @@ const ProjectNotesPage = (): ReactElement => {
                           handleToggleNoteSelection(note.id, event.target.checked)
                         }
                         disabled={!ownedByUser || bulkDeleteLoading}
+                        style={{ marginTop: token.paddingXS }}
                       />
                     ) : null}
-                    <List.Item.Meta
-                      title={
-                        <Space size={8}>
-                          <Typography.Link onClick={() => handleViewerOpen(note.id)}>
-                            {note.title}
-                          </Typography.Link>
-                          {renderVisibilityTag(note)}
-                        </Space>
-                      }
-                      description={
-                        <Space direction="vertical" size={8} style={{ width: '100%' }}>
-                          <Typography.Text type="secondary">
-                            {t('notes.list.updatedBy', {
-                              user: note.owner.displayName,
-                              date: dayjs(note.updatedAt).format('LLL')
-                            })}
-                          </Typography.Text>
-                          <Space size={4} wrap>
-                            {note.notebook ? <Tag color="geekblue">{note.notebook}</Tag> : null}
-                            {note.tags.map((tag) => (
-                              <Tag key={tag}>{tag}</Tag>
-                            ))}
-                          </Space>
-                        </Space>
-                      }
-                    />
-                  </Space>
+                    <Flex vertical gap={8} style={{ flex: '1 1 auto', minWidth: 0 }}>
+                      <Flex align="center" gap={8} wrap style={{ minWidth: 0 }}>
+                        <Typography.Link
+                          onClick={() => handleViewerOpen(note.id)}
+                          style={{
+                            flex: '1 1 auto',
+                            minWidth: 0,
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap'
+                          }}
+                        >
+                          {note.title}
+                        </Typography.Link>
+                        {renderVisibilityTag(note)}
+                      </Flex>
+                      <Typography.Text type="secondary">
+                        {t('notes.list.updatedBy', {
+                          user: note.owner.displayName,
+                          date: dayjs(note.updatedAt).format('LLL')
+                        })}
+                      </Typography.Text>
+                      <Flex gap={4} wrap>
+                        {note.notebook ? <Tag color="geekblue">{note.notebook}</Tag> : null}
+                        {note.tags.map((tag) => (
+                          <Tag key={tag}>{tag}</Tag>
+                        ))}
+                      </Flex>
+                      <Flex gap={8} wrap>
+                        {buildNoteActions(note, 'list')}
+                      </Flex>
+                    </Flex>
+                  </Flex>
                 </List.Item>
               )
             }}

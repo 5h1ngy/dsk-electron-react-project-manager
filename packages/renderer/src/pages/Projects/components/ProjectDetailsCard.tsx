@@ -50,14 +50,27 @@ export const ProjectDetailsCard = ({
     month: 'long',
     year: 'numeric'
   }).format(new Date(project.createdAt))
+  const ownerName = project.owner?.displayName ?? project.owner?.username ?? project.createdBy
+  const ownerUsername = project.owner?.username ?? project.createdBy
 
   return (
     <Card title={`${project.name} (${project.key})`} style={cardStyle}>
       <Space direction="vertical" size="middle" style={{ width: '100%' }}>
         <div>
+          <Typography.Text type="secondary">{t('details.summary.owner')}</Typography.Text>
+          <Typography.Paragraph style={{ marginBottom: 4 }}>
+            {ownerName}
+            {ownerUsername && ownerUsername !== ownerName ? (
+              <Typography.Text type="secondary" style={{ marginLeft: 6 }}>
+                ({ownerUsername})
+              </Typography.Text>
+            ) : null}
+          </Typography.Paragraph>
+        </div>
+        <div>
           <Typography.Text type="secondary">{t('details.summary.createdOn')}</Typography.Text>
           <Typography.Paragraph style={{ marginBottom: 0 }}>
-            {t('details.summary.createdBy', { date: formattedCreatedAt, user: project.createdBy })}
+            {t('details.summary.createdBy', { date: formattedCreatedAt, user: ownerName })}
           </Typography.Paragraph>
         </div>
         <div>

@@ -4,11 +4,12 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm, type UseFormReturn, type Resolver } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import { useAppDispatch } from '@renderer/store/hooks'
+import { useAppDispatch, useAppSelector } from '@renderer/store/hooks'
 import { createTask, updateTask, deleteTask, type TaskDetails } from '@renderer/store/slices/tasks'
 import type { ProjectDetails } from '@renderer/store/slices/projects'
 import { taskFormSchema, type TaskFormValues } from '@renderer/pages/Projects/schemas/taskSchemas'
 import type { TaskStatusItem } from '@renderer/store/slices/taskStatuses'
+import { selectCurrentUser } from '@renderer/store/slices/auth/selectors'
 
 export interface TaskModalsState {
   detailTask: TaskDetails | null
@@ -30,6 +31,7 @@ export interface TaskModalsState {
   closeDeleteConfirm: () => void
   confirmDelete: () => Promise<void>
   assigneeOptions: Array<{ label: string; value: string }>
+  ownerOptions: Array<{ label: string; value: string }>
   statusOptions: Array<{ label: string; value: string }>
   taskMessageContext: React.ReactNode
 }
@@ -54,6 +56,7 @@ export const useTaskModals = ({
   const dispatch = useAppDispatch()
   const { t } = useTranslation('projects')
   const [messageApi, taskMessageContext] = message.useMessage()
+  const currentUser = useAppSelector(selectCurrentUser)
 
   const [detailTaskId, setDetailTaskId] = useState<string | null>(null)
   const [editorState, setEditorState] = useState<{
@@ -78,18 +81,10 @@ export const useTaskModals = ({
   )
   const defaultStatusKey = useMemo(() => statusOptions[0]?.value ?? 'todo', [statusOptions])
 
-  const editorForm = useForm<TaskFormValues>({
-    resolver: zodResolver(taskFormSchema) as unknown as Resolver<TaskFormValues>,
-    mode: 'onChange',
-    defaultValues: {
-      title: '',
-      description: null,
-      status: defaultStatusKey,
-      priority: 'medium',
-      dueDate: null,
-      assigneeId: null
-    }
-  })
+  const activeMembers = useMemo(
+    () => (project?.members ?? []).filter((member) => member.isActive),
+    [project?.members]
+  )
 
   const detailTask = useMemo(
     () => (detailTaskId ? (tasks.find((task) => task.id === detailTaskId) ?? null) : null),
@@ -104,17 +99,52 @@ export const useTaskModals = ({
     [editorState, tasks]
   )
 
-  const assigneeOptions = useMemo(() => {
-    if (!project?.members) {
-      return []
-    }
-    return project.members
-      .filter((member) => member.isActive)
-      .map((member) => ({
+  const assigneeOptions = useMemo(
+    () =>
+      activeMembers.map((member) => ({
         label: member.displayName ?? member.username,
         value: member.userId
-      }))
-  }, [project?.members])
+      })),
+    [activeMembers]
+  )
+
+  const ownerOptions = useMemo(() => {
+    const options = activeMembers.map((member) => ({
+      label: member.displayName ?? member.username,
+      value: member.userId
+    }))
+    if (currentUser?.id) {
+      const exists = options.some((option) => option.value === currentUser.id)
+      if (!exists) {
+        options.push({
+          label: currentUser.displayName ?? currentUser.username ?? currentUser.id,
+          value: currentUser.id
+        })
+      }
+    }
+    return options
+  }, [activeMembers, currentUser?.displayName, currentUser?.id, currentUser?.username])
+
+  const defaultOwnerId = useMemo(() => {
+    if (currentUser?.id && ownerOptions.some((option) => option.value === currentUser.id)) {
+      return currentUser.id
+    }
+    return ownerOptions[0]?.value ?? ''
+  }, [currentUser?.id, ownerOptions])
+
+  const editorForm = useForm<TaskFormValues>({
+    resolver: zodResolver(taskFormSchema) as unknown as Resolver<TaskFormValues>,
+    mode: 'onChange',
+    defaultValues: {
+      title: '',
+      description: null,
+      status: defaultStatusKey,
+      priority: 'medium',
+      dueDate: null,
+      assigneeId: null,
+      ownerId: defaultOwnerId
+    }
+  })
 
   const openDetail = useCallback((taskId: string) => {
     setDetailTaskId(taskId)
@@ -139,10 +169,11 @@ export const useTaskModals = ({
         status: resolvedStatus,
         priority: defaults?.priority ?? 'medium',
         dueDate: null,
-        assigneeId: null
+        assigneeId: null,
+        ownerId: defaultOwnerId
       })
     },
-    [canManageTasks, defaultStatusKey, editorForm, messageApi, statusMap, t]
+    [canManageTasks, defaultOwnerId, defaultStatusKey, editorForm, messageApi, statusMap, t]
   )
 
   const openEdit = useCallback(
@@ -164,10 +195,11 @@ export const useTaskModals = ({
         status: resolvedStatus,
         priority: task.priority,
         dueDate: task.dueDate ? task.dueDate.slice(0, 10) : null,
-        assigneeId: task.assignee?.id ?? null
+        assigneeId: task.assignee?.id ?? null,
+        ownerId: task.owner?.id ?? defaultOwnerId
       })
     },
-    [canManageTasks, defaultStatusKey, editorForm, messageApi, statusMap, t, tasks]
+    [canManageTasks, defaultOwnerId, defaultStatusKey, editorForm, messageApi, statusMap, t, tasks]
   )
 
   const closeEditor = useCallback(() => {
@@ -178,9 +210,10 @@ export const useTaskModals = ({
       status: defaultStatusKey,
       priority: 'medium',
       dueDate: null,
-      assigneeId: null
+      assigneeId: null,
+      ownerId: defaultOwnerId
     })
-  }, [defaultStatusKey, editorForm])
+  }, [defaultOwnerId, defaultStatusKey, editorForm])
 
   const handleEditorSubmit = editorForm.handleSubmit(async (values) => {
     if (!projectId || !editorState) {
@@ -194,28 +227,30 @@ export const useTaskModals = ({
             projectId,
             parentId: null,
             title: values.title,
-            description: values.description,
-            status: values.status,
-            priority: values.priority,
-            dueDate: values.dueDate,
-            assigneeId: values.assigneeId
-          })
-        ).unwrap()
+          description: values.description,
+          status: values.status,
+          priority: values.priority,
+          dueDate: values.dueDate,
+          assigneeId: values.assigneeId,
+          ownerId: values.ownerId
+        })
+      ).unwrap()
         messageApi.success(t('tasks.messages.createSuccess'))
       } else if (editorState.mode === 'edit' && editorState.taskId) {
         await dispatch(
           updateTask({
             taskId: editorState.taskId,
-            input: {
-              title: values.title,
-              description: values.description,
-              status: values.status,
-              priority: values.priority,
-              dueDate: values.dueDate,
-              assigneeId: values.assigneeId
-            }
-          })
-        ).unwrap()
+          input: {
+            title: values.title,
+            description: values.description,
+            status: values.status,
+            priority: values.priority,
+            dueDate: values.dueDate,
+            assigneeId: values.assigneeId,
+            ownerId: values.ownerId
+          }
+        })
+      ).unwrap()
         messageApi.success(t('tasks.messages.updateSuccess'))
       }
       closeEditor()
@@ -322,6 +357,7 @@ export const useTaskModals = ({
     closeDeleteConfirm,
     confirmDelete,
     assigneeOptions,
+    ownerOptions,
     statusOptions,
     taskMessageContext
   }
