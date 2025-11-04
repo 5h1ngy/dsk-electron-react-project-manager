@@ -137,6 +137,9 @@
       "customizeTitle": "Uebersicht anpassen",
       "customizeDescription": "Waehlen Sie aus, welche Karten in der Uebersicht angezeigt werden sollen.",
       "customizeMinimum": "Waehlen Sie mindestens eine Karte aus.",
+      "customizeReset": "Standard wiederherstellen",
+      "customizeCancel": "Abbrechen",
+      "customizeApply": "Aenderungen uebernehmen",
       "taskItem": {
         "due": "Faellig am {{date}}",
         "priority": "Prioritaet: {{priority}}"

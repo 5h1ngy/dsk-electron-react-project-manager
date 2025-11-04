@@ -138,6 +138,9 @@
       "customizeTitle": "Personalizza panoramica",
       "customizeDescription": "Scegli quali schede mostrare nella panoramica.",
       "customizeMinimum": "Seleziona almeno una scheda.",
+      "customizeReset": "Ripristina predefiniti",
+      "customizeCancel": "Annulla",
+      "customizeApply": "Applica modifiche",
       "taskItem": {
         "due": "Scadenza {{date}}",
         "priority": "Priorita: {{priority}}"

@@ -137,6 +137,9 @@
       "customizeTitle": "Personnaliser la vue",
       "customizeDescription": "Choisissez les cartes a afficher dans la vue d'ensemble.",
       "customizeMinimum": "Selectionnez au moins une carte.",
+      "customizeReset": "Restaurer les valeurs par defaut",
+      "customizeCancel": "Annuler",
+      "customizeApply": "Appliquer les modifications",
       "taskItem": {
         "due": "Echeance {{date}}",
         "priority": "Priorite : {{priority}}"
