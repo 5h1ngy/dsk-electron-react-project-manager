@@ -26,6 +26,7 @@ const BodyStyleSynchronizer = () => {
 }
 
 const SCROLLBAR_STYLE_ID = 'app-scrollbar-styles'
+const NAVIGATION_STYLE_ID = 'app-navigation-styles'
 
 const ScrollbarStyleSynchronizer = () => {
   const { token } = theme.useToken()
@@ -92,6 +93,51 @@ const ScrollbarStyleSynchronizer = () => {
   return null
 }
 
+const NavigationStyleSynchronizer = () => {
+  const { token } = theme.useToken()
+
+  useEffect(() => {
+    let styleTag = document.getElementById(NAVIGATION_STYLE_ID) as HTMLStyleElement | null
+    if (!styleTag) {
+      styleTag = document.createElement('style')
+      styleTag.id = NAVIGATION_STYLE_ID
+      document.head.appendChild(styleTag)
+    }
+
+    const baseColor = token.colorText
+    const hoverColor = token.colorPrimary
+    const focusOutline = hoverColor
+
+    styleTag.textContent = `
+      .${'app-breadcrumb-clickable'} {
+        cursor: pointer;
+        color: ${baseColor};
+        transition: color 0.2s ease, text-decoration-color 0.2s ease;
+      }
+
+      .${'app-breadcrumb-clickable'}:hover,
+      .${'app-breadcrumb-clickable'}:focus-visible {
+        color: ${hoverColor};
+        text-decoration: underline;
+        text-decoration-color: ${hoverColor};
+      }
+
+      .${'app-breadcrumb-clickable'}:focus-visible {
+        outline: 2px solid ${focusOutline};
+        outline-offset: 2px;
+      }
+    `
+
+    return () => {
+      if (styleTag) {
+        styleTag.textContent = ''
+      }
+    }
+  }, [token.colorPrimary, token.colorText])
+
+  return null
+}
+
 const App = () => {
   const dispatch = useAppDispatch()
   const mode = useAppSelector(selectThemeMode)
@@ -119,6 +165,7 @@ const App = () => {
           <AntdApp>
             <BodyStyleSynchronizer />
             <ScrollbarStyleSynchronizer />
+            <NavigationStyleSynchronizer />
             <AppRoutes />
           </AntdApp>
         </HashRouter>

@@ -11,7 +11,8 @@ const PROJECT_ROLE_WEIGHT: Record<ProjectMembershipRole, number> = {
 
 export const DEFAULT_MEMBER_ROLE: ProjectMembershipRole = 'view'
 
-export const isSystemAdmin = (actor: ProjectActor): boolean => actor.roles.includes('Admin')
+export const isSystemAdmin = (actor: ProjectActor): boolean =>
+  actor.roles.some((role) => role === 'Admin' || role === 'Maintainer')
 
 export const resolveRoleWeight = (role: ProjectMembershipRole): number =>
   PROJECT_ROLE_WEIGHT[role] ?? 0

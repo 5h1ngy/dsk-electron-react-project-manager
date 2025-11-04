@@ -213,11 +213,9 @@ const ProjectLayout = (): JSX.Element => {
           >
             {t('details.refresh')}
           </Button>
-          {activeKey === 'tasks' ? (
-            <Button icon={<ArrowLeftOutlined />} onClick={() => navigate('/projects')}>
-              {t('details.backToList')}
-            </Button>
-          ) : null}
+          <Button icon={<ArrowLeftOutlined />} onClick={() => navigate('/projects')}>
+            {t('details.backToList')}
+          </Button>
           <Breadcrumb items={emphasizedBreadcrumbItems} style={breadcrumbStyle} />
         </Space>
       </ShellHeaderPortal>

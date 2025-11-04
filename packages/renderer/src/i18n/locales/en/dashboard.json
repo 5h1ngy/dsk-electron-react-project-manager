@@ -74,6 +74,25 @@
       }
     }
   },
+  "validation": {
+    "createUser": {
+      "usernameRequired": "Username is required",
+      "usernameMin": "Username must be at least 3 characters",
+      "usernameMax": "Username must be at most 32 characters",
+      "usernamePattern": "Use only letters, numbers, dots, hyphens or underscores",
+      "displayNameRequired": "Name is required",
+      "displayNameMax": "Name must be 64 characters or fewer",
+      "passwordRequired": "Password is required",
+      "passwordMin": "Password must be at least 8 characters",
+      "rolesRequired": "Select at least one role"
+    },
+    "updateUser": {
+      "displayNameRequired": "Name is required",
+      "displayNameMax": "Name must be 64 characters or fewer",
+      "passwordMin": "If you set a new password, it must be at least 8 characters long",
+      "rolesRequired": "Select at least one role"
+    }
+  },
   "messages": {
     "createSuccess": "User created successfully",
     "createErrorFallback": "Unable to create user",

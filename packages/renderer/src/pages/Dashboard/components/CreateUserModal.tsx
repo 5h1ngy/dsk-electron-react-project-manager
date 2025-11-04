@@ -26,7 +26,6 @@ export const CreateUserModal = ({
   const { t } = useTranslation('dashboard')
   const {
     control,
-    register,
     formState: { errors, isSubmitting }
   } = form
   const { token } = theme.useToken()
@@ -86,9 +85,24 @@ export const CreateUserModal = ({
           validateStatus={errors.username ? 'error' : undefined}
           help={errors.username?.message}
         >
-          <Input
-            {...register('username', { setValueAs: (value) => value.trim() })}
-            autoComplete="off"
+          <Controller
+            control={control}
+            name="username"
+            render={({ field }) => (
+              <Input
+                {...field}
+                value={field.value ?? ''}
+                onChange={(event) => field.onChange(event.target.value)}
+                onBlur={(event) => {
+                  const trimmed = event.target.value.trim()
+                  if (trimmed !== field.value) {
+                    field.onChange(trimmed)
+                  }
+                  field.onBlur()
+                }}
+                autoComplete="off"
+              />
+            )}
           />
         </Form.Item>
         <Form.Item
@@ -96,9 +110,24 @@ export const CreateUserModal = ({
           validateStatus={errors.displayName ? 'error' : undefined}
           help={errors.displayName?.message}
         >
-          <Input
-            {...register('displayName', { setValueAs: (value) => value.trim() })}
-            autoComplete="off"
+          <Controller
+            control={control}
+            name="displayName"
+            render={({ field }) => (
+              <Input
+                {...field}
+                value={field.value ?? ''}
+                onChange={(event) => field.onChange(event.target.value)}
+                onBlur={(event) => {
+                  const trimmed = event.target.value.trim()
+                  if (trimmed !== field.value) {
+                    field.onChange(trimmed)
+                  }
+                  field.onBlur()
+                }}
+                autoComplete="off"
+              />
+            )}
           />
         </Form.Item>
         <Form.Item
@@ -106,7 +135,19 @@ export const CreateUserModal = ({
           validateStatus={errors.password ? 'error' : undefined}
           help={errors.password?.message}
         >
-          <Input.Password {...register('password')} autoComplete="new-password" />
+          <Controller
+            control={control}
+            name="password"
+            render={({ field }) => (
+              <Input.Password
+                {...field}
+                value={field.value ?? ''}
+                onChange={(event) => field.onChange(event.target.value)}
+                onBlur={field.onBlur}
+                autoComplete="new-password"
+              />
+            )}
+          />
         </Form.Item>
         <Form.Item
           label={t('dashboard:modals.create.fields.roles')}
@@ -119,6 +160,7 @@ export const CreateUserModal = ({
             render={({ field }) => (
               <Select
                 {...field}
+                value={field.value ?? []}
                 mode="multiple"
                 options={selectOptions}
                 placeholder={t('dashboard:modals.create.fields.rolesPlaceholder')}
@@ -132,7 +174,10 @@ export const CreateUserModal = ({
             control={control}
             name="isActive"
             render={({ field }) => (
-              <Switch checked={field.value} onChange={(checked) => field.onChange(checked)} />
+              <Switch
+                checked={Boolean(field.value)}
+                onChange={(checked) => field.onChange(checked)}
+              />
             )}
           />
         </Form.Item>
