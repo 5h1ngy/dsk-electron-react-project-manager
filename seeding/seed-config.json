@@ -1,100 +1,61 @@
 {
   "users": {
     "profiles": [
-      {
-        "roles": [
-          "Admin",
-          "Maintainer"
-        ],
-        "count": 50
-      },
-      {
-        "roles": [
-          "Admin"
-        ],
-        "count": 50
-      },
-      {
-        "roles": [
-          "Maintainer",
-          "Contributor"
-        ],
-        "count": 600
-      },
-      {
-        "roles": [
-          "Maintainer"
-        ],
-        "count": 400
-      },
-      {
-        "roles": [
-          "Contributor"
-        ],
-        "count": 2500
-      },
-      {
-        "roles": [
-          "Contributor",
-          "Viewer"
-        ],
-        "count": 800
-      },
-      {
-        "roles": [
-          "Viewer"
-        ],
-        "count": 600
-      }
+      { "roles": ["Admin", "Maintainer"], "count": 2 },
+      { "roles": ["Maintainer", "Contributor"], "count": 5 },
+      { "roles": ["Maintainer"], "count": 3 },
+      { "roles": ["Contributor"], "count": 12 },
+      { "roles": ["Contributor", "Viewer"], "count": 4 },
+      { "roles": ["Viewer"], "count": 4 }
     ]
   },
   "projects": {
-    "min": 120,
-    "max": 240,
+    "min": 4,
+    "max": 7,
     "tasksPerProject": {
-      "min": 80,
-      "max": 160
+      "min": 8,
+      "max": 20
     },
-    "backlogBufferMax": 10,
+    "backlogBufferMax": 2,
     "tagsPerProject": {
-      "min": 3,
-      "max": 8
+      "min": 1,
+      "max": 4
     },
     "members": {
       "maintainerAdmin": {
-        "min": 3,
-        "max": 6
+        "min": 1,
+        "max": 2
       },
       "contributor": {
-        "min": 12,
-        "max": 30
+        "min": 2,
+        "max": 5
       },
       "viewer": {
-        "min": 5,
-        "max": 15
+        "min": 0,
+        "max": 2
       }
     }
   },
   "comments": {
     "minByStatus": {
-      "todo": 1,
-      "in_progress": 2,
-      "blocked": 2,
-      "done": 1
+      "todo": 0,
+      "in_progress": 1,
+      "blocked": 1,
+      "done": 0
     },
     "maxByStatus": {
-      "todo": 4,
-      "in_progress": 8,
-      "blocked": 10,
-      "done": 5
+      "todo": 2,
+      "in_progress": 4,
+      "blocked": 5,
+      "done": 3
     }
   },
   "notes": {
     "perProject": {
-      "min": 20,
-      "max": 60
+      "min": 4,
+      "max": 10
     },
-    "privateRatio": 0.25,
+    "privateRatio": 0.2,
     "notebooks": [
       "Discovery",
       "Retro",
@@ -104,9 +65,7 @@
       "Strategy",
       "Architecture Review",
       "Customer Success",
-      "Security Briefing",
-      "Quarterly Review",
-      "Product Roadmap"
+      "Security Briefing"
     ],
     "tagsCatalog": [
       "retro",
@@ -123,26 +82,21 @@
       "audit",
       "training",
       "innovation",
-      "infrastructure",
-      "compliance",
-      "meeting",
-      "finance",
-      "marketing",
-      "people"
+      "infrastructure"
     ],
     "tagsPerNote": {
       "min": 1,
-      "max": 4
-    },
-    "linkProbability": 0.5,
-    "linkTargets": {
-      "min": 1,
       "max": 3
     },
-    "checklistProbability": 0.4,
+    "linkProbability": 0.6,
+    "linkTargets": {
+      "min": 1,
+      "max": 2
+    },
+    "checklistProbability": 0.35,
     "summaryParagraphs": {
       "min": 2,
-      "max": 6
+      "max": 4
     }
   }
 }
