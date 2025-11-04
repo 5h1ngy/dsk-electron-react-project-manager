@@ -2,6 +2,32 @@ import { app, session, type Session, type WebContents } from 'electron'
 import { URL } from 'node:url'
 
 const OFFLINE_PROTOCOLS = new Set(['file:', 'data:', 'devtools:', 'about:'])
+const DEVTOOLS_ALLOWED_HOSTS = new Set(['clients2.google.com', 'clients2.googleusercontent.com'])
+
+const parseDevtoolsToggle = (value: string | undefined): boolean | null => {
+  if (!value) {
+    return null
+  }
+
+  const normalized = value.trim().toLowerCase()
+  if (['1', 'true', 'yes', 'on'].includes(normalized)) {
+    return true
+  }
+
+  if (['0', 'false', 'no', 'off'].includes(normalized)) {
+    return false
+  }
+
+  return null
+}
+
+const shouldEnableDevtools = (): boolean => {
+  const toggle = parseDevtoolsToggle(process.env.ENABLE_DEVTOOLS)
+  if (toggle !== null) {
+    return toggle
+  }
+  return process.env.NODE_ENV !== 'production'
+}
 
 const isLocalhostUrl = (url: URL): boolean =>
   url.hostname === 'localhost' || url.hostname === '127.0.0.1'
@@ -50,6 +76,10 @@ export const shouldAllowRequest = (url: URL, isPackaged: boolean): boolean => {
   }
 
   if (!isPackaged && isLocalhostUrl(url)) {
+    return true
+  }
+
+  if (shouldEnableDevtools() && url.protocol === 'https:' && DEVTOOLS_ALLOWED_HOSTS.has(url.hostname)) {
     return true
   }
 

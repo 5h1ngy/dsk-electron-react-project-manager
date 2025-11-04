@@ -1,5 +1,7 @@
-import { BrowserWindow } from 'electron'
+import { app, BrowserWindow } from 'electron'
+import type { Session, WebContents } from 'electron'
 import { join } from 'node:path'
+import { existsSync } from 'node:fs'
 import type { Sequelize } from 'sequelize-typescript'
 
 import { logger, shouldSuppressDevtoolsMessage } from '@main/config/logger'
@@ -48,6 +50,10 @@ export class MainWindowManager {
   private readonly env: NodeJS.ProcessEnv
   private readonly shouldSuppress: typeof shouldSuppressDevtoolsMessage
   private readonly devtoolsToggle: boolean | null
+  private reduxDevtoolsInstalled = false
+  private reduxInstallPromise: Promise<void> | null = null
+  private readonly reduxFocusTargets = new WeakSet<WebContents>()
+  private readonly devtoolsConsoleFilters = new WeakSet<WebContents>()
 
   constructor(options: MainWindowManagerOptions = {}) {
     this.BrowserWindowCtor = options.browserWindowCtor ?? BrowserWindow
@@ -102,6 +108,11 @@ export class MainWindowManager {
       return
     }
 
+    const installPromise = this.ensureReduxDevtools(window.webContents)
+    void installPromise
+
+    this.registerReduxPanelFocus(window)
+
     const shouldAutoOpen = this.shouldAutoOpenDevtools()
 
     if (!shouldAutoOpen) {
@@ -109,11 +120,116 @@ export class MainWindowManager {
     }
 
     window.webContents.once('dom-ready', () => {
-      if (!window.webContents.isDevToolsOpened()) {
-        this.logger.debug('Opening docked DevTools per configuration', 'Window')
-        window.webContents.openDevTools({ mode: 'right' })
+      const openDevtools = () => {
+        if (!window.webContents.isDevToolsOpened()) {
+          this.logger.debug('Opening docked DevTools per configuration', 'Window')
+          window.webContents.openDevTools({ mode: 'right' })
+        }
       }
+
+      void installPromise.finally(openDevtools)
     })
+  }
+
+  private async ensureReduxDevtools(webContents: WebContents): Promise<void> {
+    if (!this.shouldAllowDevtools() || this.reduxDevtoolsInstalled) {
+      return
+    }
+
+    if (this.reduxInstallPromise) {
+      await this.reduxInstallPromise
+      return
+    }
+
+    this.reduxInstallPromise = this.installReduxDevtools(webContents.session)
+
+    try {
+      await this.reduxInstallPromise
+    } finally {
+      this.reduxInstallPromise = null
+    }
+  }
+
+  private async installReduxDevtools(session: Session): Promise<void> {
+    const localExtensionPath = join(app.getAppPath(), 'extensions/redux-devtools')
+
+    if (existsSync(localExtensionPath)) {
+      try {
+        const extension = await session.loadExtension(localExtensionPath, {
+          allowFileAccess: true
+        })
+        this.reduxDevtoolsInstalled = true
+        this.logger.info(`Redux DevTools extension ready (${extension.name}) [local]`, 'DevTools')
+        return
+      } catch (error) {
+        this.logger.warn('Unable to load local Redux DevTools extension', 'DevTools')
+        this.logger.debug(this.describeError(error), 'DevTools')
+      }
+    } else {
+      this.logger.debug(
+        `Local Redux DevTools extension missing at: ${localExtensionPath}`,
+        'DevTools'
+      )
+    }
+
+    try {
+      const { default: installExtension, REDUX_DEVTOOLS } = await import(
+        'electron-devtools-installer'
+      )
+      const extension = await installExtension(REDUX_DEVTOOLS, {
+        session,
+        loadExtensionOptions: { allowFileAccess: true },
+        forceDownload: false
+      })
+      this.reduxDevtoolsInstalled = true
+      this.logger.info(
+        `Redux DevTools extension ready (${extension.name}) [downloaded]`,
+        'DevTools'
+      )
+    } catch (error) {
+      this.logger.warn('Unable to install Redux DevTools extension', 'DevTools')
+      this.logger.debug(this.describeError(error), 'DevTools')
+    }
+  }
+
+  private registerReduxPanelFocus(window: BrowserWindow): void {
+    const contents = window.webContents
+    if (this.reduxFocusTargets.has(contents)) {
+      return
+    }
+    this.reduxFocusTargets.add(contents)
+
+    contents.on('devtools-opened', () => {
+      const devtools = contents.devToolsWebContents
+      if (!devtools) {
+        return
+      }
+
+      if (this.devtoolsConsoleFilters.has(devtools)) {
+        return
+      }
+
+      this.devtoolsConsoleFilters.add(devtools)
+      devtools.on('console-message', (event, _level, message, _line, sourceId) => {
+        const normalizedMessage = String(message ?? '').toLowerCase()
+        const normalizedSource = String(sourceId ?? '').toLowerCase()
+        if (
+          normalizedMessage.includes('sandboxed_renderer.bundle.js script failed') ||
+          normalizedMessage.includes('autofill.enable failed') ||
+          normalizedMessage.includes('autofill.setaddresses failed') ||
+          normalizedSource.includes('sandbox_bundle')
+        ) {
+          event.preventDefault()
+        }
+      })
+    })
+  }
+
+  private describeError(error: unknown): string {
+    if (error instanceof Error) {
+      return error.stack ?? error.message
+    }
+    return String(error)
   }
 
   private registerConsoleForwarding(window: BrowserWindow): void {
