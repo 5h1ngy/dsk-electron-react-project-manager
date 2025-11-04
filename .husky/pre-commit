@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+
+# No automated pre-commit checks configured
+: 
