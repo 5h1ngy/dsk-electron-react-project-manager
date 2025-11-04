@@ -12,12 +12,15 @@ import {
   buildPriorityOptions,
   buildStatusOptions,
   buildAssigneeOptions,
+  buildSprintOptions,
   filterTasks
 } from '@renderer/pages/ProjectTasks/ProjectTasks.helpers'
 import type { TaskFilters } from '@renderer/pages/ProjectTasks/ProjectTasks.types'
 import { TaskFiltersBar } from '@renderer/pages/ProjectTasks/components/TaskFiltersBar'
 import { ProjectTasksCardGrid } from '@renderer/pages/ProjectTasks/components/ProjectTasksCardGrid'
 import { ProjectTasksList } from '@renderer/pages/Projects/components/ProjectTasksList'
+import ProjectSprintBoard from '@renderer/pages/ProjectTasks/components/ProjectSprintBoard'
+import ProjectTimeTrackingView from '@renderer/pages/ProjectTasks/components/ProjectTimeTrackingView'
 
 import TaskSavedViewsControls from '@renderer/pages/ProjectTasks/components/TaskSavedViewsControls'
 import TaskColumnVisibilityControls, {
@@ -36,6 +39,11 @@ import {
   selectViewsMutationStatus,
   selectSavedView
 } from '@renderer/store/slices/views'
+import {
+  fetchSprints,
+  selectSprintList,
+  selectSprintsForProject
+} from '@renderer/store/slices/sprints'
 import type { SavedView } from '@renderer/store/slices/views/types'
 import type { LoadStatus } from '@renderer/store/slices/tasks/types'
 import { deleteTask, type TaskDetails } from '@renderer/store/slices/tasks'
@@ -54,6 +62,17 @@ const getColumnsForView = (selected: ReadonlyArray<OptionalTaskColumn>) =>
 
 const extractOptionalColumns = (columns: ReadonlyArray<string>): OptionalTaskColumn[] =>
   OPTIONAL_TASK_COLUMNS.filter((column) => columns.includes(column))
+
+const DEFAULT_TASK_FILTERS: TaskFilters = {
+  searchQuery: '',
+  status: 'all',
+  priority: 'all',
+  assignee: 'all',
+  dueDateRange: null,
+  sprint: 'all'
+}
+
+const createDefaultTaskFilters = (): TaskFilters => ({ ...DEFAULT_TASK_FILTERS })
 
 const ProjectTasksPage = (): JSX.Element => {
   const {
@@ -77,15 +96,11 @@ const ProjectTasksPage = (): JSX.Element => {
     deletingTaskId
   } = useProjectRouteContext()
   const { t } = useTranslation('projects')
-  const [filters, setFilters] = useState<TaskFilters>({
-    searchQuery: '',
-    status: 'all',
-    priority: 'all',
-    assignee: 'all',
-    dueDateRange: null
-  })
+  const [filters, setFilters] = useState<TaskFilters>(() => createDefaultTaskFilters())
   const [visibleColumns, setVisibleColumns] = useState<OptionalTaskColumn[]>([])
-  const [viewMode, setViewMode] = useState<'table' | 'list' | 'cards' | 'board'>('board')
+  const [viewMode, setViewMode] = useState<
+    'table' | 'list' | 'cards' | 'board' | 'sprint' | 'timeline'
+  >('board')
   const [tablePage, setTablePage] = useState(1)
   const [tablePageSize, setTablePageSize] = useState(TABLE_PAGE_SIZE)
   const [cardPage, setCardPage] = useState(1)
@@ -106,6 +121,12 @@ const ProjectTasksPage = (): JSX.Element => {
     [projectId]
   )
   const savedViews = useAppSelector(savedViewsSelector)
+  const sprintState = useAppSelector((state) =>
+    projectId ? selectSprintsForProject(projectId)(state) : undefined
+  )
+  const sprintList = useAppSelector((state) =>
+    projectId ? selectSprintList(projectId)(state) : []
+  )
 
   const viewsStatusSelector = useMemo(
     () => (projectId ? selectProjectViewsStatus(projectId) : () => 'idle' as LoadStatus),
@@ -131,6 +152,7 @@ const ProjectTasksPage = (): JSX.Element => {
 
   const priorityOptions = useMemo(() => buildPriorityOptions(t), [t])
   const assigneeOptions = useMemo(() => buildAssigneeOptions(tasks, t), [tasks, t])
+  const sprintOptions = useMemo(() => buildSprintOptions(sprintList, t), [sprintList, t])
 
   const filteredTasks = useMemo(() => filterTasks(tasks, filters), [tasks, filters])
   const selectedTasks = useMemo(
@@ -156,7 +178,7 @@ const ProjectTasksPage = (): JSX.Element => {
   const applyFiltersFromView = useCallback(
     (view: SavedView) => {
       isApplyingViewRef.current = true
-      setFilters(view.filters)
+      setFilters({ ...createDefaultTaskFilters(), ...view.filters })
       setVisibleColumns(extractOptionalColumns(view.columns))
       setTablePage(1)
       setCardPage(1)
@@ -357,6 +379,27 @@ const ProjectTasksPage = (): JSX.Element => {
   }, [filters.status, taskStatuses, taskStatusesStatus])
 
   useEffect(() => {
+    if (!projectId) {
+      return
+    }
+    if (!sprintState || sprintState.status === 'idle') {
+      void dispatch(fetchSprints(projectId))
+    }
+  }, [dispatch, projectId, sprintState])
+
+  useEffect(() => {
+    if (isApplyingViewRef.current) {
+      return
+    }
+    if (filters.sprint === 'all' || filters.sprint === 'backlog') {
+      return
+    }
+    if (!sprintList.some((sprint) => sprint.id === filters.sprint)) {
+      setFilters((prev) => ({ ...prev, sprint: 'all' }))
+    }
+  }, [filters.sprint, sprintList])
+
+  useEffect(() => {
     const maxPage = Math.max(1, Math.ceil(filteredTasks.length / tablePageSize))
     if (tablePage > maxPage) {
       setTablePage(maxPage)
@@ -518,6 +561,7 @@ const ProjectTasksPage = (): JSX.Element => {
           statusOptions={statusOptions}
           priorityOptions={priorityOptions}
           assigneeOptions={assigneeOptions}
+          sprintOptions={sprintOptions}
           onChange={handleFiltersChange}
           viewMode={viewMode}
           onViewModeChange={(mode) => {
@@ -613,6 +657,12 @@ const ProjectTasksPage = (): JSX.Element => {
             onTaskDelete={(task) => handleTaskDelete(task.id)}
             deletingTaskId={deletingTaskId}
           />
+        ) : null}
+        {viewMode === 'sprint' ? (
+          <ProjectSprintBoard projectId={projectId} canManage={canManageTasks} />
+        ) : null}
+        {viewMode === 'timeline' ? (
+          <ProjectTimeTrackingView projectId={projectId} tasks={tasks} canManage={canManageTasks} />
         ) : null}
       </Space>
       <Modal

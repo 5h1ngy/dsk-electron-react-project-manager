@@ -290,6 +290,7 @@ const ProjectLayout = (): JSX.Element => {
         assigneeOptions={taskModals.assigneeOptions}
         ownerOptions={taskModals.ownerOptions}
         statusOptions={taskModals.statusOptions}
+        sprintOptions={taskModals.sprintOptions}
         taskTitle={taskModals.editorTask?.title}
       />
     </>
@@ -300,9 +301,3 @@ ProjectLayout.displayName = 'ProjectLayout'
 
 export { ProjectLayout }
 export default ProjectLayout
-
-
-
-
-
-

@@ -14,6 +14,8 @@ import { User } from '@main/models/User'
 import { Comment } from '@main/models/Comment'
 import { Note } from '@main/models/Note'
 import { NoteTaskLink } from '@main/models/NoteTaskLink'
+import { Sprint } from '@main/models/Sprint'
+import { TimeEntry } from '@main/models/TimeEntry'
 
 export type TaskStatus = string
 export type TaskPriority = 'low' | 'medium' | 'high' | 'critical'
@@ -53,6 +55,13 @@ export class Task extends Model {
   })
   declare parentId: string | null
 
+  @ForeignKey(() => Sprint)
+  @Column({
+    type: DataType.STRING(36),
+    allowNull: true
+  })
+  declare sprintId: string | null
+
   @Column({
     type: DataType.STRING(160),
     allowNull: false
@@ -85,6 +94,12 @@ export class Task extends Model {
   })
   declare dueDate: string | null
 
+  @Column({
+    type: DataType.INTEGER,
+    allowNull: true
+  })
+  declare estimatedMinutes: number | null
+
   @ForeignKey(() => User)
   @Column({
     type: DataType.STRING(36),
@@ -105,6 +120,9 @@ export class Task extends Model {
   @BelongsTo(() => Task, 'parentId')
   declare parent?: Task | null
 
+  @BelongsTo(() => Sprint, { onDelete: 'SET NULL', onUpdate: 'CASCADE' })
+  declare sprint?: Sprint | null
+
   @HasMany(() => Task, 'parentId')
   declare subtasks?: Task[]
 
@@ -116,6 +134,9 @@ export class Task extends Model {
 
   @HasMany(() => Comment)
   declare comments?: Comment[]
+
+  @HasMany(() => TimeEntry)
+  declare timeEntries?: TimeEntry[]
 
   @BelongsToMany(() => Note, () => NoteTaskLink)
   declare notes?: Note[]

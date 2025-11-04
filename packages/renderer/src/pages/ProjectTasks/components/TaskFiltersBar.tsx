@@ -4,6 +4,8 @@ import {
   AppstoreOutlined,
   BarsOutlined,
   ColumnWidthOutlined,
+  DeploymentUnitOutlined,
+  FieldTimeOutlined,
   PlusOutlined,
   TableOutlined
 } from '@ant-design/icons'
@@ -40,9 +42,10 @@ export interface TaskFiltersBarProps {
   statusOptions: SelectOption[]
   priorityOptions: SelectOption[]
   assigneeOptions: SelectOption[]
+  sprintOptions?: SelectOption[]
   onChange: (patch: Partial<TaskFilters>) => void
-  viewMode: 'table' | 'list' | 'cards' | 'board'
-  onViewModeChange: (mode: 'table' | 'list' | 'cards' | 'board') => void
+  viewMode: 'table' | 'list' | 'cards' | 'board' | 'sprint' | 'timeline'
+  onViewModeChange: (mode: 'table' | 'list' | 'cards' | 'board' | 'sprint' | 'timeline') => void
   onCreate?: () => void
   canCreate?: boolean
   secondaryActions?: ReactNode
@@ -60,6 +63,7 @@ export const TaskFiltersBar = ({
   statusOptions,
   priorityOptions,
   assigneeOptions,
+  sprintOptions,
   onChange,
   viewMode,
   onViewModeChange,
@@ -139,13 +143,31 @@ export const TaskFiltersBar = ({
           </Space>
         ),
         value: 'cards'
+      },
+      {
+        label: (
+          <Space size={6} style={{ color: 'inherit' }}>
+            <DeploymentUnitOutlined />
+            {!isCompact ? <span>{t('viewSwitcher.sprint')}</span> : null}
+          </Space>
+        ),
+        value: 'sprint'
+      },
+      {
+        label: (
+          <Space size={6} style={{ color: 'inherit' }}>
+            <FieldTimeOutlined />
+            {!isCompact ? <span>{t('viewSwitcher.timeline')}</span> : null}
+          </Space>
+        ),
+        value: 'timeline'
       }
     ],
     [isCompact, t]
   )
 
-  const selectOption = (options: SelectOption[]): Option =>
-    options.map((option) => ({ label: option.label, value: option.value }))
+  const selectOption = (options?: SelectOption[] | null): Option =>
+    (options ?? []).map((option) => ({ label: option.label, value: option.value }))
 
   const segmentedStyle = useMemo(
     () => ({
@@ -249,6 +271,13 @@ export const TaskFiltersBar = ({
           options={selectOption(assigneeOptions)}
           style={{ width: '100%' }}
         />
+        <Select
+          size="large"
+          value={filters.sprint}
+          onChange={(value) => onChange({ sprint: value as TaskFilters['sprint'] })}
+          options={selectOption(sprintOptions)}
+          style={{ width: '100%' }}
+        />
         <RangePicker
           size="large"
           value={dueRangeValue}
@@ -265,7 +294,12 @@ export const TaskFiltersBar = ({
   )
 
   const actionsContent = (
-    <Flex vertical={isCompact} align={isCompact ? 'stretch' : 'center'} gap={12} style={{ width: '100%' }}>
+    <Flex
+      vertical={isCompact}
+      align={isCompact ? 'stretch' : 'center'}
+      gap={12}
+      style={{ width: '100%' }}
+    >
       <Flex
         align={isCompact ? 'stretch' : 'center'}
         vertical={isCompact}
@@ -306,7 +340,9 @@ export const TaskFiltersBar = ({
         <Segmented
           size="large"
           value={viewMode}
-          onChange={(next) => onViewModeChange(next as 'table' | 'list' | 'cards' | 'board')}
+          onChange={(next) =>
+            onViewModeChange(next as 'table' | 'list' | 'cards' | 'board' | 'sprint' | 'timeline')
+          }
           options={viewSegmentedOptions}
           block={isCompact}
           style={segmentedStyle}
@@ -378,7 +414,8 @@ export const TaskFiltersBar = ({
                   status: 'all',
                   priority: 'all',
                   assignee: 'all',
-                  dueDateRange: null
+                  dueDateRange: null,
+                  sprint: 'all'
                 })
               }}
             >
@@ -414,8 +451,7 @@ export const TaskFiltersBar = ({
           <Flex vertical gap={token.marginMD}>
             <Typography.Paragraph style={{ marginBottom: 0 }}>
               {t('tasks.optionalColumns.description', {
-                defaultValue:
-                  'Select the additional fields you want to show in the table view.'
+                defaultValue: 'Select the additional fields you want to show in the table view.'
               })}
             </Typography.Paragraph>
             {optionalFieldControls.content}

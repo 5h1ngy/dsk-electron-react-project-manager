@@ -3,7 +3,9 @@
   "viewSwitcher": {
     "table": "Vue tableau",
     "cards": "Vue cartes",
-    "board": "Vue kanban"
+    "board": "Vue Kanban",
+    "sprint": "Vue sprint",
+    "timeline": "Suivi du temps"
   },
   "actions": {
     "refresh": "Actualiser",
@@ -164,6 +166,11 @@
       "assigneeOptions": {
         "all": "Tous les assignes",
         "unassigned": "Non assigne"
+      },
+      "sprint": "Sprint",
+      "sprintOptions": {
+        "all": "Tous les sprints",
+        "backlog": "Backlog"
       },
       "dueDateRange": {
         "start": "Echeance a partir du",
@@ -548,7 +555,8 @@
       "cancel": "Annuler",
       "nameLabel": "Nom",
       "nameRequired": "Saisissez un nom"
-    }  },
+    }
+  },
   "wiki": {
     "title": "Wiki",
     "actions": {
@@ -596,6 +604,83 @@
       "noSummary": "Aucun résumé",
       "empty": "Aucune version disponible."
     }
+  },
+  "sprints": {
+    "title": "Sprints du projet",
+    "noProjectSelected": "Sélectionnez un projet pour afficher ses sprints.",
+    "empty": "Aucun sprint défini pour ce projet.",
+    "totalTasks": "Tâches totales",
+    "estimatedMinutes": "Estimées",
+    "spentMinutes": "Enregistrées",
+    "capacityMinutes": "Capacité",
+    "utilization": "Utilisation",
+    "actions": {
+      "create": "Nouveau sprint",
+      "viewTasks": "Voir les tâches"
+    },
+    "deleteConfirmTitle": "Supprimer le sprint",
+    "deleteConfirmBody": "La suppression d’un sprint retire l’association des tâches mais celles-ci restent disponibles dans le backlog.",
+    "deleteSuccess": "Sprint supprimé",
+    "form": {
+      "invalid": "Veuillez remplir tous les champs obligatoires.",
+      "nameRequired": "Le nom est obligatoire",
+      "dateRequired": "Sélectionnez les dates de début et de fin"
+    },
+    "createTitle": "Créer un sprint",
+    "editTitle": "Modifier le sprint",
+    "createSuccess": "Sprint créé",
+    "updateSuccess": "Sprint mis à jour",
+    "status": {
+      "planned": "Planifié",
+      "active": "En cours",
+      "completed": "Terminé",
+      "archived": "Archivé"
+    },
+    "fields": {
+      "name": "Nom",
+      "goal": "Objectif",
+      "dateRange": "Période",
+      "status": "Statut",
+      "capacityMinutes": "Capacité (minutes)"
+    },
+    "details": {
+      "title": "Détails du sprint",
+      "tasks": "Tâches",
+      "emptyTasks": "Aucune tâche dans ce sprint."
+    }
+  },
+  "time": {
+    "tracking": {
+      "title": "Suivi du temps",
+      "actions": {
+        "logTime": "Enregistrer du temps"
+      },
+      "createTitle": "Enregistrer du temps",
+      "editTitle": "Modifier l’enregistrement",
+      "createSuccess": "Temps enregistré",
+      "updateSuccess": "Enregistrement mis à jour",
+      "deleteTitle": "Supprimer l’enregistrement",
+      "deleteBody": "Voulez-vous supprimer cet enregistrement de temps ?",
+      "deleteSuccess": "Enregistrement supprimé",
+      "totalMinutes": "Minutes enregistrées",
+      "byUser": "Par utilisateur",
+      "byTask": "Par tâche",
+      "noData": "Aucune donnée disponible",
+      "noEntries": "Aucun enregistrement pour la période sélectionnée.",
+      "noTasks": "Créez une tâche avant d\u2019enregistrer du temps.",
+      "columns": {
+        "date": "Date",
+        "task": "Tâche",
+        "user": "Utilisateur",
+        "minutes": "Minutes",
+        "description": "Description"
+      },
+      "fields": {
+        "task": "Tâche",
+        "entryDate": "Date",
+        "duration": "Durée (minutes)",
+        "description": "Description"
+      }
+    }
   }
 }
-

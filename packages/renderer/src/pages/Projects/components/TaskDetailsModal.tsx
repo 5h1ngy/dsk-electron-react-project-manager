@@ -74,7 +74,9 @@ const buildEditValues = (
   priority: task?.priority ?? 'medium',
   dueDate: task?.dueDate ?? null,
   assigneeId: task?.assignee?.id ?? null,
-  ownerId: task?.owner?.id ?? fallbackOwnerId
+  ownerId: task?.owner?.id ?? fallbackOwnerId,
+  sprintId: task?.sprint?.id ?? null,
+  estimatedMinutes: task?.estimatedMinutes ?? null
 })
 
 export const TaskDetailsModal = ({
@@ -229,7 +231,9 @@ export const TaskDetailsModal = ({
             priority: values.priority,
             dueDate: values.dueDate ?? null,
             assigneeId: values.assigneeId ?? null,
-            ownerId: values.ownerId
+            ownerId: values.ownerId,
+            sprintId: values.sprintId ?? null,
+            estimatedMinutes: values.estimatedMinutes ?? null
           }
         })
       ).unwrap()

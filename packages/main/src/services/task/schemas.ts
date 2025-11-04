@@ -49,6 +49,14 @@ const descriptionSchema = z
   .union([descriptionValueSchema, z.null().transform(() => null)])
   .optional()
 
+const estimatedMinutesSchema = z
+  .number({ invalid_type_error: 'Estimated minutes must be a number' })
+  .int('Estimated minutes must be an integer')
+  .min(0, 'Estimated minutes cannot be negative')
+  .max(1_000_000, 'Estimated minutes is too large')
+
+const optionalEstimatedMinutesSchema = estimatedMinutesSchema.nullable().optional()
+
 export const createTaskSchema = z.object({
   projectId: identifierSchema,
   parentId: nullableIdentifierSchema.optional(),
@@ -62,7 +70,9 @@ export const createTaskSchema = z.object({
   priority: taskPrioritySchema.default('medium'),
   dueDate: optionalDueDateSchema,
   assigneeId: nullableIdentifierSchema.optional(),
-  ownerId: identifierSchema.optional()
+  ownerId: identifierSchema.optional(),
+  sprintId: nullableIdentifierSchema.optional(),
+  estimatedMinutes: optionalEstimatedMinutesSchema
 })
 
 export const updateTaskSchema = z
@@ -79,7 +89,9 @@ export const updateTaskSchema = z
     dueDate: optionalDueDateSchema,
     assigneeId: nullableIdentifierSchema.optional(),
     parentId: nullableIdentifierSchema.optional(),
-    ownerId: identifierSchema.optional()
+    ownerId: identifierSchema.optional(),
+    sprintId: nullableIdentifierSchema.optional(),
+    estimatedMinutes: optionalEstimatedMinutesSchema
   })
   .refine(
     (value) => Object.keys(value).length > 0,

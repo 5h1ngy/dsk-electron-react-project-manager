@@ -1,5 +1,13 @@
 import { randomUUID } from 'node:crypto'
-import { Op, QueryTypes, fn, type FindOptions, type Sequelize, type Transaction } from 'sequelize'
+import {
+  Op,
+  QueryTypes,
+  col,
+  fn,
+  type FindOptions,
+  type Sequelize,
+  type Transaction
+} from 'sequelize'
 import { AuditService } from '@main/services/audit'
 import { Project } from '@main/models/Project'
 import { ProjectMember, type ProjectMembershipRole } from '@main/models/ProjectMember'
@@ -9,6 +17,8 @@ import { Comment } from '@main/models/Comment'
 import { User } from '@main/models/User'
 import { Note } from '@main/models/Note'
 import { NoteTaskLink } from '@main/models/NoteTaskLink'
+import { Sprint } from '@main/models/Sprint'
+import { TimeEntry } from '@main/models/TimeEntry'
 import { AppError, wrapError } from '@main/config/appError'
 import {
   createTaskSchema,
@@ -119,6 +129,27 @@ export class TaskService {
     }
   }
 
+  private async ensureSprint(
+    projectId: string,
+    sprintId: string | null,
+    transaction?: Transaction
+  ): Promise<Sprint | null> {
+    if (!sprintId) {
+      return null
+    }
+
+    const sprint = await Sprint.findOne({
+      where: { id: sprintId, projectId },
+      transaction
+    })
+
+    if (!sprint) {
+      throw new AppError('ERR_VALIDATION', 'Sprint selezionato non valido')
+    }
+
+    return sprint
+  }
+
   private async ensureOwner(
     actor: ServiceActor,
     projectId: string,
@@ -150,6 +181,7 @@ export class TaskService {
         { model: Project },
         { model: User, as: 'assignee' },
         { model: User, as: 'owner' },
+        { model: Sprint, as: 'sprint' },
         {
           model: Note,
           through: { attributes: [] }
@@ -233,6 +265,7 @@ export class TaskService {
         include: [
           { model: User, as: 'assignee' },
           { model: User, as: 'owner' },
+          { model: Sprint, as: 'sprint' },
           {
             model: Note,
             through: { attributes: [] }
@@ -250,6 +283,7 @@ export class TaskService {
       const tasks = await Task.findAll(queryOptions)
       const taskIds = tasks.map((task) => task.id)
       const commentCountMap = new Map<string, number>()
+      const timeSpentMap = new Map<string, number>()
 
       if (taskIds.length > 0) {
         const rawCounts = (await Comment.findAll({
@@ -264,9 +298,24 @@ export class TaskService {
         })
       }
 
+      if (taskIds.length > 0) {
+        const timeTotals = (await TimeEntry.findAll({
+          attributes: ['taskId', [fn('SUM', col('durationMinutes')), 'totalMinutes']],
+          where: { taskId: { [Op.in]: taskIds } },
+          group: ['taskId'],
+          raw: true
+        })) as unknown as Array<{ taskId: string; totalMinutes: number }>
+
+        timeTotals.forEach((row) => {
+          timeSpentMap.set(row.taskId, Number(row.totalMinutes ?? 0))
+        })
+      }
+
       return tasks.map((task) => {
         const commentCount = commentCountMap.get(task.id) ?? 0
-        const details = mapTaskDetails(task, project.key, commentCount)
+        const details = mapTaskDetails(task, project.key, commentCount, {
+          timeSpentMinutes: timeSpentMap.get(task.id) ?? 0
+        })
         return {
           ...details,
           linkedNotes: this.filterLinkedNotes(actor, role, details.linkedNotes)
@@ -282,7 +331,12 @@ export class TaskService {
       const task = await this.loadTask(taskId)
       const { role } = await this.resolveProjectAccess(actor, task.projectId, 'view')
       const commentCount = await Comment.count({ where: { taskId: task.id } })
-      const details = mapTaskDetails(task, task.project.key, commentCount)
+      const timeSpent = await TimeEntry.sum('durationMinutes', {
+        where: { taskId: task.id }
+      })
+      const details = mapTaskDetails(task, task.project.key, commentCount, {
+        timeSpentMinutes: Number(timeSpent ?? 0)
+      })
       return {
         ...details,
         linkedNotes: this.filterLinkedNotes(actor, role, details.linkedNotes)
@@ -306,6 +360,7 @@ export class TaskService {
       const task = await this.withTransaction(async (transaction) => {
         await this.ensureAssignee(project.id, input.assigneeId ?? null, transaction)
         await this.ensureParentTask(project.id, input.parentId ?? null, transaction)
+        await this.ensureSprint(project.id, input.sprintId ?? null, transaction)
         const ownerId = input.ownerId ?? actor.userId
         await this.ensureOwner(actor, project.id, ownerId, transaction)
 
@@ -324,7 +379,9 @@ export class TaskService {
             priority: input.priority ?? 'medium',
             dueDate: input.dueDate ?? null,
             assigneeId: input.assigneeId ?? null,
-            ownerUserId: ownerId
+            ownerUserId: ownerId,
+            sprintId: input.sprintId ?? null,
+            estimatedMinutes: input.estimatedMinutes ?? null
           },
           { transaction }
         )
@@ -340,6 +397,7 @@ export class TaskService {
         include: [
           { model: User, as: 'assignee' },
           { model: User, as: 'owner' },
+          { model: Sprint, as: 'sprint' },
           {
             model: Note,
             through: { attributes: [] }
@@ -351,7 +409,7 @@ export class TaskService {
         throw new AppError('ERR_INTERNAL', 'Task creato non reperibile')
       }
 
-      const details = mapTaskDetails(created, project.key, 0)
+      const details = mapTaskDetails(created, project.key, 0, { timeSpentMinutes: 0 })
       return {
         ...details,
         linkedNotes: this.filterLinkedNotes(actor, role, details.linkedNotes)
@@ -384,6 +442,11 @@ export class TaskService {
           task.parentId = input.parentId ?? null
         }
 
+        if (input.sprintId !== undefined) {
+          await this.ensureSprint(task.projectId, input.sprintId ?? null, transaction)
+          task.sprintId = input.sprintId ?? null
+        }
+
         if (input.ownerId !== undefined) {
           await this.ensureOwner(actor, task.projectId, input.ownerId, transaction)
           task.ownerUserId = input.ownerId
@@ -409,6 +472,10 @@ export class TaskService {
           task.dueDate = input.dueDate ?? null
         }
 
+        if (input.estimatedMinutes !== undefined) {
+          task.estimatedMinutes = input.estimatedMinutes ?? null
+        }
+
         await task.save({ transaction })
       })
 
@@ -416,7 +483,10 @@ export class TaskService {
 
       const reloaded = await this.loadTask(taskId)
       const commentCount = await Comment.count({ where: { taskId } })
-      const details = mapTaskDetails(reloaded, reloaded.project.key, commentCount)
+      const timeSpent = await TimeEntry.sum('durationMinutes', { where: { taskId } })
+      const details = mapTaskDetails(reloaded, reloaded.project.key, commentCount, {
+        timeSpentMinutes: Number(timeSpent ?? 0)
+      })
       return {
         ...details,
         linkedNotes: this.filterLinkedNotes(actor, role, details.linkedNotes)
@@ -448,6 +518,10 @@ export class TaskService {
           transaction
         })
         await NoteTaskLink.destroy({
+          where: { taskId: task.id },
+          transaction
+        })
+        await TimeEntry.destroy({
           where: { taskId: task.id },
           transaction
         })
@@ -536,6 +610,7 @@ export class TaskService {
           { model: User, as: 'assignee' },
           { model: User, as: 'owner' },
           { model: Project },
+          { model: Sprint, as: 'sprint' },
           {
             model: Note,
             through: { attributes: [] }
@@ -552,6 +627,7 @@ export class TaskService {
       )
 
       const commentCountMap = new Map<string, number>()
+      const timeSpentMap = new Map<string, number>()
       if (tasks.length > 0) {
         const taskIdsForCounts = tasks.map((task) => task.id)
         const rawCounts = (await Comment.findAll({
@@ -564,12 +640,25 @@ export class TaskService {
         rawCounts.forEach((row) => {
           commentCountMap.set(row.taskId, Number(row.count ?? 0))
         })
+
+        const rawTime = (await TimeEntry.findAll({
+          attributes: ['taskId', [fn('SUM', col('durationMinutes')), 'totalMinutes']],
+          where: { taskId: { [Op.in]: taskIdsForCounts } },
+          group: ['taskId'],
+          raw: true
+        })) as unknown as Array<{ taskId: string; totalMinutes: number }>
+
+        rawTime.forEach((row) => {
+          timeSpentMap.set(row.taskId, Number(row.totalMinutes ?? 0))
+        })
       }
 
       return tasks.map((task) => {
         const projectKey = task.project?.key ?? 'UNKNOWN'
         const commentCount = commentCountMap.get(task.id) ?? 0
-        const details = mapTaskDetails(task, projectKey, commentCount)
+        const details = mapTaskDetails(task, projectKey, commentCount, {
+          timeSpentMinutes: timeSpentMap.get(task.id) ?? 0
+        })
         const role = roles.get(task.projectId) ?? 'view'
         return {
           ...details,

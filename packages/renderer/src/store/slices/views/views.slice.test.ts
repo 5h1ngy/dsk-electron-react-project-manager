@@ -12,6 +12,7 @@ const baseView = () => ({
     status: 'all' as const,
     priority: 'all' as const,
     assignee: 'all' as const,
+    sprint: 'all' as const,
     dueDateRange: null
   },
   sort: null,

@@ -6,6 +6,7 @@ export type ViewFilterState = {
   status: 'all' | TaskStatus
   priority: 'all' | TaskPriority
   assignee: 'all' | 'unassigned' | string
+  sprint: 'all' | 'backlog' | string
   dueDateRange: [string | null, string | null] | null
 }
 

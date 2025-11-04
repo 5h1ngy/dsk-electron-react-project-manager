@@ -9,6 +9,8 @@ import { wikiApi } from '@preload/api/wiki'
 import { viewApi } from '@preload/api/view'
 import { roleApi } from '@preload/api/role'
 import { databaseApi } from '@preload/api/database'
+import { sprintApi } from '@preload/api/sprint'
+import { timeTrackingApi } from '@preload/api/timeTracking'
 import type { PreloadApi } from '@preload/types'
 
 const parseDevtoolsToggle = (value: string | undefined): boolean | null => {
@@ -46,7 +48,9 @@ const api: PreloadApi = Object.freeze({
   wiki: wikiApi,
   view: viewApi,
   role: roleApi,
-  database: databaseApi
+  database: databaseApi,
+  sprint: sprintApi,
+  timeTracking: timeTrackingApi
 })
 
 const devtoolsConfig = Object.freeze({
@@ -64,4 +68,3 @@ if (process.contextIsolated) {
   ;(window as unknown as { api: PreloadApi }).api = api
   ;(window as unknown as { devtoolsConfig: typeof devtoolsConfig }).devtoolsConfig = devtoolsConfig
 }
-

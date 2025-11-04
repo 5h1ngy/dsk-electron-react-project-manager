@@ -1,607 +1,696 @@
-{
-    "title":  "Projects",
-    "viewSwitcher":  {
-                         "table":  "Table view",
-                         "list":  "List view",
-                         "cards":  "Card view",
-                         "board":  "Kanban board"
-                     },
-    "actions":  {
-                    "refresh":  "Refresh",
-                    "create":  "New project",
-                    "edit":  "Edit",
-                    "delete":  "Delete",
-                    "deleteTitle":  "Remove project",
-                    "deleteDescription":  "Are you sure you want to remove {{name}}?",
-                    "deleteConfirm":  "Remove",
-                    "cancel":  "Cancel",
-                    "panelTitle":  "Actions"
-                },
-    "filters":  {
-                    "searchPlaceholder":  "Search by name, key or tag",
-                    "tagsPlaceholder":  "Filter by tags",
-                    "openButton":  "Filters",
-                    "createdRange":  {
-                                         "start":  "Created from",
-                                         "end":  "Created to"
-                                     },
-                    "roleOptions":  {
-                                        "all":  "All roles",
-                                        "admin":  "Administrator",
-                                        "edit":  "Editor",
-                                        "view":  "Viewer"
-                                    },
-                    "ownedOptions":  {
-                                         "all":  "All projects",
-                                         "mine":  "Created by me"
-                                     },
-                    "panelTitle":  "Filters"
-                },
-    "permissions":  {
-                        "createDenied":  "Only administrators or maintainers can create projects.",
-                        "updateDenied":  "Only administrators or maintainers can update projects.",
-                        "manageMembersDenied":  "Only administrators or maintainers can manage project members.",
-                        "tasksCreateDenied":  "You do not have permissions to create tasks in this project.",
-                        "tasksUpdateDenied":  "You do not have permissions to update tasks in this project.",
-                        "tasksDeleteDenied":  "You do not have permissions to delete this task.",
-                        "deleteDenied":  "You do not have permissions to delete this project."
-                    },
-    "errors":  {
-                   "generic":  "Operation failed"
-               },
-    "create":  {
-                   "success":  "Project created"
-               },
-    "update":  {
-                   "success":  "Project updated"
-               },
-    "members":  {
-                    "addSuccess":  "Member added",
-                    "removeSuccess":  "Member removed"
-                },
-    "list":  {
-                 "loading":  "Loading projects...",
-                 "empty":  "No projects found",
-                 "noTags":  "No tags",
-                 "memberCount_one":  "{{count}} member",
-                 "memberCount_other":  "{{count}} members",
-                 "createdOn":  "Created on {{date}}",
-                 "columns":  {
-                                 "key":  "Key",
-                                 "name":  "Name",
-                                 "owner":  "Owner",
-                                 "tags":  "Tags",
-                                 "role":  "Role",
-                                 "members":  "Members",
-                                 "createdAt":  "Created",
-                                 "actions":  "Actions"
-                             },
-                 "role":  {
-                              "admin":  "Administrator",
-                              "edit":  "Editor",
-                              "view":  "Viewer"
-                          }
-             },
-    "breadcrumbs":  {
-                        "projects":  "Projects",
-                        "overview":  "Overview",
-                        "tasks":  "Tasks",
-                        "notes":  "Notes",
-                        "board":  "Kanban",
-                        "wiki":  "Wiki"
-                    },
-    "cards":  {
-                  "noDescription":  "No description provided"
-              },
-    "details":  {
-                    "title":  "Project details",
-                    "loading":  "Loading...",
-                    "refresh":  "Refresh",
-                    "tabs":  {
-                                 "overview":  "Overview",
-                                 "tasks":  "Tasks",
-                                 "notes":  "Notes",
-                                 "board":  "Kanban",
-                                 "wiki":  "Wiki"
-                             },
-                    "overview":  {
-                                     "metrics":  {
-                                                     "title":  "Workload snapshot",
-                                                     "total":  "Total tasks",
-                                                     "active":  "In progress",
-                                                     "done":  "Completed",
-                                                     "overdue":  "Overdue",
-                                                     "dueSoon":  "Due soon",
-                                                     "unassigned":  "Unassigned"
-                                                 },
-                                     "statusCard":  {
-                                                        "title":  "Status distribution"
-                                                    },
-                                     "priorityCard":  {
-                                                          "title":  "Priority distribution"
-                                                      },
-                                     "assigneeCard":  {
-                                                          "title":  "Workload by assignee",
-                                                          "unassigned":  "Unassigned"
-                                                      },
-                                     "trendCard":  {
-                                                       "title":  "Completion trend",
-                                                       "empty":  "No tasks completed in the selected period"
-                                                   },
-                                     "upcoming":  {
-                                                      "title":  "Upcoming deadlines",
-                                                      "empty":  "No upcoming deadlines"
-                                                  },
-                                     "overdue":  {
-                                                     "title":  "Overdue tasks",
-                                                     "empty":  "No overdue tasks"
-                                                 },
-                                     "customizeButton":  "Customize overview",
-                                     "customizeTitle":  "Customize overview",
-                                     "customizeDescription":  "Choose which cards to display on the overview.",
-                                     "customizeMinimum":  "Select at least one card.",
-                                     "customizeReset":  "Restore defaults",
-                                     "customizeCancel":  "Cancel",
-                                     "customizeApply":  "Apply changes",
-                                     "taskItem":  {
-                                                      "due":  "Due {{date}}",
-                                                      "priority":  "Priority: {{priority}}"
-                                                  },
-                                     "empty":  "No data available"
-                                 },
-                    "tasksTitle":  "Project tasks",
-                    "kanbanTitle":  "Kanban board",
-                    "tasksLoading":  "Loading tasks...",
-                    "tasksEmpty":  "No tasks available",
-                    "tasksSearchPlaceholder":  "Search tasks...",
-                    "filters":  {
-                                    "status":  "Status",
-                                    "statusOptions":  {
-                                                          "all":  "All statuses"
-                                                      },
-                                    "priority":  "Priority",
-                                    "priorityOptions":  {
-                                                            "all":  "All priorities"
-                                                        },
-                                    "assignee":  "Assignee",
-                                    "assigneeOptions":  {
-                                                            "all":  "All assignees",
-                                                            "unassigned":  "Unassigned"
-                                                        },
-                                    "dueDateRange":  {
-                                                         "start":  "Due from",
-                                                         "end":  "Due to"
-                                                     }
-                                },
-                    "noAssignee":  "Unassigned",
-                    "noDueDate":  "No due date",
-                    "status":  {
-                                   "todo":  "To do",
-                                   "in_progress":  "In progress",
-                                   "blocked":  "Blocked",
-                                   "done":  "Completed"
-                               },
-                    "priority":  {
-                                     "low":  "Low priority",
-                                     "medium":  "Medium priority",
-                                     "high":  "High priority",
-                                     "critical":  "Critical priority"
-                                 },
-                    "summary":  {
-                                    "title":  "Project overview",
-                                    "empty":  "Select a project to view details",
-                                    "owner":  "Owner",
-                                    "createdOn":  "Created",
-                                    "createdBy":  "{{date}} by {{user}}",
-                                    "editProject":  "Edit project",
-                                    "description":  "Description",
-                                    "noDescription":  "No description available",
-                                    "tags":  "Tags",
-                                    "noTags":  "No tags",
-                                    "members":  "Members",
-                                    "noMembers":  "No members assigned"
-                                },
-                    "tasksColumns":  {
-                                         "key":  "Key",
-                                         "title":  "Title",
-                                         "status":  "Status",
-                                         "priority":  "Priority",
-                                         "assignee":  "Assignee",
-                                         "dueDate":  "Due date",
-                                         "comments":  "Comments"
-                                     },
-                    "drawer":  {
-                                   "title":  "Task details",
-                                   "description":  "Description",
-                                   "assignment":  "Assignment",
-                                   "owner":  "Owner: {{owner}}",
-                                   "assignee":  "Assigned to: {{assignee}}",
-                                   "timing":  "Timeline",
-                                   "createdAt":  "Created on {{date}}",
-                                   "dueDate":  "Due by {{date}}",
-                                   "empty":  "Select a task to view details"
-                               },
-                    "missingId":  "Project identifier is missing",
-                    "notFound":  "Project not found",
-                    "backToList":  "Back to projects"
-                },
-    "board":  {
-                  "empty":  "Select a project to open the Kanban board",
-                  "permissions":  {
-                                      "title":  "Limited permissions",
-                                      "description":  "You don\u0027t have the permissions required to modify tasks in this project."
-                                  },
-                  "columns":  {
-                                  "todo":  "To do",
-                                  "inProgress":  "In progress",
-                                  "blocked":  "Blocked",
-                                  "done":  "Completed"
-                              },
-                  "composer":  {
-                                   "title":  "Create a new task",
-                                   "titlePlaceholder":  "Task title",
-                                   "descriptionPlaceholder":  "Description (optional)",
-                                   "submit":  "Add task"
-                               },
-                  "taskCount_one":  "{{count}} task",
-                  "taskCount_other":  "{{count}} tasks",
-                  "emptyColumn":  "No tasks in this column",
-                  "summary":  {
-                                  "total":  "All tasks"
-                              },
-                  "statusPanel":  {
-                                      "title":  "Kanban insights",
-                                      "total":  "Total tasks",
-                                      "close":  "Close panel"
-                                  }
-              },
-    "notifications":  {
-                          "taskCreated":  "Task created",
-                          "taskUpdated":  "Task updated"
-                      },
-    "form":  {
-                 "createTitle":  "New project",
-                 "fields":  {
-                                "key":  {
-                                            "placeholder":  "e.g. PROJ",
-                                            "label":  "Key"
-                                        },
-                                "name":  {
-                                             "placeholder":  "Project name",
-                                             "label":  "Name"
-                                         },
-                                "description":  {
-                                                    "placeholder":  "Description (optional)",
-                                                    "label":  "Description"
-                                                },
-                                "tags":  {
-                                             "placeholder":  "Add tags (press Enter to confirm)",
-                                             "label":  "Tags"
-                                         }
-                            },
-                 "createAction":  "Create",
-                 "editTitle":  "Edit {{name}}",
-                 "editTitleFallback":  "Edit project",
-                 "updateAction":  "Save changes"
-             },
-    "delete":  {
-                   "success":  "Project removed"
-               },
-    "tasks":  {
-                  "openFilters":  "Filters",
-                  "resetFilters":  "Reset filters",
-                  "closeFilters":  "Close",
-                  "columns":  {
-                                  "actions":  "Actions"
-                              },
-                  "optionalColumns":  {
-                                          "label":  "Optional fields",
-                                          "button":  "Optional fields",
-                                          "modalTitle":  "Select optional fields",
-                                          "description":  "Select the additional fields to display in the table view."
-                                      },
-                  "deleteModal":  {
-                                      "title":  "Delete task",
-                                      "message":  "Deleting \"{{title}}\" permanently removes the task, its comments, and any note links.",
-                                      "warning":  "This action cannot be undone.",
-                                      "confirm":  "Delete task",
-                                      "cancel":  "Cancel"
-                                  },
-                  "statusManager":  {
-                                        "manageButton":  "Manage statuses",
-                                        "title":  "Task statuses",
-                                        "add":  "Add status",
-                                        "empty":  "No statuses defined yet",
-                                        "messages":  {
-                                                         "created":  "Status created",
-                                                         "updated":  "Status updated",
-                                                         "deleted":  "Status removed",
-                                                         "reordered":  "Order updated",
-                                                         "error":  "Operation failed"
-                                                     },
-                                        "deleteTitle":  "Remove status",
-                                        "deleteDescription":  "Do you want to remove \"{{status}}\"?",
-                                        "deletePrompt":  "Removing \"{{status}}\" will move existing tasks to the fallback status.",
-                                        "confirm":  "Confirm",
-                                        "cancel":  "Cancel",
-                                        "createTitle":  "Create status",
-                                        "editTitle":  "Edit status",
-                                        "fields":  {
-                                                       "label":  "Label",
-                                                       "fallback":  "Fallback status"
-                                                   },
-                                        "validation":  {
-                                                           "labelRequired":  "Enter a label",
-                                                           "labelMax":  "Maximum 80 characters",
-                                                           "fallbackRequired":  "Select a fallback status"
-                                                       }
-                                    },
-                  "savedViews":  {
-                                     "placeholder":  "Saved views",
-                                     "panelTitle":  "Saved views",
-                                     "saveButton":  "Save view",
-                                     "deleteButton":  "Delete",
-                                     "modalTitle":  "Save current view",
-                                     "nameLabel":  "Name",
-                                     "nameRequired":  "Please enter a name"
-                                 },
-                  "actions":  {
-                                  "create":  "New task",
-                                  "edit":  "Edit",
-                                  "delete":  "Delete",
-                                  "toggleBoardInsights":  "Kanban insights",
-                                  "deleteTitle":  "Remove task",
-                                  "deleteDescription":  "Do you want to remove \"{{title}}\"?",
-                                  "deleteConfirm":  "Remove",
-                                  "cancel":  "Cancel",
-                                  "deleteSelected":  "Delete selected ({{count}})"
-                              },
-                  "form":  {
-                               "createTitle":  "New task",
-                               "editTitle":  "Edit {{title}}",
-                               "createAction":  "Create task",
-                               "updateAction":  "Save changes",
-                               "fields":  {
-                                              "title":  "Title",
-                                              "description":  "Description",
-                                              "status":  "Status",
-                                              "priority":  "Priority",
-                                              "assignee":  "Assignee",
-                                              "owner":  "Owner",
-                                              "dueDate":  "Due date"
-                                          },
-                               "placeholders":  {
-                                                    "title":  "Task title",
-                                                    "description":  "Description (optional)",
-                                                    "assignee":  "Select assignee",
-                                                    "owner":  "Select owner",
-                                                    "dueDate":  "Select due date"
-                                                }
-                           },
-                  "messages":  {
-                                   "createSuccess":  "Task created",
-                                   "updateSuccess":  "Task updated",
-                                   "deleteSuccess":  "Task removed",
-                                   "notFound":  "Task not found",
-                                   "deleteBulkSuccess":  "Deleted {{count}} tasks",
-                                   "deleteOwnerWarning":  "{{count}} selected tasks cannot be deleted because you are not the owner."
-                               },
-                  "details":  {
-                                  "description":  "Description",
-                                  "noDescription":  "No description provided",
-                                  "owner":  "Owner: {{owner}}",
-                                  "assignee":  "Assigned to: {{assignee}}",
-                                  "createdAt":  "Created on {{date}}",
-                                  "dueDate":  "Due by {{date}}",
-                                  "linkedNotes":  "Linked notes",
-                                  "noLinkedNotes":  "No linked notes yet",
-                                  "empty":  "No task selected",
-                                  "comments":  {
-                                                   "title":  "Comments",
-                                                   "count_one":  "{{count}} comment",
-                                                   "count_other":  "{{count}} comments",
-                                                   "empty":  "No comments yet",
-                                                   "addLabel":  "Add a comment",
-                                                   "validation":  "Please enter a comment",
-                                                   "submit":  "Post comment",
-                                                   "success":  "Comment added"
-                                               },
-                                  "loadingTitle":  "Task details",
-                                  "goBack":  "Back to tasks",
-                                  "propertiesTitle":  "Task properties",
-                                  "statusLabel":  "Status",
-                                  "priorityLabel":  "Priority",
-                                  "ownerLabel":  "Owner",
-                                  "assigneeLabel":  "Assignee",
-                                  "createdAtLabel":  "Created on",
-                                  "dueDateLabel":  "Due date",
-                                  "updatedAtLabel":  "Last updated on",
-                                  "projectReference":  "Project: {{key}} - {{name}}",
-                                  "projectUnknown":  "Project unavailable",
-                                  "addNote":  "Add note"
-                              },
-                  "filterPanel":  "Filters",
-                  "actionsPanel":  "Actions",
-                  "bulkDelete":  {
-                                     "title":  "Delete {{count}} tasks",
-                                     "description":  "Deleting these tasks removes comments, history, and note links.",
-                                     "warning":  "This action cannot be undone.",
-                                     "confirm":  "Delete tasks",
-                                     "cancel":  "Cancel"
-                                 }
-              },
-    "notes":  {
-                  "title":  "Project notes",
-                  "filters":  {
-                                  "includePrivate":  "Include private notes",
-                                  "includePrivateOptions":  {
-                                                                "public":  "Public only",
-                                                                "private":  "Include private notes"
-                                                            },
-                                  "notebook":  "Notebook",
-                                  "tag":  "Tag",
-                                  "panelTitle":  "Filters"
-                              },
-                  "actions":  {
-                                  "create":  "New note",
-                                  "save":  "Save note",
-                                  "cancel":  "Cancel",
-                                  "searchPlaceholder":  "Search notes...",
-                                  "view":  "View",
-                                  "edit":  "Edit",
-                                  "deleteTitle":  "Delete note",
-                                  "deleteConfirmText":  "Are you sure you want to delete this note?",
-                                  "delete":  "Delete",
-                                  "panelTitle":  "Actions",
-                                  "openFilters":  "Filters",
-                                  "resetFilters":  "Reset filters",
-                                  "closeFilters":  "Close",
-                                  "deleteSelected":  "Delete selected ({{count}})"
-                              },
-                  "view":  {
-                               "list":  "List view",
-                               "cards":  "Card view"
-                           },
-                  "labels":  {
-                                 "private":  "Private",
-                                 "public":  "Public"
-                             },
-                  "list":  {
-                               "updatedBy":  "Last updated {{date}} by {{user}}",
-                               "empty":  "No notes available"
-                           },
-                  "editor":  {
-                                 "createTitle":  "Create note",
-                                 "editTitle":  "Edit note",
-                                 "fields":  {
-                                                "title":  "Title",
-                                                "notebook":  "Notebook",
-                                                "tags":  "Tags",
-                                                "visibility":  "Visibility",
-                                                "body":  "Markdown body",
-                                                "linkedTasks":  "Linked tasks"
-                                            },
-                                 "placeholders":  {
-                                                      "notebook":  "Notebook or collection (optional)",
-                                                      "tags":  "Add tags and press Enter",
-                                                      "body":  "Write markdown content here...",
-                                                      "linkedTasks":  "Select tasks to link"
-                                                  },
-                                 "suggestions":  {
-                                                     "title":  "Task suggestions ([[key]])",
-                                                     "empty":  "Start typing after [[ to see matching tasks"
-                                                 }
-                             },
-                  "viewer":  {
-                                 "title":  "Note",
-                                 "linkedTasks":  "Linked tasks",
-                                 "noLinks":  "No linked tasks yet.",
-                                 "empty":  "Select a note to view details",
-                                 "updatedBy":  "Last updated {{date}} by {{user}}"
-                             },
-                  "feedback":  {
-                                   "created":  "Note created",
-                                   "updated":  "Note updated",
-                                   "deleted":  "Note deleted",
-                                   "notFound":  "Note not found",
-                                   "deleteDenied":  "You do not have permissions to delete this note.",
-                                   "bulkDeleted":  "Deleted {{count}} notes",
-                                   "deleteOwnerWarning":  "{{count}} selected notes cannot be deleted because you are not the owner."
-                               },
-                  "validation":  {
-                                     "title":  "Title is required",
-                                     "titleMax":  "Title must be at most 160 characters",
-                                     "body":  "Body is required",
-                                     "notebookMax":  "Notebook name must be at most 80 characters",
-                                     "tag":  "Tag cannot be empty",
-                                     "tagMax":  "Tag must be at most 40 characters",
-                                     "tooManyTags":  "Maximum 20 tags per note",
-                                     "tooManyLinks":  "Maximum 20 linked tasks"
-                                 },
-                  "search":  {
-                                 "title":  "Search notes",
-                                 "empty":  "No notes found",
-                                 "open":  "Open note",
-                                 "noHighlight":  "No preview available"
-                             },
-                  "bulkDelete":  {
-                                     "title":  "Delete {{count}} notes",
-                                     "description":  "Deleting these notes removes their content and any linked tasks.",
-                                     "warning":  "This action cannot be undone.",
-                                     "confirm":  "Delete notes",
-                                     "cancel":  "Cancel"
-                                 }
-              },
-    "search":  {
-                   "button":  "Search tasks",
-                   "title":  "Global task search",
-                   "placeholder":  "Search by title or description",
-                   "submit":  "Search",
-                   "empty":  "No tasks found",
-                   "openTask":  "Open"
-               },
-    "views":  {
-                  "placeholder":  "Saved views",
-                  "panelTitle":  "Saved views",
-                  "saveButton":  "Save view",
-                  "deleteButton":  "Delete",
-                  "saveSuccess":  "View saved",
-                  "saveError":  "Unable to save the view",
-                  "deleteSuccess":  "View removed",
-                  "modal":  {
-                                "title":  "Save project view",
-                                "save":  "Save",
-                                "cancel":  "Cancel",
-                                "nameLabel":  "Name",
-                                "nameRequired":  "Please enter a name"
-                            }
-              },
-    "wiki":  {
-                 "title":  "Wiki",
-                 "actions":  {
-                                 "refresh":  "Refresh",
-                                 "create":  "New page",
-                                 "createFirst":  "Create the first page",
-                                 "edit":  "Edit",
-                                 "delete":  "Delete",
-                                 "history":  "History",
-                                 "save":  "Save",
-                                 "cancel":  "Cancel"
-                             },
-                 "fields":  {
-                                "title":  "Title",
-                                "summary":  "Summary",
-                                "content":  "Content"
-                            },
-                 "validation":  {
-                                    "title":  "Please enter a title.",
-                                    "contentRequired":  "Please provide page content."
-                                },
-                 "emptyState":  "There are no wiki pages yet.",
-                 "list":  {
-                              "noSummary":  "No summary available"
-                          },
-                 "noSelection":  "Select a page from the list.",
-                 "create":  {
-                                "title":  "Create page"
-                            },
-                 "feedback":  {
-                                  "created":  "Page created.",
-                                  "updated":  "Page updated.",
-                                  "deleted":  "Page deleted.",
-                                  "restored":  "Revision restored."
-                              },
-                 "delete":  {
-                                "confirmTitle":  "Delete page?",
-                                "confirmDescription":  "This action will remove the page and its history.",
-                                "confirmButton":  "Delete",
-                                "cancel":  "Cancel"
-                            },
-                 "revisions":  {
-                                   "title":  "Revision history",
-                                   "restore":  "Restore",
-                                   "noSummary":  "No summary",
-                                   "empty":  "No revisions available."
-                               }
-             }
+﻿{
+  "title": "Projects",
+  "viewSwitcher": {
+    "table": "Table view",
+    "list": "List view",
+    "cards": "Card view",
+    "board": "Kanban board",
+    "sprint": "Sprint view",
+    "timeline": "Time tracking"
+  },
+  "actions": {
+    "refresh": "Refresh",
+    "create": "New project",
+    "edit": "Edit",
+    "delete": "Delete",
+    "deleteTitle": "Remove project",
+    "deleteDescription": "Are you sure you want to remove {{name}}?",
+    "deleteConfirm": "Remove",
+    "cancel": "Cancel",
+    "panelTitle": "Actions"
+  },
+  "filters": {
+    "searchPlaceholder": "Search by name, key or tag",
+    "tagsPlaceholder": "Filter by tags",
+    "openButton": "Filters",
+    "createdRange": {
+      "start": "Created from",
+      "end": "Created to"
+    },
+    "roleOptions": {
+      "all": "All roles",
+      "admin": "Administrator",
+      "edit": "Editor",
+      "view": "Viewer"
+    },
+    "ownedOptions": {
+      "all": "All projects",
+      "mine": "Created by me"
+    },
+    "panelTitle": "Filters"
+  },
+  "permissions": {
+    "createDenied": "Only administrators or maintainers can create projects.",
+    "updateDenied": "Only administrators or maintainers can update projects.",
+    "manageMembersDenied": "Only administrators or maintainers can manage project members.",
+    "tasksCreateDenied": "You do not have permissions to create tasks in this project.",
+    "tasksUpdateDenied": "You do not have permissions to update tasks in this project.",
+    "tasksDeleteDenied": "You do not have permissions to delete this task.",
+    "deleteDenied": "You do not have permissions to delete this project."
+  },
+  "errors": {
+    "generic": "Operation failed"
+  },
+  "create": {
+    "success": "Project created"
+  },
+  "update": {
+    "success": "Project updated"
+  },
+  "members": {
+    "addSuccess": "Member added",
+    "removeSuccess": "Member removed"
+  },
+  "list": {
+    "loading": "Loading projects...",
+    "empty": "No projects found",
+    "noTags": "No tags",
+    "memberCount_one": "{{count}} member",
+    "memberCount_other": "{{count}} members",
+    "createdOn": "Created on {{date}}",
+    "columns": {
+      "key": "Key",
+      "name": "Name",
+      "owner": "Owner",
+      "tags": "Tags",
+      "role": "Role",
+      "members": "Members",
+      "createdAt": "Created",
+      "actions": "Actions"
+    },
+    "role": {
+      "admin": "Administrator",
+      "edit": "Editor",
+      "view": "Viewer"
+    }
+  },
+  "breadcrumbs": {
+    "projects": "Projects",
+    "overview": "Overview",
+    "tasks": "Tasks",
+    "notes": "Notes",
+    "board": "Kanban",
+    "wiki": "Wiki"
+  },
+  "cards": {
+    "noDescription": "No description provided"
+  },
+  "details": {
+    "title": "Project details",
+    "loading": "Loading...",
+    "refresh": "Refresh",
+    "tabs": {
+      "overview": "Overview",
+      "tasks": "Tasks",
+      "notes": "Notes",
+      "board": "Kanban",
+      "wiki": "Wiki"
+    },
+    "overview": {
+      "metrics": {
+        "title": "Workload snapshot",
+        "total": "Total tasks",
+        "active": "In progress",
+        "done": "Completed",
+        "overdue": "Overdue",
+        "dueSoon": "Due soon",
+        "unassigned": "Unassigned"
+      },
+      "statusCard": {
+        "title": "Status distribution"
+      },
+      "priorityCard": {
+        "title": "Priority distribution"
+      },
+      "assigneeCard": {
+        "title": "Workload by assignee",
+        "unassigned": "Unassigned"
+      },
+      "trendCard": {
+        "title": "Completion trend",
+        "empty": "No tasks completed in the selected period"
+      },
+      "upcoming": {
+        "title": "Upcoming deadlines",
+        "empty": "No upcoming deadlines"
+      },
+      "overdue": {
+        "title": "Overdue tasks",
+        "empty": "No overdue tasks"
+      },
+      "customizeButton": "Customize overview",
+      "customizeTitle": "Customize overview",
+      "customizeDescription": "Choose which cards to display on the overview.",
+      "customizeMinimum": "Select at least one card.",
+      "customizeReset": "Restore defaults",
+      "customizeCancel": "Cancel",
+      "customizeApply": "Apply changes",
+      "taskItem": {
+        "due": "Due {{date}}",
+        "priority": "Priority: {{priority}}"
+      },
+      "empty": "No data available"
+    },
+    "tasksTitle": "Project tasks",
+    "kanbanTitle": "Kanban board",
+    "tasksLoading": "Loading tasks...",
+    "tasksEmpty": "No tasks available",
+    "tasksSearchPlaceholder": "Search tasks...",
+    "filters": {
+      "status": "Status",
+      "statusOptions": {
+        "all": "All statuses"
+      },
+      "priority": "Priority",
+      "priorityOptions": {
+        "all": "All priorities"
+      },
+      "assignee": "Assignee",
+      "assigneeOptions": {
+        "all": "All assignees",
+        "unassigned": "Unassigned"
+      },
+      "sprint": "Sprint",
+      "sprintOptions": {
+        "all": "All sprints",
+        "backlog": "Backlog"
+      },
+      "dueDateRange": {
+        "start": "Due from",
+        "end": "Due to"
+      }
+    },
+    "noAssignee": "Unassigned",
+    "noDueDate": "No due date",
+    "status": {
+      "todo": "To do",
+      "in_progress": "In progress",
+      "blocked": "Blocked",
+      "done": "Completed"
+    },
+    "priority": {
+      "low": "Low priority",
+      "medium": "Medium priority",
+      "high": "High priority",
+      "critical": "Critical priority"
+    },
+    "summary": {
+      "title": "Project overview",
+      "empty": "Select a project to view details",
+      "owner": "Owner",
+      "createdOn": "Created",
+      "createdBy": "{{date}} by {{user}}",
+      "editProject": "Edit project",
+      "description": "Description",
+      "noDescription": "No description available",
+      "tags": "Tags",
+      "noTags": "No tags",
+      "members": "Members",
+      "noMembers": "No members assigned"
+    },
+    "tasksColumns": {
+      "key": "Key",
+      "title": "Title",
+      "status": "Status",
+      "priority": "Priority",
+      "assignee": "Assignee",
+      "dueDate": "Due date",
+      "comments": "Comments"
+    },
+    "drawer": {
+      "title": "Task details",
+      "description": "Description",
+      "assignment": "Assignment",
+      "owner": "Owner: {{owner}}",
+      "assignee": "Assigned to: {{assignee}}",
+      "timing": "Timeline",
+      "createdAt": "Created on {{date}}",
+      "dueDate": "Due by {{date}}",
+      "empty": "Select a task to view details"
+    },
+    "missingId": "Project identifier is missing",
+    "notFound": "Project not found",
+    "backToList": "Back to projects"
+  },
+  "board": {
+    "empty": "Select a project to open the Kanban board",
+    "permissions": {
+      "title": "Limited permissions",
+      "description": "You don\u0027t have the permissions required to modify tasks in this project."
+    },
+    "columns": {
+      "todo": "To do",
+      "inProgress": "In progress",
+      "blocked": "Blocked",
+      "done": "Completed"
+    },
+    "composer": {
+      "title": "Create a new task",
+      "titlePlaceholder": "Task title",
+      "descriptionPlaceholder": "Description (optional)",
+      "submit": "Add task"
+    },
+    "taskCount_one": "{{count}} task",
+    "taskCount_other": "{{count}} tasks",
+    "emptyColumn": "No tasks in this column",
+    "summary": {
+      "total": "All tasks"
+    },
+    "statusPanel": {
+      "title": "Kanban insights",
+      "total": "Total tasks",
+      "close": "Close panel"
+    }
+  },
+  "notifications": {
+    "taskCreated": "Task created",
+    "taskUpdated": "Task updated"
+  },
+  "form": {
+    "createTitle": "New project",
+    "fields": {
+      "key": {
+        "placeholder": "e.g. PROJ",
+        "label": "Key"
+      },
+      "name": {
+        "placeholder": "Project name",
+        "label": "Name"
+      },
+      "description": {
+        "placeholder": "Description (optional)",
+        "label": "Description"
+      },
+      "tags": {
+        "placeholder": "Add tags (press Enter to confirm)",
+        "label": "Tags"
+      }
+    },
+    "createAction": "Create",
+    "editTitle": "Edit {{name}}",
+    "editTitleFallback": "Edit project",
+    "updateAction": "Save changes"
+  },
+  "delete": {
+    "success": "Project removed"
+  },
+  "tasks": {
+    "openFilters": "Filters",
+    "resetFilters": "Reset filters",
+    "closeFilters": "Close",
+    "columns": {
+      "actions": "Actions"
+    },
+    "optionalColumns": {
+      "label": "Optional fields",
+      "button": "Optional fields",
+      "modalTitle": "Select optional fields",
+      "description": "Select the additional fields to display in the table view."
+    },
+    "deleteModal": {
+      "title": "Delete task",
+      "message": "Deleting \"{{title}}\" permanently removes the task, its comments, and any note links.",
+      "warning": "This action cannot be undone.",
+      "confirm": "Delete task",
+      "cancel": "Cancel"
+    },
+    "statusManager": {
+      "manageButton": "Manage statuses",
+      "title": "Task statuses",
+      "add": "Add status",
+      "empty": "No statuses defined yet",
+      "messages": {
+        "created": "Status created",
+        "updated": "Status updated",
+        "deleted": "Status removed",
+        "reordered": "Order updated",
+        "error": "Operation failed"
+      },
+      "deleteTitle": "Remove status",
+      "deleteDescription": "Do you want to remove \"{{status}}\"?",
+      "deletePrompt": "Removing \"{{status}}\" will move existing tasks to the fallback status.",
+      "confirm": "Confirm",
+      "cancel": "Cancel",
+      "createTitle": "Create status",
+      "editTitle": "Edit status",
+      "fields": {
+        "label": "Label",
+        "fallback": "Fallback status"
+      },
+      "validation": {
+        "labelRequired": "Enter a label",
+        "labelMax": "Maximum 80 characters",
+        "fallbackRequired": "Select a fallback status"
+      }
+    },
+    "savedViews": {
+      "placeholder": "Saved views",
+      "panelTitle": "Saved views",
+      "saveButton": "Save view",
+      "deleteButton": "Delete",
+      "modalTitle": "Save current view",
+      "nameLabel": "Name",
+      "nameRequired": "Please enter a name"
+    },
+    "actions": {
+      "create": "New task",
+      "edit": "Edit",
+      "delete": "Delete",
+      "toggleBoardInsights": "Kanban insights",
+      "deleteTitle": "Remove task",
+      "deleteDescription": "Do you want to remove \"{{title}}\"?",
+      "deleteConfirm": "Remove",
+      "cancel": "Cancel",
+      "deleteSelected": "Delete selected ({{count}})"
+    },
+    "form": {
+      "createTitle": "New task",
+      "editTitle": "Edit {{title}}",
+      "createAction": "Create task",
+      "updateAction": "Save changes",
+      "fields": {
+        "title": "Title",
+        "description": "Description",
+        "status": "Status",
+        "priority": "Priority",
+        "assignee": "Assignee",
+        "owner": "Owner",
+        "dueDate": "Due date",
+        "sprint": "Sprint",
+        "estimatedMinutes": "Estimated minutes"
+      },
+      "placeholders": {
+        "title": "Task title",
+        "description": "Description (optional)",
+        "assignee": "Select assignee",
+        "owner": "Select owner",
+        "dueDate": "Select due date",
+        "sprint": "Select sprint",
+        "estimatedMinutes": "Minutes (optional)"
+      }
+    },
+    "messages": {
+      "createSuccess": "Task created",
+      "updateSuccess": "Task updated",
+      "deleteSuccess": "Task removed",
+      "notFound": "Task not found",
+      "deleteBulkSuccess": "Deleted {{count}} tasks",
+      "deleteOwnerWarning": "{{count}} selected tasks cannot be deleted because you are not the owner."
+    },
+    "details": {
+      "description": "Description",
+      "noDescription": "No description provided",
+      "owner": "Owner: {{owner}}",
+      "assignee": "Assigned to: {{assignee}}",
+      "createdAt": "Created on {{date}}",
+      "dueDate": "Due by {{date}}",
+      "linkedNotes": "Linked notes",
+      "noLinkedNotes": "No linked notes yet",
+      "empty": "No task selected",
+      "comments": {
+        "title": "Comments",
+        "count_one": "{{count}} comment",
+        "count_other": "{{count}} comments",
+        "empty": "No comments yet",
+        "addLabel": "Add a comment",
+        "validation": "Please enter a comment",
+        "submit": "Post comment",
+        "success": "Comment added"
+      },
+      "loadingTitle": "Task details",
+      "goBack": "Back to tasks",
+      "propertiesTitle": "Task properties",
+      "statusLabel": "Status",
+      "priorityLabel": "Priority",
+      "ownerLabel": "Owner",
+      "assigneeLabel": "Assignee",
+      "createdAtLabel": "Created on",
+      "dueDateLabel": "Due date",
+      "updatedAtLabel": "Last updated on",
+      "projectReference": "Project: {{key}} - {{name}}",
+      "projectUnknown": "Project unavailable",
+      "addNote": "Add note"
+    },
+    "filterPanel": "Filters",
+    "actionsPanel": "Actions",
+    "bulkDelete": {
+      "title": "Delete {{count}} tasks",
+      "description": "Deleting these tasks removes comments, history, and note links.",
+      "warning": "This action cannot be undone.",
+      "confirm": "Delete tasks",
+      "cancel": "Cancel"
+    }
+  },
+  "notes": {
+    "title": "Project notes",
+    "filters": {
+      "includePrivate": "Include private notes",
+      "includePrivateOptions": {
+        "public": "Public only",
+        "private": "Include private notes"
+      },
+      "notebook": "Notebook",
+      "tag": "Tag",
+      "panelTitle": "Filters"
+    },
+    "actions": {
+      "create": "New note",
+      "save": "Save note",
+      "cancel": "Cancel",
+      "searchPlaceholder": "Search notes...",
+      "view": "View",
+      "edit": "Edit",
+      "deleteTitle": "Delete note",
+      "deleteConfirmText": "Are you sure you want to delete this note?",
+      "delete": "Delete",
+      "panelTitle": "Actions",
+      "openFilters": "Filters",
+      "resetFilters": "Reset filters",
+      "closeFilters": "Close",
+      "deleteSelected": "Delete selected ({{count}})"
+    },
+    "view": {
+      "list": "List view",
+      "cards": "Card view"
+    },
+    "labels": {
+      "private": "Private",
+      "public": "Public"
+    },
+    "list": {
+      "updatedBy": "Last updated {{date}} by {{user}}",
+      "empty": "No notes available"
+    },
+    "editor": {
+      "createTitle": "Create note",
+      "editTitle": "Edit note",
+      "fields": {
+        "title": "Title",
+        "notebook": "Notebook",
+        "tags": "Tags",
+        "visibility": "Visibility",
+        "body": "Markdown body",
+        "linkedTasks": "Linked tasks"
+      },
+      "placeholders": {
+        "notebook": "Notebook or collection (optional)",
+        "tags": "Add tags and press Enter",
+        "body": "Write markdown content here...",
+        "linkedTasks": "Select tasks to link"
+      },
+      "suggestions": {
+        "title": "Task suggestions ([[key]])",
+        "empty": "Start typing after [[ to see matching tasks"
+      }
+    },
+    "viewer": {
+      "title": "Note",
+      "linkedTasks": "Linked tasks",
+      "noLinks": "No linked tasks yet.",
+      "empty": "Select a note to view details",
+      "updatedBy": "Last updated {{date}} by {{user}}"
+    },
+    "feedback": {
+      "created": "Note created",
+      "updated": "Note updated",
+      "deleted": "Note deleted",
+      "notFound": "Note not found",
+      "deleteDenied": "You do not have permissions to delete this note.",
+      "bulkDeleted": "Deleted {{count}} notes",
+      "deleteOwnerWarning": "{{count}} selected notes cannot be deleted because you are not the owner."
+    },
+    "validation": {
+      "title": "Title is required",
+      "titleMax": "Title must be at most 160 characters",
+      "body": "Body is required",
+      "notebookMax": "Notebook name must be at most 80 characters",
+      "tag": "Tag cannot be empty",
+      "tagMax": "Tag must be at most 40 characters",
+      "tooManyTags": "Maximum 20 tags per note",
+      "tooManyLinks": "Maximum 20 linked tasks"
+    },
+    "search": {
+      "title": "Search notes",
+      "empty": "No notes found",
+      "open": "Open note",
+      "noHighlight": "No preview available"
+    },
+    "bulkDelete": {
+      "title": "Delete {{count}} notes",
+      "description": "Deleting these notes removes their content and any linked tasks.",
+      "warning": "This action cannot be undone.",
+      "confirm": "Delete notes",
+      "cancel": "Cancel"
+    }
+  },
+  "search": {
+    "button": "Search tasks",
+    "title": "Global task search",
+    "placeholder": "Search by title or description",
+    "submit": "Search",
+    "empty": "No tasks found",
+    "openTask": "Open"
+  },
+  "views": {
+    "placeholder": "Saved views",
+    "panelTitle": "Saved views",
+    "saveButton": "Save view",
+    "deleteButton": "Delete",
+    "saveSuccess": "View saved",
+    "saveError": "Unable to save the view",
+    "deleteSuccess": "View removed",
+    "modal": {
+      "title": "Save project view",
+      "save": "Save",
+      "cancel": "Cancel",
+      "nameLabel": "Name",
+      "nameRequired": "Please enter a name"
+    }
+  },
+  "wiki": {
+    "title": "Wiki",
+    "actions": {
+      "refresh": "Refresh",
+      "create": "New page",
+      "createFirst": "Create the first page",
+      "edit": "Edit",
+      "delete": "Delete",
+      "history": "History",
+      "save": "Save",
+      "cancel": "Cancel"
+    },
+    "fields": {
+      "title": "Title",
+      "summary": "Summary",
+      "content": "Content"
+    },
+    "validation": {
+      "title": "Please enter a title.",
+      "contentRequired": "Please provide page content."
+    },
+    "emptyState": "There are no wiki pages yet.",
+    "list": {
+      "noSummary": "No summary available"
+    },
+    "noSelection": "Select a page from the list.",
+    "create": {
+      "title": "Create page"
+    },
+    "feedback": {
+      "created": "Page created.",
+      "updated": "Page updated.",
+      "deleted": "Page deleted.",
+      "restored": "Revision restored."
+    },
+    "delete": {
+      "confirmTitle": "Delete page?",
+      "confirmDescription": "This action will remove the page and its history.",
+      "confirmButton": "Delete",
+      "cancel": "Cancel"
+    },
+    "revisions": {
+      "title": "Revision history",
+      "restore": "Restore",
+      "noSummary": "No summary",
+      "empty": "No revisions available."
+    }
+  },
+  "sprints": {
+    "title": "Project sprints",
+    "noProjectSelected": "Select a project to view its sprints.",
+    "empty": "No sprints defined for this project yet.",
+    "totalTasks": "Total tasks",
+    "estimatedMinutes": "Estimated",
+    "spentMinutes": "Logged",
+    "capacityMinutes": "Capacity",
+    "utilization": "Utilization",
+    "actions": {
+      "create": "New sprint",
+      "viewTasks": "View tasks"
+    },
+    "deleteConfirmTitle": "Delete sprint",
+    "deleteConfirmBody": "Deleting a sprint removes the association from its tasks. Tasks remain available in the backlog.",
+    "deleteSuccess": "Sprint deleted",
+    "form": {
+      "invalid": "Please complete all required fields.",
+      "nameRequired": "Name is required",
+      "dateRequired": "Select start and end dates"
+    },
+    "createTitle": "Create sprint",
+    "editTitle": "Edit sprint",
+    "createSuccess": "Sprint created",
+    "updateSuccess": "Sprint updated",
+    "status": {
+      "planned": "Planned",
+      "active": "Active",
+      "completed": "Completed",
+      "archived": "Archived"
+    },
+    "fields": {
+      "name": "Name",
+      "goal": "Goal",
+      "dateRange": "Period",
+      "status": "Status",
+      "capacityMinutes": "Capacity (minutes)"
+    },
+    "details": {
+      "title": "Sprint details",
+      "tasks": "Tasks",
+      "emptyTasks": "No tasks in this sprint yet."
+    }
+  },
+  "time": {
+    "tracking": {
+      "title": "Time tracking",
+      "actions": {
+        "logTime": "Log time"
+      },
+      "createTitle": "Log time",
+      "editTitle": "Edit time entry",
+      "createSuccess": "Time logged",
+      "updateSuccess": "Time entry updated",
+      "deleteTitle": "Delete time entry",
+      "deleteBody": "Are you sure you want to delete this time entry?",
+      "deleteSuccess": "Time entry deleted",
+      "totalMinutes": "Minutes logged",
+      "byUser": "By user",
+      "byTask": "By task",
+      "noData": "No data available",
+      "noEntries": "No time entries for the selected period.",
+      "noTasks": "Create a task before logging time.",
+      "columns": {
+        "date": "Date",
+        "task": "Task",
+        "user": "User",
+        "minutes": "Minutes",
+        "description": "Description"
+      },
+      "fields": {
+        "task": "Task",
+        "entryDate": "Date",
+        "duration": "Duration (minutes)",
+        "description": "Description"
+      }
+    }
+  }
 }

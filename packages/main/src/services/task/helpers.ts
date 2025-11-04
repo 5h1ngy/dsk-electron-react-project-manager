@@ -7,9 +7,11 @@ import type {
   CommentDTO,
   TaskDetailsDTO,
   TaskNoteLinkDTO,
-  UserSummaryDTO
+  UserSummaryDTO,
+  SprintSummaryDTO
 } from '@main/services/task/types'
 import type { TaskPriorityInput, TaskStatusInput } from '@main/services/task/schemas'
+import type { Sprint } from '@main/models/Sprint'
 
 export const mapUserSummary = (user: User | null): UserSummaryDTO | null => {
   if (!user) {
@@ -22,34 +24,49 @@ export const mapUserSummary = (user: User | null): UserSummaryDTO | null => {
   }
 }
 
+interface MapTaskDetailsOptions {
+  sprint?: Sprint | null
+  timeSpentMinutes?: number
+}
+
 export const mapTaskDetails = (
   task: Task,
   projectKey: string,
-  commentCount = 0
-): TaskDetailsDTO => ({
-  id: task.id,
-  projectId: task.projectId,
-  key: task.key,
-  parentId: task.parentId ?? null,
-  title: task.title,
-  description: task.description ?? null,
-  status: task.status as TaskStatusInput,
-  priority: task.priority as TaskPriorityInput,
-  dueDate: task.dueDate ?? null,
-  assignee: mapUserSummary(task.assignee ?? null),
-  owner:
-    mapUserSummary(task.owner ?? null) ??
-    ({
-      id: task.ownerUserId,
-      username: task.owner?.username ?? 'unknown',
-      displayName: task.owner?.displayName ?? 'Unknown'
-    } as UserSummaryDTO),
-  createdAt: task.createdAt!,
-  updatedAt: task.updatedAt!,
-  projectKey,
-  linkedNotes: mapTaskNotes(task.notes ?? []),
-  commentCount
-})
+  commentCount = 0,
+  options: MapTaskDetailsOptions = {}
+): TaskDetailsDTO => {
+  const sprint = options.sprint ?? task.sprint ?? null
+  const timeSpent = Number(options.timeSpentMinutes ?? 0)
+
+  return {
+    id: task.id,
+    projectId: task.projectId,
+    key: task.key,
+    parentId: task.parentId ?? null,
+    title: task.title,
+    description: task.description ?? null,
+    status: task.status as TaskStatusInput,
+    priority: task.priority as TaskPriorityInput,
+    dueDate: task.dueDate ?? null,
+    assignee: mapUserSummary(task.assignee ?? null),
+    owner:
+      mapUserSummary(task.owner ?? null) ??
+      ({
+        id: task.ownerUserId,
+        username: task.owner?.username ?? 'unknown',
+        displayName: task.owner?.displayName ?? 'Unknown'
+      } as UserSummaryDTO),
+    sprintId: sprint?.id ?? task.sprintId ?? null,
+    sprint: mapSprintSummary(sprint),
+    estimatedMinutes: task.estimatedMinutes ?? null,
+    timeSpentMinutes: timeSpent,
+    createdAt: task.createdAt!,
+    updatedAt: task.updatedAt!,
+    projectKey,
+    linkedNotes: mapTaskNotes(task.notes ?? []),
+    commentCount
+  }
+}
 
 export const mapComment = (comment: Comment): CommentDTO => {
   const author = comment.author
@@ -73,3 +90,21 @@ const mapTaskNotes = (notes: Note[]): TaskNoteLinkDTO[] =>
     isPrivate: note.isPrivate,
     ownerId: note.ownerUserId
   }))
+
+export const mapSprintSummary = (sprint: Sprint | null): SprintSummaryDTO | null => {
+  if (!sprint) {
+    return null
+  }
+
+  return {
+    id: sprint.id,
+    projectId: sprint.projectId,
+    name: sprint.name,
+    status: sprint.status,
+    startDate: sprint.startDate,
+    endDate: sprint.endDate,
+    goal: sprint.goal ?? null,
+    capacityMinutes: sprint.capacityMinutes ?? null,
+    sequence: sprint.sequence
+  }
+}

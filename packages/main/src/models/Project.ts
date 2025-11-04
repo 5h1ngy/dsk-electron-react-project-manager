@@ -11,6 +11,7 @@ import { User } from '@main/models/User'
 import { ProjectMember } from '@main/models/ProjectMember'
 import { Task } from '@main/models/Task'
 import { ProjectTag } from '@main/models/ProjectTag'
+import { Sprint } from '@main/models/Sprint'
 
 @Table({
   tableName: 'projects',
@@ -60,4 +61,7 @@ export class Project extends Model {
 
   @HasMany(() => ProjectTag)
   declare tags?: ProjectTag[]
+
+  @HasMany(() => Sprint)
+  declare sprints?: Sprint[]
 }
