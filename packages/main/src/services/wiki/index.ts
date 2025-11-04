@@ -265,7 +265,14 @@ private readonly maxTransactionAttempts = 10
         )
 
         const loaded = await this.loadPageByIdentifier(projectId, page.id, transaction)
-        await this.auditService.record(actor.userId, 'wiki_page', page.id, 'create', { projectId })
+        await this.auditService.record(
+          actor.userId,
+          'wiki_page',
+          page.id,
+          'create',
+          { projectId },
+          { transaction }
+        )
         return mapWikiPageDetails(loaded)
       })
     } catch (error) {
@@ -317,7 +324,14 @@ private readonly maxTransactionAttempts = 10
         await page.save({ transaction })
 
         const reloaded = await this.loadPageByIdentifier(projectId, page.id, transaction)
-        await this.auditService.record(actor.userId, 'wiki_page', page.id, 'update', { projectId })
+        await this.auditService.record(
+          actor.userId,
+          'wiki_page',
+          page.id,
+          'update',
+          { projectId },
+          { transaction }
+        )
         return mapWikiPageDetails(reloaded)
       })
     } catch (error) {
@@ -339,9 +353,16 @@ private readonly maxTransactionAttempts = 10
         const page = await this.loadPageByIdentifier(projectId, pageId, transaction)
         await WikiRevision.destroy({ where: { pageId: page.id }, transaction })
         await page.destroy({ transaction })
-        await this.auditService.record(actor.userId, 'wiki_page', page.id, 'delete', {
-          projectId
-        })
+        await this.auditService.record(
+          actor.userId,
+          'wiki_page',
+          page.id,
+          'delete',
+          {
+            projectId
+          },
+          { transaction }
+        )
       })
     } catch (error) {
       throw wrapError(error)
@@ -417,10 +438,17 @@ private readonly maxTransactionAttempts = 10
         await page.save({ transaction })
 
         const loaded = await this.loadPageByIdentifier(projectId, page.id, transaction)
-        await this.auditService.record(actor.userId, 'wiki_page', page.id, 'restore_revision', {
-          projectId,
-          revisionId
-        })
+        await this.auditService.record(
+          actor.userId,
+          'wiki_page',
+          page.id,
+          'restore_revision',
+          {
+            projectId,
+            revisionId
+          },
+          { transaction }
+        )
         return mapWikiPageDetails(loaded)
       })
     } catch (error) {
