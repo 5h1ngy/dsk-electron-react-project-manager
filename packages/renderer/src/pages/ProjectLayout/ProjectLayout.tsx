@@ -21,6 +21,9 @@ import type {
 import { usePrimaryBreadcrumb } from '@renderer/layout/Shell/hooks/usePrimaryBreadcrumb'
 import { useBreadcrumbStyle } from '@renderer/layout/Shell/hooks/useBreadcrumbStyle'
 import { ShellHeaderPortal } from '@renderer/layout/Shell/ShellHeader.context'
+import { useAppSelector } from '@renderer/store/hooks'
+import { selectCurrentUser } from '@renderer/store/slices/auth/selectors'
+import type { TaskDetails } from '@renderer/store/slices/tasks/types'
 
 const ProjectLayout = (): JSX.Element => {
   const { projectId } = useParams<{ projectId: string }>()
@@ -28,6 +31,8 @@ const ProjectLayout = (): JSX.Element => {
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
   const { t } = useTranslation('projects')
+  const currentUser = useAppSelector(selectCurrentUser)
+  const currentUserId = currentUser?.id ?? null
 
   const {
     project,
@@ -47,12 +52,26 @@ const ProjectLayout = (): JSX.Element => {
     messageContext
   } = useProjectDetails(projectId)
 
+  const canDeleteTask = useCallback(
+    (task: TaskDetails) => {
+      if (canManageTasks) {
+        return true
+      }
+      if (!currentUserId) {
+        return false
+      }
+      return task.owner.id === currentUserId
+    },
+    [canManageTasks, currentUserId]
+  )
+
   const taskModals = useTaskModals({
     project: project ?? null,
     tasks,
     projectId: projectId ?? null,
     statuses: taskStatuses,
-    canManageTasks
+    canManageTasks,
+    canDeleteTask
   })
 
   useEffect(() => {
@@ -175,6 +194,7 @@ const ProjectLayout = (): JSX.Element => {
     refreshTasks,
     refreshTaskStatuses,
     canManageTasks,
+    canDeleteTask,
     openTaskDetails: handleOpenTaskDetails,
     openTaskCreate: (options) => taskModals.openCreate(options),
     openTaskEdit: taskModals.openEdit,

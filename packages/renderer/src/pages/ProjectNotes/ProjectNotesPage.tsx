@@ -213,9 +213,18 @@ const ProjectNotesPage = (): ReactElement => {
   const [selectedNoteIds, setSelectedNoteIds] = useState<string[]>([])
   const [bulkDeleteTargets, setBulkDeleteTargets] = useState<NoteSummary[] | null>(null)
   const [bulkDeleteLoading, setBulkDeleteLoading] = useState(false)
+  const canDeleteNote = useCallback(
+    (note: NoteSummary | NoteDetails) => {
+      if (canManageNotes) {
+        return true
+      }
+      return note.owner.id === userId
+    },
+    [canManageNotes, userId]
+  )
   const selectedNotes = useMemo(
-    () => notes.filter((note) => selectedNoteIds.includes(note.id) && note.owner.id === userId),
-    [notes, selectedNoteIds, userId]
+    () => notes.filter((note) => selectedNoteIds.includes(note.id) && canDeleteNote(note)),
+    [canDeleteNote, notes, selectedNoteIds]
   )
 
   const fetchCurrentNotes = useCallback(() => {
@@ -245,14 +254,12 @@ const ProjectNotesPage = (): ReactElement => {
     if (selectedNoteIds.length === 0) {
       return
     }
-    const validIds = new Set(
-      notes.filter((note) => note.owner.id === userId).map((note) => note.id)
-    )
+    const validIds = new Set(notes.filter((note) => canDeleteNote(note)).map((note) => note.id))
     const cleaned = selectedNoteIds.filter((id) => validIds.has(id))
     if (cleaned.length !== selectedNoteIds.length) {
       setSelectedNoteIds(cleaned)
     }
-  }, [notes, selectedNoteIds, userId])
+  }, [canDeleteNote, notes, selectedNoteIds])
 
   const handleCreateNote = useCallback((linkedTaskId?: string) => {
     setEditorMode('create')
@@ -384,6 +391,19 @@ const ProjectNotesPage = (): ReactElement => {
   )
 
   const handleDeleteNote = async (noteId: string) => {
+    const note = notes.find((candidate) => candidate.id === noteId)
+    if (!note) {
+      messageApi.error(t('notes.feedback.notFound', { defaultValue: 'Nota non trovata' }))
+      return
+    }
+    if (!canDeleteNote(note)) {
+      messageApi.warning(
+        t('notes.feedback.deleteDenied', {
+          defaultValue: 'Non hai i permessi per eliminare questa nota.'
+        })
+      )
+      return
+    }
     const success = await deleteNoteById(noteId)
     if (success) {
       setViewerNoteId((current) => (current === noteId ? null : current))
@@ -528,8 +548,11 @@ const ProjectNotesPage = (): ReactElement => {
       </Tag>
     )
 
-  const buildNoteActions = (note: NoteSummary, variant: 'list' | 'card'): ReactElement[] =>
-    [
+  const buildNoteActions = (note: NoteSummary, variant: 'list' | 'card'): ReactElement[] => {
+    const allowEdit = canManageNotes
+    const allowDelete = canDeleteNote(note)
+
+    return [
       <Button
         key="view"
         type={variant === 'card' ? 'link' : 'text'}
@@ -538,7 +561,7 @@ const ProjectNotesPage = (): ReactElement => {
       >
         {t('notes.actions.view')}
       </Button>,
-      canManageNotes ? (
+      allowEdit ? (
         <Button
           key="edit"
           type={variant === 'card' ? 'link' : 'text'}
@@ -547,8 +570,23 @@ const ProjectNotesPage = (): ReactElement => {
         >
           {t('notes.actions.edit')}
         </Button>
+      ) : null,
+      allowDelete ? (
+        <Popconfirm
+          key="delete"
+          title={t('notes.actions.deleteTitle')}
+          description={t('notes.actions.deleteConfirmText')}
+          okText={t('notes.actions.delete')}
+          cancelText={t('notes.actions.cancel')}
+          onConfirm={() => void handleDeleteNote(note.id)}
+        >
+          <Button type={variant === 'card' ? 'link' : 'text'} danger icon={<DeleteOutlined />}>
+            {t('notes.actions.delete')}
+          </Button>
+        </Popconfirm>
       ) : null
     ].filter(Boolean) as ReactElement[]
+  }
 
   const filtersContent = (
     <Flex vertical gap={16}>
@@ -840,6 +878,7 @@ const ProjectNotesPage = (): ReactElement => {
         open={Boolean(viewerNoteId)}
         noteId={viewerNoteId}
         canManage={canManageNotes}
+        canDelete={canDeleteNote}
         tasks={tasks}
         onDelete={handleDeleteNote}
         onClose={handleViewerClose}
@@ -1052,6 +1091,7 @@ interface NoteDetailsModalProps {
   open: boolean
   noteId: string | null
   canManage: boolean
+  canDelete: (note: NoteDetails) => boolean
   tasks: TaskDetails[]
   onDelete: (noteId: string) => Promise<void>
   onClose: () => void
@@ -1062,6 +1102,7 @@ const NoteDetailsModal = ({
   open,
   noteId,
   canManage,
+  canDelete,
   tasks,
   onDelete,
   onClose,
@@ -1150,9 +1191,9 @@ const NoteDetailsModal = ({
       title={note ? note.title : t('notes.viewer.title')}
       width={760}
       footer={
-        note && canManage ? (
+        note && (canManage || canDelete(note)) ? (
           <Space>
-            {isEditing ? (
+            {canManage && isEditing ? (
               <>
                 <Button onClick={() => setIsEditing(false)}>{t('notes.actions.cancel')}</Button>
                 <Button type="primary" onClick={handleUpdate} loading={submitting}>
@@ -1161,20 +1202,24 @@ const NoteDetailsModal = ({
               </>
             ) : (
               <>
-                <Button icon={<EditOutlined />} onClick={() => setIsEditing(true)}>
-                  {t('notes.actions.edit')}
-                </Button>
-                <Popconfirm
-                  title={t('notes.actions.deleteTitle')}
-                  description={t('notes.actions.deleteConfirmText')}
-                  okText={t('notes.actions.delete')}
-                  cancelText={t('notes.actions.cancel')}
-                  onConfirm={() => note && onDelete(note.id)}
-                >
-                  <Button danger icon={<DeleteOutlined />}>
-                    {t('notes.actions.delete')}
+                {canManage ? (
+                  <Button icon={<EditOutlined />} onClick={() => setIsEditing(true)}>
+                    {t('notes.actions.edit')}
                   </Button>
-                </Popconfirm>
+                ) : null}
+                {canDelete(note) ? (
+                  <Popconfirm
+                    title={t('notes.actions.deleteTitle')}
+                    description={t('notes.actions.deleteConfirmText')}
+                    okText={t('notes.actions.delete')}
+                    cancelText={t('notes.actions.cancel')}
+                    onConfirm={() => note && onDelete(note.id)}
+                  >
+                    <Button danger icon={<DeleteOutlined />}>
+                      {t('notes.actions.delete')}
+                    </Button>
+                  </Popconfirm>
+                ) : null}
               </>
             )}
           </Space>

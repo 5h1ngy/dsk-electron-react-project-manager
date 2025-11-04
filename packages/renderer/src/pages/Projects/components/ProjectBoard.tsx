@@ -15,6 +15,7 @@ export interface ProjectBoardProps {
   statuses: TaskStatusItem[]
   isLoading: boolean
   canManageTasks: boolean
+  canDeleteTask: (task: TaskDetails) => boolean
   onTaskSelect: (task: TaskDetails) => void
   onTaskEdit: (task: TaskDetails) => void
   onTaskDelete: (task: TaskDetails) => void
@@ -27,6 +28,7 @@ export const ProjectBoard = ({
   statuses,
   isLoading,
   canManageTasks,
+  canDeleteTask,
   onTaskSelect,
   onTaskEdit,
   onTaskDelete,
@@ -71,6 +73,7 @@ export const ProjectBoard = ({
                   onTaskDelete={onTaskDelete}
                   deletingTaskId={deletingTaskId}
                   canManage={canManageTasks}
+                  canDeleteTask={canDeleteTask}
                 />
               </Col>
             ))}

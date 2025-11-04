@@ -42,6 +42,7 @@
     "manageMembersDenied": "Seuls les administrateurs ou mainteneurs peuvent gerer les membres.",
     "tasksCreateDenied": "Vous n'avez pas les droits pour creer des taches dans ce projet.",
     "tasksUpdateDenied": "Vous n'avez pas les droits pour modifier les taches de ce projet.",
+    "tasksDeleteDenied": "Vous n'avez pas les droits pour supprimer cette tache.",
     "deleteDenied": "Seuls les administrateurs peuvent supprimer des projets."
   },
   "errors": {
@@ -472,6 +473,8 @@
       "created": "Note creee",
       "updated": "Note mise a jour",
       "deleted": "Note supprimee",
+      "notFound": "Note introuvable",
+      "deleteDenied": "Vous n'avez pas les droits pour supprimer cette note.",
       "bulkDeleted": "{{count}} notes supprimees",
       "deleteOwnerWarning": "{{count}} notes selectionnees ne peuvent pas etre supprimees car vous n'etes pas proprietaire."
     },

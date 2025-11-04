@@ -43,6 +43,7 @@
     "manageMembersDenied": "Solo amministratori o maintainer possono gestire i membri.",
     "tasksCreateDenied": "Non hai i permessi per creare task in questo progetto.",
     "tasksUpdateDenied": "Non hai i permessi per modificare i task di questo progetto.",
+    "tasksDeleteDenied": "Non hai i permessi per eliminare questo task.",
     "deleteDenied": "Solo gli amministratori possono eliminare i progetti."
   },
   "errors": {
@@ -476,6 +477,8 @@
       "created": "Nota creata",
       "updated": "Nota aggiornata",
       "deleted": "Nota eliminata",
+      "notFound": "Nota non trovata",
+      "deleteDenied": "Non hai i permessi per eliminare questa nota.",
       "bulkDeleted": "Eliminate {{count}} note",
       "deleteOwnerWarning": "Impossibile eliminare {{count}} note selezionate perche non sei il proprietario."
     },

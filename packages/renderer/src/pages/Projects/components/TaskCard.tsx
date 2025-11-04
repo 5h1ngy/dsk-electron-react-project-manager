@@ -14,6 +14,8 @@ export interface TaskCardProps {
   onDeleteRequest: () => void
   deleting?: boolean
   draggable?: boolean
+  canEdit?: boolean
+  canDelete?: boolean
 }
 
 export const TaskCard = ({
@@ -23,7 +25,9 @@ export const TaskCard = ({
   onEdit,
   onDeleteRequest,
   deleting = false,
-  draggable = true
+  draggable = true,
+  canEdit = true,
+  canDelete = true
 }: TaskCardProps): JSX.Element => {
   const { t, i18n } = useTranslation('projects')
   const badgeTokens = useSemanticBadges()
@@ -45,30 +49,34 @@ export const TaskCard = ({
       onDragStart={handleDragStart}
       onClick={onSelect}
       extra={
-        draggable ? (
+        canEdit || canDelete ? (
           <Space size={4}>
-            <Button
-              type="text"
-              icon={<EditOutlined />}
-              onClick={(event) => {
-                event.stopPropagation()
-                onEdit()
-              }}
-            >
-              {t('tasks.actions.edit')}
-            </Button>
-            <Button
-              type="text"
-              danger
-              icon={<DeleteOutlined />}
-              loading={deleting}
-              onClick={(event) => {
-                event.stopPropagation()
-                onDeleteRequest()
-              }}
-            >
-              {t('tasks.actions.delete')}
-            </Button>
+            {canEdit ? (
+              <Button
+                type="text"
+                icon={<EditOutlined />}
+                onClick={(event) => {
+                  event.stopPropagation()
+                  onEdit()
+                }}
+              >
+                {t('tasks.actions.edit')}
+              </Button>
+            ) : null}
+            {canDelete ? (
+              <Button
+                type="text"
+                danger
+                icon={<DeleteOutlined />}
+                loading={deleting}
+                onClick={(event) => {
+                  event.stopPropagation()
+                  onDeleteRequest()
+                }}
+              >
+                {t('tasks.actions.delete')}
+              </Button>
+            ) : null}
           </Space>
         ) : undefined
       }

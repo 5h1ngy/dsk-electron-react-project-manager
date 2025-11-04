@@ -42,6 +42,7 @@
     "manageMembersDenied": "Nur Administratoren oder Maintainer koennen Mitglieder verwalten.",
     "tasksCreateDenied": "Keine Berechtigung, Aufgaben in diesem Projekt zu erstellen.",
     "tasksUpdateDenied": "Keine Berechtigung, Aufgaben in diesem Projekt zu aktualisieren.",
+    "tasksDeleteDenied": "Keine Berechtigung, diese Aufgabe zu loeschen.",
     "deleteDenied": "Nur Administratoren duerfen Projekte loeschen."
   },
   "errors": {
@@ -474,6 +475,8 @@
       "created": "Notiz erstellt",
       "updated": "Notiz aktualisiert",
       "deleted": "Notiz geloescht",
+      "notFound": "Notiz nicht gefunden",
+      "deleteDenied": "Keine Berechtigung, diese Notiz zu loeschen.",
       "bulkDeleted": "{{count}} Notizen geloescht",
       "deleteOwnerWarning": "{{count}} ausgewaehlte Notizen koennen nicht geloescht werden, weil Sie nicht der Besitzer sind."
     },

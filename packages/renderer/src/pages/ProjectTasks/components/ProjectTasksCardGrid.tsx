@@ -32,6 +32,7 @@ export interface ProjectTasksCardGridProps {
   onEdit: (task: TaskDetails) => void
   onDeleteRequest: (task: TaskDetails) => void
   canManage: boolean
+  canDeleteTask?: (task: TaskDetails) => boolean
   deletingTaskId?: string | null
   statusLabels?: Record<string, string>
 }
@@ -46,6 +47,7 @@ export const ProjectTasksCardGrid = ({
   onEdit,
   onDeleteRequest,
   canManage,
+  canDeleteTask,
   deletingTaskId,
   statusLabels = {}
 }: ProjectTasksCardGridProps): JSX.Element => {
@@ -90,34 +92,43 @@ export const ProjectTasksCardGrid = ({
                   </Typography.Title>
                 </Space>
               }
-              extra={
-                canManage ? (
-                <Space size={4}>
-                  <Button
-                    type="text"
-                    icon={<EditOutlined />}
-                    onClick={(event) => {
-                      event.stopPropagation()
-                      onEdit(task)
-                    }}
-                  >
-                    {t('tasks.actions.edit')}
-                  </Button>
-                  <Button
-                    type="text"
-                    danger
-                    icon={<DeleteOutlined />}
-                    loading={deletingTaskId === task.id}
-                    onClick={(event) => {
-                      event.stopPropagation()
-                      onDeleteRequest(task)
-                    }}
-                  >
-                    {t('tasks.actions.delete')}
-                  </Button>
+              extra={(() => {
+                const allowEdit = canManage
+                const allowDelete = canDeleteTask ? canDeleteTask(task) : canManage
+                if (!allowEdit && !allowDelete) {
+                  return undefined
+                }
+                return (
+                  <Space size={4}>
+                    {allowEdit ? (
+                      <Button
+                        type="text"
+                        icon={<EditOutlined />}
+                        onClick={(event) => {
+                          event.stopPropagation()
+                          onEdit(task)
+                        }}
+                      >
+                        {t('tasks.actions.edit')}
+                      </Button>
+                    ) : null}
+                    {allowDelete ? (
+                      <Button
+                        type="text"
+                        danger
+                        icon={<DeleteOutlined />}
+                        loading={deletingTaskId === task.id}
+                        onClick={(event) => {
+                          event.stopPropagation()
+                          onDeleteRequest(task)
+                        }}
+                      >
+                        {t('tasks.actions.delete')}
+                      </Button>
+                    ) : null}
                   </Space>
-                ) : undefined
-              }
+                )
+              })()}
             >
               <Space direction="vertical" size="small" style={{ width: '100%' }}>
                 <Space size={6} wrap>

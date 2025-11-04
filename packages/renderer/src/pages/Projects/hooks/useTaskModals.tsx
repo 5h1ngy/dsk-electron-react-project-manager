@@ -40,6 +40,7 @@ export interface UseTaskModalsOptions {
   projectId: string | null
   statuses: TaskStatusItem[]
   canManageTasks: boolean
+  canDeleteTask: (task: TaskDetails) => boolean
 }
 
 export const useTaskModals = ({
@@ -47,7 +48,8 @@ export const useTaskModals = ({
   tasks,
   projectId,
   statuses,
-  canManageTasks
+  canManageTasks,
+  canDeleteTask
 }: UseTaskModalsOptions): TaskModalsState => {
   const dispatch = useAppDispatch()
   const { t } = useTranslation('projects')
@@ -261,18 +263,22 @@ export const useTaskModals = ({
 
   const openDeleteConfirm = useCallback(
     (taskId: string) => {
-      if (!canManageTasks) {
-        messageApi.warning(t('permissions.tasksUpdateDenied'))
-        return
-      }
       const target = tasks.find((item) => item.id === taskId)
       if (!target) {
         messageApi.error(t('tasks.messages.notFound', { defaultValue: 'Task non trovato' }))
         return
       }
+      if (!canDeleteTask(target)) {
+        messageApi.warning(
+          t('permissions.tasksDeleteDenied', {
+            defaultValue: 'Non hai i permessi per eliminare questo task.'
+          })
+        )
+        return
+      }
       setDeleteTarget(target)
     },
-    [canManageTasks, messageApi, t, tasks]
+    [canDeleteTask, messageApi, t, tasks]
   )
 
   const closeDeleteConfirm = useCallback(() => {

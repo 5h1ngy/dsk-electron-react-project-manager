@@ -17,6 +17,7 @@ export interface ProjectRouteContext {
   taskStatuses: TaskStatusItem[]
   taskStatusesStatus: string
   canManageTasks: boolean
+  canDeleteTask: (task: TaskDetails) => boolean
   openTaskDetails: (taskId: string) => void
   openTaskCreate: (options?: {
     status?: TaskDetails['status']

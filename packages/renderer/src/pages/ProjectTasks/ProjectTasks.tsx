@@ -66,6 +66,7 @@ const ProjectTasksPage = (): JSX.Element => {
     taskStatusesStatus,
     refreshTasks,
     canManageTasks,
+    canDeleteTask,
     openTaskDetails,
     openTaskCreate,
     openTaskEdit,
@@ -133,11 +134,8 @@ const ProjectTasksPage = (): JSX.Element => {
 
   const filteredTasks = useMemo(() => filterTasks(tasks, filters), [tasks, filters])
   const selectedTasks = useMemo(
-    () =>
-      tasks.filter(
-        (task) => selectedTaskIds.includes(task.id) && task.owner.id === userId
-      ),
-    [selectedTaskIds, tasks, userId]
+    () => tasks.filter((task) => selectedTaskIds.includes(task.id) && canDeleteTask(task)),
+    [canDeleteTask, selectedTaskIds, tasks]
   )
   const tableColumns = useMemo(() => getColumnsForView(visibleColumns), [visibleColumns])
   const tableRowSelection = useMemo(() => {
@@ -150,10 +148,10 @@ const ProjectTasksPage = (): JSX.Element => {
         setSelectedTaskIds(keys.map((key) => String(key)))
       },
       getCheckboxProps: (record: TaskDetails) => ({
-        disabled: deleteLoading || record.owner.id !== userId
+        disabled: deleteLoading || !canDeleteTask(record)
       })
     }
-  }, [canManageTasks, deleteLoading, selectedTaskIds, userId])
+  }, [canDeleteTask, canManageTasks, deleteLoading, selectedTaskIds, userId])
 
   const applyFiltersFromView = useCallback(
     (view: SavedView) => {
@@ -313,15 +311,12 @@ const ProjectTasksPage = (): JSX.Element => {
         removedIds.push(task.id)
       } catch (error) {
         bulkMessageApi.error(
-          extractErrorMessage(error) ??
-            t('errors.generic', { defaultValue: 'Operation failed' })
+          extractErrorMessage(error) ?? t('errors.generic', { defaultValue: 'Operation failed' })
         )
       }
     }
     if (removedIds.length > 0) {
-      bulkMessageApi.success(
-        t('tasks.messages.deleteBulkSuccess', { count: removedIds.length })
-      )
+      bulkMessageApi.success(t('tasks.messages.deleteBulkSuccess', { count: removedIds.length }))
       setSelectedTaskIds((prev) => prev.filter((id) => !removedIds.includes(id)))
       refreshTasks()
     }
@@ -404,14 +399,12 @@ const ProjectTasksPage = (): JSX.Element => {
     if (selectedTaskIds.length === 0) {
       return
     }
-    const validIds = new Set(
-      tasks.filter((task) => task.owner.id === userId).map((task) => task.id)
-    )
+    const validIds = new Set(tasks.filter((task) => canDeleteTask(task)).map((task) => task.id))
     const cleaned = selectedTaskIds.filter((id) => validIds.has(id))
     if (cleaned.length !== selectedTaskIds.length) {
       setSelectedTaskIds(cleaned)
     }
-  }, [selectedTaskIds, tasks, userId])
+  }, [canDeleteTask, selectedTaskIds, tasks])
 
   const savedViewsControls = projectId ? (
     <TaskSavedViewsControls
@@ -464,7 +457,25 @@ const ProjectTasksPage = (): JSX.Element => {
     openTaskEdit(taskId)
   }
 
-  const handleTaskDelete = (taskId: string) => openDeleteConfirm(taskId)
+  const handleTaskDelete = useCallback(
+    (taskId: string) => {
+      const task = tasks.find((candidate) => candidate.id === taskId)
+      if (!task) {
+        bulkMessageApi.error(t('tasks.messages.notFound', { defaultValue: 'Task non trovato' }))
+        return
+      }
+      if (!canDeleteTask(task)) {
+        bulkMessageApi.warning(
+          t('permissions.tasksDeleteDenied', {
+            defaultValue: 'Non hai i permessi per eliminare questo task.'
+          })
+        )
+        return
+      }
+      openDeleteConfirm(taskId)
+    },
+    [bulkMessageApi, canDeleteTask, openDeleteConfirm, t, tasks]
+  )
 
   if (!project && !projectLoading) {
     return (
@@ -531,6 +542,7 @@ const ProjectTasksPage = (): JSX.Element => {
               onEdit={(task) => handleTaskEdit(task.id)}
               onDeleteRequest={(task) => handleTaskDelete(task.id)}
               canManage={canManageTasks}
+              canDeleteTask={canDeleteTask}
               deletingTaskId={deletingTaskId}
               statusLabels={statusLabelMap}
               columns={tableColumns}
@@ -561,6 +573,7 @@ const ProjectTasksPage = (): JSX.Element => {
             onEdit={(task) => handleTaskEdit(task.id)}
             onDeleteRequest={(task) => handleTaskDelete(task.id)}
             canManage={canManageTasks}
+            canDeleteTask={canDeleteTask}
             deletingTaskId={deletingTaskId}
             statusLabels={statusLabelMap}
           />
@@ -576,17 +589,19 @@ const ProjectTasksPage = (): JSX.Element => {
             onEdit={(task) => handleTaskEdit(task.id)}
             onDeleteRequest={(task) => handleTaskDelete(task.id)}
             canManage={canManageTasks}
+            canDeleteTask={canDeleteTask}
             deletingTaskId={deletingTaskId}
             statusLabels={statusLabelMap}
           />
         ) : null}
         {viewMode === 'board' ? (
-      <ProjectBoard
-        projectId={projectId}
-        statuses={taskStatuses}
-        tasks={filteredTasks}
-        isLoading={loading || projectLoading}
+          <ProjectBoard
+            projectId={projectId}
+            statuses={taskStatuses}
+            tasks={filteredTasks}
+            isLoading={loading || projectLoading}
             canManageTasks={canManageTasks}
+            canDeleteTask={canDeleteTask}
             onTaskSelect={(task) => handleTaskSelect(task.id)}
             onTaskEdit={(task) => handleTaskEdit(task.id)}
             onTaskDelete={(task) => handleTaskDelete(task.id)}
@@ -631,9 +646,7 @@ const ProjectTasksPage = (): JSX.Element => {
               ))}
             </ul>
           ) : null}
-          <Typography.Text type="danger">
-            {t('tasks.bulkDelete.warning')}
-          </Typography.Text>
+          <Typography.Text type="danger">{t('tasks.bulkDelete.warning')}</Typography.Text>
         </Space>
       </Modal>
       <Modal

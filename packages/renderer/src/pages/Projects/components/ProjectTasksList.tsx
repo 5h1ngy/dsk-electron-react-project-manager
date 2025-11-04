@@ -18,6 +18,7 @@ export interface ProjectTasksListProps {
   onEdit: (task: TaskDetails) => void
   onDeleteRequest: (task: TaskDetails) => void
   canManage: boolean
+  canDeleteTask?: (task: TaskDetails) => boolean
   deletingTaskId?: string | null
   statusLabels: Record<string, string>
 }
@@ -32,6 +33,7 @@ export const ProjectTasksList = ({
   onEdit,
   onDeleteRequest,
   canManage,
+  canDeleteTask,
   deletingTaskId,
   statusLabels
 }: ProjectTasksListProps): JSX.Element => {
@@ -77,41 +79,51 @@ export const ProjectTasksList = ({
         const statusToken = badgeTokens.status[task.status] ?? badgeTokens.statusFallback
         const assignee = task.assignee?.displayName ?? t('details.noAssignee')
 
+        const allowEdit = canManage
+        const allowDelete = canDeleteTask ? canDeleteTask(task) : canManage
+
+        const itemActions: JSX.Element[] = []
+
+        if (allowEdit) {
+          itemActions.push(
+            <Button
+              key="edit"
+              type="text"
+              icon={<EditOutlined />}
+              onClick={(event) => {
+                event.stopPropagation()
+                onEdit(task)
+              }}
+            >
+              {t('tasks.actions.edit')}
+            </Button>
+          )
+        }
+
+        if (allowDelete) {
+          itemActions.push(
+            <Button
+              key="delete"
+              type="text"
+              danger
+              icon={<DeleteOutlined />}
+              loading={deletingTaskId === task.id}
+              onClick={(event) => {
+                event.stopPropagation()
+                onDeleteRequest(task)
+              }}
+            >
+              {t('tasks.actions.delete')}
+            </Button>
+          )
+        }
+
         return (
           <List.Item
             key={task.id}
             onClick={() => onSelect(task)}
             style={{ cursor: 'pointer', paddingInline: token.paddingLG }}
-            actions={
-              canManage
-                ? [
-                    <Button
-                      key="edit"
-                      type="text"
-                      icon={<EditOutlined />}
-                      onClick={(event) => {
-                        event.stopPropagation()
-                        onEdit(task)
-                      }}
-                    >
-                      {t('tasks.actions.edit')}
-                    </Button>,
-                    <Button
-                      key="delete"
-                      type="text"
-                      danger
-                      icon={<DeleteOutlined />}
-                      loading={deletingTaskId === task.id}
-                      onClick={(event) => {
-                        event.stopPropagation()
-                        onDeleteRequest(task)
-                      }}
-                    >
-                      {t('tasks.actions.delete')}
-                    </Button>
-                  ]
-                : undefined
-            }
+            actions={itemActions.length > 0 ? itemActions : undefined}
           >
             <List.Item.Meta
               title={

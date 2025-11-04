@@ -20,6 +20,7 @@ export interface ProjectTasksTableProps {
   onEdit: (task: TaskDetails) => void
   onDeleteRequest: (task: TaskDetails) => void
   canManage: boolean
+  canDeleteTask?: (task: TaskDetails) => boolean
   deletingTaskId?: string | null
   pagination?: TablePaginationConfig | false
   columns?: ReadonlyArray<TaskTableColumn>
@@ -34,6 +35,7 @@ export const ProjectTasksTable = ({
   onEdit,
   onDeleteRequest,
   canManage,
+  canDeleteTask,
   deletingTaskId,
   pagination,
   columns = VIEW_COLUMN_VALUES,
@@ -139,38 +141,54 @@ export const ProjectTasksTable = ({
     .map((column) => columnConfig[column])
     .filter((column): column is ColumnsType<TaskDetails>[number] => Boolean(column))
 
-  resolvedColumns.push({
-    title: canManage ? t('tasks.columns.actions') : undefined,
-    key: 'actions',
-    width: canManage ? 120 : 0,
-    render: (_value: unknown, record: TaskDetails) =>
-      canManage ? (
-        <Space size={4}>
-          <Button
-            type="text"
-            icon={<EditOutlined />}
-            onClick={(event) => {
-              event.stopPropagation()
-              onEdit(record)
-            }}
-          >
-            {t('tasks.actions.edit')}
-          </Button>
-          <Button
-            type="text"
-            danger
-            icon={<DeleteOutlined />}
-            loading={deletingTaskId === record.id}
-            onClick={(event) => {
-              event.stopPropagation()
-              onDeleteRequest(record)
-            }}
-          >
-            {t('tasks.actions.delete')}
-          </Button>
-        </Space>
-      ) : null
-  })
+  const allowActionsColumn = canManage || typeof canDeleteTask === 'function'
+
+  if (allowActionsColumn) {
+    resolvedColumns.push({
+      title: t('tasks.columns.actions'),
+      key: 'actions',
+      width: canManage ? 140 : 110,
+      render: (_value: unknown, record: TaskDetails) => {
+        const allowEdit = canManage
+        const allowDelete = canDeleteTask ? canDeleteTask(record) : canManage
+
+        if (!allowEdit && !allowDelete) {
+          return null
+        }
+
+        return (
+          <Space size={4}>
+            {allowEdit ? (
+              <Button
+                type="text"
+                icon={<EditOutlined />}
+                onClick={(event) => {
+                  event.stopPropagation()
+                  onEdit(record)
+                }}
+              >
+                {t('tasks.actions.edit')}
+              </Button>
+            ) : null}
+            {allowDelete ? (
+              <Button
+                type="text"
+                danger
+                icon={<DeleteOutlined />}
+                loading={deletingTaskId === record.id}
+                onClick={(event) => {
+                  event.stopPropagation()
+                  onDeleteRequest(record)
+                }}
+              >
+                {t('tasks.actions.delete')}
+              </Button>
+            ) : null}
+          </Space>
+        )
+      }
+    })
+  }
 
   if (showSkeleton) {
     return <LoadingSkeleton variant="table" />

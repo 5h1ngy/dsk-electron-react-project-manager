@@ -43,6 +43,7 @@
     "manageMembersDenied": "Only administrators or maintainers can manage project members.",
     "tasksCreateDenied": "You do not have permissions to create tasks in this project.",
     "tasksUpdateDenied": "You do not have permissions to update tasks in this project.",
+    "tasksDeleteDenied": "You do not have permissions to delete this task.",
     "deleteDenied": "You do not have permissions to delete this project."
   },
   "errors": {
@@ -476,6 +477,8 @@
       "created": "Note created",
       "updated": "Note updated",
       "deleted": "Note deleted",
+      "notFound": "Note not found",
+      "deleteDenied": "You do not have permissions to delete this note.",
       "bulkDeleted": "Deleted {{count}} notes",
       "deleteOwnerWarning": "{{count}} selected notes cannot be deleted because you are not the owner."
     },
