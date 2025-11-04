@@ -1,4 +1,4 @@
-import { Button, List, Popconfirm, Space, Tag, Typography, theme } from 'antd'
+import { Button, List, Space, Tag, Typography, theme } from 'antd'
 import { ClockCircleOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons'
 import { useMemo, type JSX } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -17,6 +17,8 @@ export interface UserListViewProps {
   onPageChange: (page: number) => void
   onEdit: (user: UserDTO) => void
   onDelete: (user: UserDTO) => void
+  isDeleting: (userId: string) => boolean
+  deleteDisabled?: boolean
 }
 
 export const UserListView = ({
@@ -27,7 +29,9 @@ export const UserListView = ({
   pageSize,
   onPageChange,
   onEdit,
-  onDelete
+  onDelete,
+  isDeleting,
+  deleteDisabled = false
 }: UserListViewProps): JSX.Element => {
   const { t, i18n } = useTranslation('dashboard')
   const { token } = theme.useToken()
@@ -78,18 +82,17 @@ export const UserListView = ({
               <Button key="edit" type="text" icon={<EditOutlined />} onClick={() => onEdit(user)}>
                 {t('actions.edit')}
               </Button>,
-              <Popconfirm
+              <Button
                 key="delete"
-                title={t('actions.deleteTitle')}
-                description={t('actions.deleteDescription', { username: user.username })}
-                okText={t('actions.confirmDelete')}
-                cancelText={t('actions.cancel')}
-                onConfirm={() => onDelete(user)}
+                type="text"
+                danger
+                icon={<DeleteOutlined />}
+                onClick={() => onDelete(user)}
+                loading={isDeleting(user.id)}
+                disabled={deleteDisabled && !isDeleting(user.id)}
               >
-                <Button type="text" danger icon={<DeleteOutlined />}>
-                  {t('actions.delete')}
-                </Button>
-              </Popconfirm>
+                {t('actions.delete')}
+              </Button>
             ]}
           >
             <List.Item.Meta

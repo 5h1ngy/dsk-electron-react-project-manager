@@ -1,4 +1,5 @@
-import { Button, Popconfirm, Space, Table, Tag, Typography, theme } from 'antd'
+import { Button, Space, Table, Tag, Typography, theme } from 'antd'
+import type { TableProps } from 'antd'
 import type { ColumnsType, TablePaginationConfig } from 'antd/es/table'
 import { useTranslation } from 'react-i18next'
 import { DeleteOutlined, EditOutlined, MessageOutlined } from '@ant-design/icons'
@@ -17,12 +18,14 @@ export interface ProjectTasksTableProps {
   loading: boolean
   onSelect: (task: TaskDetails) => void
   onEdit: (task: TaskDetails) => void
-  onDelete: (task: TaskDetails) => Promise<void> | void
+  onDeleteRequest: (task: TaskDetails) => void
   canManage: boolean
+  canDeleteTask?: (task: TaskDetails) => boolean
   deletingTaskId?: string | null
   pagination?: TablePaginationConfig | false
   columns?: ReadonlyArray<TaskTableColumn>
   statusLabels?: Record<string, string>
+  rowSelection?: TableProps<TaskDetails>['rowSelection']
 }
 
 export const ProjectTasksTable = ({
@@ -30,12 +33,14 @@ export const ProjectTasksTable = ({
   loading,
   onSelect,
   onEdit,
-  onDelete,
+  onDeleteRequest,
   canManage,
+  canDeleteTask,
   deletingTaskId,
   pagination,
   columns = VIEW_COLUMN_VALUES,
-  statusLabels = {}
+  statusLabels = {},
+  rowSelection
 }: ProjectTasksTableProps) => {
   const { t, i18n } = useTranslation('projects')
   const showSkeleton = useDelayedLoading(loading)
@@ -136,44 +141,54 @@ export const ProjectTasksTable = ({
     .map((column) => columnConfig[column])
     .filter((column): column is ColumnsType<TaskDetails>[number] => Boolean(column))
 
-  resolvedColumns.push({
-    title: canManage ? t('tasks.columns.actions') : undefined,
-    key: 'actions',
-    width: canManage ? 120 : 0,
-    render: (_value: unknown, record: TaskDetails) =>
-      canManage ? (
-        <Space size={4}>
-          <Button
-            type="text"
-            icon={<EditOutlined />}
-            onClick={(event) => {
-              event.stopPropagation()
-              onEdit(record)
-            }}
-          >
-            {t('tasks.actions.edit')}
-          </Button>
-          <Popconfirm
-            title={t('tasks.actions.deleteTitle')}
-            description={t('tasks.actions.deleteDescription', { title: record.title })}
-            okText={t('tasks.actions.deleteConfirm')}
-            cancelText={t('tasks.actions.cancel')}
-            onConfirm={async () => await onDelete(record)}
-            okButtonProps={{ loading: deletingTaskId === record.id }}
-          >
-            <Button
-              type="text"
-              danger
-              icon={<DeleteOutlined />}
-              loading={deletingTaskId === record.id}
-              onClick={(event) => event.stopPropagation()}
-            >
-              {t('tasks.actions.delete')}
-            </Button>
-          </Popconfirm>
-        </Space>
-      ) : null
-  })
+  const allowActionsColumn = canManage || typeof canDeleteTask === 'function'
+
+  if (allowActionsColumn) {
+    resolvedColumns.push({
+      title: t('tasks.columns.actions'),
+      key: 'actions',
+      width: canManage ? 140 : 110,
+      render: (_value: unknown, record: TaskDetails) => {
+        const allowEdit = canManage
+        const allowDelete = canDeleteTask ? canDeleteTask(record) : canManage
+
+        if (!allowEdit && !allowDelete) {
+          return null
+        }
+
+        return (
+          <Space size={4}>
+            {allowEdit ? (
+              <Button
+                type="text"
+                icon={<EditOutlined />}
+                onClick={(event) => {
+                  event.stopPropagation()
+                  onEdit(record)
+                }}
+              >
+                {t('tasks.actions.edit')}
+              </Button>
+            ) : null}
+            {allowDelete ? (
+              <Button
+                type="text"
+                danger
+                icon={<DeleteOutlined />}
+                loading={deletingTaskId === record.id}
+                onClick={(event) => {
+                  event.stopPropagation()
+                  onDeleteRequest(record)
+                }}
+              >
+                {t('tasks.actions.delete')}
+              </Button>
+            ) : null}
+          </Space>
+        )
+      }
+    })
+  }
 
   if (showSkeleton) {
     return <LoadingSkeleton variant="table" />
@@ -184,6 +199,7 @@ export const ProjectTasksTable = ({
       rowKey="id"
       columns={resolvedColumns}
       dataSource={tasks}
+      rowSelection={rowSelection}
       pagination={pagination}
       size="middle"
       scroll={{ x: 'max-content' }}

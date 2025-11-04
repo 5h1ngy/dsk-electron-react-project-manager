@@ -1,6 +1,6 @@
 import { JSX, useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Button, Popconfirm, Space, Tag, message } from 'antd'
+import { Button, Space, Tag, message } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons'
 
@@ -38,7 +38,14 @@ interface UserManagementState {
   clearError: () => void
   messageContext: JSX.Element
   isAdmin: boolean
-  removeUser: (user: UserDTO) => Promise<void>
+  openDeleteConfirm: (users: UserDTO | UserDTO[]) => void
+  closeDeleteConfirm: () => void
+  confirmDelete: () => Promise<void>
+  deleteConfirmUsers: UserDTO[] | null
+  deleteLoading: boolean
+  isDeletingUser: (userId: string) => boolean
+  selectedUserIds: string[]
+  setSelectedUserIds: (ids: string[]) => void
 }
 
 export const useUserManagement = (): UserManagementState => {
@@ -61,6 +68,10 @@ export const useUserManagement = (): UserManagementState => {
   const [messageApi, messageContext] = message.useMessage()
   const [isCreateOpen, setCreateOpen] = useState(false)
   const [editingUser, setEditingUser] = useState<UserDTO | null>(null)
+  const [deleteTargets, setDeleteTargets] = useState<UserDTO[] | null>(null)
+  const [deleteLoading, setDeleteLoading] = useState(false)
+  const [deletingIds, setDeletingIds] = useState<string[]>([])
+  const [selectedUserIds, setSelectedUserIds] = useState<string[]>([])
   const { t } = useTranslation('dashboard')
   const badgeTokens = useSemanticBadges()
 
@@ -68,6 +79,11 @@ export const useUserManagement = (): UserManagementState => {
     (value: string) =>
       value.includes('ERR_PERMISSION') ? t('dashboard:permissions.description') : value,
     [t]
+  )
+
+  const isDeletingUser = useCallback(
+    (userId: string) => deletingIds.includes(userId),
+    [deletingIds]
   )
 
   const openCreateModal = useCallback(() => {
@@ -137,19 +153,54 @@ export const useUserManagement = (): UserManagementState => {
     }
   })
 
-  const removeUser = useCallback(
-    async (user: UserDTO) => {
+  const openDeleteConfirm = useCallback(
+    (targets: UserDTO | UserDTO[]) => {
       if (!isAdmin) {
         return
       }
-      if (currentUser?.id === user.id) {
-        messageApi.warning(t('dashboard:messages.deleteSelfWarning'))
+      if (deleteLoading) {
         return
       }
+      const list = (Array.isArray(targets) ? targets : [targets]).filter((user) => {
+        if (currentUser?.id === user.id) {
+          messageApi.warning(t('dashboard:messages.deleteSelfWarning'))
+          return false
+        }
+        return true
+      })
+      if (list.length === 0) {
+        return
+      }
+      setDeleteTargets(list)
+    },
+    [currentUser?.id, deleteLoading, isAdmin, messageApi, t]
+  )
+
+  const closeDeleteConfirm = useCallback(() => {
+    if (deleteLoading) {
+      return
+    }
+    setDeleteTargets(null)
+  }, [deleteLoading])
+
+  const confirmDelete = useCallback(async () => {
+    if (!deleteTargets || deleteTargets.length === 0) {
+      return
+    }
+    if (!isAdmin) {
+      return
+    }
+
+    setDeleteLoading(true)
+    const targetIds = deleteTargets.map((user) => user.id)
+    setDeletingIds((prev) => Array.from(new Set([...prev, ...targetIds])))
+
+    let successCount = 0
+
+    for (const user of deleteTargets) {
       try {
         await deleteUser(user.id)
-        messageApi.success(t('dashboard:messages.deleteSuccess'))
-        refreshUsers()
+        successCount += 1
       } catch (error) {
         const messageText =
           typeof error === 'string'
@@ -157,9 +208,34 @@ export const useUserManagement = (): UserManagementState => {
             : ((error as Error).message ?? t('dashboard:messages.deleteErrorFallback'))
         messageApi.error(normalizeMessage(messageText))
       }
-    },
-    [currentUser?.id, deleteUser, isAdmin, messageApi, normalizeMessage, refreshUsers, t]
-  )
+    }
+
+    setDeletingIds((prev) => prev.filter((id) => !targetIds.includes(id)))
+    setDeleteLoading(false)
+    setDeleteTargets(null)
+    setSelectedUserIds((prev) => prev.filter((id) => !targetIds.includes(id)))
+
+    if (successCount > 0) {
+      if (successCount === 1) {
+        messageApi.success(t('dashboard:messages.deleteSuccess'))
+      } else {
+        messageApi.success(
+          t('dashboard:messages.deleteBulkSuccess', {
+            count: successCount
+          })
+        )
+      }
+      refreshUsers()
+    }
+  }, [
+    deleteTargets,
+    deleteUser,
+    isAdmin,
+    messageApi,
+    normalizeMessage,
+    refreshUsers,
+    t
+  ])
 
   const columns = useMemo<ColumnsType<UserDTO>>(
     () => [
@@ -210,27 +286,24 @@ export const useUserManagement = (): UserManagementState => {
             >
               {t('dashboard:actions.edit')}
             </Button>
-            <Popconfirm
-              title={t('dashboard:actions.deleteTitle')}
-              description={t('dashboard:actions.deleteDescription', { username: record.username })}
-              okText={t('dashboard:actions.confirmDelete')}
-              cancelText={t('dashboard:actions.cancel')}
-              onConfirm={() => removeUser(record)}
+            <Button
+              type="text"
+              danger
+              icon={<DeleteOutlined />}
+              loading={isDeletingUser(record.id)}
+              disabled={deleteLoading && !isDeletingUser(record.id)}
+              onClick={(event) => {
+                event.stopPropagation()
+                openDeleteConfirm(record)
+              }}
             >
-              <Button
-                type="text"
-                danger
-                icon={<DeleteOutlined />}
-                onClick={(event) => event.stopPropagation()}
-              >
-                {t('dashboard:actions.delete')}
-              </Button>
-            </Popconfirm>
+              {t('dashboard:actions.delete')}
+            </Button>
           </Space>
         )
       }
     ],
-    [badgeTokens, openEditModal, removeUser, t]
+    [badgeTokens, deleteLoading, isDeletingUser, openDeleteConfirm, openEditModal, t]
   )
 
   return {
@@ -253,6 +326,13 @@ export const useUserManagement = (): UserManagementState => {
     clearError,
     messageContext,
     isAdmin,
-    removeUser
+    openDeleteConfirm,
+    closeDeleteConfirm,
+    confirmDelete,
+    deleteConfirmUsers: deleteTargets,
+    deleteLoading,
+    isDeletingUser,
+    selectedUserIds,
+    setSelectedUserIds
   }
 }

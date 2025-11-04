@@ -46,6 +46,7 @@
     "deleteDescription": "Vuoi davvero rimuovere {{username}}?",
     "confirmDelete": "Rimuovi",
     "cancel": "Annulla",
+    "deleteSelected": "Elimina selezionati",
     "panelTitle": "Azioni"
   },
   "modals": {
@@ -72,6 +73,15 @@
         "rolesPlaceholder": "Seleziona i ruoli",
         "active": "Attivo"
       }
+    },
+    "deleteUser": {
+      "title": "Rimuovi utente {{username}}",
+      "bulkTitle": "Rimuovi {{count}} utenti",
+      "description": "Stai per rimuovere {{user}} e tutti i dati collegati.",
+      "bulkDescription": "Stai per rimuovere {{count}} utenti e tutti i loro dati collegati.",
+      "warning": "Saranno rimosse appartenenze ai progetti, viste salvate, commenti e qualsiasi record correlato. L'operazione non puo essere annullata.",
+      "confirm": "Rimuovi",
+      "cancel": "Annulla"
     }
   },
   "validation": {
@@ -99,6 +109,7 @@
     "updateSuccess": "Utente aggiornato correttamente",
     "updateErrorFallback": "Impossibile aggiornare l'utente",
     "deleteSuccess": "Utente rimosso correttamente",
+    "deleteBulkSuccess": "Eliminati {{count}} utenti correttamente",
     "deleteErrorFallback": "Impossibile rimuovere l'utente",
     "deleteSelfWarning": "Non puoi rimuovere il tuo account"
   },

@@ -1,4 +1,4 @@
-import { Button, Card, Popconfirm, Space, Tag, Typography } from 'antd'
+import { Button, Card, Space, Tag, Typography } from 'antd'
 import type { DragEvent, JSX } from 'react'
 import { useTranslation } from 'react-i18next'
 import { DeleteOutlined, EditOutlined, MessageOutlined } from '@ant-design/icons'
@@ -11,9 +11,11 @@ export interface TaskCardProps {
   onSelect: () => void
   onDragStart: (taskId: string, event: DragEvent<HTMLDivElement>) => void
   onEdit: () => void
-  onDelete: () => Promise<void> | void
+  onDeleteRequest: () => void
   deleting?: boolean
   draggable?: boolean
+  canEdit?: boolean
+  canDelete?: boolean
 }
 
 export const TaskCard = ({
@@ -21,9 +23,11 @@ export const TaskCard = ({
   onSelect,
   onDragStart,
   onEdit,
-  onDelete,
+  onDeleteRequest,
   deleting = false,
-  draggable = true
+  draggable = true,
+  canEdit = true,
+  canDelete = true
 }: TaskCardProps): JSX.Element => {
   const { t, i18n } = useTranslation('projects')
   const badgeTokens = useSemanticBadges()
@@ -45,36 +49,34 @@ export const TaskCard = ({
       onDragStart={handleDragStart}
       onClick={onSelect}
       extra={
-        draggable ? (
+        canEdit || canDelete ? (
           <Space size={4}>
-            <Button
-              type="text"
-              icon={<EditOutlined />}
-              onClick={(event) => {
-                event.stopPropagation()
-                onEdit()
-              }}
-            >
-              {t('tasks.actions.edit')}
-            </Button>
-            <Popconfirm
-              title={t('tasks.actions.deleteTitle')}
-              description={t('tasks.actions.deleteDescription', { title: task.title })}
-              okText={t('tasks.actions.deleteConfirm')}
-              cancelText={t('tasks.actions.cancel')}
-              onConfirm={async () => onDelete()}
-              okButtonProps={{ loading: deleting }}
-            >
+            {canEdit ? (
+              <Button
+                type="text"
+                icon={<EditOutlined />}
+                onClick={(event) => {
+                  event.stopPropagation()
+                  onEdit()
+                }}
+              >
+                {t('tasks.actions.edit')}
+              </Button>
+            ) : null}
+            {canDelete ? (
               <Button
                 type="text"
                 danger
                 icon={<DeleteOutlined />}
                 loading={deleting}
-                onClick={(event) => event.stopPropagation()}
+                onClick={(event) => {
+                  event.stopPropagation()
+                  onDeleteRequest()
+                }}
               >
                 {t('tasks.actions.delete')}
               </Button>
-            </Popconfirm>
+            ) : null}
           </Space>
         ) : undefined
       }

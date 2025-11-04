@@ -11,9 +11,10 @@ export interface KanbanColumnProps {
   onTaskDrop: (taskId: string, status: TaskStatus) => void
   onTaskSelect: (task: TaskDetails) => void
   onTaskEdit: (task: TaskDetails) => void
-  onTaskDelete: (task: TaskDetails) => Promise<void> | void
+  onTaskDelete: (task: TaskDetails) => void
   deletingTaskId?: string | null
   canManage: boolean
+  canDeleteTask: (task: TaskDetails) => boolean
   renderComposer?: () => JSX.Element | null
 }
 
@@ -27,6 +28,7 @@ export const KanbanColumn = ({
   onTaskDelete,
   deletingTaskId,
   canManage,
+  canDeleteTask,
   renderComposer
 }: KanbanColumnProps): JSX.Element => {
   const handleDragOver = (event: DragEvent<HTMLDivElement>) => {
@@ -70,10 +72,12 @@ export const KanbanColumn = ({
             task={task}
             onSelect={() => onTaskSelect(task)}
             onEdit={() => onTaskEdit(task)}
-            onDelete={() => onTaskDelete(task)}
+            onDeleteRequest={() => onTaskDelete(task)}
             deleting={deletingTaskId === task.id}
             onDragStart={handleDragStart}
             draggable={canManage}
+            canEdit={canManage}
+            canDelete={canDeleteTask(task)}
           />
         ))}
       </Space>

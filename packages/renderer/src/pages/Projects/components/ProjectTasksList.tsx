@@ -1,4 +1,4 @@
-import { Button, List, Popconfirm, Space, Tag, Typography, theme } from 'antd'
+import { Button, List, Space, Tag, Typography, theme } from 'antd'
 import { DeleteOutlined, EditOutlined, MessageOutlined } from '@ant-design/icons'
 import { useMemo, type JSX } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -16,8 +16,9 @@ export interface ProjectTasksListProps {
   onPageChange: (page: number) => void
   onSelect: (task: TaskDetails) => void
   onEdit: (task: TaskDetails) => void
-  onDelete: (task: TaskDetails) => Promise<void> | void
+  onDeleteRequest: (task: TaskDetails) => void
   canManage: boolean
+  canDeleteTask?: (task: TaskDetails) => boolean
   deletingTaskId?: string | null
   statusLabels: Record<string, string>
 }
@@ -30,8 +31,9 @@ export const ProjectTasksList = ({
   onPageChange,
   onSelect,
   onEdit,
-  onDelete,
+  onDeleteRequest,
   canManage,
+  canDeleteTask,
   deletingTaskId,
   statusLabels
 }: ProjectTasksListProps): JSX.Element => {
@@ -77,47 +79,51 @@ export const ProjectTasksList = ({
         const statusToken = badgeTokens.status[task.status] ?? badgeTokens.statusFallback
         const assignee = task.assignee?.displayName ?? t('details.noAssignee')
 
+        const allowEdit = canManage
+        const allowDelete = canDeleteTask ? canDeleteTask(task) : canManage
+
+        const itemActions: JSX.Element[] = []
+
+        if (allowEdit) {
+          itemActions.push(
+            <Button
+              key="edit"
+              type="text"
+              icon={<EditOutlined />}
+              onClick={(event) => {
+                event.stopPropagation()
+                onEdit(task)
+              }}
+            >
+              {t('tasks.actions.edit')}
+            </Button>
+          )
+        }
+
+        if (allowDelete) {
+          itemActions.push(
+            <Button
+              key="delete"
+              type="text"
+              danger
+              icon={<DeleteOutlined />}
+              loading={deletingTaskId === task.id}
+              onClick={(event) => {
+                event.stopPropagation()
+                onDeleteRequest(task)
+              }}
+            >
+              {t('tasks.actions.delete')}
+            </Button>
+          )
+        }
+
         return (
           <List.Item
             key={task.id}
             onClick={() => onSelect(task)}
             style={{ cursor: 'pointer', paddingInline: token.paddingLG }}
-            actions={
-              canManage
-                ? [
-                    <Button
-                      key="edit"
-                      type="text"
-                      icon={<EditOutlined />}
-                      onClick={(event) => {
-                        event.stopPropagation()
-                        onEdit(task)
-                      }}
-                    >
-                      {t('tasks.actions.edit')}
-                    </Button>,
-                    <Popconfirm
-                      key="delete"
-                      title={t('tasks.actions.deleteTitle')}
-                      description={t('tasks.actions.deleteDescription', { title: task.title })}
-                      okText={t('tasks.actions.deleteConfirm')}
-                      cancelText={t('tasks.actions.cancel')}
-                      okButtonProps={{ loading: deletingTaskId === task.id }}
-                      onConfirm={() => onDelete(task)}
-                    >
-                      <Button
-                        type="text"
-                        danger
-                        icon={<DeleteOutlined />}
-                        loading={deletingTaskId === task.id}
-                        onClick={(event) => event.stopPropagation()}
-                      >
-                        {t('tasks.actions.delete')}
-                      </Button>
-                    </Popconfirm>
-                  ]
-                : undefined
-            }
+            actions={itemActions.length > 0 ? itemActions : undefined}
           >
             <List.Item.Meta
               title={

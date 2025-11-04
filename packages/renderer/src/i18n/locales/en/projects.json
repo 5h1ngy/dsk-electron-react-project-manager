@@ -43,6 +43,7 @@
     "manageMembersDenied": "Only administrators or maintainers can manage project members.",
     "tasksCreateDenied": "You do not have permissions to create tasks in this project.",
     "tasksUpdateDenied": "You do not have permissions to update tasks in this project.",
+    "tasksDeleteDenied": "You do not have permissions to delete this task.",
     "deleteDenied": "You do not have permissions to delete this project."
   },
   "errors": {
@@ -276,6 +277,13 @@
       "modalTitle": "Select optional fields",
       "description": "Select the additional fields to display in the table view."
     },
+    "deleteModal": {
+      "title": "Delete task",
+      "message": "Deleting \"{{title}}\" permanently removes the task, its comments, and any note links.",
+      "warning": "This action cannot be undone.",
+      "confirm": "Delete task",
+      "cancel": "Cancel"
+    },
     "statusManager": {
       "manageButton": "Manage statuses",
       "title": "Task statuses",
@@ -321,7 +329,8 @@
       "deleteTitle": "Remove task",
       "deleteDescription": "Do you want to remove \"{{title}}\"?",
       "deleteConfirm": "Remove",
-      "cancel": "Cancel"
+      "cancel": "Cancel",
+      "deleteSelected": "Delete selected ({{count}})"
     },
     "form": {
       "createTitle": "New task",
@@ -347,7 +356,9 @@
       "createSuccess": "Task created",
       "updateSuccess": "Task updated",
       "deleteSuccess": "Task removed",
-      "notFound": "Task not found"
+      "notFound": "Task not found",
+      "deleteBulkSuccess": "Deleted {{count}} tasks",
+      "deleteOwnerWarning": "{{count}} selected tasks cannot be deleted because you are not the owner."
     },
     "details": {
       "description": "Description",
@@ -384,7 +395,14 @@
       "addNote": "Add note"
     },
     "filterPanel": "Filters",
-    "actionsPanel": "Actions"
+    "actionsPanel": "Actions",
+    "bulkDelete": {
+      "title": "Delete {{count}} tasks",
+      "description": "Deleting these tasks removes comments, history, and note links.",
+      "warning": "This action cannot be undone.",
+      "confirm": "Delete tasks",
+      "cancel": "Cancel"
+    }
   },
   "notes": {
     "title": "Project notes",
@@ -411,7 +429,8 @@
       "panelTitle": "Actions",
       "openFilters": "Filters",
       "resetFilters": "Reset filters",
-      "closeFilters": "Close"
+      "closeFilters": "Close",
+      "deleteSelected": "Delete selected ({{count}})"
     },
     "view": {
       "list": "List view",
@@ -457,7 +476,11 @@
     "feedback": {
       "created": "Note created",
       "updated": "Note updated",
-      "deleted": "Note deleted"
+      "deleted": "Note deleted",
+      "notFound": "Note not found",
+      "deleteDenied": "You do not have permissions to delete this note.",
+      "bulkDeleted": "Deleted {{count}} notes",
+      "deleteOwnerWarning": "{{count}} selected notes cannot be deleted because you are not the owner."
     },
     "validation": {
       "title": "Title is required",
@@ -474,6 +497,13 @@
       "empty": "No notes found",
       "open": "Open note",
       "noHighlight": "No preview available"
+    },
+    "bulkDelete": {
+      "title": "Delete {{count}} notes",
+      "description": "Deleting these notes removes their content and any linked tasks.",
+      "warning": "This action cannot be undone.",
+      "confirm": "Delete notes",
+      "cancel": "Cancel"
     }
   },
   "search": {
@@ -501,4 +531,3 @@
     }
   }
 }
-

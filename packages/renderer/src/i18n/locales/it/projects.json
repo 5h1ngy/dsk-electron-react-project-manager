@@ -43,6 +43,7 @@
     "manageMembersDenied": "Solo amministratori o maintainer possono gestire i membri.",
     "tasksCreateDenied": "Non hai i permessi per creare task in questo progetto.",
     "tasksUpdateDenied": "Non hai i permessi per modificare i task di questo progetto.",
+    "tasksDeleteDenied": "Non hai i permessi per eliminare questo task.",
     "deleteDenied": "Solo gli amministratori possono eliminare i progetti."
   },
   "errors": {
@@ -276,6 +277,13 @@
       "modalTitle": "Seleziona i campi opzionali",
       "description": "Scegli i campi aggiuntivi da mostrare nella vista tabellare."
     },
+    "deleteModal": {
+      "title": "Elimina task",
+      "message": "Eliminando \"{{title}}\" verranno rimossi definitivamente il task, i commenti e i collegamenti alle note.",
+      "warning": "L'operazione è irreversibile.",
+      "confirm": "Elimina task",
+      "cancel": "Annulla"
+    },
     "statusManager": {
       "manageButton": "Gestisci stati",
       "title": "Stati dei task",
@@ -321,7 +329,8 @@
       "deleteTitle": "Rimuovi task",
       "deleteDescription": "Vuoi davvero rimuovere \"{{title}}\"?",
       "deleteConfirm": "Rimuovi",
-      "cancel": "Annulla"
+      "cancel": "Annulla",
+      "deleteSelected": "Elimina selezionati ({{count}})"
     },
     "form": {
       "createTitle": "Nuovo task",
@@ -347,7 +356,9 @@
       "createSuccess": "Task creato",
       "updateSuccess": "Task aggiornato",
       "deleteSuccess": "Task eliminato",
-      "notFound": "Task non trovato"
+      "notFound": "Task non trovato",
+      "deleteBulkSuccess": "Eliminati {{count}} task",
+      "deleteOwnerWarning": "Impossibile eliminare {{count}} task selezionati perche non sei il proprietario."
     },
     "details": {
       "description": "Descrizione",
@@ -384,7 +395,14 @@
       "addNote": "Aggiungi nota"
     },
     "filterPanel": "Filtri",
-    "actionsPanel": "Azioni"
+    "actionsPanel": "Azioni",
+    "bulkDelete": {
+      "title": "Elimina {{count}} task",
+      "description": "Eliminando questi task verranno rimossi commenti, cronologia e collegamenti alle note.",
+      "warning": "Questa operazione non puo essere annullata.",
+      "confirm": "Elimina task",
+      "cancel": "Annulla"
+    }
   },
   "notes": {
     "title": "Note del progetto",
@@ -411,7 +429,8 @@
       "panelTitle": "Azioni",
       "openFilters": "Filtri",
       "resetFilters": "Reimposta filtri",
-      "closeFilters": "Chiudi"
+      "closeFilters": "Chiudi",
+      "deleteSelected": "Elimina selezionate ({{count}})"
     },
     "view": {
       "list": "Vista elenco",
@@ -457,7 +476,11 @@
     "feedback": {
       "created": "Nota creata",
       "updated": "Nota aggiornata",
-      "deleted": "Nota eliminata"
+      "deleted": "Nota eliminata",
+      "notFound": "Nota non trovata",
+      "deleteDenied": "Non hai i permessi per eliminare questa nota.",
+      "bulkDeleted": "Eliminate {{count}} note",
+      "deleteOwnerWarning": "Impossibile eliminare {{count}} note selezionate perche non sei il proprietario."
     },
     "validation": {
       "title": "Il titolo e obbligatorio",
@@ -474,6 +497,13 @@
       "empty": "Nessuna nota trovata",
       "open": "Apri nota",
       "noHighlight": "Nessuna anteprima disponibile"
+    },
+    "bulkDelete": {
+      "title": "Elimina {{count}} note",
+      "description": "Eliminando queste note verranno rimossi contenuto e collegamenti ai task.",
+      "warning": "Questa operazione non puo essere annullata.",
+      "confirm": "Elimina note",
+      "cancel": "Annulla"
     }
   },
   "search": {
@@ -501,4 +531,3 @@
     }
   }
 }
-

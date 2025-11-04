@@ -1,5 +1,6 @@
-import { Button, Popconfirm, Space, Table, Tag, Typography } from 'antd'
+import { Button, Space, Table, Tag, Typography } from 'antd'
 import type { ColumnsType, TablePaginationConfig } from 'antd/es/table'
+import type { TableProps } from 'antd'
 import { useTranslation } from 'react-i18next'
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons'
 
@@ -16,8 +17,11 @@ export interface ProjectListProps {
   onSelect: (projectId: string) => void
   onEdit?: (project: ProjectSummary) => void
   onDelete?: (project: ProjectSummary) => void
-  deletingProjectId?: string | null
   pagination?: TablePaginationConfig
+  canManage: boolean
+  isDeleting: (projectId: string) => boolean
+  deleteDisabled?: boolean
+  rowSelection?: TableProps<ProjectRow>['rowSelection']
 }
 
 const formatDate = (value: Date | string, locale: string): string => {
@@ -35,8 +39,11 @@ export const ProjectList = ({
   onSelect,
   onEdit,
   onDelete,
-  deletingProjectId,
-  pagination
+  pagination,
+  canManage,
+  isDeleting,
+  deleteDisabled = false,
+  rowSelection
 }: ProjectListProps) => {
   const { t, i18n } = useTranslation('projects')
   const showSkeleton = useDelayedLoading(loading)
@@ -118,7 +125,7 @@ export const ProjectList = ({
       width: 160,
       align: 'right',
       render: (_value: unknown, record) => {
-        if (record.role !== 'admin') {
+        if (!canManage || record.role !== 'admin') {
           return null
         }
         return (
@@ -133,24 +140,19 @@ export const ProjectList = ({
             >
               {t('actions.edit')}
             </Button>
-            <Popconfirm
-              title={t('actions.deleteTitle')}
-              description={t('actions.deleteDescription', { name: record.name })}
-              okText={t('actions.deleteConfirm')}
-              cancelText={t('actions.cancel')}
-              okButtonProps={{ loading: deletingProjectId === record.id }}
-              onConfirm={async () => onDelete?.(record)}
-              disabled={!onDelete}
+            <Button
+              type="text"
+              danger
+              icon={<DeleteOutlined />}
+              onClick={(event) => {
+                event.stopPropagation()
+                onDelete?.(record)
+              }}
+              loading={isDeleting(record.id)}
+              disabled={!onDelete || (deleteDisabled && !isDeleting(record.id))}
             >
-              <Button
-                type="text"
-                danger
-                icon={<DeleteOutlined />}
-                onClick={(event) => event.stopPropagation()}
-              >
-                {t('actions.delete')}
-              </Button>
-            </Popconfirm>
+              {t('actions.delete')}
+            </Button>
           </Space>
         )
       }
@@ -166,6 +168,7 @@ export const ProjectList = ({
       rowKey="id"
       columns={columns}
       dataSource={projects}
+      rowSelection={rowSelection}
       pagination={
         pagination ?? {
           pageSize: 10,

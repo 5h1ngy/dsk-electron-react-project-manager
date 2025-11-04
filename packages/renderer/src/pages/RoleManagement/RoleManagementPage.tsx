@@ -1,4 +1,4 @@
-import type { JSX } from 'react'
+import type { JSX, Key } from 'react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   Alert,
@@ -16,7 +16,7 @@ import {
   message
 } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
-import { PlusOutlined, ReloadOutlined } from '@ant-design/icons'
+import { DeleteOutlined, PlusOutlined, ReloadOutlined } from '@ant-design/icons'
 import { Navigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 
@@ -65,6 +65,9 @@ const RoleManagementPage = (): JSX.Element => {
   const [messageApi, messageContext] = message.useMessage()
   const [createForm] = Form.useForm<RoleFormValues>()
   const [editForm] = Form.useForm<RoleFormValues>()
+  const [selectedRoleIds, setSelectedRoleIds] = useState<string[]>([])
+  const [deleteTargets, setDeleteTargets] = useState<RoleSummary[] | null>(null)
+  const [deleteLoading, setDeleteLoading] = useState(false)
 
   const permissionMetadata = useMemo(() => {
     const map = new Map<string, { label: string; description: string }>()
@@ -114,6 +117,26 @@ const RoleManagementPage = (): JSX.Element => {
     }
     void refreshData()
   }, [isAdmin, refreshData])
+
+  useEffect(() => {
+    if (selectedRoleIds.length === 0) {
+      return
+    }
+    const deletableRoles = new Set(
+      roles
+        .filter((role) => !role.isSystemRole && role.userCount === 0)
+        .map((role) => role.id)
+    )
+    const cleaned = selectedRoleIds.filter((id) => deletableRoles.has(id))
+    if (cleaned.length !== selectedRoleIds.length) {
+      setSelectedRoleIds(cleaned)
+    }
+  }, [roles, selectedRoleIds])
+
+  const selectedRoles = useMemo(
+    () => roles.filter((role) => selectedRoleIds.includes(role.id)),
+    [roles, selectedRoleIds]
+  )
 
   const openCreateModal = useCallback(() => {
     createForm.resetFields()
@@ -214,29 +237,103 @@ const RoleManagementPage = (): JSX.Element => {
     }
   }, [closeEditModal, dispatch, editForm, editTarget, messageApi, refreshData, t, token])
 
-  const handleDelete = useCallback(
-    async (role: RoleSummary) => {
-      if (!token) {
-        setError(t('roles:errors.sessionExpired'))
+  const openDeleteConfirm = useCallback(
+    (targets: RoleSummary | RoleSummary[]) => {
+      if (deleteLoading) {
         return
       }
+      const list = Array.isArray(targets) ? targets : [targets]
+      const deletable = list.filter((role) => !role.isSystemRole && role.userCount === 0)
+      const skipped = list.length - deletable.length
+
+      if (skipped > 0) {
+        messageApi.warning(
+          t('roles:messages.deletePartialWarning', {
+            count: skipped,
+            defaultValue:
+              skipped === 1
+                ? '1 role cannot be removed because it is protected or still assigned.'
+                : '{{count}} roles cannot be removed because they are protected or still assigned.'
+          })
+        )
+      }
+
+      if (deletable.length === 0) {
+        return
+      }
+
+      setDeleteTargets(deletable)
+    },
+    [deleteLoading, messageApi, t]
+  )
+
+  const closeDeleteConfirm = useCallback(() => {
+    if (deleteLoading) {
+      return
+    }
+    setDeleteTargets(null)
+  }, [deleteLoading])
+
+  const confirmDelete = useCallback(async () => {
+    if (!deleteTargets || deleteTargets.length === 0) {
+      return
+    }
+    if (!token) {
+      setError(t('roles:errors.sessionExpired'))
+      return
+    }
+
+    setDeleteLoading(true)
+    let successCount = 0
+    const removedIds: string[] = []
+
+    for (const role of deleteTargets) {
       try {
         await handleResponse(window.api.role.remove(token, role.id))
-        messageApi.success(t('roles:messages.deleteSuccess', { name: role.name }))
-        await refreshData()
+        successCount += 1
+        removedIds.push(role.id)
       } catch (err) {
         if (isSessionExpiredError(err)) {
           dispatch(forceLogout())
           setError(t('roles:errors.sessionExpired'))
+          break
         } else {
           const reason = extractErrorMessage(err)
           setError(reason)
           messageApi.error(reason)
         }
       }
-    },
-    [dispatch, messageApi, refreshData, t, token]
-  )
+    }
+
+    if (successCount > 0) {
+      if (successCount === 1) {
+        const role = deleteTargets.find((item) => removedIds.includes(item.id))
+        messageApi.success(
+          t('roles:messages.deleteSuccess', { name: role?.name ?? '', defaultValue: 'Role deleted' })
+        )
+      } else {
+        messageApi.success(
+          t('roles:messages.deleteBulkSuccess', {
+            count: successCount,
+            defaultValue: '{{count}} roles deleted'
+          })
+        )
+      }
+      await refreshData()
+      setSelectedRoleIds((prev) => prev.filter((id) => !removedIds.includes(id)))
+    }
+
+    setDeleteLoading(false)
+    setDeleteTargets(null)
+  }, [
+    deleteTargets,
+    dispatch,
+    messageApi,
+    refreshData,
+    setSelectedRoleIds,
+    t,
+    token
+  ])
 
   const columns = useMemo<ColumnsType<RoleSummary>>(
     () => [
@@ -297,14 +394,18 @@ const RoleManagementPage = (): JSX.Element => {
         width: 200,
         render: (_value: unknown, record: RoleSummary) => (
           <Space size="small">
-            <Button type="link" onClick={() => openEditModal(record)}>
+            <Button
+              type="link"
+              onClick={() => openEditModal(record)}
+              disabled={record.isSystemRole || deleteLoading}
+            >
               {t('roles:actions.edit')}
             </Button>
             <Button
               type="link"
               danger
-              disabled={record.isSystemRole || record.userCount > 0}
-              onClick={() => handleDelete(record)}
+              disabled={record.isSystemRole || record.userCount > 0 || deleteLoading}
+              onClick={() => openDeleteConfirm(record)}
             >
               {t('roles:actions.delete')}
             </Button>
@@ -312,11 +413,50 @@ const RoleManagementPage = (): JSX.Element => {
         )
       }
     ],
-    [handleDelete, openEditModal, permissionMetadata, t]
+    [deleteLoading, openDeleteConfirm, openEditModal, permissionMetadata, t]
+  )
+
+  const deleteModalTitle = useMemo(() => {
+    if (!deleteTargets || deleteTargets.length === 0) {
+      return ''
+    }
+    if (deleteTargets.length === 1) {
+      return t('roles:modals.delete.title', { name: deleteTargets[0].name })
+    }
+    return t('roles:modals.delete.bulkTitle', { count: deleteTargets.length })
+  }, [deleteTargets, t])
+
+  const deleteModalDescription = useMemo(() => {
+    if (!deleteTargets || deleteTargets.length === 0) {
+      return ''
+    }
+    if (deleteTargets.length === 1) {
+      return t('roles:modals.delete.description', { name: deleteTargets[0].name })
+    }
+    return t('roles:modals.delete.bulkDescription', { count: deleteTargets.length })
+  }, [deleteTargets, t])
+
+  const deleteConfirmItems = useMemo(
+    () =>
+      deleteTargets?.map((role) => ({
+        id: role.id,
+        label: role.name
+      })) ?? [],
+    [deleteTargets]
   )
 
   if (!isAdmin) {
     return <Navigate to="/" replace />
+  }
+
+  const rowSelection = {
+    selectedRowKeys: selectedRoleIds,
+    onChange: (keys: Key[]) => {
+      setSelectedRoleIds(keys.map((key) => String(key)))
+    },
+    getCheckboxProps: (record: RoleSummary) => ({
+      disabled: record.isSystemRole || record.userCount > 0 || deleteLoading
+    })
   }
 
   return (
@@ -341,6 +481,21 @@ const RoleManagementPage = (): JSX.Element => {
               disabled={loading}
             >
               {t('roles:actions.create')}
+            </Button>
+            <Button
+              icon={<DeleteOutlined />}
+              danger
+              onClick={() => openDeleteConfirm(selectedRoles)}
+              disabled={selectedRoles.length === 0 || deleteLoading}
+              loading={deleteLoading}
+            >
+              {t('roles:actions.deleteSelected', {
+                count: selectedRoles.length,
+                defaultValue:
+                  selectedRoles.length > 0
+                    ? `Delete selected (${selectedRoles.length})`
+                    : 'Delete selected'
+              })}
             </Button>
             <Button
               icon={<ReloadOutlined />}
@@ -368,6 +523,7 @@ const RoleManagementPage = (): JSX.Element => {
           rowKey="id"
           dataSource={roles}
           columns={columns}
+          rowSelection={rowSelection}
           loading={loading}
           pagination={{
             pageSize: 10,
@@ -379,6 +535,43 @@ const RoleManagementPage = (): JSX.Element => {
           }}
         />
       </Space>
+      <Modal
+        open={Boolean(deleteTargets && deleteTargets.length > 0)}
+        title={deleteModalTitle}
+        onCancel={closeDeleteConfirm}
+        onOk={() => void confirmDelete()}
+        okText={t('roles:modals.delete.confirm')}
+        cancelText={t('roles:modals.delete.cancel')}
+        okButtonProps={{
+          danger: true,
+          loading: deleteLoading,
+          disabled: !deleteTargets || deleteTargets.length === 0
+        }}
+        cancelButtonProps={{ disabled: deleteLoading }}
+        closable={!deleteLoading}
+        maskClosable={false}
+        destroyOnHidden
+      >
+        <Space direction="vertical" size={8} style={{ width: '100%' }}>
+          {deleteModalDescription ? (
+            <Typography.Paragraph style={{ marginBottom: 0 }}>
+              {deleteModalDescription}
+            </Typography.Paragraph>
+          ) : null}
+          {deleteConfirmItems.length > 1 ? (
+            <ul style={{ paddingLeft: 18, margin: 0 }}>
+              {deleteConfirmItems.map((item) => (
+                <li key={item.id}>
+                  <Typography.Text>{item.label}</Typography.Text>
+                </li>
+              ))}
+            </ul>
+          ) : null}
+          <Typography.Text type="danger">
+            {t('roles:modals.delete.warning')}
+          </Typography.Text>
+        </Space>
+      </Modal>
       <Modal
         title={t('roles:create.title')}
         open={createModalOpen}

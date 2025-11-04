@@ -17,13 +17,17 @@ export interface ProjectRouteContext {
   taskStatuses: TaskStatusItem[]
   taskStatusesStatus: string
   canManageTasks: boolean
+  canDeleteTask: (task: TaskDetails) => boolean
   openTaskDetails: (taskId: string) => void
   openTaskCreate: (options?: {
     status?: TaskDetails['status']
     priority?: TaskDetails['priority']
   }) => void
   openTaskEdit: (taskId: string) => void
-  deleteTask: (taskId: string) => Promise<void>
+  deleteConfirmTask: TaskDetails | null
+  openDeleteConfirm: (taskId: string) => void
+  closeDeleteConfirm: () => void
+  confirmDelete: () => Promise<void>
   deletingTaskId: string | null
   notes: NoteSummary[]
   notesStatus: string

@@ -8,6 +8,7 @@ import { TaskStatus } from '@main/models/TaskStatus'
 import { Comment } from '@main/models/Comment'
 import { User } from '@main/models/User'
 import { Note } from '@main/models/Note'
+import { NoteTaskLink } from '@main/models/NoteTaskLink'
 import { AppError, wrapError } from '@main/config/appError'
 import {
   createTaskSchema,
@@ -410,7 +411,15 @@ export class TaskService {
       await this.resolveProjectAccess(actor, task.projectId, 'edit')
 
       await this.withTransaction(async (transaction) => {
-        await task.destroy({ transaction })
+        await Comment.destroy({
+          where: { taskId: task.id },
+          transaction
+        })
+        await NoteTaskLink.destroy({
+          where: { taskId: task.id },
+          transaction
+        })
+        await task.destroy({ transaction, force: true })
       })
 
       await this.auditService.record(actor.userId, 'task', taskId, 'delete', null)

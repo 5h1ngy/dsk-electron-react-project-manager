@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState, type ReactElement } from 're
 import {
   Badge,
   Button,
+  Checkbox,
   Card,
   Divider,
   Drawer,
@@ -61,6 +62,7 @@ import type { NoteDetails, NoteSummary } from '@renderer/store/slices/notes/type
 import type { TaskDetails } from '@renderer/store/slices/tasks/types'
 import type { SearchNotesInput } from '@main/services/note/schemas'
 import { extractErrorMessage } from '@renderer/store/slices/auth/helpers'
+import { selectCurrentUser } from '@renderer/store/slices/auth/selectors'
 import MarkdownEditor, {
   type MarkdownSuggestion
 } from '@renderer/components/Markdown/MarkdownEditor'
@@ -171,6 +173,7 @@ const ProjectNotesPage = (): ReactElement => {
   const dispatch = useAppDispatch()
   const { t } = useTranslation('projects')
   const [messageApi, contextHolder] = message.useMessage()
+  const [bulkMessageApi, bulkMessageContext] = message.useMessage()
   const screens = Grid.useBreakpoint()
   const { token } = theme.useToken()
   const toolbarSegmentedStyle = useMemo(
@@ -205,6 +208,24 @@ const ProjectNotesPage = (): ReactElement => {
   const [filtersDrawerOpen, setFiltersDrawerOpen] = useState(false)
   const [viewMode, setViewMode] = useState<'list' | 'cards'>('list')
   const [prefillLinkedTaskId, setPrefillLinkedTaskId] = useState<string | null>(null)
+  const currentUser = useAppSelector(selectCurrentUser)
+  const userId = currentUser?.id ?? null
+  const [selectedNoteIds, setSelectedNoteIds] = useState<string[]>([])
+  const [bulkDeleteTargets, setBulkDeleteTargets] = useState<NoteSummary[] | null>(null)
+  const [bulkDeleteLoading, setBulkDeleteLoading] = useState(false)
+  const canDeleteNote = useCallback(
+    (note: NoteSummary | NoteDetails) => {
+      if (canManageNotes) {
+        return true
+      }
+      return note.owner.id === userId
+    },
+    [canManageNotes, userId]
+  )
+  const selectedNotes = useMemo(
+    () => notes.filter((note) => selectedNoteIds.includes(note.id) && canDeleteNote(note)),
+    [canDeleteNote, notes, selectedNoteIds]
+  )
 
   const fetchCurrentNotes = useCallback(() => {
     if (!projectId) {
@@ -223,12 +244,40 @@ const ProjectNotesPage = (): ReactElement => {
   useEffect(() => {
     fetchCurrentNotes()
   }, [fetchCurrentNotes])
+  useEffect(() => {
+    if (!(['list', 'cards'] as const).includes(viewMode) && selectedNoteIds.length > 0) {
+      setSelectedNoteIds([])
+    }
+  }, [selectedNoteIds.length, viewMode])
+
+  useEffect(() => {
+    if (selectedNoteIds.length === 0) {
+      return
+    }
+    const validIds = new Set(notes.filter((note) => canDeleteNote(note)).map((note) => note.id))
+    const cleaned = selectedNoteIds.filter((id) => validIds.has(id))
+    if (cleaned.length !== selectedNoteIds.length) {
+      setSelectedNoteIds(cleaned)
+    }
+  }, [canDeleteNote, notes, selectedNoteIds])
 
   const handleCreateNote = useCallback((linkedTaskId?: string) => {
     setEditorMode('create')
     setEditingNote(null)
     setPrefillLinkedTaskId(linkedTaskId ?? null)
     setIsEditorOpen(true)
+  }, [])
+
+  const handleToggleNoteSelection = useCallback((noteId: string, checked: boolean) => {
+    setSelectedNoteIds((prev) => {
+      if (checked) {
+        if (prev.includes(noteId)) {
+          return prev
+        }
+        return [...prev, noteId]
+      }
+      return prev.filter((id) => id !== noteId)
+    })
   }, [])
 
   const handleEditNote = (note: NoteSummary | NoteDetails) => {
@@ -324,19 +373,104 @@ const ProjectNotesPage = (): ReactElement => {
     }
   }
 
+  const deleteNoteById = useCallback(
+    async (noteId: string): Promise<boolean> => {
+      if (!projectId) {
+        return false
+      }
+      try {
+        await dispatch(deleteNote({ projectId, noteId })).unwrap()
+        messageApi.success(t('notes.feedback.deleted'))
+        return true
+      } catch (error) {
+        messageApi.error(extractErrorMessage(error))
+        return false
+      }
+    },
+    [dispatch, messageApi, projectId, t]
+  )
+
   const handleDeleteNote = async (noteId: string) => {
-    if (!projectId) {
+    const note = notes.find((candidate) => candidate.id === noteId)
+    if (!note) {
+      messageApi.error(t('notes.feedback.notFound', { defaultValue: 'Nota non trovata' }))
       return
     }
-    try {
-      await dispatch(deleteNote({ projectId, noteId })).unwrap()
-      messageApi.success(t('notes.feedback.deleted'))
+    if (!canDeleteNote(note)) {
+      messageApi.warning(
+        t('notes.feedback.deleteDenied', {
+          defaultValue: 'Non hai i permessi per eliminare questa nota.'
+        })
+      )
+      return
+    }
+    const success = await deleteNoteById(noteId)
+    if (success) {
       setViewerNoteId((current) => (current === noteId ? null : current))
       fetchCurrentNotes()
-    } catch (error) {
-      messageApi.error(extractErrorMessage(error))
     }
   }
+
+  const openBulkDeleteModal = useCallback(() => {
+    if (!canManageNotes || bulkDeleteLoading) {
+      return
+    }
+    if (selectedNotes.length === 0) {
+      if (selectedNoteIds.length > 0) {
+        bulkMessageApi.warning(
+          t('notes.feedback.deleteOwnerWarning', {
+            count: selectedNoteIds.length,
+            defaultValue:
+              selectedNoteIds.length === 1
+                ? 'Puoi eliminare in blocco solo le note di cui sei proprietario.'
+                : '{{count}} note selezionate non possono essere eliminate perche non sei il proprietario.'
+          })
+        )
+      }
+      return
+    }
+    const skipped = selectedNoteIds.length - selectedNotes.length
+    if (skipped > 0) {
+      bulkMessageApi.warning(
+        t('notes.feedback.deleteOwnerWarning', {
+          count: skipped,
+          defaultValue:
+            skipped === 1
+              ? '1 nota selezionata non puo essere eliminata perche non sei il proprietario.'
+              : '{{count}} note selezionate non possono essere eliminate perche non sei il proprietario.'
+        })
+      )
+    }
+    setBulkDeleteTargets(selectedNotes)
+  }, [bulkDeleteLoading, bulkMessageApi, canManageNotes, selectedNoteIds, selectedNotes, t])
+
+  const closeBulkDeleteModal = useCallback(() => {
+    if (bulkDeleteLoading) {
+      return
+    }
+    setBulkDeleteTargets(null)
+  }, [bulkDeleteLoading])
+
+  const confirmBulkDelete = useCallback(async () => {
+    if (!bulkDeleteTargets || bulkDeleteTargets.length === 0) {
+      return
+    }
+    setBulkDeleteLoading(true)
+    const removedIds: string[] = []
+    for (const note of bulkDeleteTargets) {
+      const success = await deleteNoteById(note.id)
+      if (success) {
+        removedIds.push(note.id)
+      }
+    }
+    if (removedIds.length > 0) {
+      setSelectedNoteIds((prev) => prev.filter((id) => !removedIds.includes(id)))
+      fetchCurrentNotes()
+      bulkMessageApi.success(t('notes.feedback.bulkDeleted', { count: removedIds.length }))
+    }
+    setBulkDeleteLoading(false)
+    setBulkDeleteTargets(null)
+  }, [bulkDeleteTargets, bulkMessageApi, deleteNoteById, fetchCurrentNotes, t])
 
   const handleSearch = (query: string) => {
     const trimmed = query.trim()
@@ -414,8 +548,11 @@ const ProjectNotesPage = (): ReactElement => {
       </Tag>
     )
 
-  const buildNoteActions = (note: NoteSummary, variant: 'list' | 'card'): ReactElement[] =>
-    [
+  const buildNoteActions = (note: NoteSummary, variant: 'list' | 'card'): ReactElement[] => {
+    const allowEdit = canManageNotes
+    const allowDelete = canDeleteNote(note)
+
+    return [
       <Button
         key="view"
         type={variant === 'card' ? 'link' : 'text'}
@@ -424,7 +561,7 @@ const ProjectNotesPage = (): ReactElement => {
       >
         {t('notes.actions.view')}
       </Button>,
-      canManageNotes ? (
+      allowEdit ? (
         <Button
           key="edit"
           type={variant === 'card' ? 'link' : 'text'}
@@ -433,8 +570,23 @@ const ProjectNotesPage = (): ReactElement => {
         >
           {t('notes.actions.edit')}
         </Button>
+      ) : null,
+      allowDelete ? (
+        <Popconfirm
+          key="delete"
+          title={t('notes.actions.deleteTitle')}
+          description={t('notes.actions.deleteConfirmText')}
+          okText={t('notes.actions.delete')}
+          cancelText={t('notes.actions.cancel')}
+          onConfirm={() => void handleDeleteNote(note.id)}
+        >
+          <Button type={variant === 'card' ? 'link' : 'text'} danger icon={<DeleteOutlined />}>
+            {t('notes.actions.delete')}
+          </Button>
+        </Popconfirm>
       ) : null
     ].filter(Boolean) as ReactElement[]
+  }
 
   const filtersContent = (
     <Flex vertical gap={16}>
@@ -478,6 +630,7 @@ const ProjectNotesPage = (): ReactElement => {
   return (
     <Space direction="vertical" size={24} style={{ width: '100%' }}>
       {contextHolder}
+      {bulkMessageContext}
       <BorderedPanel padding="lg" style={{ width: '100%' }}>
         <Flex align="center" gap={12} wrap style={{ width: '100%' }}>
           <Flex align="center" gap={12} wrap style={{ flex: '1 1 auto' }}>
@@ -542,60 +695,56 @@ const ProjectNotesPage = (): ReactElement => {
       >
         {filtersContent}
       </Drawer>
+      {canManageNotes ? (
+        <Flex justify="flex-end" style={{ width: '100%' }}>
+          <Button
+            icon={<DeleteOutlined />}
+            danger
+            onClick={openBulkDeleteModal}
+            disabled={selectedNotes.length === 0 || bulkDeleteLoading}
+            loading={bulkDeleteLoading}
+          >
+            {t('notes.actions.deleteSelected', {
+              count: selectedNotes.length,
+              defaultValue:
+                selectedNotes.length > 0
+                  ? `Delete selected (${selectedNotes.length})`
+                  : 'Delete selected'
+            })}
+          </Button>
+        </Flex>
+      ) : null}
       {viewMode === 'cards' ? (
         <Spin spinning={noteLoading} style={{ width: '100%' }}>
           {notes.length ? (
             <Flex gap={16} wrap style={{ width: '100%' }}>
-              {notes.map((note) => (
-                <Card
-                  key={note.id}
-                  actions={buildNoteActions(note, 'card')}
-                  style={{ flex: '1 1 320px', minWidth: 280, maxWidth: 420 }}
-                  styles={{ body: { display: 'flex', flexDirection: 'column', gap: 8 } }}
-                  title={
-                    <Flex align="center" justify="space-between" wrap>
-                      <Typography.Text strong>{note.title}</Typography.Text>
-                      {renderVisibilityTag(note)}
-                    </Flex>
-                  }
-                >
-                  <Typography.Text type="secondary">
-                    {t('notes.list.updatedBy', {
-                      user: note.owner.displayName,
-                      date: dayjs(note.updatedAt).format('LLL')
-                    })}
-                  </Typography.Text>
-                  <Space size={4} wrap>
-                    {note.notebook ? <Tag color="geekblue">{note.notebook}</Tag> : null}
-                    {note.tags.map((tag) => (
-                      <Tag key={tag}>{tag}</Tag>
-                    ))}
-                  </Space>
-                </Card>
-              ))}
-            </Flex>
-          ) : (
-            <Typography.Text type="secondary">{t('notes.list.empty')}</Typography.Text>
-          )}
-        </Spin>
-      ) : (
-        <List
-          loading={noteLoading}
-          dataSource={notes}
-          locale={{ emptyText: t('notes.list.empty') }}
-          renderItem={(note) => (
-            <List.Item key={note.id} actions={buildNoteActions(note, 'list')}>
-              <List.Item.Meta
-                title={
-                  <Space size={8}>
-                    <Typography.Link onClick={() => handleViewerOpen(note.id)}>
-                      {note.title}
-                    </Typography.Link>
-                    {renderVisibilityTag(note)}
-                  </Space>
-                }
-                description={
-                  <Space direction="vertical" size={8} style={{ width: '100%' }}>
+              {notes.map((note) => {
+                const ownedByUser = note.owner.id === userId
+                const checked = selectedNoteIds.includes(note.id)
+                return (
+                  <Card
+                    key={note.id}
+                    actions={buildNoteActions(note, 'card')}
+                    style={{ flex: '1 1 320px', minWidth: 280, maxWidth: 420 }}
+                    styles={{ body: { display: 'flex', flexDirection: 'column', gap: 8 } }}
+                    extra={
+                      canManageNotes ? (
+                        <Checkbox
+                          checked={checked}
+                          onChange={(event) =>
+                            handleToggleNoteSelection(note.id, event.target.checked)
+                          }
+                          disabled={!ownedByUser || bulkDeleteLoading}
+                        />
+                      ) : null
+                    }
+                    title={
+                      <Flex align="center" justify="space-between" wrap>
+                        <Typography.Text strong>{note.title}</Typography.Text>
+                        {renderVisibilityTag(note)}
+                      </Flex>
+                    }
+                  >
                     <Typography.Text type="secondary">
                       {t('notes.list.updatedBy', {
                         user: note.owner.displayName,
@@ -608,13 +757,107 @@ const ProjectNotesPage = (): ReactElement => {
                         <Tag key={tag}>{tag}</Tag>
                       ))}
                     </Space>
-                  </Space>
-                }
-              />
-            </List.Item>
+                  </Card>
+                )
+              })}
+            </Flex>
+          ) : (
+            <Typography.Text type="secondary">{t('notes.list.empty')}</Typography.Text>
           )}
-        />
+        </Spin>
+      ) : (
+        <Space direction="vertical" size="small" style={{ width: '100%' }}>
+          <List
+            loading={noteLoading}
+            dataSource={notes}
+            locale={{ emptyText: t('notes.list.empty') }}
+            renderItem={(note) => {
+              const ownedByUser = note.owner.id === userId
+              const checked = selectedNoteIds.includes(note.id)
+              return (
+                <List.Item key={note.id} actions={buildNoteActions(note, 'list')}>
+                  <Space align="start" size={12} style={{ width: '100%' }}>
+                    {canManageNotes ? (
+                      <Checkbox
+                        checked={checked}
+                        onChange={(event) =>
+                          handleToggleNoteSelection(note.id, event.target.checked)
+                        }
+                        disabled={!ownedByUser || bulkDeleteLoading}
+                      />
+                    ) : null}
+                    <List.Item.Meta
+                      title={
+                        <Space size={8}>
+                          <Typography.Link onClick={() => handleViewerOpen(note.id)}>
+                            {note.title}
+                          </Typography.Link>
+                          {renderVisibilityTag(note)}
+                        </Space>
+                      }
+                      description={
+                        <Space direction="vertical" size={8} style={{ width: '100%' }}>
+                          <Typography.Text type="secondary">
+                            {t('notes.list.updatedBy', {
+                              user: note.owner.displayName,
+                              date: dayjs(note.updatedAt).format('LLL')
+                            })}
+                          </Typography.Text>
+                          <Space size={4} wrap>
+                            {note.notebook ? <Tag color="geekblue">{note.notebook}</Tag> : null}
+                            {note.tags.map((tag) => (
+                              <Tag key={tag}>{tag}</Tag>
+                            ))}
+                          </Space>
+                        </Space>
+                      }
+                    />
+                  </Space>
+                </List.Item>
+              )
+            }}
+          />
+        </Space>
       )}
+
+      <Modal
+        open={Boolean(bulkDeleteTargets && bulkDeleteTargets.length > 0)}
+        title={
+          bulkDeleteTargets && bulkDeleteTargets.length > 0
+            ? t('notes.bulkDelete.title', { count: bulkDeleteTargets.length })
+            : ''
+        }
+        onCancel={closeBulkDeleteModal}
+        onOk={() => {
+          void confirmBulkDelete()
+        }}
+        okText={t('notes.bulkDelete.confirm')}
+        cancelText={t('notes.bulkDelete.cancel')}
+        okButtonProps={{
+          danger: true,
+          loading: bulkDeleteLoading,
+          disabled: !bulkDeleteTargets || bulkDeleteTargets.length === 0
+        }}
+        cancelButtonProps={{ disabled: bulkDeleteLoading }}
+        maskClosable={false}
+        destroyOnHidden
+      >
+        <Space direction="vertical" size={8} style={{ width: '100%' }}>
+          <Typography.Paragraph style={{ marginBottom: 0 }}>
+            {t('notes.bulkDelete.description')}
+          </Typography.Paragraph>
+          {bulkDeleteTargets && bulkDeleteTargets.length > 0 ? (
+            <ul style={{ paddingLeft: 18, margin: 0 }}>
+              {bulkDeleteTargets.map((note) => (
+                <li key={note.id}>
+                  <Typography.Text>{note.title}</Typography.Text>
+                </li>
+              ))}
+            </ul>
+          ) : null}
+          <Typography.Text type="danger">{t('notes.bulkDelete.warning')}</Typography.Text>
+        </Space>
+      </Modal>
 
       <NoteEditorModal
         open={isEditorOpen}
@@ -635,6 +878,7 @@ const ProjectNotesPage = (): ReactElement => {
         open={Boolean(viewerNoteId)}
         noteId={viewerNoteId}
         canManage={canManageNotes}
+        canDelete={canDeleteNote}
         tasks={tasks}
         onDelete={handleDeleteNote}
         onClose={handleViewerClose}
@@ -847,6 +1091,7 @@ interface NoteDetailsModalProps {
   open: boolean
   noteId: string | null
   canManage: boolean
+  canDelete: (note: NoteDetails) => boolean
   tasks: TaskDetails[]
   onDelete: (noteId: string) => Promise<void>
   onClose: () => void
@@ -857,6 +1102,7 @@ const NoteDetailsModal = ({
   open,
   noteId,
   canManage,
+  canDelete,
   tasks,
   onDelete,
   onClose,
@@ -945,9 +1191,9 @@ const NoteDetailsModal = ({
       title={note ? note.title : t('notes.viewer.title')}
       width={760}
       footer={
-        note && canManage ? (
+        note && (canManage || canDelete(note)) ? (
           <Space>
-            {isEditing ? (
+            {canManage && isEditing ? (
               <>
                 <Button onClick={() => setIsEditing(false)}>{t('notes.actions.cancel')}</Button>
                 <Button type="primary" onClick={handleUpdate} loading={submitting}>
@@ -956,20 +1202,24 @@ const NoteDetailsModal = ({
               </>
             ) : (
               <>
-                <Button icon={<EditOutlined />} onClick={() => setIsEditing(true)}>
-                  {t('notes.actions.edit')}
-                </Button>
-                <Popconfirm
-                  title={t('notes.actions.deleteTitle')}
-                  description={t('notes.actions.deleteConfirmText')}
-                  okText={t('notes.actions.delete')}
-                  cancelText={t('notes.actions.cancel')}
-                  onConfirm={() => note && onDelete(note.id)}
-                >
-                  <Button danger icon={<DeleteOutlined />}>
-                    {t('notes.actions.delete')}
+                {canManage ? (
+                  <Button icon={<EditOutlined />} onClick={() => setIsEditing(true)}>
+                    {t('notes.actions.edit')}
                   </Button>
-                </Popconfirm>
+                ) : null}
+                {canDelete(note) ? (
+                  <Popconfirm
+                    title={t('notes.actions.deleteTitle')}
+                    description={t('notes.actions.deleteConfirmText')}
+                    okText={t('notes.actions.delete')}
+                    cancelText={t('notes.actions.cancel')}
+                    onConfirm={() => note && onDelete(note.id)}
+                  >
+                    <Button danger icon={<DeleteOutlined />}>
+                      {t('notes.actions.delete')}
+                    </Button>
+                  </Popconfirm>
+                ) : null}
               </>
             )}
           </Space>

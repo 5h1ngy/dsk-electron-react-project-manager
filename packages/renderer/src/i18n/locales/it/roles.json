@@ -3,7 +3,8 @@
     "create": "Crea ruolo",
     "refresh": "Aggiorna",
     "edit": "Modifica",
-    "delete": "Elimina"
+    "delete": "Elimina",
+    "deleteSelected": "Elimina selezionati ({{count}})"
   },
   "table": {
     "name": "Nome",
@@ -31,7 +32,9 @@
   "messages": {
     "createSuccess": "Ruolo creato con successo",
     "updateSuccess": "Ruolo aggiornato con successo",
-    "deleteSuccess": "Ruolo \"{{name}}\" eliminato"
+    "deleteSuccess": "Ruolo \"{{name}}\" eliminato",
+    "deleteBulkSuccess": "Eliminati {{count}} ruoli",
+    "deletePartialWarning": "Impossibile eliminare {{count}} ruoli selezionati perche sono protetti o ancora assegnati."
   },
   "errors": {
     "title": "Impossibile caricare i ruoli",
@@ -46,6 +49,17 @@
     "title": "Modifica {{name}}",
     "confirm": "Salva modifiche",
     "cancel": "Annulla"
+  },
+  "modals": {
+    "delete": {
+      "title": "Elimina ruolo {{name}}",
+      "bulkTitle": "Elimina {{count}} ruoli",
+      "description": "L'eliminazione di questo ruolo rimuove i permessi associati. Assicurati che non sia piu assegnato.",
+      "bulkDescription": "Eliminando questi ruoli verranno revocati i permessi corrispondenti in tutto l'ambiente.",
+      "warning": "Questa operazione non puo essere annullata.",
+      "confirm": "Elimina",
+      "cancel": "Annulla"
+    }
   },
   "emptyState": "Nessun ruolo è stato ancora creato",
   "loadingState": "Caricamento ruoli...",
