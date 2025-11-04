@@ -54,14 +54,18 @@ export const TaskBoardStatusPanel = ({
     return null
   }
 
+  const estimatedPanelHeight = 96 + marginMd * 2
+  const stickyTop = `calc(100vh - ${estimatedPanelHeight + marginLg}px)`
+
   return (
     <div
       style={{
         width: '100%',
         position: 'sticky',
-        bottom: marginLg,
-        zIndex: 2,
-        marginTop: marginLg
+        top: stickyTop,
+        zIndex: 5,
+        marginTop: marginLg,
+        pointerEvents: 'auto'
       }}
     >
       <Card
