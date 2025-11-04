@@ -1,7 +1,7 @@
 import { useMemo, type ReactNode } from 'react'
 import { Card, Typography, theme } from 'antd'
 import MarkdownPreview from '@uiw/react-markdown-preview'
-import '@uiw/react-markdown-preview/dist/markdown.css'
+import '@uiw/react-markdown-preview/markdown.css'
 
 export interface MarkdownViewerProps {
   value?: string | null
