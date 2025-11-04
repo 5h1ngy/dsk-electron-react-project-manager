@@ -58,9 +58,9 @@ export const TaskBoardStatusPanel = ({
   return shouldRender ? (
     <div
       style={{
-        width: PANEL_WIDTH,
+        width: open ? PANEL_WIDTH : 0,
         marginInlineStart: open ? token.marginLG : 0,
-        transition: 'margin-inline-start 0.3s ease, opacity 0.3s ease',
+        transition: 'width 0.3s ease, margin-inline-start 0.3s ease, opacity 0.3s ease',
         opacity: open ? 1 : 0,
         pointerEvents: open ? 'auto' : 'none',
         flexShrink: 0,
@@ -145,3 +145,4 @@ export const TaskBoardStatusPanel = ({
 TaskBoardStatusPanel.displayName = 'TaskBoardStatusPanel'
 
 export default TaskBoardStatusPanel
+
