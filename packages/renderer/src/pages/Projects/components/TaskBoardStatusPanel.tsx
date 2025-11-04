@@ -55,8 +55,9 @@ export const TaskBoardStatusPanel = ({
   }
 
   const panelHeight = 110
-  const stickyTop = `max(${marginLg * 2}px, calc(100vh - ${panelHeight + marginLg * 4}px))`
+  const stickyTop = `max(${marginLg * 2}px, calc(100vh - ${panelHeight + marginLg * 3}px))`
   const overlayOffset = panelHeight + marginMd * 2
+  const borderColor = token.colorBorderSecondary
 
   return (
     <div
@@ -76,7 +77,11 @@ export const TaskBoardStatusPanel = ({
         style={{
           pointerEvents: 'auto',
           transform: `translateY(-${overlayOffset}px)`,
-          width: 'min(960px, 100%)'
+          width: 'min(960px, 100%)',
+          borderRadius: token.borderRadiusLG,
+          border: `${token.lineWidth}px solid ${borderColor}`,
+          background: token.colorBgElevated,
+          boxShadow: token.boxShadowTertiary
         }}
       >
       <Card
@@ -84,8 +89,8 @@ export const TaskBoardStatusPanel = ({
         style={{
           width: '100%',
           borderRadius: token.borderRadiusLG,
-          background: token.colorBgContainer,
-          boxShadow: token.boxShadowTertiary
+          background: 'transparent',
+          boxShadow: 'none'
         }}
         styles={{
           body: {
