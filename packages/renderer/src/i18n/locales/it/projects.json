@@ -553,5 +553,53 @@
       "nameLabel": "Nome",
       "nameRequired": "Inserisci un nome"
     }
+  },
+  "wiki": {
+    "title": "Wiki",
+    "actions": {
+      "refresh": "Aggiorna",
+      "create": "Nuova pagina",
+      "createFirst": "Crea la prima pagina",
+      "edit": "Modifica",
+      "delete": "Elimina",
+      "history": "Cronologia",
+      "save": "Salva",
+      "cancel": "Annulla"
+    },
+    "fields": {
+      "title": "Titolo",
+      "summary": "Riassunto",
+      "content": "Contenuto"
+    },
+    "validation": {
+      "title": "Inserisci un titolo.",
+      "contentRequired": "Inserisci il contenuto della pagina."
+    },
+    "emptyState": "Non ci sono ancora pagine wiki.",
+    "list": {
+      "noSummary": "Nessun riassunto disponibile"
+    },
+    "noSelection": "Seleziona una pagina dall'elenco.",
+    "create": {
+      "title": "Crea pagina"
+    },
+    "feedback": {
+      "created": "Pagina creata.",
+      "updated": "Pagina aggiornata.",
+      "deleted": "Pagina eliminata.",
+      "restored": "Revisione ripristinata."
+    },
+    "delete": {
+      "confirmTitle": "Eliminare la pagina?",
+      "confirmDescription": "Questa azione rimuoverà la pagina e la sua cronologia.",
+      "confirmButton": "Elimina",
+      "cancel": "Annulla"
+    },
+    "revisions": {
+      "title": "Cronologia revisioni",
+      "restore": "Ripristina",
+      "noSummary": "Nessun riassunto",
+      "empty": "Nessuna revisione disponibile."
+    }
   }
 }

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo } from 'react'
+import type { ReactNode } from 'react'
 import { message } from 'antd'
 
 import { useAppDispatch, useAppSelector } from '@renderer/store/hooks'
@@ -15,6 +16,7 @@ import {
 } from '@renderer/store/slices/tasks'
 import type { TaskDetails, LoadStatus } from '@renderer/store/slices/tasks'
 import { selectCurrentUser } from '@renderer/store/slices/auth/selectors'
+import { fetchWikiPages } from '@renderer/store/slices/wiki'
 import {
   fetchNotes,
   selectProjectNotes,
@@ -46,7 +48,9 @@ export interface UseProjectDetailsResult {
   notesStatus: ReturnType<ReturnType<typeof selectProjectNotesStatus>>
   canManageNotes: boolean
   refreshNotes: () => void
-  messageContext: React.ReactNode
+  canManageWiki: boolean
+  refreshWiki: () => void
+  messageContext: ReactNode
 }
 
 export const useProjectDetails = (projectId?: string): UseProjectDetailsResult => {
@@ -121,6 +125,7 @@ export const useProjectDetails = (projectId?: string): UseProjectDetailsResult =
     void dispatch(fetchTasks(projectId))
     void dispatch(fetchTaskStatuses(projectId))
     void dispatch(fetchNotes({ projectId }))
+    void dispatch(fetchWikiPages(projectId))
   }, [dispatch, projectId])
 
   useEffect(() => {
@@ -137,6 +142,7 @@ export const useProjectDetails = (projectId?: string): UseProjectDetailsResult =
     void dispatch(fetchTasks(projectId))
     void dispatch(fetchTaskStatuses(projectId))
     void dispatch(fetchNotes({ projectId }))
+    void dispatch(fetchWikiPages(projectId))
   }, [dispatch, projectId])
 
   const refreshTasks = useCallback(() => {
@@ -168,6 +174,13 @@ export const useProjectDetails = (projectId?: string): UseProjectDetailsResult =
     )
   }, [dispatch, notesFilters.includePrivate, notesFilters.notebook, notesFilters.tag, projectId])
 
+  const refreshWiki = useCallback(() => {
+    if (!projectId) {
+      return
+    }
+    void dispatch(fetchWikiPages(projectId))
+  }, [dispatch, projectId])
+
   const projectLoading = !project && projectsStatus === 'loading'
 
   return {
@@ -185,6 +198,14 @@ export const useProjectDetails = (projectId?: string): UseProjectDetailsResult =
     notesStatus,
     canManageNotes: canManageTasks,
     refreshNotes,
+    canManageWiki: canManageTasks,
+    refreshWiki,
     messageContext
   }
 }
+
+
+
+
+
+

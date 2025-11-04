@@ -5,6 +5,7 @@ import { projectApi } from '@preload/api/project'
 import { taskApi } from '@preload/api/task'
 import { taskStatusApi } from '@preload/api/taskStatus'
 import { noteApi } from '@preload/api/note'
+import { wikiApi } from '@preload/api/wiki'
 import { viewApi } from '@preload/api/view'
 import { roleApi } from '@preload/api/role'
 import { databaseApi } from '@preload/api/database'
@@ -42,6 +43,7 @@ const api: PreloadApi = Object.freeze({
   task: taskApi,
   taskStatus: taskStatusApi,
   note: noteApi,
+  wiki: wikiApi,
   view: viewApi,
   role: roleApi,
   database: databaseApi
@@ -62,3 +64,4 @@ if (process.contextIsolated) {
   ;(window as unknown as { api: PreloadApi }).api = api
   ;(window as unknown as { devtoolsConfig: typeof devtoolsConfig }).devtoolsConfig = devtoolsConfig
 }
+

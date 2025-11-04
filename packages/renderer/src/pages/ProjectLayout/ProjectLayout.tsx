@@ -49,6 +49,8 @@ const ProjectLayout = (): JSX.Element => {
     notesStatus,
     canManageNotes,
     refreshNotes,
+    canManageWiki,
+    refreshWiki,
     messageContext
   } = useProjectDetails(projectId)
 
@@ -171,11 +173,14 @@ const ProjectLayout = (): JSX.Element => {
       case 'notes':
         refreshNotes()
         break
+      case 'wiki':
+        refreshWiki()
+        break
       default:
         refresh()
         break
     }
-  }, [activeKey, projectId, refresh, refreshNotes, refreshTasks])
+  }, [activeKey, projectId, refresh, refreshNotes, refreshTasks, refreshWiki])
 
   if (!projectId) {
     return (
@@ -212,6 +217,7 @@ const ProjectLayout = (): JSX.Element => {
     refreshTasks,
     refreshTaskStatuses,
     canManageTasks,
+    canManageWiki,
     canDeleteTask,
     openTaskDetails: handleOpenTaskDetails,
     openTaskCreate: (options) => taskModals.openCreate(options),
@@ -224,7 +230,8 @@ const ProjectLayout = (): JSX.Element => {
     notes,
     notesStatus,
     canManageNotes,
-    refreshNotes
+    refreshNotes,
+    refreshWiki
   }
 
   const handleTabChange = (key: string): void => {
@@ -235,6 +242,9 @@ const ProjectLayout = (): JSX.Element => {
         break
       case 'notes':
         navigate(`${basePath}/notes`)
+        break
+      case 'wiki':
+        navigate(`${basePath}/wiki`)
         break
       default:
         navigate(`${basePath}`)
@@ -290,3 +300,9 @@ ProjectLayout.displayName = 'ProjectLayout'
 
 export { ProjectLayout }
 export default ProjectLayout
+
+
+
+
+
+

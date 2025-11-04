@@ -16,6 +16,9 @@ interface BreadcrumbParams {
 type BreadcrumbItem = NonNullable<BreadcrumbProps['items']>[number]
 
 export const resolveActiveTab = (pathname: string, basePath: string): ProjectTabKey => {
+  if (pathname.startsWith(`${basePath}/wiki`)) {
+    return 'wiki'
+  }
   if (pathname.startsWith(`${basePath}/notes`)) {
     return 'notes'
   }
@@ -28,13 +31,15 @@ export const resolveActiveTab = (pathname: string, basePath: string): ProjectTab
 export const buildTabItems = (t: TFunction<'projects'>): TabsProps['items'] => [
   { key: 'overview', label: t('details.tabs.overview') },
   { key: 'tasks', label: t('details.tabs.tasks') },
-  { key: 'notes', label: t('details.tabs.notes') }
+  { key: 'notes', label: t('details.tabs.notes') },
+  { key: 'wiki', label: t('details.tabs.wiki') }
 ]
 
 export const buildTabLabelMap = (t: TFunction<'projects'>): Record<ProjectTabKey, string> => ({
   overview: t('breadcrumbs.overview'),
   tasks: t('breadcrumbs.tasks'),
-  notes: t('breadcrumbs.notes')
+  notes: t('breadcrumbs.notes'),
+  wiki: t('breadcrumbs.wiki')
 })
 
 export const buildBreadcrumbItems = ({
@@ -67,6 +72,8 @@ export const buildBreadcrumbItems = ({
       tabItem.onClick = () => navigate(`/projects/${project.id}/tasks`)
     } else if (activeKey === 'notes') {
       tabItem.onClick = () => navigate(`/projects/${project.id}/notes`)
+    } else if (activeKey === 'wiki') {
+      tabItem.onClick = () => navigate(`/projects/${project.id}/wiki`)
     } else if (activeKey === 'overview') {
       tabItem.onClick = () => navigate(`/projects/${project.id}`)
     }
@@ -76,3 +83,6 @@ export const buildBreadcrumbItems = ({
 
   return items
 }
+
+
+

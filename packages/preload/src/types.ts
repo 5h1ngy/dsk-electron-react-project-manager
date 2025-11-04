@@ -34,7 +34,9 @@ import type {
   ListNotesInput,
   SearchNotesInput
 } from '@main/services/note/schemas'
+import type { CreateWikiPageInput, UpdateWikiPageInput } from '@main/services/wiki/schemas'
 import type { NoteDetailsDTO, NoteSummaryDTO, NoteSearchResultDTO } from '@main/services/note/types'
+import type { WikiPageDetailsDTO, WikiPageSummaryDTO, WikiRevisionDTO } from '@main/services/wiki/types'
 import type { SavedViewDTO } from '@main/services/view/types'
 import type { CreateViewInput, UpdateViewInput, ListViewsInput } from '@main/services/view/schemas'
 import type { RoleSummary } from '@main/services/roles'
@@ -155,8 +157,48 @@ export interface NoteApi {
     payload: UpdateNoteInput
   ) => Promise<IpcResponse<NoteDetailsDTO>>
   remove: (token: string, noteId: string) => Promise<IpcResponse<{ success: boolean }>>
-  search: (token: string, payload: SearchNotesInput) => Promise<IpcResponse<NoteSearchResultDTO[]>>
+  search: (
+    token: string,
+    payload: SearchNotesInput
+  ) => Promise<IpcResponse<NoteSearchResultDTO[]>>
 }
+
+export interface WikiApi {
+  list: (token: string, projectId: string) => Promise<IpcResponse<WikiPageSummaryDTO[]>>
+  get: (
+    token: string,
+    projectId: string,
+    pageId: string
+  ) => Promise<IpcResponse<WikiPageDetailsDTO>>
+  create: (
+    token: string,
+    projectId: string,
+    payload: CreateWikiPageInput
+  ) => Promise<IpcResponse<WikiPageDetailsDTO>>
+  update: (
+    token: string,
+    projectId: string,
+    pageId: string,
+    payload: UpdateWikiPageInput
+  ) => Promise<IpcResponse<WikiPageDetailsDTO>>
+  remove: (
+    token: string,
+    projectId: string,
+    pageId: string
+  ) => Promise<IpcResponse<{ success: boolean }>>
+  revisions: (
+    token: string,
+    projectId: string,
+    pageId: string
+  ) => Promise<IpcResponse<WikiRevisionDTO[]>>
+  restore: (
+    token: string,
+    projectId: string,
+    pageId: string,
+    revisionId: string
+  ) => Promise<IpcResponse<WikiPageDetailsDTO>>
+}
+
 
 export interface ViewApi {
   list: (token: string, payload: ListViewsInput) => Promise<IpcResponse<SavedViewDTO[]>>
@@ -196,7 +238,10 @@ export interface PreloadApi {
   task: TaskApi
   taskStatus: TaskStatusApi
   note: NoteApi
+  wiki: WikiApi
   view: ViewApi
   role: RoleApi
   database: DatabaseApi
 }
+
+

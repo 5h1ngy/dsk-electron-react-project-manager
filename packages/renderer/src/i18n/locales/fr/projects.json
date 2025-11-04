@@ -548,6 +548,54 @@
       "cancel": "Annuler",
       "nameLabel": "Nom",
       "nameRequired": "Saisissez un nom"
+    }  },
+  "wiki": {
+    "title": "Wiki",
+    "actions": {
+      "refresh": "Actualiser",
+      "create": "Nouvelle page",
+      "createFirst": "Créer la première page",
+      "edit": "Modifier",
+      "delete": "Supprimer",
+      "history": "Historique",
+      "save": "Enregistrer",
+      "cancel": "Annuler"
+    },
+    "fields": {
+      "title": "Titre",
+      "summary": "Résumé",
+      "content": "Contenu"
+    },
+    "validation": {
+      "title": "Veuillez saisir un titre.",
+      "contentRequired": "Veuillez renseigner le contenu de la page."
+    },
+    "emptyState": "Aucune page wiki pour le moment.",
+    "list": {
+      "noSummary": "Aucun résumé disponible"
+    },
+    "noSelection": "Sélectionnez une page dans la liste.",
+    "create": {
+      "title": "Créer une page"
+    },
+    "feedback": {
+      "created": "Page créée.",
+      "updated": "Page mise à jour.",
+      "deleted": "Page supprimée.",
+      "restored": "Version restaurée."
+    },
+    "delete": {
+      "confirmTitle": "Supprimer la page ?",
+      "confirmDescription": "Cette action supprime la page et son historique.",
+      "confirmButton": "Supprimer",
+      "cancel": "Annuler"
+    },
+    "revisions": {
+      "title": "Historique des versions",
+      "restore": "Restaurer",
+      "noSummary": "Aucun résumé",
+      "empty": "Aucune version disponible."
     }
   }
 }
+

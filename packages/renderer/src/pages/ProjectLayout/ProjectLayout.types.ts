@@ -3,7 +3,7 @@ import type { TaskDetails } from '@renderer/store/slices/tasks/types'
 import type { NoteSummary } from '@renderer/store/slices/notes/types'
 import type { TaskStatusItem } from '@renderer/store/slices/taskStatuses'
 
-export type ProjectTabKey = 'overview' | 'tasks' | 'notes'
+export type ProjectTabKey = 'overview' | 'tasks' | 'notes' | 'wiki'
 
 export interface ProjectRouteContext {
   projectId: string
@@ -33,4 +33,9 @@ export interface ProjectRouteContext {
   notesStatus: string
   canManageNotes: boolean
   refreshNotes: () => void
+  canManageWiki: boolean
+  refreshWiki: () => void
 }
+
+
+
