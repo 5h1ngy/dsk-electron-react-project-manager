@@ -1,4 +1,5 @@
 import { randomUUID } from 'node:crypto'
+import { setTimeout as delay } from 'node:timers/promises'
 import { Op, Sequelize, Transaction } from 'sequelize'
 
 import { AppError, wrapError } from '@main/config/appError'
@@ -37,12 +38,17 @@ const slugify = (value: string): string => {
 }
 
 export class WikiService {
+  private readonly maxTransactionAttempts = 5
+
   constructor(
     private readonly sequelize: Sequelize,
     private readonly auditService: AuditService
   ) {}
 
-  private async withTransaction<T>(handler: (tx: Transaction) => Promise<T>): Promise<T> {
+  private async withTransaction<T>(
+    handler: (tx: Transaction) => Promise<T>,
+    attempt = 0
+  ): Promise<T> {
     const transaction = await this.sequelize.transaction()
     try {
       const result = await handler(transaction)
@@ -50,8 +56,23 @@ export class WikiService {
       return result
     } catch (error) {
       await transaction.rollback()
+      if (this.shouldRetryBusy(error, attempt)) {
+        await delay(150 * (attempt + 1))
+        return await this.withTransaction(handler, attempt + 1)
+      }
       throw error
     }
+  }
+
+  private shouldRetryBusy(error: unknown, attempt: number): boolean {
+    if (attempt >= this.maxTransactionAttempts - 1) {
+      return false
+    }
+    if (!error || typeof error !== 'object') {
+      return false
+    }
+    const candidate = error as { code?: string }
+    return candidate.code === 'SQLITE_BUSY'
   }
 
   private async loadMembership(
