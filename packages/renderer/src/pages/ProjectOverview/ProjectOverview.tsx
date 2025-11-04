@@ -4,6 +4,7 @@ import {
   Card,
   Col,
   Checkbox,
+  Grid,
   List,
   Modal,
   Progress,
@@ -16,12 +17,13 @@ import {
   theme,
   message
 } from 'antd'
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { SettingOutlined, EditOutlined } from '@ant-design/icons'
 import dayjs from 'dayjs'
 
 import { EmptyState } from '@renderer/components/DataStates'
+import { BorderedPanel } from '@renderer/components/Surface/BorderedPanel'
 import { useDelayedLoading } from '@renderer/hooks/useDelayedLoading'
 import { ProjectDetailsCard } from '@renderer/pages/Projects/components/ProjectDetailsCard'
 import { useProjectRouteContext } from '@renderer/pages/ProjectLayout'
@@ -57,17 +59,26 @@ const DEFAULT_VISIBLE_OVERVIEW_CARDS: OverviewCardKey[] = [
 
 const OVERVIEW_CARDS_STORAGE_KEY = 'projects:overviewCards'
 
+const normalizeOverviewSelection = (keys: OverviewCardKey[]): OverviewCardKey[] =>
+  DEFAULT_VISIBLE_OVERVIEW_CARDS.filter((key) => keys.includes(key))
+
 const ProjectOverviewPage: FC<ProjectOverviewPageProps> = () => {
   const { project, projectLoading, tasks, taskStatuses, refresh } = useProjectRouteContext()
   const { t } = useTranslation('projects')
   const { token } = theme.useToken()
+  const screens = Grid.useBreakpoint()
+  const isCompact = !screens.md
   const showSkeleton = useDelayedLoading(projectLoading)
   const dispatch = useAppDispatch()
   const { updateForm } = useProjectForms()
   const [visibleOverviewCards, setVisibleOverviewCards] = useState<OverviewCardKey[]>(
     DEFAULT_VISIBLE_OVERVIEW_CARDS
   )
+  const [customizeSelection, setCustomizeSelection] = useState<OverviewCardKey[]>(
+    DEFAULT_VISIBLE_OVERVIEW_CARDS
+  )
   const [customizeOpen, setCustomizeOpen] = useState(false)
+  const [customizeError, setCustomizeError] = useState<string | null>(null)
   const [editModalOpen, setEditModalOpen] = useState(false)
   const [editLoading, setEditLoading] = useState(false)
   const hasWindow = typeof window !== 'undefined'
@@ -138,7 +149,9 @@ const ProjectOverviewPage: FC<ProjectOverviewPageProps> = () => {
           DEFAULT_VISIBLE_OVERVIEW_CARDS.includes(item as OverviewCardKey)
         )
         if (valid.length > 0) {
-          setVisibleOverviewCards(valid)
+          const normalized = normalizeOverviewSelection(valid)
+          setVisibleOverviewCards(normalized)
+          setCustomizeSelection(normalized)
         }
       }
     } catch {
@@ -176,17 +189,53 @@ const ProjectOverviewPage: FC<ProjectOverviewPageProps> = () => {
   const visibleCardsSet = useMemo(() => new Set(visibleOverviewCards), [visibleOverviewCards])
   const canEditProject = project?.role === 'admin'
 
-  const handleOverviewCardsChange = (values: string[]) => {
-    if (values.length === 0) {
-      message.warning(
-        t('details.overview.customizeMinimum', {
-          defaultValue: 'Select at least one card.'
-        })
-      )
+  const handleCustomizeOpen = useCallback(() => {
+    setCustomizeSelection(visibleOverviewCards)
+    setCustomizeError(null)
+    setCustomizeOpen(true)
+  }, [visibleOverviewCards])
+
+  const handleCustomizeCancel = useCallback(() => {
+    setCustomizeSelection(visibleOverviewCards)
+    setCustomizeError(null)
+    setCustomizeOpen(false)
+  }, [visibleOverviewCards])
+
+  const handleCustomizeReset = useCallback(() => {
+    setCustomizeSelection(DEFAULT_VISIBLE_OVERVIEW_CARDS)
+    setCustomizeError(null)
+  }, [])
+
+  const customizeHasChanges = useMemo(() => {
+    if (customizeSelection.length !== visibleOverviewCards.length) {
+      return true
+    }
+    return customizeSelection.some((key, index) => key !== visibleOverviewCards[index])
+  }, [customizeSelection, visibleOverviewCards])
+
+  const isCustomizeDefault = useMemo(() => {
+    if (customizeSelection.length !== DEFAULT_VISIBLE_OVERVIEW_CARDS.length) {
+      return false
+    }
+    return customizeSelection.every(
+      (key, index) => key === DEFAULT_VISIBLE_OVERVIEW_CARDS[index]
+    )
+  }, [customizeSelection])
+
+  const handleCustomizeApply = useCallback(() => {
+    if (customizeSelection.length === 0) {
+      const warningMessage = t('details.overview.customizeMinimum', {
+        defaultValue: 'Select at least one card.'
+      })
+      setCustomizeError(warningMessage)
+      message.warning(warningMessage)
       return
     }
-    setVisibleOverviewCards(values as OverviewCardKey[])
-  }
+    const normalized = normalizeOverviewSelection(customizeSelection)
+    setVisibleOverviewCards(normalized)
+    setCustomizeError(null)
+    setCustomizeOpen(false)
+  }, [customizeSelection, t])
 
   const handleOpenEdit = () => {
     if (!project) {
@@ -381,18 +430,36 @@ const ProjectOverviewPage: FC<ProjectOverviewPageProps> = () => {
   }
 
   return (
-    <Space direction="vertical" size={16} style={{ width: '100%' }}>
-      <Flex justify="flex-end" align="center" gap={8} wrap>
-        {canEditProject ? (
-          <Button icon={<EditOutlined />} onClick={handleOpenEdit} disabled={!project}>
-            {t('details.summary.editProject', { defaultValue: 'Edit project' })}
-          </Button>
-        ) : null}
-        <Button icon={<SettingOutlined />} onClick={() => setCustomizeOpen(true)}>
-          {t('details.overview.customizeButton', { defaultValue: 'Customize overview' })}
-        </Button>
-      </Flex>
-      <Row gutter={[16, 32]} style={{ width: '100%' }}>
+      <Space direction="vertical" size={16} style={{ width: '100%' }}>
+        <BorderedPanel padding="lg" style={{ width: '100%' }}>
+          <Flex align="center" gap={12} wrap style={{ width: '100%' }}>
+            <Flex align="center" gap={12} wrap style={{ flex: '1 1 auto' }}>
+              {canEditProject ? (
+                <div style={isCompact ? { width: '100%' } : undefined}>
+                  <Button
+                    type="primary"
+                    icon={<EditOutlined />}
+                    onClick={handleOpenEdit}
+                    disabled={!project}
+                    style={isCompact ? { width: '100%' } : undefined}
+                  >
+                    {t('details.summary.editProject', { defaultValue: 'Edit project' })}
+                  </Button>
+                </div>
+              ) : null}
+              <div style={isCompact ? { width: '100%' } : undefined}>
+                <Button
+                  icon={<SettingOutlined />}
+                  onClick={handleCustomizeOpen}
+                  style={isCompact ? { width: '100%' } : undefined}
+                >
+                  {t('details.overview.customizeButton', { defaultValue: 'Customize overview' })}
+                </Button>
+              </div>
+            </Flex>
+          </Flex>
+        </BorderedPanel>
+        <Row gutter={[16, 32]} style={{ width: '100%' }}>
         <Col xs={24} lg={12} xl={6}>
           <ProjectDetailsCard
             project={project ?? null}
@@ -594,9 +661,27 @@ const ProjectOverviewPage: FC<ProjectOverviewPageProps> = () => {
       <Modal
         open={customizeOpen}
         title={t('details.overview.customizeTitle', { defaultValue: 'Customize overview' })}
-        onCancel={() => setCustomizeOpen(false)}
-        footer={null}
+        onCancel={handleCustomizeCancel}
         destroyOnClose={false}
+        footer={
+          <Flex align="center" justify="space-between" wrap gap={12}>
+            <Button onClick={handleCustomizeReset} disabled={isCustomizeDefault}>
+              {t('details.overview.customizeReset', { defaultValue: 'Restore defaults' })}
+            </Button>
+            <Space size="small" wrap>
+              <Button onClick={handleCustomizeCancel}>
+                {t('details.overview.customizeCancel', { defaultValue: 'Cancel' })}
+              </Button>
+              <Button
+                type="primary"
+                onClick={handleCustomizeApply}
+                disabled={!customizeHasChanges}
+              >
+                {t('details.overview.customizeApply', { defaultValue: 'Apply changes' })}
+              </Button>
+            </Space>
+          </Flex>
+        }
       >
         <Space direction="vertical" size={16} style={{ width: '100%' }}>
           <Typography.Paragraph type="secondary" style={{ marginBottom: 0 }}>
@@ -605,10 +690,25 @@ const ProjectOverviewPage: FC<ProjectOverviewPageProps> = () => {
             })}
           </Typography.Paragraph>
           <Checkbox.Group
-            options={overviewCardOptions}
-            value={visibleOverviewCards}
-            onChange={handleOverviewCardsChange}
-          />
+            value={customizeSelection}
+            onChange={(values) => {
+              setCustomizeError(null)
+              setCustomizeSelection(
+                normalizeOverviewSelection(values as OverviewCardKey[])
+              )
+            }}
+          >
+            <Space direction="vertical" size={8} style={{ width: '100%' }}>
+              {overviewCardOptions.map((option) => (
+                <Checkbox key={option.value} value={option.value}>
+                  {option.label}
+                </Checkbox>
+              ))}
+            </Space>
+          </Checkbox.Group>
+          {customizeError ? (
+            <Typography.Text type="danger">{customizeError}</Typography.Text>
+          ) : null}
         </Space>
       </Modal>
       <EditProjectModal

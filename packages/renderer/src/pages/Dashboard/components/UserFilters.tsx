@@ -1,4 +1,4 @@
-import { useMemo, useState, type JSX } from 'react'
+import { useMemo, useState, type JSX, type ReactNode } from 'react'
 import {
   Button,
   Drawer,
@@ -35,6 +35,7 @@ export interface UserFiltersProps {
   canCreate?: boolean
   viewMode: 'table' | 'list' | 'cards'
   onViewModeChange: (mode: 'table' | 'list' | 'cards') => void
+  primaryActions?: ReactNode[]
 }
 export const UserFilters = ({
   value,
@@ -43,12 +44,14 @@ export const UserFilters = ({
   onCreate,
   canCreate = true,
   viewMode,
-  onViewModeChange
+  onViewModeChange,
+  primaryActions = []
 }: UserFiltersProps): JSX.Element => {
   const { t } = useTranslation('dashboard')
   const segmentedValue = useMemo<SegmentedValue>(() => value.status, [value.status])
   const [filtersOpen, setFiltersOpen] = useState(false)
   const screens = Grid.useBreakpoint()
+  const isCompact = !screens.md
   const { token } = theme.useToken()
   const toolbarSegmentedStyle = useMemo(
     () => ({
@@ -147,6 +150,13 @@ export const UserFilters = ({
         <Button type="primary" onClick={onCreate} disabled={!canCreate}>
           {t('dashboard:actionBar.create')}
         </Button>
+        {primaryActions.length
+          ? primaryActions.map((action, index) => (
+              <div key={`primary-action-${index}`} style={isCompact ? { width: '100%' } : undefined}>
+                {action}
+              </div>
+            ))
+          : null}
       </Space>
       <Flex align="center" gap={12} wrap style={{ justifyContent: 'flex-end', flexShrink: 0 }}>
         <Segmented

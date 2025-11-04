@@ -449,6 +449,30 @@ const ProjectTasksPage = (): JSX.Element => {
       />
     ) : null
 
+  const bulkDeleteButton = useMemo(() => {
+    if (!canManageTasks || viewMode !== 'table') {
+      return null
+    }
+    return (
+      <Button
+        key="bulk-delete"
+        icon={<DeleteOutlined />}
+        danger
+        onClick={openBulkDeleteModal}
+        disabled={selectedTasks.length === 0 || deleteLoading}
+        loading={deleteLoading}
+      >
+        {t('tasks.actions.deleteSelected', {
+          count: selectedTasks.length,
+          defaultValue:
+            selectedTasks.length > 0
+              ? `Delete selected (${selectedTasks.length})`
+              : 'Delete selected'
+        })}
+      </Button>
+    )
+  }, [canManageTasks, viewMode, openBulkDeleteModal, selectedTasks.length, deleteLoading, t])
+
   const handleTaskSelect = (taskId: string) => {
     openTaskDetails(taskId)
   }
@@ -513,28 +537,10 @@ const ProjectTasksPage = (): JSX.Element => {
           secondaryActions={secondaryActionsContent}
           optionalFieldControls={optionalFieldControlsConfig}
           savedViewsControls={savedViewsControls}
+          primaryActions={bulkDeleteButton ? [bulkDeleteButton] : []}
         />
         {viewMode === 'table' ? (
           <Space direction="vertical" size="small" style={{ width: '100%' }}>
-            {canManageTasks ? (
-              <div style={{ display: 'flex', justifyContent: 'flex-end', width: '100%' }}>
-                <Button
-                  icon={<DeleteOutlined />}
-                  danger
-                  onClick={openBulkDeleteModal}
-                  disabled={selectedTasks.length === 0 || deleteLoading}
-                  loading={deleteLoading}
-                >
-                  {t('tasks.actions.deleteSelected', {
-                    count: selectedTasks.length,
-                    defaultValue:
-                      selectedTasks.length > 0
-                        ? `Delete selected (${selectedTasks.length})`
-                        : 'Delete selected'
-                  })}
-                </Button>
-              </div>
-            ) : null}
             <ProjectTasksTable
               tasks={filteredTasks}
               loading={loading || projectLoading}

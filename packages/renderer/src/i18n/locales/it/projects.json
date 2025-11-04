@@ -138,6 +138,9 @@
       "customizeTitle": "Personalizza panoramica",
       "customizeDescription": "Scegli quali schede mostrare nella panoramica.",
       "customizeMinimum": "Seleziona almeno una scheda.",
+      "customizeReset": "Ripristina predefiniti",
+      "customizeCancel": "Annulla",
+      "customizeApply": "Applica modifiche",
       "taskItem": {
         "due": "Scadenza {{date}}",
         "priority": "Priorita: {{priority}}"
@@ -243,6 +246,11 @@
     "emptyColumn": "Nessun task in questa colonna",
     "summary": {
       "total": "Totale task"
+    },
+    "statusPanel": {
+      "title": "Insight kanban",
+      "total": "Task totali",
+      "close": "Chiudi pannello"
     }
   },
   "notifications": {
@@ -339,6 +347,7 @@
       "create": "Nuovo task",
       "edit": "Modifica",
       "delete": "Elimina",
+      "toggleBoardInsights": "Insight kanban",
       "deleteTitle": "Rimuovi task",
       "deleteDescription": "Vuoi davvero rimuovere \"{{title}}\"?",
       "deleteConfirm": "Rimuovi",

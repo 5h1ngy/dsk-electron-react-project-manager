@@ -138,6 +138,9 @@
       "customizeTitle": "Customize overview",
       "customizeDescription": "Choose which cards to display on the overview.",
       "customizeMinimum": "Select at least one card.",
+      "customizeReset": "Restore defaults",
+      "customizeCancel": "Cancel",
+      "customizeApply": "Apply changes",
       "taskItem": {
         "due": "Due {{date}}",
         "priority": "Priority: {{priority}}"
@@ -243,6 +246,11 @@
     "emptyColumn": "No tasks in this column",
     "summary": {
       "total": "All tasks"
+    },
+    "statusPanel": {
+      "title": "Kanban insights",
+      "total": "Total tasks",
+      "close": "Close panel"
     }
   },
   "notifications": {
@@ -339,6 +347,7 @@
       "create": "New task",
       "edit": "Edit",
       "delete": "Delete",
+      "toggleBoardInsights": "Kanban insights",
       "deleteTitle": "Remove task",
       "deleteDescription": "Do you want to remove \"{{title}}\"?",
       "deleteConfirm": "Remove",

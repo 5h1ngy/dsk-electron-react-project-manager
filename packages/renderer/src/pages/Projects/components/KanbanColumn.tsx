@@ -79,6 +79,9 @@ export const KanbanColumn = ({
       size="small"
       style={{
         minHeight: 360,
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
         borderColor: isDragOver ? token.colorPrimary : token.colorBorderSecondary,
         background: isDragOver ? token.colorPrimaryBg : token.colorBgContainer,
         transition: 'border-color 0.2s ease, background 0.2s ease'
@@ -92,14 +95,26 @@ export const KanbanColumn = ({
           borderRadius: token.borderRadiusLG,
           display: 'flex',
           flexDirection: 'column',
-          gap: 12
+          gap: 12,
+          flex: 1,
+          overflow: 'hidden'
         }
       }}
       onDragOver={handleDragOver}
       onDrop={handleDrop}
       onDragLeave={handleDragLeave}
     >
-      <Space direction="vertical" size={12} style={{ width: '100%' }}>
+      <Space
+        direction="vertical"
+        size={12}
+        style={{
+          width: '100%',
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'stretch'
+        }}
+      >
         {renderComposer ? renderComposer() : null}
         {tasks.length === 0 ? (
           <Typography.Text type="secondary" style={{ textAlign: 'center', padding: '12px 0' }}>

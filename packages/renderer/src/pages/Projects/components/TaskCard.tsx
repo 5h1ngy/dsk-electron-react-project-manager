@@ -1,5 +1,5 @@
-import { Button, Card, Space, Tag, Typography, theme } from 'antd'
-import type { DragEvent, JSX } from 'react'
+import { Button, Card, Flex, Space, Tag, Typography, theme } from 'antd'
+import { useMemo, type DragEvent, type JSX } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   CalendarOutlined,
@@ -51,7 +51,24 @@ export const TaskCard = ({
 
   const ownerName = task.owner?.displayName ?? task.owner?.username ?? null
   const assigneeName = task.assignee?.displayName ?? task.assignee?.username ?? null
-  const hasDescription = Boolean(task.description)
+  const summaryText = useMemo(() => {
+    if (!task.description) {
+      return null
+    }
+    const normalized = task.description
+      .replace(/`{3}[\s\S]*?`{3}/g, ' ')
+      .replace(/`([^`]+)`/g, '$1')
+      .replace(/!\[[^\]]*\]\([^)]*\)/g, ' ')
+      .replace(/\[[^\]]*\]\([^)]*\)/g, '$1')
+      .replace(/^\s{0,3}[-*+]\s+/gm, '')
+      .replace(/^\s{0,3}\d+\.\s+/gm, '')
+      .replace(/^>{1,6}\s+/gm, '')
+      .replace(/^#{1,6}\s+/gm, '')
+      .replace(/[*_~>#]/g, '')
+      .replace(/\s+/g, ' ')
+      .trim()
+    return normalized.length > 0 ? normalized : null
+  }, [task.description])
   const dueDate = task.dueDate ? dayjs(task.dueDate) : null
   const isOverdue = dueDate ? dueDate.isBefore(dayjs(), 'day') : false
   const dueDateLabel = dueDate
@@ -110,20 +127,26 @@ export const TaskCard = ({
       }
     >
       <Space direction="vertical" size={6} style={{ width: '100%' }}>
-        <Space align="center" style={{ justifyContent: 'space-between', width: '100%' }}>
-          <Space size={6} align="center" style={{ minWidth: 0 }}>
-            <Tag color={token.colorPrimary} style={{ margin: 0 }}>
+        <Flex
+          align="center"
+          justify="space-between"
+          wrap
+          gap={8}
+          style={{ width: '100%' }}
+        >
+          <Flex align="center" gap={6} wrap style={{ flex: '1 1 auto', minWidth: 0 }}>
+            <Tag color={token.colorPrimary} style={{ margin: 0, flexShrink: 0 }}>
               {task.key}
             </Tag>
             <Typography.Text
               strong
               ellipsis={{ tooltip: task.title }}
-              style={{ maxWidth: 200 }}
+              style={{ flex: '1 1 auto', minWidth: 0 }}
             >
               {task.title}
             </Typography.Text>
-          </Space>
-          <Space size={4}>
+          </Flex>
+          <Flex align="center" gap={4} wrap style={{ flexShrink: 0 }}>
             <Tag bordered={false} style={buildBadgeStyle(badgeTokens.priority[task.priority])}>
               {t(`details.priority.${task.priority}`)}
             </Tag>
@@ -134,9 +157,9 @@ export const TaskCard = ({
             >
               {task.commentCount ?? 0}
             </Tag>
-          </Space>
-        </Space>
-        <Space size={8} wrap style={{ lineHeight: 1.4 }}>
+          </Flex>
+        </Flex>
+        <Flex gap={8} wrap style={{ lineHeight: 1.4 }}>
           {ownerName ? (
             <Typography.Text type="secondary" style={{ fontSize: 12 }}>
               <IdcardOutlined style={{ marginRight: 4 }} />
@@ -161,14 +184,14 @@ export const TaskCard = ({
               {dueDateLabel}
             </Typography.Text>
           ) : null}
-        </Space>
-        {hasDescription ? (
+        </Flex>
+        {summaryText ? (
           <Typography.Paragraph
             type="secondary"
             ellipsis={{ rows: 2 }}
             style={{ marginBottom: 0 }}
           >
-            {task.description}
+            {summaryText}
           </Typography.Paragraph>
         ) : null}
       </Space>

@@ -137,6 +137,9 @@
       "customizeTitle": "Uebersicht anpassen",
       "customizeDescription": "Waehlen Sie aus, welche Karten in der Uebersicht angezeigt werden sollen.",
       "customizeMinimum": "Waehlen Sie mindestens eine Karte aus.",
+      "customizeReset": "Standard wiederherstellen",
+      "customizeCancel": "Abbrechen",
+      "customizeApply": "Aenderungen uebernehmen",
       "taskItem": {
         "due": "Faellig am {{date}}",
         "priority": "Prioritaet: {{priority}}"
@@ -244,6 +247,11 @@
     "emptyColumn": "Keine Aufgaben in dieser Spalte",
     "summary": {
       "total": "Alle Aufgaben"
+    },
+    "statusPanel": {
+      "title": "Kanban-Statistiken",
+      "total": "Gesamtaufgaben",
+      "close": "Panel schliessen"
     }
   },
   "notifications": {
@@ -340,6 +348,7 @@
       "create": "Neuer Task",
       "edit": "Bearbeiten",
       "delete": "Entfernen",
+      "toggleBoardInsights": "Kanban-Statistiken",
       "deleteTitle": "Task entfernen",
       "deleteDescription": "Moechten Sie \"{{title}}\" wirklich entfernen?",
       "deleteConfirm": "Entfernen",
