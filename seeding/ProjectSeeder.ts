@@ -9,9 +9,18 @@ import { Task } from '../packages/main/src/models/Task'
 import { Note } from '../packages/main/src/models/Note'
 import { NoteTag } from '../packages/main/src/models/NoteTag'
 import { NoteTaskLink } from '../packages/main/src/models/NoteTaskLink'
+import { WikiPage } from '../packages/main/src/models/WikiPage'
+import { WikiRevision } from '../packages/main/src/models/WikiRevision'
 import { logger } from '../packages/main/src/config/logger'
 
 import type { ProjectSeedDefinition } from './DevelopmentSeeder.types'
+
+const slugify = (value: string): string =>
+  value
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '') || 'page'
 
 export class ProjectSeeder {
   async upsert(
@@ -22,11 +31,20 @@ export class ProjectSeeder {
     taskCount: number
     commentCount: number
     noteCount: number
+    wikiPageCount: number
+    wikiRevisionCount: number
   }> {
     const existing = await Project.findOne({ where: { key: seed.key }, transaction })
     if (existing) {
       logger.debug(`Project ${seed.key} already present, skipping`, 'Seed')
-      return { project: null, taskCount: 0, commentCount: 0, noteCount: 0 }
+      return {
+        project: null,
+        taskCount: 0,
+        commentCount: 0,
+        noteCount: 0,
+        wikiPageCount: 0,
+        wikiRevisionCount: 0
+      }
     }
 
     const project = await Project.create(
@@ -114,6 +132,8 @@ export class ProjectSeeder {
     }
 
     let noteCount = 0
+    let wikiPageCount = 0
+    let wikiRevisionTotal = 0
 
     if (seed.notes.length > 0) {
       for (const noteSeed of seed.notes) {
@@ -165,15 +185,64 @@ export class ProjectSeeder {
       }
     }
 
+    if (seed.wikiPages.length > 0) {
+      const usedSlugs = new Set<string>()
+      let displayOrder = 0
+
+      for (const pageSeed of seed.wikiPages) {
+        const baseSlug = slugify(pageSeed.title)
+        let candidate = baseSlug
+        let suffix = 2
+        while (usedSlugs.has(candidate)) {
+          candidate = `${baseSlug}-${suffix}`
+          suffix += 1
+        }
+        usedSlugs.add(candidate)
+
+        const page = await WikiPage.create(
+          {
+            id: randomUUID(),
+            projectId: project.id,
+            title: pageSeed.title,
+            slug: candidate,
+            summary: pageSeed.summary ?? null,
+            contentMd: pageSeed.content,
+            displayOrder,
+            createdBy: pageSeed.createdBy,
+            updatedBy: pageSeed.updatedBy
+          },
+          { transaction }
+        )
+
+        wikiPageCount += 1
+        displayOrder += 1
+
+        if (pageSeed.revisions.length > 0) {
+          const revisionPayload = pageSeed.revisions.map((revision) => ({
+            id: randomUUID(),
+            pageId: page.id,
+            title: revision.title,
+            summary: revision.summary ?? null,
+            contentMd: revision.content,
+            createdBy: revision.authorId
+          }))
+          await WikiRevision.bulkCreate(revisionPayload, { transaction })
+          wikiRevisionTotal += revisionPayload.length
+        }
+      }
+    }
+
     logger.debug(
-      `Seeded project ${seed.key} with ${seed.members.length} members, ${seed.tags.length} tags, ${seed.tasks.length} tasks, ${commentTotal} comments and ${noteCount} notes`,
+      `Seeded project ${seed.key} with ${seed.members.length} members, ${seed.tags.length} tags, ${seed.tasks.length} tasks, ${commentTotal} comments, ${noteCount} notes and ${wikiPageCount} wiki pages`,
       'Seed'
     )
     return {
       project,
       taskCount: seed.tasks.length,
       commentCount: commentTotal,
-      noteCount
+      noteCount,
+      wikiPageCount,
+      wikiRevisionCount: wikiRevisionTotal
     }
   }
 }

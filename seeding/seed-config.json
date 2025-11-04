@@ -98,5 +98,34 @@
       "min": 2,
       "max": 4
     }
+  },
+  "wiki": {
+    "perProject": {
+      "min": 2,
+      "max": 5
+    },
+    "summarySentences": {
+      "min": 1,
+      "max": 2
+    },
+    "sections": [
+      "Overview",
+      "Architecture",
+      "Operations",
+      "Dependencies",
+      "Runbook",
+      "Risks",
+      "FAQ",
+      "Testing"
+    ],
+    "paragraphsPerSection": {
+      "min": 1,
+      "max": 2
+    },
+    "revisionProbability": 0.35,
+    "revisionsPerPage": {
+      "min": 1,
+      "max": 2
+    }
   }
 }

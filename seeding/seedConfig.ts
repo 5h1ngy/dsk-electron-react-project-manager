@@ -49,6 +49,16 @@ export interface SeedConfig {
     checklistProbability: number
     summaryParagraphs: { min: number; max: number }
   }
+  wiki: WikiSeedConfig
+}
+
+export interface WikiSeedConfig {
+  perProject: { min: number; max: number }
+  summarySentences: { min: number; max: number }
+  sections: string[]
+  paragraphsPerSection: { min: number; max: number }
+  revisionProbability: number
+  revisionsPerPage: { min: number; max: number }
 }
 
 const DEFAULT_CONFIG: SeedConfig = {
@@ -111,6 +121,25 @@ const DEFAULT_CONFIG: SeedConfig = {
     linkTargets: { min: 1, max: 3 },
     checklistProbability: 0.55,
     summaryParagraphs: { min: 3, max: 5 }
+  },
+  wiki: {
+    perProject: { min: 3, max: 6 },
+    summarySentences: { min: 1, max: 3 },
+    sections: [
+      'Overview',
+      'Architecture',
+      'Operations',
+      'Dependencies',
+      'Risks',
+      'Runbook',
+      'FAQ',
+      'Implementation',
+      'Testing',
+      'Rollout Plan'
+    ],
+    paragraphsPerSection: { min: 1, max: 2 },
+    revisionProbability: 0.45,
+    revisionsPerPage: { min: 1, max: 2 }
   }
 }
 
@@ -233,6 +262,38 @@ const mergeConfig = (defaults: SeedConfig, overrides: DeepPartial<SeedConfig>): 
     summaryParagraphs: {
       min: overrides.notes?.summaryParagraphs?.min ?? defaults.notes.summaryParagraphs.min,
       max: overrides.notes?.summaryParagraphs?.max ?? defaults.notes.summaryParagraphs.max
+    }
+  },
+  wiki: {
+    perProject: {
+      min: overrides.wiki?.perProject?.min ?? defaults.wiki.perProject.min,
+      max: overrides.wiki?.perProject?.max ?? defaults.wiki.perProject.max
+    },
+    summarySentences: {
+      min: overrides.wiki?.summarySentences?.min ?? defaults.wiki.summarySentences.min,
+      max: overrides.wiki?.summarySentences?.max ?? defaults.wiki.summarySentences.max
+    },
+    sections:
+      overrides.wiki?.sections && overrides.wiki.sections.length > 0
+        ? overrides.wiki.sections
+        : defaults.wiki.sections,
+    paragraphsPerSection: {
+      min:
+        overrides.wiki?.paragraphsPerSection?.min ??
+        defaults.wiki.paragraphsPerSection.min,
+      max:
+        overrides.wiki?.paragraphsPerSection?.max ??
+        defaults.wiki.paragraphsPerSection.max
+    },
+    revisionProbability: clampRatio(
+      overrides.wiki?.revisionProbability,
+      defaults.wiki.revisionProbability
+    ),
+    revisionsPerPage: {
+      min:
+        overrides.wiki?.revisionsPerPage?.min ?? defaults.wiki.revisionsPerPage.min,
+      max:
+        overrides.wiki?.revisionsPerPage?.max ?? defaults.wiki.revisionsPerPage.max
     }
   }
 })
