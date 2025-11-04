@@ -612,33 +612,24 @@ const ProjectTasksPage = (): JSX.Element => {
           />
         ) : null}
         {viewMode === 'board' ? (
-          <div
-            style={{
-              display: 'flex',
-              gap: 16,
-              alignItems: 'stretch',
-              width: '100%'
-            }}
-          >
-            <div style={{ flex: '1 1 auto', minWidth: 0 }}>
-              <ProjectBoard
-                projectId={projectId}
-                statuses={taskStatuses}
-                tasks={filteredTasks}
-                isLoading={loading || projectLoading}
-                canManageTasks={canManageTasks}
-                canDeleteTask={canDeleteTask}
-                onTaskSelect={(task) => handleTaskSelect(task.id)}
-                onTaskEdit={(task) => handleTaskEdit(task.id)}
-                onTaskDelete={(task) => handleTaskDelete(task.id)}
-                deletingTaskId={deletingTaskId}
-              />
-            </div>
+          <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 16 }}>
             <TaskBoardStatusPanel
               open={statusPanelOpen}
               onClose={() => setStatusPanelOpen(false)}
               tasks={filteredTasks}
               statuses={taskStatuses}
+            />
+            <ProjectBoard
+              projectId={projectId}
+              statuses={taskStatuses}
+              tasks={filteredTasks}
+              isLoading={loading || projectLoading}
+              canManageTasks={canManageTasks}
+              canDeleteTask={canDeleteTask}
+              onTaskSelect={(task) => handleTaskSelect(task.id)}
+              onTaskEdit={(task) => handleTaskEdit(task.id)}
+              onTaskDelete={(task) => handleTaskDelete(task.id)}
+              deletingTaskId={deletingTaskId}
             />
           </div>
         ) : null}

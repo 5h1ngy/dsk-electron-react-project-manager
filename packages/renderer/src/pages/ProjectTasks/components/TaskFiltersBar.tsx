@@ -272,22 +272,13 @@ export const TaskFiltersBar = ({
   )
 
   const actionsContent = (
-    <Flex
-      vertical={isCompact}
-      align={isCompact ? 'stretch' : 'center'}
-      gap={12}
-      wrap
-      style={{ width: '100%' }}
-    >
+    <Flex vertical={isCompact} align={isCompact ? 'stretch' : 'center'} gap={12} style={{ width: '100%' }}>
       <Flex
         align={isCompact ? 'stretch' : 'center'}
         vertical={isCompact}
         gap={12}
         wrap={!isCompact}
-        style={{
-          flex: '1 1 260px',
-          minWidth: isCompact ? '100%' : 260
-        }}
+        style={{ flex: '1 1 auto' }}
       >
         {secondaryActions ? (
           <Space size="small" wrap>
@@ -317,12 +308,7 @@ export const TaskFiltersBar = ({
         align={isCompact ? 'stretch' : 'center'}
         vertical={isCompact}
         gap={12}
-        wrap={!isCompact}
-        style={{
-          justifyContent: isCompact ? 'flex-start' : 'flex-end',
-          flex: '1 1 260px',
-          minWidth: isCompact ? '100%' : 260
-        }}
+        style={{ justifyContent: 'flex-end', flexShrink: 0 }}
       >
         <Segmented
           size="large"
