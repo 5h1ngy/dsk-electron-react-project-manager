@@ -65,6 +65,7 @@ export class DatabaseManager {
     const sequelize = this.createInstance()
     await sequelize.authenticate()
     await sequelize.query('PRAGMA foreign_keys = ON;')
+    await sequelize.query('PRAGMA busy_timeout = 5000;')
     logger.debug('Foreign key constraints enabled', 'Database')
     logger.debug('Synchronizing Sequelize models with storage', 'Database')
     await sequelize.sync()

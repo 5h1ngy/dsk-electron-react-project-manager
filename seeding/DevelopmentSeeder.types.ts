@@ -45,6 +45,22 @@ export interface NoteSeedDefinition {
   linkedTaskIndexes: number[]
 }
 
+export interface WikiRevisionSeedDefinition {
+  title: string
+  summary: string | null
+  content: string
+  authorId: string
+}
+
+export interface WikiPageSeedDefinition {
+  title: string
+  summary: string | null
+  content: string
+  createdBy: string
+  updatedBy: string
+  revisions: WikiRevisionSeedDefinition[]
+}
+
 export interface ProjectSeedDefinition {
   key: string
   name: string
@@ -54,6 +70,7 @@ export interface ProjectSeedDefinition {
   tags: string[]
   tasks: TaskSeedDefinition[]
   notes: NoteSeedDefinition[]
+  wikiPages: WikiPageSeedDefinition[]
 }
 
 export interface SeederState {

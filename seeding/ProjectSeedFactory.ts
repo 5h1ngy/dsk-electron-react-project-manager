@@ -7,9 +7,16 @@ import type {
   NoteSeedDefinition,
   ProjectMemberSeed,
   ProjectSeedDefinition,
-  TaskSeedDefinition
+  TaskSeedDefinition,
+  WikiPageSeedDefinition,
+  WikiRevisionSeedDefinition
 } from './DevelopmentSeeder.types'
-import type { CommentsSeedConfig, ProjectsSeedConfig, NotesSeedConfig } from './seedConfig'
+import type {
+  CommentsSeedConfig,
+  ProjectsSeedConfig,
+  NotesSeedConfig,
+  WikiSeedConfig
+} from './seedConfig'
 import { capitalize, formatIsoDate, pickWeighted, type WeightedValue } from './seed.helpers'
 
 const TAG_CATALOG = [
@@ -62,13 +69,27 @@ const NOTE_PREFIXES = [
   'Planning Digest'
 ] as const
 const NOTE_QUOTE_PREFIXES = ['Quote', 'Reminder', 'Insight', 'Customer feedback'] as const
+const WIKI_TOPIC_PREFIXES = [
+  'Architecture',
+  'Operations',
+  'Deployment',
+  'Security',
+  'Quality',
+  'Observability',
+  'Integration',
+  'Runbook',
+  'Compliance',
+  'Performance'
+] as const
+const WIKI_TITLE_SUFFIXES = ['Overview', 'Playbook', 'Guide', 'Reference', 'Deep Dive', 'Checklist'] as const
 
 export class ProjectSeedFactory {
   constructor(
     private readonly random: Faker,
     private readonly projectConfig: ProjectsSeedConfig,
     private readonly commentConfig: CommentsSeedConfig,
-    private readonly notesConfig: NotesSeedConfig
+    private readonly notesConfig: NotesSeedConfig,
+    private readonly wikiConfig: WikiSeedConfig
   ) {}
 
   createSeeds(
@@ -146,6 +167,12 @@ export class ProjectSeedFactory {
         projectTags: tags
       })
 
+      const wikiPages = this.buildWikiSeeds({
+        memberIds,
+        primaryOwnerId: primaryOwner.id,
+        projectTags: tags
+      })
+
       seeds.push({
         key,
         name: this.random.company.catchPhrase(),
@@ -154,7 +181,8 @@ export class ProjectSeedFactory {
         members: Array.from(members.entries()).map(([userId, role]) => ({ userId, role })),
         tags,
         tasks,
-        notes
+        notes,
+        wikiPages
       })
     }
 
@@ -364,6 +392,183 @@ export class ProjectSeedFactory {
     }
 
     return notes
+  }
+
+  private buildWikiSeeds(params: {
+    memberIds: string[]
+    primaryOwnerId: string
+    projectTags: string[]
+  }): WikiPageSeedDefinition[] {
+    const config = this.wikiConfig
+    const maxPages = Math.max(config.perProject.min, config.perProject.max)
+    if (maxPages <= 0) {
+      return []
+    }
+
+    const pageCount = this.random.number.int({
+      min: Math.max(0, config.perProject.min),
+      max: maxPages
+    })
+
+    if (pageCount === 0) {
+      return []
+    }
+
+    const authorPool = params.memberIds.length > 0 ? params.memberIds : [params.primaryOwnerId]
+    const pages: WikiPageSeedDefinition[] = []
+
+    for (let index = 0; index < pageCount; index += 1) {
+      const title = this.buildWikiTitle()
+      const summary =
+        config.summarySentences.max > 0
+          ? this.random.lorem.sentences({
+              min: Math.max(1, config.summarySentences.min),
+              max: Math.max(config.summarySentences.min, config.summarySentences.max)
+            })
+          : null
+
+      const sections = this.pickWikiSections()
+      const content = this.buildWikiContent({
+        title,
+        sections,
+        projectTags: params.projectTags
+      })
+
+      const createdBy = this.random.helpers.arrayElement(authorPool)
+      const updatedBy = this.random.helpers.arrayElement(authorPool)
+
+      const revisions: WikiRevisionSeedDefinition[] =
+        this.random.number.float({ min: 0, max: 1 }) < config.revisionProbability
+          ? this.buildWikiRevisions({
+              sections,
+              authorPool,
+              baseTitle: title,
+              summary,
+              projectTags: params.projectTags
+            })
+          : []
+
+      pages.push({
+        title,
+        summary,
+        content,
+        createdBy,
+        updatedBy,
+        revisions
+      })
+    }
+
+    return pages
+  }
+
+  private buildWikiTitle(): string {
+    const topic = this.random.helpers.arrayElement(WIKI_TOPIC_PREFIXES)
+    const suffix = this.random.helpers.arrayElement(WIKI_TITLE_SUFFIXES)
+    return `${topic} ${suffix}`
+  }
+
+  private pickWikiSections(): string[] {
+    const catalog = this.wikiConfig.sections.length
+      ? this.wikiConfig.sections
+      : ['Overview', 'Details', 'Procedures', 'Notes']
+    const min = Math.min(2, catalog.length)
+    const max = Math.min(5, catalog.length)
+    const count = this.random.number.int({ min, max })
+    const sections = this.random.helpers.arrayElements(catalog, count)
+    if (!sections.includes('Overview')) {
+      sections.unshift('Overview')
+    }
+    return sections
+  }
+
+  private buildWikiContent(params: {
+    title: string
+    sections: string[]
+    projectTags: string[]
+  }): string {
+    const paragraphRange = this.wikiConfig.paragraphsPerSection
+    const tagSnippet =
+      params.projectTags.length > 0
+        ? `> Related tags: ${params.projectTags
+            .slice(0, 4)
+            .map((tag) => `\`${tag}\``)
+            .join(', ')}\n\n`
+        : ''
+
+    let content = `# ${params.title}\n\n${tagSnippet}`
+    for (const section of params.sections) {
+      content += `## ${section}\n\n`
+      const paragraphCount = this.random.number.int({
+        min: Math.max(1, paragraphRange.min),
+        max: Math.max(paragraphRange.min, paragraphRange.max)
+      })
+      for (let index = 0; index < paragraphCount; index += 1) {
+        content += `${this.random.lorem.paragraph()}\n\n`
+      }
+
+      if (this.random.number.float({ min: 0, max: 1 }) < 0.35) {
+        const bulletCount = this.random.number.int({ min: 2, max: 4 })
+        for (let bullet = 0; bullet < bulletCount; bullet += 1) {
+          content += `- ${capitalize(this.random.lorem.sentence())}\n`
+        }
+        content += '\n'
+      }
+    }
+
+    return content.trimEnd()
+  }
+
+  private buildWikiRevisions(params: {
+    sections: string[]
+    authorPool: string[]
+    baseTitle: string
+    summary: string | null
+    projectTags: string[]
+  }): WikiRevisionSeedDefinition[] {
+    const range = this.wikiConfig.revisionsPerPage
+    const revisionCount = this.random.number.int({
+      min: Math.max(1, range.min),
+      max: Math.max(range.min, range.max)
+    })
+
+    const revisions: WikiRevisionSeedDefinition[] = []
+    for (let index = 0; index < revisionCount; index += 1) {
+      const authorId = this.random.helpers.arrayElement(params.authorPool)
+      const summary =
+        params.summary && params.summary.length > 0
+          ? this.random.lorem.sentences({
+              min: 1,
+              max: Math.max(1, this.wikiConfig.summarySentences.max)
+            })
+          : null
+
+      const shuffledSections =
+        params.sections.length > 2
+          ? this.random.helpers.shuffle(params.sections).slice(
+              0,
+              this.random.number.int({
+                min: Math.max(1, params.sections.length - 1),
+                max: params.sections.length
+              })
+            )
+          : params.sections
+
+      revisions.push({
+        title:
+          index === 0
+            ? `${params.baseTitle} (Draft)`
+            : `${params.baseTitle} (Rev ${index})`,
+        summary,
+        content: this.buildWikiContent({
+          title: params.baseTitle,
+          sections: shuffledSections,
+          projectTags: params.projectTags
+        }),
+        authorId
+      })
+    }
+
+    return revisions
   }
 
   private buildCommentSeeds(params: {
