@@ -54,8 +54,8 @@ export const TaskBoardStatusPanel = ({
     return null
   }
 
-  const estimatedPanelHeight = 96 + marginMd * 2
-  const stickyTop = `calc(100vh - ${estimatedPanelHeight + marginLg}px)`
+  const panelHeight = 110
+  const stickyTop = `calc(100vh - ${panelHeight + marginLg}px)`
 
   return (
     <div
@@ -64,7 +64,7 @@ export const TaskBoardStatusPanel = ({
         position: 'sticky',
         top: stickyTop,
         zIndex: 5,
-        marginTop: marginLg,
+        marginTop: marginMd,
         pointerEvents: 'auto'
       }}
     >

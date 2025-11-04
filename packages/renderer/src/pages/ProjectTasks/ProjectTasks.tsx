@@ -613,12 +613,6 @@ const ProjectTasksPage = (): JSX.Element => {
         ) : null}
         {viewMode === 'board' ? (
           <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 16 }}>
-            <TaskBoardStatusPanel
-              open={statusPanelOpen}
-              onClose={() => setStatusPanelOpen(false)}
-              tasks={filteredTasks}
-              statuses={taskStatuses}
-            />
             <ProjectBoard
               projectId={projectId}
               statuses={taskStatuses}
@@ -630,6 +624,12 @@ const ProjectTasksPage = (): JSX.Element => {
               onTaskEdit={(task) => handleTaskEdit(task.id)}
               onTaskDelete={(task) => handleTaskDelete(task.id)}
               deletingTaskId={deletingTaskId}
+            />
+            <TaskBoardStatusPanel
+              open={statusPanelOpen}
+              onClose={() => setStatusPanelOpen(false)}
+              tasks={filteredTasks}
+              statuses={taskStatuses}
             />
           </div>
         ) : null}
