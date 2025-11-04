@@ -14,6 +14,7 @@ import { TaskStatusService } from '@main/services/taskStatus'
 import { NoteService } from '@main/services/note'
 import { ViewService } from '@main/services/view'
 import { RoleService } from '@main/services/roles'
+import { WikiService } from '@main/services/wiki'
 
 export const MAIN_WINDOW_OPTIONS: Electron.BrowserWindowConstructorOptions = {
   width: 1280,
@@ -307,6 +308,7 @@ class AppContext {
   noteService?: NoteService
   viewService?: ViewService
   roleService?: RoleService
+  wikiService?: WikiService
   private databasePath?: string
 
   setDatabase(sequelize: Sequelize, storagePath: string): void {
@@ -318,6 +320,7 @@ class AppContext {
     this.noteService = new NoteService(sequelize, this.auditService)
     this.viewService = new ViewService(sequelize, this.auditService)
     this.roleService = new RoleService(sequelize, this.auditService)
+    this.wikiService = new WikiService(sequelize, this.auditService)
   }
 
   getDatabasePath(): string | null {
@@ -335,8 +338,10 @@ class AppContext {
     this.noteService = undefined
     this.viewService = undefined
     this.roleService = undefined
+    this.wikiService = undefined
   }
 }
 
 export const appContext = new AppContext()
 export const mainWindowManager = new MainWindowManager()
+

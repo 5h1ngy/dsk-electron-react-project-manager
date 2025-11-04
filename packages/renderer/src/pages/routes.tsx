@@ -8,6 +8,7 @@ import ProjectLayout from '@renderer/pages/ProjectLayout'
 import ProjectOverviewPage from '@renderer/pages/ProjectOverview'
 import ProjectTasksPage from '@renderer/pages/ProjectTasks'
 import ProjectNotesPage from '@renderer/pages/ProjectNotes'
+import ProjectWikiPage from '@renderer/pages/ProjectWiki'
 import SettingsPage from '@renderer/pages/Settings'
 import UserManagementPage from '@renderer/pages/UserManagement'
 import RoleManagementPage from '@renderer/pages/RoleManagement'
@@ -33,9 +34,11 @@ export const AppRoutes = () => (
         <Route index element={<ProjectOverviewPage />} />
         <Route path="tasks" element={<ProjectTasksPage />} />
         <Route path="notes" element={<ProjectNotesPage />} />
+        <Route path="wiki" element={<ProjectWikiPage />} />
       </Route>
       <Route path="/projects/:projectId/tasks/:taskId" element={<TaskDetailsPage />} />
     </Route>
     <Route path="*" element={<Navigate to="/" replace />} />
   </Routes>
 )
+

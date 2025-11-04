@@ -17,6 +17,7 @@ import { TaskStatusIpcRegistrar } from '@main/ipc/taskStatus'
 import { NoteIpcRegistrar } from '@main/ipc/note'
 import { ViewIpcRegistrar } from '@main/ipc/view'
 import { RoleIpcRegistrar } from '@main/ipc/role'
+import { WikiIpcRegistrar } from '@main/ipc/wiki'
 import { HealthIpcRegistrar } from '@main/ipc/health'
 import { DatabaseMaintenanceService } from '@main/services/databaseMaintenance'
 import { DatabaseIpcRegistrar } from '@main/ipc/database'
@@ -229,7 +230,8 @@ class MainProcessApplication {
       taskStatusService,
       noteService,
       viewService,
-      roleService
+      roleService,
+      wikiService
     } = this.deps.context
     if (
       !projectService ||
@@ -237,10 +239,11 @@ class MainProcessApplication {
       !taskStatusService ||
       !noteService ||
       !viewService ||
-      !roleService
+      !roleService ||
+      !wikiService
     ) {
       throw new Error(
-        'Project, Task, TaskStatus, Note, View and Role services must be initialized before registering IPC'
+        'Project, Task, TaskStatus, Note, View, Role e Wiki services must be initialized before registering IPC'
       )
     }
 
@@ -277,6 +280,11 @@ class MainProcessApplication {
       roleService,
       registrar: this.deps.ipcRegistrar
     }).register()
+    new WikiIpcRegistrar({
+      authService: this.deps.context.authService,
+      wikiService,
+      registrar: this.deps.ipcRegistrar
+    }).register()
 
     const databaseService = new DatabaseMaintenanceService({
       authService: this.deps.context.authService,
@@ -296,7 +304,7 @@ class MainProcessApplication {
     }).register()
 
     this.deps.logger.debug(
-      'Auth, Project, Task, TaskStatus, Note, View, Role e Database IPC channels registered',
+      'Auth, Project, Task, TaskStatus, Note, View, Role, Wiki e Database IPC channels registered',
       'IPC'
     )
   }
@@ -326,3 +334,9 @@ const application = new MainProcessApplication({
 })
 
 application.bootstrap()
+
+
+
+
+
+

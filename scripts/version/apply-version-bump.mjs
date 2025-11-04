@@ -83,10 +83,10 @@ const updateEnvFile = (version) => {
 const updateReadme = (version) => {
   const readmePath = resolve(PROJECT_ROOT, 'README.md')
   const raw = readFileSync(readmePath, 'utf8')
-  if (!/> Release \d+\.\d+\.\d+ -/m.test(raw)) {
-    throw new Error('Unable to locate the Release heading in README.md')
+  if (!/version-\d+\.\d+\.\d+-/m.test(raw)) {
+    throw new Error('Unable to locate the version badge in README.md')
   }
-  const next = raw.replace(/> Release \d+\.\d+\.\d+ -/, `> Release ${version} -`)
+  const next = raw.replace(/version-\d+\.\d+\.\d+-/g, `version-${version}-`)
   writeFileSync(readmePath, next, 'utf8')
 }
 

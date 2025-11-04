@@ -550,6 +550,54 @@
       "cancel": "Abbrechen",
       "nameLabel": "Name",
       "nameRequired": "Bitte einen Namen eingeben"
+    }  },
+  "wiki": {
+    "title": "Wiki",
+    "actions": {
+      "refresh": "Aktualisieren",
+      "create": "Neue Seite",
+      "createFirst": "Erste Seite erstellen",
+      "edit": "Bearbeiten",
+      "delete": "Löschen",
+      "history": "Verlauf",
+      "save": "Speichern",
+      "cancel": "Abbrechen"
+    },
+    "fields": {
+      "title": "Titel",
+      "summary": "Zusammenfassung",
+      "content": "Inhalt"
+    },
+    "validation": {
+      "title": "Bitte einen Titel angeben.",
+      "contentRequired": "Bitte Seiteninhalt hinzufügen."
+    },
+    "emptyState": "Es sind noch keine Wiki-Seiten vorhanden.",
+    "list": {
+      "noSummary": "Keine Zusammenfassung verfügbar"
+    },
+    "noSelection": "Wähle eine Seite aus der Liste.",
+    "create": {
+      "title": "Seite erstellen"
+    },
+    "feedback": {
+      "created": "Seite erstellt.",
+      "updated": "Seite aktualisiert.",
+      "deleted": "Seite gelöscht.",
+      "restored": "Version wiederhergestellt."
+    },
+    "delete": {
+      "confirmTitle": "Seite löschen?",
+      "confirmDescription": "Diese Aktion entfernt die Seite und ihren Verlauf.",
+      "confirmButton": "Löschen",
+      "cancel": "Abbrechen"
+    },
+    "revisions": {
+      "title": "Versionsverlauf",
+      "restore": "Wiederherstellen",
+      "noSummary": "Keine Zusammenfassung",
+      "empty": "Keine Versionen verfügbar."
     }
   }
 }
+

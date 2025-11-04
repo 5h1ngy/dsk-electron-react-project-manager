@@ -1,5 +1,6 @@
 # DSK Electron React Project Manager
 
+[![Version Shield][version-shield]][version-link]
 [![Electron Shield][electron-shield]][electron-link]
 [![React Shield][react-shield]][react-link]
 [![SQLite Shield][sqlite-shield]][sqlite-link]
@@ -7,8 +8,6 @@
 [![Jest Shield][jest-shield]][jest-link]
 
 ![Application preview](assets/preview.png)
-
-> Release 0.44.12 - Modern desktop project manager with a hardened Electron main process, a typed preload bridge, and a polished React/Redux experience.
 
 ---
 
@@ -99,11 +98,11 @@ All commands assume a recent Node 22 environment. The Electron app automatically
 
 ### Versioning & Releases
 
-- Esegui `npm run version:bump` per impostare manualmente la nuova versione: lo script aggiorna `.env`, `package.json`, `package-lock.json`, la riga "Release ..." nel README e crea automaticamente il commit `chore: bump version to X.Y.Z`.
-- La versione applicativa e' dichiarata in `.env` (`APP_VERSION`) e deve rimanere allineata con `package.json`; il comando precedente garantisce l'aggiornamento coerente dei file.
+- Esegui `npm run version:bump` per impostare manualmente la nuova versione: lo script aggiorna `.env`, `package.json`, `package-lock.json`, il badge `version-` nel README e crea automaticamente il commit `chore: bump version to X.Y.Z`.
+- La versione applicativa è dichiarata in `.env` (`APP_VERSION`) e deve rimanere allineata con `package.json`; il comando precedente garantisce l'aggiornamento coerente dei file.
 - Su `develop` sono ammessi solo branch `feature/`, `feat/`, `bugfix/`, `bug/`, `fix/`; su `main` soltanto `release/` e `hotfix/`. I merge non conformi vengono bloccati sia in locale sia in CI.
 - La pipeline `Release` su GitHub genera esclusivamente il pacchetto Windows portable e pubblica tag+release partendo dalla versione presente nel repository.
-- Dopo il clone esegui `npm run setup:hooks` (o `npm install`) per configurare i githook che applicano i controlli sui prefissi e i Conventional Commit.
+- Gli hook Git sono gestiti da Husky: `npm install` esegue automaticamente `prepare` per configurare i controlli pre-commit (`npm run lint`) e commitlint (Conventional Commits) sul messaggio.
 
 ---
 
@@ -181,6 +180,8 @@ No explicit OSS license is bundled; coordinate internally before distributing bi
 
 ---
 
+[version-shield]: https://img.shields.io/badge/version-0.44.12-blue?style=flat
+[version-link]: https://github.com/dsk-labs/dsk-electron-react-project-manager/releases
 [electron-shield]: https://img.shields.io/badge/electron-38.3-47848f?logo=electron&logoColor=white
 [electron-link]: https://www.electronjs.org/
 [react-shield]: https://img.shields.io/badge/react-19-61dafb?logo=react&logoColor=white

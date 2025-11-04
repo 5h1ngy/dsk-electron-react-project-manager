@@ -7,6 +7,7 @@ import { themeReducer } from '@renderer/store/slices/theme'
 import { projectsReducer } from '@renderer/store/slices/projects'
 import { tasksReducer } from '@renderer/store/slices/tasks'
 import { notesReducer } from '@renderer/store/slices/notes'
+import { wikiReducer } from '@renderer/store/slices/wiki'
 import { viewsReducer } from '@renderer/store/slices/views'
 import { taskStatusesReducer } from '@renderer/store/slices/taskStatuses'
 
@@ -34,6 +35,7 @@ export const setupStore = () => {
       projects: projectsReducer,
       tasks: tasksReducer,
       notes: notesReducer,
+      wiki: wikiReducer,
       views: viewsReducer,
       taskStatuses: taskStatusesReducer
     },
@@ -58,3 +60,4 @@ export const setupStore = () => {
     }
   })
 }
+

@@ -18,6 +18,8 @@ import { Note } from '@main/models/Note'
 import { NoteTag } from '@main/models/NoteTag'
 import { NoteTaskLink } from '@main/models/NoteTaskLink'
 import { View } from '@main/models/View'
+import { WikiPage } from '@main/models/WikiPage'
+import { WikiRevision } from '@main/models/WikiRevision'
 import { DEFAULT_TASK_STATUSES } from '@main/services/taskStatus/defaults'
 import type { DatabaseInitializationOptions } from '@main/config/database.types'
 import { logger } from '@main/config/logger'
@@ -86,7 +88,9 @@ export class DatabaseManager {
     Note,
     NoteTag,
     NoteTaskLink,
-    View
+    View,
+    WikiPage,
+    WikiRevision
   ]
 
   private async ensureCoreData(sequelize: Sequelize): Promise<void> {
