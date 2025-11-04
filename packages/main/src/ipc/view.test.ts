@@ -29,6 +29,7 @@ const baseView = (): SavedViewDTO => ({
     status: 'in_progress',
     priority: 'all',
     assignee: 'all',
+    sprint: 'all',
     dueDateRange: null
   },
   sort: {

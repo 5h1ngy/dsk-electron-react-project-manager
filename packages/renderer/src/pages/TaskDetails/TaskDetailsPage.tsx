@@ -1,4 +1,4 @@
-import {
+﻿import {
   ArrowLeftOutlined,
   CalendarOutlined,
   EditOutlined,
@@ -159,7 +159,9 @@ const TaskDetailsContent = ({
       priority: task?.priority ?? 'medium',
       dueDate: task?.dueDate ?? null,
       assigneeId: task?.assignee?.id ?? null,
-      ownerId: task?.owner?.id ?? currentUser?.id ?? ownerOptions[0]?.value ?? ''
+      ownerId: task?.owner?.id ?? currentUser?.id ?? ownerOptions[0]?.value ?? '',
+      sprintId: task?.sprint?.id ?? null,
+      estimatedMinutes: task?.estimatedMinutes ?? null
     }),
     [currentUser?.id, ownerOptions, task, taskStatuses]
   )
@@ -324,7 +326,9 @@ const TaskDetailsContent = ({
               priority: values.priority,
               dueDate: values.dueDate,
               assigneeId: values.assigneeId,
-              ownerId: values.ownerId
+              ownerId: values.ownerId,
+              sprintId: values.sprintId,
+              estimatedMinutes: values.estimatedMinutes
             }
           })
         ).unwrap()
@@ -566,7 +570,7 @@ const TaskDetailsContent = ({
                       <Space align="center" size={8}>
                         <UserOutlined aria-hidden />
                         <Typography.Text strong>
-                          {comment.author?.displayName ?? comment.author?.username ?? '—'}
+                          {comment.author?.displayName ?? comment.author?.username ?? 'â€”'}
                         </Typography.Text>
                         <Typography.Text type="secondary">
                           {formatDate(comment.createdAt, i18n.language)}
@@ -799,7 +803,7 @@ const TaskDetailsContent = ({
                         <Space size={6} align="center">
                           <UserOutlined aria-hidden />
                           <Typography.Text>
-                            {task.owner?.displayName ?? task.owner?.username ?? '—'}
+                            {task.owner?.displayName ?? task.owner?.username ?? 'â€”'}
                           </Typography.Text>
                         </Space>
                       </div>

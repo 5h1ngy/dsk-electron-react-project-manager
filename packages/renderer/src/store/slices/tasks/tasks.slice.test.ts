@@ -1,4 +1,4 @@
-import { tasksReducer, resetTaskSearch } from '@renderer/store/slices/tasks/slice'
+﻿import { tasksReducer, resetTaskSearch } from '@renderer/store/slices/tasks/slice'
 import { addComment, fetchTasks, moveTask, searchTasks } from '@renderer/store/slices/tasks/thunks'
 import type { TaskDetails } from '@renderer/store/slices/tasks/types'
 
@@ -25,7 +25,11 @@ describe('tasks slice', () => {
     createdAt: now,
     updatedAt: now,
     linkedNotes: [],
-    commentCount: 0
+    commentCount: 0,
+    sprintId: null,
+    sprint: null,
+    estimatedMinutes: null,
+    timeSpentMinutes: 0
   }
 
   it('handles fetchTasks.fulfilled', () => {

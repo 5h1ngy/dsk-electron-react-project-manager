@@ -10,6 +10,8 @@ import { notesReducer } from '@renderer/store/slices/notes'
 import { wikiReducer } from '@renderer/store/slices/wiki'
 import { viewsReducer } from '@renderer/store/slices/views'
 import { taskStatusesReducer } from '@renderer/store/slices/taskStatuses'
+import { sprintsReducer } from '@renderer/store/slices/sprints'
+import { timeTrackingReducer } from '@renderer/store/slices/timeTracking'
 
 const resolveDevtoolsEnabled = (): boolean => {
   if (typeof window === 'undefined') {
@@ -37,7 +39,9 @@ export const setupStore = () => {
       notes: notesReducer,
       wiki: wikiReducer,
       views: viewsReducer,
-      taskStatuses: taskStatusesReducer
+      taskStatuses: taskStatusesReducer,
+      sprints: sprintsReducer,
+      timeTracking: timeTrackingReducer
     },
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({
@@ -60,4 +64,3 @@ export const setupStore = () => {
     }
   })
 }
-

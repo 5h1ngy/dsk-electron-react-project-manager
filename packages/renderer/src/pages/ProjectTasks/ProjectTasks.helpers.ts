@@ -2,6 +2,7 @@ import type { TaskDetails } from '@renderer/store/slices/tasks/types'
 import type { TaskStatusItem } from '@renderer/store/slices/taskStatuses'
 import type { SelectOption, TaskFilters } from '@renderer/pages/ProjectTasks/ProjectTasks.types'
 import type { TFunction } from 'i18next'
+import type { SprintDTO } from '@main/services/sprint/types'
 
 export const buildStatusOptions = (
   t: TFunction<'projects'>,
@@ -36,6 +37,29 @@ export const buildAssigneeOptions = (
       .sort((a, b) => a[1].localeCompare(b[1]))
       .map(([id, label]) => ({ value: id, label }))
   ]
+}
+
+export const buildSprintOptions = (
+  sprints: SprintDTO[],
+  t: TFunction<'projects'>
+): SelectOption[] => {
+  const base: SelectOption[] = [
+    { value: 'all', label: t('details.filters.sprintOptions.all') },
+    { value: 'backlog', label: t('details.filters.sprintOptions.backlog') }
+  ]
+
+  if (sprints.length === 0) {
+    return base
+  }
+
+  const sorted = [...sprints].sort((a, b) => {
+    if (a.sequence !== b.sequence) {
+      return a.sequence - b.sequence
+    }
+    return a.name.localeCompare(b.name)
+  })
+
+  return [...base, ...sorted.map((sprint) => ({ value: sprint.id, label: sprint.name }))]
 }
 
 export const filterTasks = (tasks: TaskDetails[], filters: TaskFilters): TaskDetails[] => {
@@ -79,7 +103,13 @@ export const filterTasks = (tasks: TaskDetails[], filters: TaskFilters): TaskDet
         }
         return true
       })()
+    const matchesSprint =
+      filters.sprint === 'all'
+        ? true
+        : filters.sprint === 'backlog'
+          ? task.sprintId === null
+          : task.sprintId === filters.sprint
 
-    return matchesStatus && matchesPriority && matchesAssignee && matchesDueDate
+    return matchesStatus && matchesPriority && matchesAssignee && matchesDueDate && matchesSprint
   })
 }

@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react'
+﻿import { useCallback, useEffect, useMemo, useState } from 'react'
 import { message } from 'antd'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm, type UseFormReturn, type Resolver } from 'react-hook-form'
@@ -6,6 +6,11 @@ import { useTranslation } from 'react-i18next'
 
 import { useAppDispatch, useAppSelector } from '@renderer/store/hooks'
 import { createTask, updateTask, deleteTask, type TaskDetails } from '@renderer/store/slices/tasks'
+import {
+  fetchSprints,
+  selectSprintList,
+  selectSprintsForProject
+} from '@renderer/store/slices/sprints'
 import type { ProjectDetails } from '@renderer/store/slices/projects'
 import { taskFormSchema, type TaskFormValues } from '@renderer/pages/Projects/schemas/taskSchemas'
 import type { TaskStatusItem } from '@renderer/store/slices/taskStatuses'
@@ -33,6 +38,7 @@ export interface TaskModalsState {
   assigneeOptions: Array<{ label: string; value: string }>
   ownerOptions: Array<{ label: string; value: string }>
   statusOptions: Array<{ label: string; value: string }>
+  sprintOptions: Array<{ label: string; value: string }>
   taskMessageContext: React.ReactNode
 }
 
@@ -125,6 +131,30 @@ export const useTaskModals = ({
     return options
   }, [activeMembers, currentUser?.displayName, currentUser?.id, currentUser?.username])
 
+  const sprintState = useAppSelector((state) =>
+    projectId ? selectSprintsForProject(projectId)(state) : undefined
+  )
+  const sprintList = useAppSelector((state) =>
+    projectId ? selectSprintList(projectId)(state) : []
+  )
+
+  const sprintStatus = sprintState?.status ?? 'idle'
+
+  useEffect(() => {
+    if (projectId && sprintStatus === 'idle') {
+      dispatch(fetchSprints(projectId))
+    }
+  }, [dispatch, projectId, sprintStatus])
+
+  const sprintOptions = useMemo(
+    () =>
+      sprintList.map((sprint) => ({
+        label: sprint.name,
+        value: sprint.id
+      })),
+    [sprintList]
+  )
+
   const defaultOwnerId = useMemo(() => {
     if (currentUser?.id && ownerOptions.some((option) => option.value === currentUser.id)) {
       return currentUser.id
@@ -142,7 +172,9 @@ export const useTaskModals = ({
       priority: 'medium',
       dueDate: null,
       assigneeId: null,
-      ownerId: defaultOwnerId
+      ownerId: defaultOwnerId,
+      sprintId: null,
+      estimatedMinutes: null
     }
   })
 
@@ -170,7 +202,9 @@ export const useTaskModals = ({
         priority: defaults?.priority ?? 'medium',
         dueDate: null,
         assigneeId: null,
-        ownerId: defaultOwnerId
+        ownerId: defaultOwnerId,
+        sprintId: null,
+        estimatedMinutes: null
       })
     },
     [canManageTasks, defaultOwnerId, defaultStatusKey, editorForm, messageApi, statusMap, t]
@@ -196,7 +230,9 @@ export const useTaskModals = ({
         priority: task.priority,
         dueDate: task.dueDate ? task.dueDate.slice(0, 10) : null,
         assigneeId: task.assignee?.id ?? null,
-        ownerId: task.owner?.id ?? defaultOwnerId
+        ownerId: task.owner?.id ?? defaultOwnerId,
+        sprintId: task.sprint?.id ?? null,
+        estimatedMinutes: task.estimatedMinutes ?? null
       })
     },
     [canManageTasks, defaultOwnerId, defaultStatusKey, editorForm, messageApi, statusMap, t, tasks]
@@ -211,7 +247,9 @@ export const useTaskModals = ({
       priority: 'medium',
       dueDate: null,
       assigneeId: null,
-      ownerId: defaultOwnerId
+      ownerId: defaultOwnerId,
+      sprintId: null,
+      estimatedMinutes: null
     })
   }, [defaultOwnerId, defaultStatusKey, editorForm])
 
@@ -227,30 +265,32 @@ export const useTaskModals = ({
             projectId,
             parentId: null,
             title: values.title,
-          description: values.description,
-          status: values.status,
-          priority: values.priority,
-          dueDate: values.dueDate,
-          assigneeId: values.assigneeId,
-          ownerId: values.ownerId
-        })
-      ).unwrap()
-        messageApi.success(t('tasks.messages.createSuccess'))
-      } else if (editorState.mode === 'edit' && editorState.taskId) {
-        await dispatch(
-          updateTask({
-            taskId: editorState.taskId,
-          input: {
-            title: values.title,
             description: values.description,
             status: values.status,
             priority: values.priority,
             dueDate: values.dueDate,
             assigneeId: values.assigneeId,
-            ownerId: values.ownerId
-          }
-        })
-      ).unwrap()
+            ownerId: values.ownerId,
+            sprintId: values.sprintId,
+            estimatedMinutes: values.estimatedMinutes
+          })
+        ).unwrap()
+        messageApi.success(t('tasks.messages.createSuccess'))
+      } else if (editorState.mode === 'edit' && editorState.taskId) {
+        await dispatch(
+          updateTask({
+            taskId: editorState.taskId,
+            input: {
+              title: values.title,
+              description: values.description,
+              status: values.status,
+              priority: values.priority,
+              dueDate: values.dueDate,
+              assigneeId: values.assigneeId,
+              ownerId: values.ownerId
+            }
+          })
+        ).unwrap()
         messageApi.success(t('tasks.messages.updateSuccess'))
       }
       closeEditor()
@@ -359,6 +399,7 @@ export const useTaskModals = ({
     assigneeOptions,
     ownerOptions,
     statusOptions,
+    sprintOptions,
     taskMessageContext
   }
 }

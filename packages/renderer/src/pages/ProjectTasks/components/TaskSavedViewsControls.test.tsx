@@ -21,6 +21,7 @@ describe('TaskSavedViewsControls', () => {
       status: 'all',
       priority: 'all',
       assignee: 'all',
+      sprint: 'all',
       dueDateRange: null
     },
     sort: null,

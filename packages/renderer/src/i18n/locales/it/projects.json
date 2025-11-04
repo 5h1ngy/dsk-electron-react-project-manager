@@ -4,7 +4,9 @@
     "table": "Vista tabella",
     "list": "Vista elenco",
     "cards": "Vista card",
-    "board": "Vista kanban"
+    "board": "Vista kanban",
+    "sprint": "Vista sprint",
+    "timeline": "Monitoraggio tempo"
   },
   "actions": {
     "refresh": "Aggiorna",
@@ -165,6 +167,11 @@
       "assigneeOptions": {
         "all": "Tutti gli assegnatari",
         "unassigned": "Non assegnato"
+      },
+      "sprint": "Sprint",
+      "sprintOptions": {
+        "all": "Tutti gli sprint",
+        "backlog": "Backlog"
       },
       "dueDateRange": {
         "start": "Scadenza da",
@@ -600,6 +607,84 @@
       "restore": "Ripristina",
       "noSummary": "Nessun riassunto",
       "empty": "Nessuna revisione disponibile."
+    }
+  },
+  "sprints": {
+    "title": "Sprint del progetto",
+    "noProjectSelected": "Seleziona un progetto per visualizzare gli sprint.",
+    "empty": "Nessuno sprint definito per questo progetto.",
+    "totalTasks": "Task totali",
+    "estimatedMinutes": "Stimati",
+    "spentMinutes": "Registrati",
+    "capacityMinutes": "Capacità",
+    "utilization": "Utilizzo",
+    "actions": {
+      "create": "Nuovo sprint",
+      "viewTasks": "Vedi task"
+    },
+    "deleteConfirmTitle": "Elimina sprint",
+    "deleteConfirmBody": "Eliminando uno sprint i task resteranno disponibili ma senza associazione.",
+    "deleteSuccess": "Sprint eliminato",
+    "form": {
+      "invalid": "Compila tutti i campi obbligatori.",
+      "nameRequired": "Il nome è obbligatorio",
+      "dateRequired": "Seleziona le date di inizio e fine"
+    },
+    "createTitle": "Crea sprint",
+    "editTitle": "Modifica sprint",
+    "createSuccess": "Sprint creato",
+    "updateSuccess": "Sprint aggiornato",
+    "status": {
+      "planned": "Pianificato",
+      "active": "In corso",
+      "completed": "Completato",
+      "archived": "Archiviato"
+    },
+    "fields": {
+      "name": "Nome",
+      "goal": "Obiettivo",
+      "dateRange": "Periodo",
+      "status": "Stato",
+      "capacityMinutes": "Capacità (minuti)"
+    },
+    "details": {
+      "title": "Dettagli sprint",
+      "tasks": "Task",
+      "emptyTasks": "Nessun task presente nello sprint."
+    }
+  },
+  "time": {
+    "tracking": {
+      "title": "Monitoraggio tempo",
+      "actions": {
+        "logTime": "Registra tempo"
+      },
+      "createTitle": "Registra tempo",
+      "editTitle": "Modifica registrazione",
+      "createSuccess": "Tempo registrato",
+      "updateSuccess": "Registrazione aggiornata",
+      "deleteTitle": "Elimina registrazione",
+      "deleteBody": "Vuoi eliminare questa registrazione di tempo?",
+      "deleteSuccess": "Registrazione eliminata",
+      "totalMinutes": "Minuti registrati",
+      "byUser": "Per utente",
+      "byTask": "Per task",
+      "noData": "Nessun dato disponibile",
+      "noEntries": "Nessuna registrazione per il periodo selezionato.",
+      "noTasks": "Crea un task prima di registrare il tempo.",
+      "columns": {
+        "date": "Data",
+        "task": "Task",
+        "user": "Utente",
+        "minutes": "Minuti",
+        "description": "Descrizione"
+      },
+      "fields": {
+        "task": "Task",
+        "entryDate": "Data",
+        "duration": "Durata (minuti)",
+        "description": "Descrizione"
+      }
     }
   }
 }

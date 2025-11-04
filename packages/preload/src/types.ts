@@ -36,12 +36,24 @@ import type {
 } from '@main/services/note/schemas'
 import type { CreateWikiPageInput, UpdateWikiPageInput } from '@main/services/wiki/schemas'
 import type { NoteDetailsDTO, NoteSummaryDTO, NoteSearchResultDTO } from '@main/services/note/types'
-import type { WikiPageDetailsDTO, WikiPageSummaryDTO, WikiRevisionDTO } from '@main/services/wiki/types'
+import type {
+  WikiPageDetailsDTO,
+  WikiPageSummaryDTO,
+  WikiRevisionDTO
+} from '@main/services/wiki/types'
 import type { SavedViewDTO } from '@main/services/view/types'
 import type { CreateViewInput, UpdateViewInput, ListViewsInput } from '@main/services/view/schemas'
 import type { RoleSummary } from '@main/services/roles'
 import type { RolePermissionDefinition } from '@main/services/roles/constants'
 import type { CreateRoleInput, UpdateRoleInput } from '@main/services/roles/schemas'
+import type { SprintDTO, SprintDetailsDTO } from '@main/services/sprint/types'
+import type { CreateSprintInput, UpdateSprintInput } from '@main/services/sprint/schemas'
+import type {
+  CreateTimeEntryInput,
+  UpdateTimeEntryInput,
+  ProjectTimeSummaryInput
+} from '@main/services/timeTracking/schemas'
+import type { ProjectTimeSummaryDTO, TimeEntryDTO } from '@main/services/timeTracking/types'
 import type {
   DatabaseExportResult,
   DatabaseImportResult,
@@ -157,10 +169,7 @@ export interface NoteApi {
     payload: UpdateNoteInput
   ) => Promise<IpcResponse<NoteDetailsDTO>>
   remove: (token: string, noteId: string) => Promise<IpcResponse<{ success: boolean }>>
-  search: (
-    token: string,
-    payload: SearchNotesInput
-  ) => Promise<IpcResponse<NoteSearchResultDTO[]>>
+  search: (token: string, payload: SearchNotesInput) => Promise<IpcResponse<NoteSearchResultDTO[]>>
 }
 
 export interface WikiApi {
@@ -199,7 +208,6 @@ export interface WikiApi {
   ) => Promise<IpcResponse<WikiPageDetailsDTO>>
 }
 
-
 export interface ViewApi {
   list: (token: string, payload: ListViewsInput) => Promise<IpcResponse<SavedViewDTO[]>>
   create: (token: string, payload: CreateViewInput) => Promise<IpcResponse<SavedViewDTO>>
@@ -231,6 +239,32 @@ export interface DatabaseApi {
   onImportProgress: (handler: (update: DatabaseProgressUpdate) => void) => () => void
 }
 
+export interface SprintApi {
+  list: (token: string, projectId: string) => Promise<IpcResponse<SprintDTO[]>>
+  get: (token: string, sprintId: string) => Promise<IpcResponse<SprintDetailsDTO>>
+  create: (token: string, payload: CreateSprintInput) => Promise<IpcResponse<SprintDTO>>
+  update: (
+    token: string,
+    sprintId: string,
+    payload: UpdateSprintInput
+  ) => Promise<IpcResponse<SprintDTO>>
+  remove: (token: string, sprintId: string) => Promise<IpcResponse<{ success: boolean }>>
+}
+
+export interface TimeTrackingApi {
+  log: (token: string, payload: CreateTimeEntryInput) => Promise<IpcResponse<TimeEntryDTO>>
+  update: (
+    token: string,
+    entryId: string,
+    payload: UpdateTimeEntryInput
+  ) => Promise<IpcResponse<TimeEntryDTO>>
+  remove: (token: string, entryId: string) => Promise<IpcResponse<{ success: boolean }>>
+  summary: (
+    token: string,
+    payload: ProjectTimeSummaryInput
+  ) => Promise<IpcResponse<ProjectTimeSummaryDTO>>
+}
+
 export interface PreloadApi {
   health: HealthApi
   auth: AuthApi
@@ -242,6 +276,6 @@ export interface PreloadApi {
   view: ViewApi
   role: RoleApi
   database: DatabaseApi
+  sprint: SprintApi
+  timeTracking: TimeTrackingApi
 }
-
-

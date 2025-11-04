@@ -1,5 +1,5 @@
 import type { JSX } from 'react'
-import { DatePicker, Form, Input, Modal, Select, Space } from 'antd'
+import { DatePicker, Form, Input, InputNumber, Modal, Select, Space } from 'antd'
 import { Controller, type UseFormReturn } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import dayjs from 'dayjs'
@@ -20,6 +20,7 @@ export interface TaskFormModalProps {
   assigneeOptions: Array<{ label: string; value: string }>
   ownerOptions: Array<{ label: string; value: string }>
   statusOptions: Array<{ label: string; value: string }>
+  sprintOptions: Array<{ label: string; value: string }>
   taskTitle?: string
 }
 
@@ -33,6 +34,7 @@ export const TaskFormModal = ({
   assigneeOptions,
   ownerOptions,
   statusOptions,
+  sprintOptions,
   taskTitle
 }: TaskFormModalProps): JSX.Element => {
   const { t } = useTranslation('projects')
@@ -219,6 +221,54 @@ export const TaskFormModal = ({
                   onChange={(value) => field.onChange(value ? value.format('YYYY-MM-DD') : null)}
                   style={{ width: '100%' }}
                   placeholder={t('tasks.form.placeholders.dueDate')}
+                />
+              )}
+            />
+          </Form.Item>
+        </Space>
+
+        <Space size="large" style={{ width: '100%' }} wrap>
+          <Form.Item
+            label={t('tasks.form.fields.sprint')}
+            style={{ flex: 1, minWidth: 200 }}
+            validateStatus={form.formState.errors.sprintId ? 'error' : ''}
+            help={form.formState.errors.sprintId?.toString()}
+          >
+            <Controller
+              control={form.control}
+              name="sprintId"
+              render={({ field }) => (
+                <Select
+                  value={field.value ?? undefined}
+                  allowClear
+                  placeholder={t('tasks.form.placeholders.sprint')}
+                  options={sprintOptions}
+                  onChange={(value) => field.onChange(value ?? null)}
+                  showSearch
+                  optionFilterProp="label"
+                  disabled={sprintOptions.length === 0}
+                />
+              )}
+            />
+          </Form.Item>
+
+          <Form.Item
+            label={t('tasks.form.fields.estimatedMinutes')}
+            style={{ flex: 1, minWidth: 160 }}
+            validateStatus={form.formState.errors.estimatedMinutes ? 'error' : ''}
+            help={form.formState.errors.estimatedMinutes?.toString()}
+          >
+            <Controller
+              control={form.control}
+              name="estimatedMinutes"
+              render={({ field }) => (
+                <InputNumber
+                  value={field.value ?? undefined}
+                  min={0}
+                  max={1_000_000}
+                  onChange={(value) => field.onChange(value ?? null)}
+                  style={{ width: '100%' }}
+                  placeholder={t('tasks.form.placeholders.estimatedMinutes')}
                 />
               )}
             />

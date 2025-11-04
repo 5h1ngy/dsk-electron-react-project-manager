@@ -1,4 +1,5 @@
 import type { TaskPriorityInput, TaskStatusInput } from '@main/services/task/schemas'
+import type { SprintStatus } from '@main/models/Sprint'
 
 export interface UserSummaryDTO {
   id: string
@@ -18,6 +19,10 @@ export interface TaskDTO {
   dueDate: string | null
   assignee: UserSummaryDTO | null
   owner: UserSummaryDTO
+  sprintId: string | null
+  sprint: SprintSummaryDTO | null
+  estimatedMinutes: number | null
+  timeSpentMinutes: number
   createdAt: Date
   updatedAt: Date
 }
@@ -42,4 +47,16 @@ export interface CommentDTO {
   body: string
   createdAt: Date
   updatedAt: Date
+}
+
+export interface SprintSummaryDTO {
+  id: string
+  projectId: string
+  name: string
+  status: SprintStatus
+  startDate: string
+  endDate: string
+  goal: string | null
+  capacityMinutes: number | null
+  sequence: number
 }

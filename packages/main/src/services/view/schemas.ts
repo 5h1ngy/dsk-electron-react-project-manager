@@ -42,6 +42,10 @@ export const viewFilterSchema = z.object({
   status: z.union([z.literal('all'), taskStatusSchema]),
   priority: z.union([z.literal('all'), z.enum(TASK_PRIORITY_VALUES)]),
   assignee: z.union([z.literal('all'), z.literal('unassigned'), z.string().trim().max(64)]),
+  sprint: z
+    .union([z.literal('all'), z.literal('backlog'), z.string().trim().max(64)])
+    .optional()
+    .default('all'),
   dueDateRange: z
     .tuple([z.string().trim().min(1).nullable(), z.string().trim().min(1).nullable()])
     .nullable()

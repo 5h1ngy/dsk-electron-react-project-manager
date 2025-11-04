@@ -165,6 +165,11 @@
         "all": "Alle Zustaendigen",
         "unassigned": "Nicht zugewiesen"
       },
+      "sprint": "Sprint",
+      "sprintOptions": {
+        "all": "Alle Sprints",
+        "backlog": "Backlog"
+      },
       "dueDateRange": {
         "start": "Faellig ab",
         "end": "Faellig bis"
@@ -550,7 +555,8 @@
       "cancel": "Abbrechen",
       "nameLabel": "Name",
       "nameRequired": "Bitte einen Namen eingeben"
-    }  },
+    }
+  },
   "wiki": {
     "title": "Wiki",
     "actions": {
@@ -598,6 +604,83 @@
       "noSummary": "Keine Zusammenfassung",
       "empty": "Keine Versionen verfügbar."
     }
+  },
+  "sprints": {
+    "title": "Projektsprints",
+    "noProjectSelected": "Wählen Sie ein Projekt aus, um dessen Sprints anzuzeigen.",
+    "empty": "Für dieses Projekt sind keine Sprints definiert.",
+    "totalTasks": "Gesamtaufgaben",
+    "estimatedMinutes": "Geschätzt",
+    "spentMinutes": "Erfasst",
+    "capacityMinutes": "Kapazität",
+    "utilization": "Auslastung",
+    "actions": {
+      "create": "Neuer Sprint",
+      "viewTasks": "Aufgaben anzeigen"
+    },
+    "deleteConfirmTitle": "Sprint löschen",
+    "deleteConfirmBody": "Beim Löschen eines Sprints bleiben die Aufgaben erhalten, verlieren jedoch die Zuordnung.",
+    "deleteSuccess": "Sprint gelöscht",
+    "form": {
+      "invalid": "Bitte füllen Sie alle Pflichtfelder aus.",
+      "nameRequired": "Name ist erforderlich",
+      "dateRequired": "Start- und Enddatum auswählen"
+    },
+    "createTitle": "Sprint erstellen",
+    "editTitle": "Sprint bearbeiten",
+    "createSuccess": "Sprint erstellt",
+    "updateSuccess": "Sprint aktualisiert",
+    "status": {
+      "planned": "Geplant",
+      "active": "Aktiv",
+      "completed": "Abgeschlossen",
+      "archived": "Archiviert"
+    },
+    "fields": {
+      "name": "Name",
+      "goal": "Ziel",
+      "dateRange": "Zeitraum",
+      "status": "Status",
+      "capacityMinutes": "Kapazität (Minuten)"
+    },
+    "details": {
+      "title": "Sprintdetails",
+      "tasks": "Aufgaben",
+      "emptyTasks": "In diesem Sprint sind keine Aufgaben enthalten."
+    }
+  },
+  "time": {
+    "tracking": {
+      "title": "Zeiterfassung",
+      "actions": {
+        "logTime": "Zeit erfassen"
+      },
+      "createTitle": "Zeit erfassen",
+      "editTitle": "Eintrag bearbeiten",
+      "createSuccess": "Zeit erfasst",
+      "updateSuccess": "Eintrag aktualisiert",
+      "deleteTitle": "Eintrag löschen",
+      "deleteBody": "Möchten Sie diesen Zeiterfassungseintrag löschen?",
+      "deleteSuccess": "Eintrag gelöscht",
+      "totalMinutes": "Erfasste Minuten",
+      "byUser": "Pro Benutzer",
+      "byTask": "Pro Aufgabe",
+      "noData": "Keine Daten verfügbar",
+      "noEntries": "Keine Einträge für den ausgewählten Zeitraum.",
+      "noTasks": "Erstellen Sie zuerst eine Aufgabe, bevor Sie Zeit erfassen.",
+      "columns": {
+        "date": "Datum",
+        "task": "Aufgabe",
+        "user": "Benutzer",
+        "minutes": "Minuten",
+        "description": "Beschreibung"
+      },
+      "fields": {
+        "task": "Aufgabe",
+        "entryDate": "Datum",
+        "duration": "Dauer (Minuten)",
+        "description": "Beschreibung"
+      }
+    }
   }
 }
-
