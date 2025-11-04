@@ -1,5 +1,5 @@
 import { Button, Card, Space, Tag, Typography, theme } from 'antd'
-import type { DragEvent, JSX } from 'react'
+import { useMemo, type DragEvent, type JSX } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   CalendarOutlined,
@@ -51,7 +51,24 @@ export const TaskCard = ({
 
   const ownerName = task.owner?.displayName ?? task.owner?.username ?? null
   const assigneeName = task.assignee?.displayName ?? task.assignee?.username ?? null
-  const hasDescription = Boolean(task.description)
+  const summaryText = useMemo(() => {
+    if (!task.description) {
+      return null
+    }
+    const normalized = task.description
+      .replace(/`{3}[\s\S]*?`{3}/g, ' ')
+      .replace(/`([^`]+)`/g, '$1')
+      .replace(/!\[[^\]]*\]\([^)]*\)/g, ' ')
+      .replace(/\[[^\]]*\]\([^)]*\)/g, '$1')
+      .replace(/^\s{0,3}[-*+]\s+/gm, '')
+      .replace(/^\s{0,3}\d+\.\s+/gm, '')
+      .replace(/^>{1,6}\s+/gm, '')
+      .replace(/^#{1,6}\s+/gm, '')
+      .replace(/[*_~>#]/g, '')
+      .replace(/\s+/g, ' ')
+      .trim()
+    return normalized.length > 0 ? normalized : null
+  }, [task.description])
   const dueDate = task.dueDate ? dayjs(task.dueDate) : null
   const isOverdue = dueDate ? dueDate.isBefore(dayjs(), 'day') : false
   const dueDateLabel = dueDate
@@ -162,13 +179,13 @@ export const TaskCard = ({
             </Typography.Text>
           ) : null}
         </Space>
-        {hasDescription ? (
+        {summaryText ? (
           <Typography.Paragraph
             type="secondary"
             ellipsis={{ rows: 2 }}
             style={{ marginBottom: 0 }}
           >
-            {task.description}
+            {summaryText}
           </Typography.Paragraph>
         ) : null}
       </Space>
