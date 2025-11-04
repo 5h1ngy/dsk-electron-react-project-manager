@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState, type JSX, type CSSProperties } from 'reac
 import {
   AppstoreAddOutlined,
   AppstoreOutlined,
+  BarChartOutlined,
   BarsOutlined,
   ColumnWidthOutlined,
   PlusOutlined,
@@ -52,6 +53,9 @@ export interface TaskFiltersBarProps {
     hasOptions: boolean
     disabled?: boolean
   }
+  onToggleStatusPanel?: () => void
+  statusPanelVisible?: boolean
+  statusPanelDisabled?: boolean
 }
 
 export const TaskFiltersBar = ({
@@ -66,7 +70,10 @@ export const TaskFiltersBar = ({
   canCreate = true,
   secondaryActions,
   savedViewsControls,
-  optionalFieldControls
+  optionalFieldControls,
+  onToggleStatusPanel,
+  statusPanelVisible = false,
+  statusPanelDisabled = false
 }: TaskFiltersBarProps): JSX.Element => {
   const { t } = useTranslation('projects')
   const [filtersOpen, setFiltersOpen] = useState(false)
@@ -302,6 +309,19 @@ export const TaskFiltersBar = ({
           block={isCompact}
           style={segmentedStyle}
         />
+        {onToggleStatusPanel ? (
+          <Button
+            icon={<BarChartOutlined />}
+            size="large"
+            type={statusPanelVisible ? 'primary' : 'default'}
+            ghost={statusPanelVisible}
+            onClick={onToggleStatusPanel}
+            disabled={statusPanelDisabled}
+            style={buttonFullWidthStyle}
+          >
+            {t('tasks.actions.toggleBoardInsights', { defaultValue: 'Stato kanban' })}
+          </Button>
+        ) : null}
         {optionalFieldControls && optionalFieldControls.hasOptions ? (
           <Button
             icon={<AppstoreAddOutlined />}

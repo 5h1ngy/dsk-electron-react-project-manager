@@ -242,6 +242,11 @@
     "emptyColumn": "Aucune tache dans cette colonne",
     "summary": {
       "total": "Toutes les taches"
+    },
+    "statusPanel": {
+      "title": "Statistiques kanban",
+      "total": "Total des taches",
+      "close": "Fermer le panneau"
     }
   },
   "notifications": {
@@ -338,6 +343,7 @@
       "create": "Nouvelle tache",
       "edit": "Modifier",
       "delete": "Supprimer",
+      "toggleBoardInsights": "Statistiques kanban",
       "deleteTitle": "Supprimer la tache",
       "deleteDescription": "Voulez-vous vraiment supprimer \"{{title}}\" ?",
       "deleteConfirm": "Supprimer",

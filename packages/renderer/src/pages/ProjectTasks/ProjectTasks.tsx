@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { EmptyState } from '@renderer/components/DataStates'
 import { ProjectTasksTable } from '@renderer/pages/Projects/components/ProjectTasksTable'
 import { ProjectBoard } from '@renderer/pages/Projects/components/ProjectBoard'
+import { TaskBoardStatusPanel } from '@renderer/pages/Projects/components/TaskBoardStatusPanel'
 import { DeleteOutlined } from '@ant-design/icons'
 import { useProjectRouteContext } from '@renderer/pages/ProjectLayout'
 import {
@@ -90,6 +91,7 @@ const ProjectTasksPage = (): JSX.Element => {
   const [tablePageSize, setTablePageSize] = useState(TABLE_PAGE_SIZE)
   const [cardPage, setCardPage] = useState(1)
   const [listPage, setListPage] = useState(1)
+  const [statusPanelOpen, setStatusPanelOpen] = useState(false)
   const dispatch = useAppDispatch()
   const currentUser = useAppSelector(selectCurrentUser)
   const userId = currentUser?.id ?? null
@@ -390,6 +392,12 @@ const ProjectTasksPage = (): JSX.Element => {
   }, [viewMode])
 
   useEffect(() => {
+    if (viewMode !== 'board' && statusPanelOpen) {
+      setStatusPanelOpen(false)
+    }
+  }, [statusPanelOpen, viewMode])
+
+  useEffect(() => {
     if (viewMode !== 'table' && selectedTaskIds.length > 0) {
       setSelectedTaskIds([])
     }
@@ -513,6 +521,9 @@ const ProjectTasksPage = (): JSX.Element => {
           secondaryActions={secondaryActionsContent}
           optionalFieldControls={optionalFieldControlsConfig}
           savedViewsControls={savedViewsControls}
+          onToggleStatusPanel={() => setStatusPanelOpen((prev) => !prev)}
+          statusPanelVisible={statusPanelOpen}
+          statusPanelDisabled={viewMode !== 'board'}
         />
         {viewMode === 'table' ? (
           <Space direction="vertical" size="small" style={{ width: '100%' }}>
@@ -595,18 +606,35 @@ const ProjectTasksPage = (): JSX.Element => {
           />
         ) : null}
         {viewMode === 'board' ? (
-          <ProjectBoard
-            projectId={projectId}
-            statuses={taskStatuses}
-            tasks={filteredTasks}
-            isLoading={loading || projectLoading}
-            canManageTasks={canManageTasks}
-            canDeleteTask={canDeleteTask}
-            onTaskSelect={(task) => handleTaskSelect(task.id)}
-            onTaskEdit={(task) => handleTaskEdit(task.id)}
-            onTaskDelete={(task) => handleTaskDelete(task.id)}
-            deletingTaskId={deletingTaskId}
-          />
+          <div
+            style={{
+              display: 'flex',
+              gap: 16,
+              alignItems: 'stretch',
+              width: '100%'
+            }}
+          >
+            <div style={{ flex: '1 1 auto', minWidth: 0 }}>
+              <ProjectBoard
+                projectId={projectId}
+                statuses={taskStatuses}
+                tasks={filteredTasks}
+                isLoading={loading || projectLoading}
+                canManageTasks={canManageTasks}
+                canDeleteTask={canDeleteTask}
+                onTaskSelect={(task) => handleTaskSelect(task.id)}
+                onTaskEdit={(task) => handleTaskEdit(task.id)}
+                onTaskDelete={(task) => handleTaskDelete(task.id)}
+                deletingTaskId={deletingTaskId}
+              />
+            </div>
+            <TaskBoardStatusPanel
+              open={statusPanelOpen}
+              onClose={() => setStatusPanelOpen(false)}
+              tasks={filteredTasks}
+              statuses={taskStatuses}
+            />
+          </div>
         ) : null}
       </Space>
       <Modal

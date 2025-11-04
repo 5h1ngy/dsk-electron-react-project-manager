@@ -243,6 +243,11 @@
     "emptyColumn": "Nessun task in questa colonna",
     "summary": {
       "total": "Totale task"
+    },
+    "statusPanel": {
+      "title": "Insight kanban",
+      "total": "Task totali",
+      "close": "Chiudi pannello"
     }
   },
   "notifications": {
@@ -339,6 +344,7 @@
       "create": "Nuovo task",
       "edit": "Modifica",
       "delete": "Elimina",
+      "toggleBoardInsights": "Insight kanban",
       "deleteTitle": "Rimuovi task",
       "deleteDescription": "Vuoi davvero rimuovere \"{{title}}\"?",
       "deleteConfirm": "Rimuovi",
