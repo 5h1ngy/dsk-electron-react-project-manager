@@ -31,6 +31,12 @@ const createProjectDetails = (overrides: Partial<ProjectDetailsDTO> = {}): Proje
     role: overrides.role ?? 'admin',
     memberCount: overrides.memberCount ?? 4,
     tags: overrides.tags ?? ['ux', 'refactor'],
+    owner:
+      overrides.owner ?? {
+        id: 'user-1',
+        username: 'jane.doe',
+        displayName: 'Jane Doe'
+      },
     members: overrides.members ?? [
       {
         userId: 'user-1',
@@ -85,7 +91,8 @@ describe('ProjectIpcRegistrar', () => {
         updatedAt: projectDetails.updatedAt,
         role: projectDetails.role,
         memberCount: projectDetails.memberCount,
-        tags: projectDetails.tags
+        tags: projectDetails.tags,
+        owner: projectDetails.owner
       } satisfies ProjectSummaryDTO
     ])
     projectService.getProject.mockResolvedValue(projectDetails)

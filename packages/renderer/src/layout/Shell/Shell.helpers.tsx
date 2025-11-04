@@ -59,13 +59,14 @@ interface NavigationOptions {
 const buildNavigationDefinitions = (options?: NavigationOptions): NavigationDefinition[] => {
   const items = [...BASE_NAVIGATION]
   if (options?.includeUserManagement) {
-    const projectsIndex = items.findIndex((item) => item.path === '/projects')
-    const databaseIndex = projectsIndex === -1 ? 1 : projectsIndex + 1
-    items.splice(databaseIndex, 0, DATABASE_MANAGEMENT_NAVIGATION)
-
     const settingsIndex = items.findIndex((item) => item.path === '/settings')
     const managementInsertIndex = settingsIndex === -1 ? items.length : settingsIndex
     items.splice(managementInsertIndex, 0, USER_MANAGEMENT_NAVIGATION, ROLE_MANAGEMENT_NAVIGATION)
+
+    const settingsIndexAfterManagement = items.findIndex((item) => item.path === '/settings')
+    const databaseInsertIndex =
+      settingsIndexAfterManagement === -1 ? items.length : settingsIndexAfterManagement
+    items.splice(databaseInsertIndex, 0, DATABASE_MANAGEMENT_NAVIGATION)
   }
   return items
 }
