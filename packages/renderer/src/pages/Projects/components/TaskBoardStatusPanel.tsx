@@ -53,14 +53,17 @@ export const TaskBoardStatusPanel = ({
 
   const totalTasks = tasks.length
 
-  return (
+  const shouldRender = open || typeof window === 'undefined'
+
+  return shouldRender ? (
     <div
       style={{
-        width: open ? PANEL_WIDTH : 0,
-        transition: 'width 0.3s ease',
-        overflow: 'hidden',
-        flexShrink: 0,
+        width: PANEL_WIDTH,
+        marginInlineStart: open ? token.marginLG : 0,
+        transition: 'margin-inline-start 0.3s ease, opacity 0.3s ease',
+        opacity: open ? 1 : 0,
         pointerEvents: open ? 'auto' : 'none',
+        flexShrink: 0,
         position: 'sticky',
         top: stickyOffset,
         alignSelf: 'flex-start',
@@ -136,7 +139,7 @@ export const TaskBoardStatusPanel = ({
         </Space>
       </Card>
     </div>
-  )
+  ) : null
 }
 
 TaskBoardStatusPanel.displayName = 'TaskBoardStatusPanel'
