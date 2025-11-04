@@ -1,4 +1,4 @@
-import { useMemo, useState, type JSX, type ReactNode } from 'react'
+import { useMemo, useState, type JSX, type ReactNode, type CSSProperties } from 'react'
 import {
   AppstoreOutlined,
   BarsOutlined,
@@ -103,13 +103,15 @@ export const ProjectsActionBar = ({
     return [start ? dayjs(start) : null, end ? dayjs(end) : null]
   }, [createdBetween])
 
+  const isCompact = !screens.md
+
   const viewSegmentedOptions = useMemo(
     () => [
       {
         label: (
           <Space size={6} style={{ color: 'inherit' }}>
             <TableOutlined />
-            <span>{t('viewSwitcher.table')}</span>
+            {!isCompact ? <span>{t('viewSwitcher.table')}</span> : null}
           </Space>
         ),
         value: 'table'
@@ -118,7 +120,7 @@ export const ProjectsActionBar = ({
         label: (
           <Space size={6} style={{ color: 'inherit' }}>
             <BarsOutlined />
-            <span>{t('viewSwitcher.list')}</span>
+            {!isCompact ? <span>{t('viewSwitcher.list')}</span> : null}
           </Space>
         ),
         value: 'list'
@@ -127,13 +129,28 @@ export const ProjectsActionBar = ({
         label: (
           <Space size={6} style={{ color: 'inherit' }}>
             <AppstoreOutlined />
-            <span>{t('viewSwitcher.cards')}</span>
+            {!isCompact ? <span>{t('viewSwitcher.cards')}</span> : null}
           </Space>
         ),
         value: 'cards'
       }
     ],
-    [t]
+    [isCompact, t]
+  )
+
+  const segmentedStyle = useMemo(
+    () => ({
+      ...toolbarSegmentedStyle,
+      width: isCompact ? '100%' : undefined,
+      display: 'flex',
+      justifyContent: 'space-between'
+    }),
+    [toolbarSegmentedStyle, isCompact]
+  )
+
+  const buttonFullWidthStyle = useMemo<CSSProperties | undefined>(
+    () => (isCompact ? { width: '100%' } : undefined),
+    [isCompact]
   )
 
   const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -251,8 +268,14 @@ export const ProjectsActionBar = ({
   )
 
   const actionsContent = (
-    <Flex align="center" wrap gap={12} style={{ width: '100%' }}>
-      <Flex align="center" gap={12} wrap style={{ flex: '1 1 auto' }}>
+    <Flex vertical={isCompact} align={isCompact ? 'stretch' : 'center'} gap={12} style={{ width: '100%' }}>
+      <Flex
+        align={isCompact ? 'stretch' : 'center'}
+        vertical={isCompact}
+        gap={12}
+        wrap={!isCompact}
+        style={{ flex: '1 1 auto' }}
+      >
         {secondaryActions ? (
           <Space size="small" wrap>
             {secondaryActions}
@@ -264,19 +287,31 @@ export const ProjectsActionBar = ({
           onClick={onCreate}
           loading={isCreating}
           disabled={!canCreate}
+          style={buttonFullWidthStyle}
         >
           {t('actions.create')}
         </Button>
       </Flex>
-      <Flex align="center" gap={12} wrap style={{ justifyContent: 'flex-end', flexShrink: 0 }}>
+      <Flex
+        align={isCompact ? 'stretch' : 'center'}
+        vertical={isCompact}
+        gap={12}
+        style={{ justifyContent: 'flex-end', flexShrink: 0 }}
+      >
         <Segmented
           size="large"
           value={viewMode}
           onChange={(next) => onViewModeChange(next as ViewMode)}
           options={viewSegmentedOptions}
-          style={toolbarSegmentedStyle}
+          block={isCompact}
+          style={segmentedStyle}
         />
-        <Button icon={<FilterOutlined />} onClick={() => setFiltersOpen(true)} size="large">
+        <Button
+          icon={<FilterOutlined />}
+          onClick={() => setFiltersOpen(true)}
+          size="large"
+          style={buttonFullWidthStyle}
+        >
           {t('filters.openButton')}
         </Button>
       </Flex>

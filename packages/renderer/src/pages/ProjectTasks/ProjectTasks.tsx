@@ -300,24 +300,36 @@ const ProjectTasksPage = (): JSX.Element => {
     />
   ) : null
 
-  const secondaryActionsContent = (
-    <>
+  const optionalFieldControlsNode = useMemo(
+    () => (
       <TaskColumnVisibilityControls
         columns={OPTIONAL_TASK_COLUMNS}
         selectedColumns={visibleColumns}
         disabled={viewMode !== 'table'}
         onChange={handleVisibleColumnsChange}
       />
-      {projectId && canManageTasks ? (
-        <TaskStatusManager
-          projectId={projectId}
-          statuses={taskStatuses}
-          onRefreshTasks={refreshTasks}
-          disabled={taskStatusesStatus === 'loading'}
-        />
-      ) : null}
-    </>
+    ),
+    [handleVisibleColumnsChange, viewMode, visibleColumns]
   )
+
+  const optionalFieldControlsConfig = useMemo(
+    () => ({
+      content: optionalFieldControlsNode,
+      hasOptions: OPTIONAL_TASK_COLUMNS.length > 0,
+      disabled: viewMode !== 'table'
+    }),
+    [optionalFieldControlsNode, viewMode]
+  )
+
+  const secondaryActionsContent =
+    projectId && canManageTasks ? (
+      <TaskStatusManager
+        projectId={projectId}
+        statuses={taskStatuses}
+        onRefreshTasks={refreshTasks}
+        disabled={taskStatusesStatus === 'loading'}
+      />
+    ) : null
 
   const handleTaskSelect = (taskId: string) => {
     openTaskDetails(taskId)
@@ -362,6 +374,7 @@ const ProjectTasksPage = (): JSX.Element => {
           onCreate={canManageTasks ? () => openTaskCreate() : undefined}
           canCreate={canManageTasks}
           secondaryActions={secondaryActionsContent}
+          optionalFieldControls={optionalFieldControlsConfig}
           savedViewsControls={savedViewsControls}
         />
         {viewMode === 'table' ? (

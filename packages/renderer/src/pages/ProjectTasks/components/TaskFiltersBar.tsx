@@ -1,5 +1,6 @@
-import { useMemo, useState, type JSX } from 'react'
+import { useEffect, useMemo, useState, type JSX, type CSSProperties } from 'react'
 import {
+  AppstoreAddOutlined,
   AppstoreOutlined,
   BarsOutlined,
   ColumnWidthOutlined,
@@ -16,7 +17,9 @@ import {
   Segmented,
   Select,
   Space,
-  theme
+  theme,
+  Modal,
+  Typography
 } from 'antd'
 import type { SelectProps } from 'antd'
 import type { ReactNode } from 'react'
@@ -44,6 +47,11 @@ export interface TaskFiltersBarProps {
   canCreate?: boolean
   secondaryActions?: ReactNode
   savedViewsControls?: ReactNode
+  optionalFieldControls?: {
+    content: ReactNode
+    hasOptions: boolean
+    disabled?: boolean
+  }
 }
 
 export const TaskFiltersBar = ({
@@ -57,10 +65,12 @@ export const TaskFiltersBar = ({
   onCreate,
   canCreate = true,
   secondaryActions,
-  savedViewsControls
+  savedViewsControls,
+  optionalFieldControls
 }: TaskFiltersBarProps): JSX.Element => {
   const { t } = useTranslation('projects')
   const [filtersOpen, setFiltersOpen] = useState(false)
+  const [optionalFieldsOpen, setOptionalFieldsOpen] = useState(false)
   const screens = Grid.useBreakpoint()
   const { token } = theme.useToken()
   const toolbarSegmentedStyle = useMemo(
@@ -80,6 +90,8 @@ export const TaskFiltersBar = ({
     ]
   )
 
+  const isCompact = !screens.md
+
   const dueRangeValue = useMemo<[Dayjs | null, Dayjs | null] | null>(() => {
     if (!filters.dueDateRange) {
       return null
@@ -94,7 +106,7 @@ export const TaskFiltersBar = ({
         label: (
           <Space size={6} style={{ color: 'inherit' }}>
             <TableOutlined />
-            <span>{t('viewSwitcher.table')}</span>
+            {!isCompact ? <span>{t('viewSwitcher.table')}</span> : null}
           </Space>
         ),
         value: 'table'
@@ -103,7 +115,7 @@ export const TaskFiltersBar = ({
         label: (
           <Space size={6} style={{ color: 'inherit' }}>
             <BarsOutlined />
-            <span>{t('viewSwitcher.list')}</span>
+            {!isCompact ? <span>{t('viewSwitcher.list')}</span> : null}
           </Space>
         ),
         value: 'list'
@@ -112,7 +124,7 @@ export const TaskFiltersBar = ({
         label: (
           <Space size={6} style={{ color: 'inherit' }}>
             <ColumnWidthOutlined />
-            <span>{t('viewSwitcher.board')}</span>
+            {!isCompact ? <span>{t('viewSwitcher.board')}</span> : null}
           </Space>
         ),
         value: 'board'
@@ -121,17 +133,32 @@ export const TaskFiltersBar = ({
         label: (
           <Space size={6} style={{ color: 'inherit' }}>
             <AppstoreOutlined />
-            <span>{t('viewSwitcher.cards')}</span>
+            {!isCompact ? <span>{t('viewSwitcher.cards')}</span> : null}
           </Space>
         ),
         value: 'cards'
       }
     ],
-    [t]
+    [isCompact, t]
   )
 
   const selectOption = (options: SelectOption[]): Option =>
     options.map((option) => ({ label: option.label, value: option.value }))
+
+  const segmentedStyle = useMemo(
+    () => ({
+      ...toolbarSegmentedStyle,
+      width: isCompact ? '100%' : undefined,
+      display: 'flex',
+      justifyContent: 'space-between'
+    }),
+    [toolbarSegmentedStyle, isCompact]
+  )
+
+  const buttonFullWidthStyle = useMemo<CSSProperties | undefined>(
+    () => (isCompact ? { width: '100%' } : undefined),
+    [isCompact]
+  )
 
   const handleRangeChange = (dates: [Dayjs | null, Dayjs | null] | null) => {
     if (!dates) {
@@ -150,6 +177,18 @@ export const TaskFiltersBar = ({
       ]
     })
   }
+
+  useEffect(() => {
+    if (!optionalFieldControls?.hasOptions && optionalFieldsOpen) {
+      setOptionalFieldsOpen(false)
+    }
+  }, [optionalFieldControls?.hasOptions, optionalFieldsOpen])
+
+  useEffect(() => {
+    if (optionalFieldControls?.disabled && optionalFieldsOpen) {
+      setOptionalFieldsOpen(false)
+    }
+  }, [optionalFieldControls?.disabled, optionalFieldsOpen])
 
   const filterContent = (
     <Flex vertical gap={16}>
@@ -224,28 +263,66 @@ export const TaskFiltersBar = ({
   )
 
   const actionsContent = (
-    <Flex align="center" wrap gap={12} style={{ width: '100%' }}>
-      <Flex align="center" gap={12} wrap style={{ flex: '1 1 auto' }}>
+    <Flex vertical={isCompact} align={isCompact ? 'stretch' : 'center'} gap={12} style={{ width: '100%' }}>
+      <Flex
+        align={isCompact ? 'stretch' : 'center'}
+        vertical={isCompact}
+        gap={12}
+        wrap={!isCompact}
+        style={{ flex: '1 1 auto' }}
+      >
         {secondaryActions ? (
           <Space size="small" wrap>
             {secondaryActions}
           </Space>
         ) : null}
         {onCreate ? (
-          <Button type="primary" icon={<PlusOutlined />} onClick={onCreate} disabled={!canCreate}>
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            onClick={onCreate}
+            disabled={!canCreate}
+            style={buttonFullWidthStyle}
+          >
             {t('tasks.actions.create')}
           </Button>
         ) : null}
       </Flex>
-      <Flex align="center" gap={12} wrap style={{ justifyContent: 'flex-end', flexShrink: 0 }}>
+      <Flex
+        align={isCompact ? 'stretch' : 'center'}
+        vertical={isCompact}
+        gap={12}
+        style={{ justifyContent: 'flex-end', flexShrink: 0 }}
+      >
         <Segmented
           size="large"
           value={viewMode}
           onChange={(next) => onViewModeChange(next as 'table' | 'list' | 'cards' | 'board')}
           options={viewSegmentedOptions}
-          style={toolbarSegmentedStyle}
+          block={isCompact}
+          style={segmentedStyle}
         />
-        <Button icon={<FilterOutlined />} size="large" onClick={() => setFiltersOpen(true)}>
+        {optionalFieldControls && optionalFieldControls.hasOptions ? (
+          <Button
+            icon={<AppstoreAddOutlined />}
+            size="large"
+            disabled={optionalFieldControls.disabled}
+            onClick={() => {
+              if (!optionalFieldControls.disabled) {
+                setOptionalFieldsOpen(true)
+              }
+            }}
+            style={buttonFullWidthStyle}
+          >
+            {t('tasks.optionalColumns.button', { defaultValue: 'Optional fields' })}
+          </Button>
+        ) : null}
+        <Button
+          icon={<FilterOutlined />}
+          size="large"
+          onClick={() => setFiltersOpen(true)}
+          style={buttonFullWidthStyle}
+        >
           {t('tasks.openFilters')}
         </Button>
       </Flex>
@@ -306,6 +383,36 @@ export const TaskFiltersBar = ({
       >
         {filterContent}
       </Drawer>
+      {optionalFieldControls && optionalFieldControls.hasOptions ? (
+        <Modal
+          open={optionalFieldsOpen}
+          title={t('tasks.optionalColumns.modalTitle', { defaultValue: 'Optional fields' })}
+          onCancel={() => setOptionalFieldsOpen(false)}
+          footer={null}
+          closable
+          destroyOnClose={false}
+          centered
+          styles={{
+            body: {
+              paddingTop: token.paddingLG,
+              display: 'flex',
+              flexDirection: 'column',
+              gap: token.marginLG,
+              paddingBottom: token.paddingLG
+            }
+          }}
+        >
+          <Flex vertical gap={token.marginMD}>
+            <Typography.Paragraph style={{ marginBottom: 0 }}>
+              {t('tasks.optionalColumns.description', {
+                defaultValue:
+                  'Select the additional fields you want to show in the table view.'
+              })}
+            </Typography.Paragraph>
+            {optionalFieldControls.content}
+          </Flex>
+        </Modal>
+      ) : null}
     </>
   )
 }
