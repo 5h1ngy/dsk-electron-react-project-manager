@@ -82,11 +82,15 @@ export const TaskCard = ({
   return (
     <Card
       size="small"
+      variant="borderless"
       style={{
         cursor: draggable ? 'grab' : 'default',
-        opacity: draggable ? 1 : 0.7,
-        borderColor: token.colorBorderSecondary,
-        transition: 'border-color 0.2s ease'
+        opacity: draggable ? 1 : 0.8,
+        borderRadius: token.borderRadius,
+        background: token.colorBgElevated,
+        border: `${token.lineWidth}px solid ${deleting ? token.colorErrorBorder : token.colorBorderSecondary}`,
+        boxShadow: deleting ? token.boxShadowSecondary : token.boxShadowTertiary,
+        transition: 'border 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease'
       }}
       hoverable
       draggable={draggable}

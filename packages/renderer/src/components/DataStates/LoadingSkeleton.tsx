@@ -1,87 +1,136 @@
-import { Card, Col, Row, Skeleton, Space, theme } from 'antd'
+import { Card, Skeleton, Space, theme } from 'antd'
 import type { ReactNode } from 'react'
 
-import { useThemeTokens } from '@renderer/theme/hooks/useThemeTokens'
-
-export type LoadingSkeletonVariant = 'table' | 'cards' | 'list'
+export type LoadingSkeletonLayout = 'stack' | 'grid' | 'columns'
 
 export interface LoadingSkeletonProps {
-  variant?: LoadingSkeletonVariant
+  layout?: LoadingSkeletonLayout
   items?: number
   className?: string
+  minHeight?: number
 }
 
-const buildTableSkeleton = (items: number, titleWidth: number): ReactNode => (
-  <Space direction="vertical" size="small">
-    <Skeleton.Input active size="large" style={{ width: titleWidth }} />
-    {Array.from({ length: items }).map((_, index) => (
-      <Card key={`table-skeleton-${index}`} size="small" variant="borderless">
-        <Skeleton
-          active
-          round
-          title={false}
-          paragraph={{ rows: 1, width: ['75%', '60%', '55%', '65%'][index % 4] }}
-        />
-      </Card>
-    ))}
+const SkeletonBlock = ({
+  index,
+  minHeight,
+  token
+}: {
+  index: number
+  minHeight: number
+  token: ReturnType<typeof theme.useToken>['token']
+}) => (
+  <Card
+    key={`app-skeleton-${index}`}
+    variant="borderless"
+    style={{
+      borderRadius: token.borderRadiusLG,
+      background: token.colorFillTertiary,
+      boxShadow: 'none',
+      minHeight,
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center'
+    }}
+    styles={{
+      body: {
+        padding: token.paddingLG
+      }
+    }}
+  >
+    <Space direction="vertical" size={token.padding / 2} style={{ width: '100%' }}>
+      <Skeleton.Button
+        active
+        size="small"
+        shape="round"
+        style={{ width: '40%', minWidth: 120, maxWidth: 180 }}
+      />
+      <Skeleton
+        active
+        title={false}
+        paragraph={{
+          rows: 3,
+          width: ['90%', '72%', '58%']
+        }}
+      />
+    </Space>
+  </Card>
+)
+
+const renderStack = (
+  blocks: ReactNode[],
+  gap: number
+): ReactNode => (
+  <Space direction="vertical" size={gap} style={{ width: '100%' }}>
+    {blocks}
   </Space>
 )
 
-const buildCardsSkeleton = (items: number, gutter: number, titleWidth: number): ReactNode => (
-  <Row gutter={[gutter, gutter]}>
-    {Array.from({ length: items }).map((_, index) => (
-      <Col xs={24} sm={12} lg={8} xl={6} key={`card-skeleton-${index}`}>
-        <Card>
-          <Space direction="vertical" size="small">
-            <Skeleton.Button active size="small" shape="round" style={{ width: titleWidth }} />
-            <Skeleton.Input active size="large" style={{ width: '100%' }} />
-            <Skeleton active title={false} paragraph={{ rows: 2, width: ['95%', '80%'] }} />
-          </Space>
-        </Card>
-      </Col>
-    ))}
-  </Row>
+const renderGrid = (
+  blocks: ReactNode[],
+  gap: number
+): ReactNode => (
+  <div
+    style={{
+      display: 'grid',
+      gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+      gap,
+      width: '100%'
+    }}
+  >
+    {blocks}
+  </div>
 )
 
-const buildListSkeleton = (items: number): ReactNode => (
-  <Space direction="vertical" size="middle">
-    {Array.from({ length: items }).map((_, index) => (
-      <Card size="small" key={`list-skeleton-${index}`}>
-        <Skeleton active paragraph={{ rows: 2 }} title={false} />
-      </Card>
-    ))}
-  </Space>
+const renderColumns = (
+  blocks: ReactNode[],
+  gap: number
+): ReactNode => (
+  <div style={{ width: '100%', overflowX: 'auto' }}>
+    <div
+      style={{
+        display: 'grid',
+        gridAutoFlow: 'column',
+        gridAutoColumns: 'minmax(260px, 320px)',
+        gap,
+        paddingBottom: gap
+      }}
+    >
+      {blocks}
+    </div>
+  </div>
 )
 
-const DEFAULT_ITEMS: Record<LoadingSkeletonVariant, number> = {
-  table: 5,
-  cards: 4,
-  list: 4
+const DEFAULT_ITEMS: Record<LoadingSkeletonLayout, number> = {
+  stack: 4,
+  grid: 4,
+  columns: 4
 }
 
-export const LoadingSkeleton = ({ variant = 'list', items, className }: LoadingSkeletonProps) => {
+export const LoadingSkeleton = ({
+  layout = 'stack',
+  items,
+  className,
+  minHeight = 140
+}: LoadingSkeletonProps) => {
   const { token } = theme.useToken()
-  const { spacing } = useThemeTokens()
-  const count = items ?? DEFAULT_ITEMS[variant]
+  const count = items ?? DEFAULT_ITEMS[layout]
+  const gap = token.paddingLG
 
-  const controlHeightLG =
-    typeof token.controlHeightLG === 'number' && Number.isFinite(token.controlHeightLG)
-      ? token.controlHeightLG
-      : 40
-  const tableWidth = controlHeightLG * 5
-  const cardTitleWidth = controlHeightLG * 2.5
-  const gutter = spacing.lg
+  const blocks = Array.from({ length: count }).map((_, index) => (
+    <SkeletonBlock key={index} index={index} minHeight={minHeight} token={token} />
+  ))
 
-  const content: Record<LoadingSkeletonVariant, ReactNode> = {
-    table: buildTableSkeleton(count, tableWidth),
-    cards: buildCardsSkeleton(count, gutter, cardTitleWidth),
-    list: buildListSkeleton(count)
-  }
+  const content =
+    layout === 'grid'
+      ? renderGrid(blocks, gap)
+      : layout === 'columns'
+        ? renderColumns(blocks, gap)
+        : renderStack(blocks, gap)
 
   return (
-    <Space direction="vertical" size={0} className={className} style={{ width: '100%' }}>
-      {content[variant]}
-    </Space>
+    <div className={className} style={{ width: '100%' }}>
+      {content}
+    </div>
   )
 }
 

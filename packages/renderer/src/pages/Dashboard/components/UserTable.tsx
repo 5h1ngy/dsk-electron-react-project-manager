@@ -50,7 +50,7 @@ export const UserTable = ({
     : undefined
 
   if (showSkeleton) {
-    return <LoadingSkeleton variant="table" />
+    return <LoadingSkeleton layout="stack" />
   }
 
   return (

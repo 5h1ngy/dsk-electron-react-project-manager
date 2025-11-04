@@ -191,7 +191,7 @@ export const ProjectTasksTable = ({
   }
 
   if (showSkeleton) {
-    return <LoadingSkeleton variant="table" />
+    return <LoadingSkeleton layout="stack" items={6} />
   }
 
   return (
