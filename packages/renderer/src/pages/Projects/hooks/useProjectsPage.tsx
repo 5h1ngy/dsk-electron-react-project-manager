@@ -104,7 +104,7 @@ export const useProjectsPage = (options?: UseProjectsPageOptions): UseProjectsPa
   const [roleFilter, setRoleFilterState] = useState<RoleFilter>('all')
   const [ownedOnly, setOwnedOnlyState] = useState(false)
   const [createdBetween, setCreatedBetweenState] = useState<CreatedRange>(null)
-  const [viewMode, setViewMode] = useState<ViewMode>('table')
+  const [viewMode, setViewMode] = useState<ViewMode>('list')
   const [isCreateModalOpen, setCreateModalOpen] = useState(false)
   const [messageApi, messageContext] = message.useMessage()
 
