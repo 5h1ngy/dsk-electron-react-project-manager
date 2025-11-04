@@ -60,9 +60,18 @@ export const ProjectBoard = ({
         <LoadingSkeleton variant="cards" items={Math.max(columns.length, 4)} />
       ) : hasTasks ? (
         <div style={{ width: '100%', overflowX: 'auto', paddingBottom: token.paddingSM }}>
-          <Row gutter={16} wrap={false} style={{ flexWrap: 'nowrap' }}>
+          <Row
+            gutter={16}
+            wrap={false}
+            align="stretch"
+            style={{ flexWrap: 'nowrap', alignItems: 'stretch' }}
+          >
             {columns.map((column) => (
-              <Col key={column.status} flex="0 0 320px" style={{ maxWidth: 320 }}>
+              <Col
+                key={column.status}
+                flex="0 0 320px"
+                style={{ maxWidth: 320, display: 'flex' }}
+              >
                 <KanbanColumn
                   status={column.status}
                   label={column.label}

@@ -22,6 +22,9 @@ export const TaskBoardStatusPanel = ({
 }: TaskBoardStatusPanelProps) => {
   const { token } = theme.useToken()
   const { t, i18n } = useTranslation('projects')
+  const marginLg = token.marginLG ?? 16
+  const stickyOffset = marginLg * 2 + 64
+  const maxPanelHeight = `calc(100vh - ${stickyOffset + marginLg}px)`
 
   const distribution = useMemo(() => {
     const map = new Map<string, { label: string; count: number }>()
@@ -57,24 +60,33 @@ export const TaskBoardStatusPanel = ({
         transition: 'width 0.3s ease',
         overflow: 'hidden',
         flexShrink: 0,
-        pointerEvents: open ? 'auto' : 'none'
+        pointerEvents: open ? 'auto' : 'none',
+        position: 'sticky',
+        top: stickyOffset,
+        alignSelf: 'flex-start',
+        maxHeight: maxPanelHeight,
+        height: 'fit-content',
+        zIndex: 1
       }}
     >
       <Card
         size="small"
         style={{
           height: '100%',
+          maxHeight: maxPanelHeight,
           display: 'flex',
           flexDirection: 'column',
           gap: token.marginLG,
-          borderRadius: token.borderRadiusLG
+          borderRadius: token.borderRadiusLG,
+          overflow: 'hidden'
         }}
         styles={{
           body: {
             display: 'flex',
             flexDirection: 'column',
             gap: token.marginLG,
-            height: '100%'
+            height: '100%',
+            overflowY: 'auto'
           }
         }}
       >
