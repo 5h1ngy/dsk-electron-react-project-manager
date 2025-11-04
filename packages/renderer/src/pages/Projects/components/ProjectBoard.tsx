@@ -64,7 +64,12 @@ export const ProjectBoard = ({
             gutter={16}
             wrap={false}
             align="stretch"
-            style={{ flexWrap: 'nowrap', alignItems: 'stretch' }}
+            style={{
+              flexWrap: 'nowrap',
+              alignItems: 'stretch',
+              width: 'max-content',
+              minWidth: '100%'
+            }}
           >
             {columns.map((column) => (
               <Col
