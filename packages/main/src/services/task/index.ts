@@ -357,7 +357,7 @@ export class TaskService {
     try {
       const { project, role } = await this.resolveProjectAccess(actor, input.projectId, 'edit')
 
-      const task = await this.withTransaction(async (transaction) => {
+      const createdTask = await this.withTransaction(async (transaction) => {
         await this.ensureAssignee(project.id, input.assigneeId ?? null, transaction)
         await this.ensureParentTask(project.id, input.parentId ?? null, transaction)
         await this.ensureSprint(project.id, input.sprintId ?? null, transaction)
@@ -367,7 +367,7 @@ export class TaskService {
         const key = await this.generateTaskKey(project, transaction)
         const statusKey = await this.resolveStatusKey(project.id, input.status ?? null, transaction)
 
-        return await Task.create(
+        const task = await Task.create(
           {
             id: randomUUID(),
             projectId: project.id,
@@ -385,31 +385,34 @@ export class TaskService {
           },
           { transaction }
         )
+
+        const reloaded = await Task.findByPk(task.id, {
+          include: [
+            { model: User, as: 'assignee' },
+            { model: User, as: 'owner' },
+            { model: Sprint, as: 'sprint' },
+            {
+              model: Note,
+              through: { attributes: [] }
+            }
+          ],
+          transaction
+        })
+
+        if (!reloaded) {
+          throw new AppError('ERR_INTERNAL', 'Task creato non reperibile')
+        }
+
+        return reloaded
       })
 
-      await this.auditService.record(actor.userId, 'task', task.id, 'create', {
-        projectId: task.projectId,
-        title: task.title,
-        status: task.status
+      await this.auditService.record(actor.userId, 'task', createdTask.id, 'create', {
+        projectId: createdTask.projectId,
+        title: createdTask.title,
+        status: createdTask.status
       })
 
-      const created = await Task.findByPk(task.id, {
-        include: [
-          { model: User, as: 'assignee' },
-          { model: User, as: 'owner' },
-          { model: Sprint, as: 'sprint' },
-          {
-            model: Note,
-            through: { attributes: [] }
-          }
-        ]
-      })
-
-      if (!created) {
-        throw new AppError('ERR_INTERNAL', 'Task creato non reperibile')
-      }
-
-      const details = mapTaskDetails(created, project.key, 0, { timeSpentMinutes: 0 })
+      const details = mapTaskDetails(createdTask, project.key, 0, { timeSpentMinutes: 0 })
       return {
         ...details,
         linkedNotes: this.filterLinkedNotes(actor, role, details.linkedNotes)

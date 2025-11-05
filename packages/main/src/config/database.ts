@@ -103,9 +103,72 @@ export class DatabaseManager {
     await this.ensureRoleSchema(sequelize)
     await this.ensureRoles()
     await this.ensureAdminUser()
+    await this.ensureTaskSchema(sequelize)
     await this.ensureTaskStatuses()
     await this.ensureTaskFtsInfrastructure(sequelize)
     await this.ensureNoteFtsInfrastructure(sequelize)
+  }
+
+  private async ensureTaskSchema(sequelize: Sequelize): Promise<void> {
+    const queryInterface = sequelize.getQueryInterface()
+    let tasksTable: Record<string, unknown>
+
+    try {
+      tasksTable = await queryInterface.describeTable('tasks')
+    } catch (error) {
+      logger.warn('Unable to inspect tasks schema; skipping migration checks', 'Database')
+      logger.debug(error instanceof Error ? error.message : String(error), 'Database')
+      return
+    }
+
+    const hasSprintId = Object.prototype.hasOwnProperty.call(tasksTable, 'sprintId')
+    const hasEstimatedMinutes = Object.prototype.hasOwnProperty.call(tasksTable, 'estimatedMinutes')
+
+    if (!hasSprintId) {
+      logger.warn('Missing tasks.sprintId column detected. Applying schema patch.', 'Database')
+      try {
+        await queryInterface.addColumn('tasks', 'sprintId', {
+          type: DataTypes.STRING(36),
+          allowNull: true,
+          references: {
+            model: 'sprints',
+            key: 'id'
+          },
+          onDelete: 'SET NULL',
+          onUpdate: 'CASCADE'
+        })
+        await queryInterface.addIndex('tasks', ['sprintId'], {
+          name: 'tasks_sprintId_idx'
+        })
+      } catch (error) {
+        logger.error(
+          `Failed to add tasks.sprintId column: ${
+            error instanceof Error ? error.message : String(error)
+          }`,
+          'Database'
+        )
+      }
+    }
+
+    if (!hasEstimatedMinutes) {
+      logger.warn(
+        'Missing tasks.estimatedMinutes column detected. Applying schema patch.',
+        'Database'
+      )
+      try {
+        await queryInterface.addColumn('tasks', 'estimatedMinutes', {
+          type: DataTypes.INTEGER,
+          allowNull: true
+        })
+      } catch (error) {
+        logger.error(
+          `Failed to add tasks.estimatedMinutes column: ${
+            error instanceof Error ? error.message : String(error)
+          }`,
+          'Database'
+        )
+      }
+    }
   }
 
   private async ensureRoleSchema(sequelize: Sequelize): Promise<void> {
