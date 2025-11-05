@@ -19,8 +19,6 @@ import type { TaskFilters } from '@renderer/pages/ProjectTasks/ProjectTasks.type
 import { TaskFiltersBar } from '@renderer/pages/ProjectTasks/components/TaskFiltersBar'
 import { ProjectTasksCardGrid } from '@renderer/pages/ProjectTasks/components/ProjectTasksCardGrid'
 import { ProjectTasksList } from '@renderer/pages/Projects/components/ProjectTasksList'
-import ProjectSprintBoard from '@renderer/pages/ProjectTasks/components/ProjectSprintBoard'
-import ProjectTimeTrackingView from '@renderer/pages/ProjectTasks/components/ProjectTimeTrackingView'
 
 import TaskSavedViewsControls from '@renderer/pages/ProjectTasks/components/TaskSavedViewsControls'
 import TaskColumnVisibilityControls, {
@@ -98,9 +96,7 @@ const ProjectTasksPage = (): JSX.Element => {
   const { t } = useTranslation('projects')
   const [filters, setFilters] = useState<TaskFilters>(() => createDefaultTaskFilters())
   const [visibleColumns, setVisibleColumns] = useState<OptionalTaskColumn[]>([])
-  const [viewMode, setViewMode] = useState<
-    'table' | 'list' | 'cards' | 'board' | 'sprint' | 'timeline'
-  >('board')
+  const [viewMode, setViewMode] = useState<'table' | 'list' | 'cards' | 'board'>('board')
   const [tablePage, setTablePage] = useState(1)
   const [tablePageSize, setTablePageSize] = useState(TABLE_PAGE_SIZE)
   const [cardPage, setCardPage] = useState(1)
@@ -657,12 +653,6 @@ const ProjectTasksPage = (): JSX.Element => {
             onTaskDelete={(task) => handleTaskDelete(task.id)}
             deletingTaskId={deletingTaskId}
           />
-        ) : null}
-        {viewMode === 'sprint' ? (
-          <ProjectSprintBoard projectId={projectId} canManage={canManageTasks} />
-        ) : null}
-        {viewMode === 'timeline' ? (
-          <ProjectTimeTrackingView projectId={projectId} tasks={tasks} canManage={canManageTasks} />
         ) : null}
       </Space>
       <Modal

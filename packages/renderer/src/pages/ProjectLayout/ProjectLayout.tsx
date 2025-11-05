@@ -127,6 +127,9 @@ const ProjectLayout = (): JSX.Element => {
     switch (activeKey) {
       case 'tasks':
         return tasksStatus === 'loading'
+      case 'sprints':
+      case 'timeTracking':
+        return projectLoading
       case 'notes':
         return notesStatus === 'loading'
       default:
@@ -167,6 +170,10 @@ const ProjectLayout = (): JSX.Element => {
       return
     }
     switch (activeKey) {
+      case 'sprints':
+      case 'timeTracking':
+        refresh()
+        break
       case 'tasks':
         refreshTasks()
         break
@@ -237,8 +244,14 @@ const ProjectLayout = (): JSX.Element => {
   const handleTabChange = (key: string): void => {
     const tabKey = key as ProjectTabKey
     switch (tabKey) {
+      case 'sprints':
+        navigate(`${basePath}/sprints`)
+        break
       case 'tasks':
         navigate(`${basePath}/tasks`)
+        break
+      case 'timeTracking':
+        navigate(`${basePath}/time-tracking`)
         break
       case 'notes':
         navigate(`${basePath}/notes`)

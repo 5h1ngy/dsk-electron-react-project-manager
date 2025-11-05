@@ -4,8 +4,6 @@ import {
   AppstoreOutlined,
   BarsOutlined,
   ColumnWidthOutlined,
-  DeploymentUnitOutlined,
-  FieldTimeOutlined,
   PlusOutlined,
   TableOutlined
 } from '@ant-design/icons'
@@ -44,8 +42,8 @@ export interface TaskFiltersBarProps {
   assigneeOptions: SelectOption[]
   sprintOptions?: SelectOption[]
   onChange: (patch: Partial<TaskFilters>) => void
-  viewMode: 'table' | 'list' | 'cards' | 'board' | 'sprint' | 'timeline'
-  onViewModeChange: (mode: 'table' | 'list' | 'cards' | 'board' | 'sprint' | 'timeline') => void
+  viewMode: 'table' | 'list' | 'cards' | 'board'
+  onViewModeChange: (mode: 'table' | 'list' | 'cards' | 'board') => void
   onCreate?: () => void
   canCreate?: boolean
   secondaryActions?: ReactNode
@@ -143,24 +141,6 @@ export const TaskFiltersBar = ({
           </Space>
         ),
         value: 'cards'
-      },
-      {
-        label: (
-          <Space size={6} style={{ color: 'inherit' }}>
-            <DeploymentUnitOutlined />
-            {!isCompact ? <span>{t('viewSwitcher.sprint')}</span> : null}
-          </Space>
-        ),
-        value: 'sprint'
-      },
-      {
-        label: (
-          <Space size={6} style={{ color: 'inherit' }}>
-            <FieldTimeOutlined />
-            {!isCompact ? <span>{t('viewSwitcher.timeline')}</span> : null}
-          </Space>
-        ),
-        value: 'timeline'
       }
     ],
     [isCompact, t]
@@ -340,9 +320,7 @@ export const TaskFiltersBar = ({
         <Segmented
           size="large"
           value={viewMode}
-          onChange={(next) =>
-            onViewModeChange(next as 'table' | 'list' | 'cards' | 'board' | 'sprint' | 'timeline')
-          }
+          onChange={(next) => onViewModeChange(next as 'table' | 'list' | 'cards' | 'board')}
           options={viewSegmentedOptions}
           block={isCompact}
           style={segmentedStyle}

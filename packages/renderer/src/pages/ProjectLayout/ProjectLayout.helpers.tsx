@@ -16,6 +16,12 @@ interface BreadcrumbParams {
 type BreadcrumbItem = NonNullable<BreadcrumbProps['items']>[number]
 
 export const resolveActiveTab = (pathname: string, basePath: string): ProjectTabKey => {
+  if (pathname.startsWith(`${basePath}/sprints`)) {
+    return 'sprints'
+  }
+  if (pathname.startsWith(`${basePath}/time-tracking`)) {
+    return 'timeTracking'
+  }
   if (pathname.startsWith(`${basePath}/wiki`)) {
     return 'wiki'
   }
@@ -30,14 +36,21 @@ export const resolveActiveTab = (pathname: string, basePath: string): ProjectTab
 
 export const buildTabItems = (t: TFunction<'projects'>): TabsProps['items'] => [
   { key: 'overview', label: t('details.tabs.overview') },
+  { key: 'sprints', label: t('details.tabs.sprints', { defaultValue: 'Sprint' }) },
   { key: 'tasks', label: t('details.tabs.tasks') },
+  {
+    key: 'timeTracking',
+    label: t('details.tabs.timeTracking', { defaultValue: 'Monitoraggio tempo' })
+  },
   { key: 'notes', label: t('details.tabs.notes') },
   { key: 'wiki', label: t('details.tabs.wiki') }
 ]
 
 export const buildTabLabelMap = (t: TFunction<'projects'>): Record<ProjectTabKey, string> => ({
   overview: t('breadcrumbs.overview'),
+  sprints: t('breadcrumbs.sprints', { defaultValue: 'Sprint' }),
   tasks: t('breadcrumbs.tasks'),
+  timeTracking: t('breadcrumbs.timeTracking', { defaultValue: 'Monitoraggio tempo' }),
   notes: t('breadcrumbs.notes'),
   wiki: t('breadcrumbs.wiki')
 })
@@ -68,8 +81,12 @@ export const buildBreadcrumbItems = ({
   }
 
   if (project) {
-    if (activeKey === 'tasks') {
+    if (activeKey === 'sprints') {
+      tabItem.onClick = () => navigate(`/projects/${project.id}/sprints`)
+    } else if (activeKey === 'tasks') {
       tabItem.onClick = () => navigate(`/projects/${project.id}/tasks`)
+    } else if (activeKey === 'timeTracking') {
+      tabItem.onClick = () => navigate(`/projects/${project.id}/time-tracking`)
     } else if (activeKey === 'notes') {
       tabItem.onClick = () => navigate(`/projects/${project.id}/notes`)
     } else if (activeKey === 'wiki') {
