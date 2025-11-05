@@ -98,10 +98,11 @@ export class SprintService {
         include: [
           { model: User, as: 'assignee' },
           { model: User, as: 'owner' },
-          { model: Sprint, as: 'sprint' },
+          { model: Sprint, as: 'sprint', required: false },
           {
             model: Note,
-            through: { attributes: [] }
+            through: { attributes: [] },
+            required: false
           }
         ],
         order: [

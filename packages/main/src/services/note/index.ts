@@ -125,11 +125,12 @@ export class NoteService {
   protected async loadNote(noteId: string, transaction?: Transaction): Promise<Note> {
     const note = await Note.findByPk(noteId, {
       include: [
-        { model: NoteTag },
+        { model: NoteTag, required: false },
         {
           model: Task,
           include: [{ model: Project }],
-          through: { attributes: [] }
+          through: { attributes: [] },
+          required: false
         },
         { model: User }
       ],
@@ -232,11 +233,12 @@ export class NoteService {
           ...(input.notebook ? { notebook: input.notebook } : {})
         },
         include: [
-          { model: NoteTag },
+          { model: NoteTag, required: false },
           {
             model: Task,
             include: [{ model: Project }],
-            through: { attributes: [] }
+            through: { attributes: [] },
+            required: false
           },
           { model: User }
         ],
@@ -474,11 +476,12 @@ export class NoteService {
       const notes = await Note.findAll({
         where: { id: { [Op.in]: Array.from(noteMap.keys()) } },
         include: [
-          { model: NoteTag },
+          { model: NoteTag, required: false },
           {
             model: Task,
             include: [{ model: Project }],
-            through: { attributes: [] }
+            through: { attributes: [] },
+            required: false
           },
           { model: User }
         ]

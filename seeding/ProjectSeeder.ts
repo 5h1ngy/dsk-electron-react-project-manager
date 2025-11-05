@@ -6,14 +6,21 @@ import { Project } from '../packages/main/src/models/Project'
 import { ProjectMember } from '../packages/main/src/models/ProjectMember'
 import { ProjectTag } from '../packages/main/src/models/ProjectTag'
 import { Task } from '../packages/main/src/models/Task'
+import { TaskStatus } from '../packages/main/src/models/TaskStatus'
 import { Note } from '../packages/main/src/models/Note'
 import { NoteTag } from '../packages/main/src/models/NoteTag'
 import { NoteTaskLink } from '../packages/main/src/models/NoteTaskLink'
 import { WikiPage } from '../packages/main/src/models/WikiPage'
 import { WikiRevision } from '../packages/main/src/models/WikiRevision'
 import { logger } from '../packages/main/src/config/logger'
+import { DEFAULT_TASK_STATUSES } from '../packages/main/src/services/taskStatus/defaults'
 
-import type { ProjectSeedDefinition } from './DevelopmentSeeder.types'
+import type {
+  NoteSeedDefinition,
+  ProjectSeedDefinition,
+  TaskSeedDefinition,
+  WikiPageSeedDefinition
+} from './DevelopmentSeeder.types'
 
 const slugify = (value: string): string =>
   value
@@ -35,32 +42,82 @@ export class ProjectSeeder {
     wikiRevisionCount: number
   }> {
     const existing = await Project.findOne({ where: { key: seed.key }, transaction })
-    if (existing) {
-      logger.debug(`Project ${seed.key} already present, skipping`, 'Seed')
-      return {
-        project: null,
-        taskCount: 0,
-        commentCount: 0,
-        noteCount: 0,
-        wikiPageCount: 0,
-        wikiRevisionCount: 0
+
+    let project: Project
+    let createdProject = false
+
+    if (!existing) {
+      project = await Project.create(
+        {
+          id: randomUUID(),
+          key: seed.key,
+          name: seed.name,
+          description: seed.description,
+          createdBy: seed.createdBy
+        },
+        { transaction }
+      )
+      createdProject = true
+    } else {
+      project = existing
+      const needsUpdate =
+        existing.name !== seed.name || (existing.description ?? null) !== seed.description
+      if (needsUpdate) {
+        existing.name = seed.name
+        existing.description = seed.description
+        await existing.save({ transaction })
       }
     }
 
-    const project = await Project.create(
-      {
-        id: randomUUID(),
-        key: seed.key,
-        name: seed.name,
-        description: seed.description,
-        createdBy: seed.createdBy
-      },
-      { transaction }
-    )
+    await this.syncMembers(project, seed.members, transaction)
+    await this.syncTags(project, seed.tags, transaction)
+    await this.ensureTaskStatuses(project, transaction)
 
-    await Promise.all(
-      seed.members.map((member) =>
-        ProjectMember.create(
+    const taskSync = await this.syncTasks(project, seed.tasks, seed.createdBy, transaction)
+    const noteSync = await this.syncNotes(project, seed.notes, taskSync.orderedTasks, transaction)
+    const wikiSync = await this.syncWiki(project, seed.wikiPages, transaction)
+
+    if (createdProject) {
+      logger.debug(
+        `Seeded project ${project.key} with ${seed.members.length} members, ${seed.tags.length} tags, ${taskSync.createdTasks} tasks, ${taskSync.createdComments} comments, ${noteSync.createdNotes} notes and ${wikiSync.createdPages} wiki pages`,
+        'Seed'
+      )
+    } else if (
+      taskSync.createdTasks > 0 ||
+      noteSync.createdNotes > 0 ||
+      wikiSync.createdPages > 0
+    ) {
+      logger.debug(
+        `Topped up project ${project.key}: +${taskSync.createdTasks} tasks, +${taskSync.createdComments} comments, +${noteSync.createdNotes} notes, +${wikiSync.createdPages} wiki pages`,
+        'Seed'
+      )
+    } else {
+      logger.debug(`Project ${project.key} already aligned with seed configuration`, 'Seed')
+    }
+
+    return {
+      project: createdProject ? project : null,
+      taskCount: taskSync.createdTasks,
+      commentCount: taskSync.createdComments,
+      noteCount: noteSync.createdNotes,
+      wikiPageCount: wikiSync.createdPages,
+      wikiRevisionCount: wikiSync.createdRevisions
+    }
+  }
+
+  private async syncMembers(
+    project: Project,
+    members: ProjectSeedDefinition['members'],
+    transaction: Transaction
+  ): Promise<void> {
+    for (const member of members) {
+      const existing = await ProjectMember.findOne({
+        where: { projectId: project.id, userId: member.userId },
+        transaction
+      })
+
+      if (!existing) {
+        await ProjectMember.create(
           {
             projectId: project.id,
             userId: member.userId,
@@ -69,35 +126,131 @@ export class ProjectSeeder {
           },
           { transaction }
         )
-      )
-    )
+        continue
+      }
 
+      if (existing.role !== member.role) {
+        existing.role = member.role
+        await existing.save({ transaction })
+      }
+    }
+  }
+
+  private async syncTags(
+    project: Project,
+    tags: string[],
+    transaction: Transaction
+  ): Promise<void> {
     await ProjectTag.destroy({ where: { projectId: project.id }, transaction })
 
-    await Promise.all(
-      seed.tags.map((tag) =>
-        ProjectTag.create(
-          {
-            id: randomUUID(),
-            projectId: project.id,
-            tag,
-            createdAt: new Date()
-          },
-          { transaction }
-        )
-      )
+    if (!tags.length) {
+      return
+    }
+
+    await ProjectTag.bulkCreate(
+      tags.map((tag) => ({
+        id: randomUUID(),
+        projectId: project.id,
+        tag,
+        createdAt: new Date()
+      })),
+      { transaction }
+    )
+  }
+
+  private async ensureTaskStatuses(project: Project, transaction: Transaction): Promise<void> {
+    const existing = await TaskStatus.findAll({
+      where: { projectId: project.id },
+      order: [['position', 'ASC']],
+      transaction
+    })
+
+    const existingKeys = new Set(existing.map((status) => status.key))
+    const missing = DEFAULT_TASK_STATUSES.filter((status) => !existingKeys.has(status.key))
+
+    if (missing.length === 0) {
+      return
+    }
+
+    const basePosition =
+      existing.reduce((max, status) => Math.max(max, status.position ?? 0), 0) ?? 0
+    const timestamp = new Date()
+
+    await TaskStatus.bulkCreate(
+      missing.map((status, index) => ({
+        id: randomUUID(),
+        projectId: project.id,
+        key: status.key,
+        label: status.label,
+        position: basePosition + index + 1,
+        createdAt: timestamp,
+        updatedAt: timestamp
+      })),
+      { transaction }
+    )
+  }
+
+  private resolveTaskSequence(prefix: string, tasks: Task[]): number {
+    let max = 0
+
+    for (const task of tasks) {
+      const key = task.key ?? ''
+      if (!key.startsWith(prefix)) {
+        continue
+      }
+
+      const suffix = key.slice(prefix.length)
+      const numeric = Number.parseInt(suffix, 10)
+      if (!Number.isNaN(numeric) && numeric > max) {
+        max = numeric
+      }
+    }
+
+    return max
+  }
+
+  private async syncTasks(
+    project: Project,
+    taskSeeds: TaskSeedDefinition[],
+    createdByFallback: string,
+    transaction: Transaction
+  ): Promise<{ createdTasks: number; createdComments: number; orderedTasks: Task[] }> {
+    if (taskSeeds.length === 0) {
+      return { createdTasks: 0, createdComments: 0, orderedTasks: [] }
+    }
+
+    const existingTasks = await Task.findAll({
+      where: { projectId: project.id },
+      order: [['key', 'ASC']],
+      transaction,
+      paranoid: false
+    })
+
+    const activeTasks = existingTasks.filter(
+      (task) => (task as unknown as { deletedAt?: Date | null }).deletedAt == null
     )
 
-    let taskIndex = 1
-    let commentTotal = 0
-    const createdTasks: Task[] = []
+    const orderedTasks: Task[] = [...activeTasks]
 
-    for (const taskSeed of seed.tasks) {
+    if (activeTasks.length >= taskSeeds.length) {
+      return { createdTasks: 0, createdComments: 0, orderedTasks }
+    }
+
+    let createdTasks = 0
+    let createdComments = 0
+
+    let nextSequence = this.resolveTaskSequence(`${project.key}-`, existingTasks) + 1
+    const tasksToCreate = taskSeeds.slice(activeTasks.length)
+
+    for (const taskSeed of tasksToCreate) {
+      const key = `${project.key}-${String(nextSequence).padStart(3, '0')}`
+      nextSequence += 1
+
       const task = await Task.create(
         {
           id: randomUUID(),
           projectId: project.id,
-          key: `${project.key}-${String(taskIndex).padStart(3, '0')}`,
+          key,
           parentId: null,
           title: taskSeed.title,
           description: taskSeed.description,
@@ -105,144 +258,169 @@ export class ProjectSeeder {
           priority: taskSeed.priority,
           dueDate: taskSeed.dueDate,
           assigneeId: taskSeed.assigneeId,
-          ownerUserId: taskSeed.ownerId ?? seed.createdBy
+          ownerUserId: taskSeed.ownerId ?? createdByFallback
         },
         { transaction }
       )
-      createdTasks.push(task)
+
+      orderedTasks.push(task)
+      createdTasks += 1
 
       if (taskSeed.comments.length > 0) {
-        await Promise.all(
-          taskSeed.comments.map((comment) =>
-            Comment.create(
-              {
-                id: randomUUID(),
-                taskId: task.id,
-                authorId: comment.authorId,
-                body: comment.body
-              },
-              { transaction }
-            )
-          )
-        )
-        commentTotal += taskSeed.comments.length
+        const payload = taskSeed.comments.map((comment) => ({
+          id: randomUUID(),
+          taskId: task.id,
+          authorId: comment.authorId,
+          body: comment.body
+        }))
+        await Comment.bulkCreate(payload, { transaction })
+        createdComments += taskSeed.comments.length
       }
-
-      taskIndex += 1
     }
 
-    let noteCount = 0
-    let wikiPageCount = 0
-    let wikiRevisionTotal = 0
+    return { createdTasks, createdComments, orderedTasks }
+  }
 
-    if (seed.notes.length > 0) {
-      for (const noteSeed of seed.notes) {
-        const note = await Note.create(
-          {
-            id: randomUUID(),
-            projectId: project.id,
-            title: noteSeed.title,
-            bodyMd: noteSeed.body,
-            ownerUserId: noteSeed.ownerId,
-            isPrivate: noteSeed.isPrivate,
-            notebook: noteSeed.notebook
-          },
+  private async syncNotes(
+    project: Project,
+    noteSeeds: NoteSeedDefinition[],
+    taskIndexMap: Task[],
+    transaction: Transaction
+  ): Promise<{ createdNotes: number }> {
+    if (noteSeeds.length === 0) {
+      return { createdNotes: 0 }
+    }
+
+    const existingNotesCount = await Note.count({ where: { projectId: project.id }, transaction })
+    if (existingNotesCount >= noteSeeds.length) {
+      return { createdNotes: 0 }
+    }
+
+    let createdNotes = 0
+
+    for (const noteSeed of noteSeeds.slice(existingNotesCount)) {
+      const note = await Note.create(
+        {
+          id: randomUUID(),
+          projectId: project.id,
+          title: noteSeed.title,
+          bodyMd: noteSeed.body,
+          ownerUserId: noteSeed.ownerId,
+          isPrivate: noteSeed.isPrivate,
+          notebook: noteSeed.notebook
+        },
+        { transaction }
+      )
+
+      createdNotes += 1
+
+      if (noteSeed.tags.length > 0) {
+        await NoteTag.bulkCreate(
+          noteSeed.tags.map((tag) => ({
+            noteId: note.id,
+            tag
+          })),
           { transaction }
         )
+      }
 
-        noteCount += 1
+      if (noteSeed.linkedTaskIndexes.length > 0 && taskIndexMap.length > 0) {
+        const taskIds = Array.from(
+          new Set(
+            noteSeed.linkedTaskIndexes
+              .map((index) => taskIndexMap[index])
+              .filter((task): task is Task => Boolean(task))
+              .map((task) => task.id)
+          )
+        )
 
-        if (noteSeed.tags.length > 0) {
-          await NoteTag.bulkCreate(
-            noteSeed.tags.map((tag) => ({
+        if (taskIds.length > 0) {
+          await NoteTaskLink.bulkCreate(
+            taskIds.map((taskId) => ({
               noteId: note.id,
-              tag
+              taskId
             })),
             { transaction }
           )
         }
-
-        if (noteSeed.linkedTaskIndexes.length > 0) {
-          const uniqueTasks = Array.from(
-            new Set(
-              noteSeed.linkedTaskIndexes
-                .map((index) => createdTasks[index])
-                .filter((task): task is Task => Boolean(task))
-                .map((task) => task.id)
-            )
-          )
-
-          if (uniqueTasks.length > 0) {
-            await NoteTaskLink.bulkCreate(
-              uniqueTasks.map((taskId) => ({
-                noteId: note.id,
-                taskId
-              })),
-              { transaction }
-            )
-          }
-        }
       }
     }
 
-    if (seed.wikiPages.length > 0) {
-      const usedSlugs = new Set<string>()
-      let displayOrder = 0
+    return { createdNotes }
+  }
 
-      for (const pageSeed of seed.wikiPages) {
-        const baseSlug = slugify(pageSeed.title)
-        let candidate = baseSlug
-        let suffix = 2
-        while (usedSlugs.has(candidate)) {
-          candidate = `${baseSlug}-${suffix}`
-          suffix += 1
-        }
-        usedSlugs.add(candidate)
+  private async syncWiki(
+    project: Project,
+    pageSeeds: WikiPageSeedDefinition[],
+    transaction: Transaction
+  ): Promise<{ createdPages: number; createdRevisions: number }> {
+    if (pageSeeds.length === 0) {
+      return { createdPages: 0, createdRevisions: 0 }
+    }
 
-        const page = await WikiPage.create(
-          {
-            id: randomUUID(),
-            projectId: project.id,
-            title: pageSeed.title,
-            slug: candidate,
-            summary: pageSeed.summary ?? null,
-            contentMd: pageSeed.content,
-            displayOrder,
-            createdBy: pageSeed.createdBy,
-            updatedBy: pageSeed.updatedBy
-          },
-          { transaction }
-        )
+    const existingPages = await WikiPage.findAll({
+      where: { projectId: project.id },
+      order: [['displayOrder', 'ASC']],
+      transaction
+    })
 
-        wikiPageCount += 1
-        displayOrder += 1
+    if (existingPages.length >= pageSeeds.length) {
+      return { createdPages: 0, createdRevisions: 0 }
+    }
 
-        if (pageSeed.revisions.length > 0) {
-          const revisionPayload = pageSeed.revisions.map((revision) => ({
-            id: randomUUID(),
-            pageId: page.id,
-            title: revision.title,
-            summary: revision.summary ?? null,
-            contentMd: revision.content,
-            createdBy: revision.authorId
-          }))
-          await WikiRevision.bulkCreate(revisionPayload, { transaction })
-          wikiRevisionTotal += revisionPayload.length
-        }
+    const usedSlugs = new Set(existingPages.map((page) => page.slug))
+    const maxDisplayOrder =
+      existingPages.length > 0
+        ? Math.max(...existingPages.map((page) => page.displayOrder ?? 0))
+        : -1
+
+    let displayOrder = maxDisplayOrder + 1
+    let createdPages = 0
+    let createdRevisions = 0
+
+    for (const pageSeed of pageSeeds.slice(existingPages.length)) {
+      const baseSlug = slugify(pageSeed.title)
+      let candidate = baseSlug
+      let suffix = 2
+
+      while (usedSlugs.has(candidate)) {
+        candidate = `${baseSlug}-${suffix}`
+        suffix += 1
+      }
+      usedSlugs.add(candidate)
+
+      const page = await WikiPage.create(
+        {
+          id: randomUUID(),
+          projectId: project.id,
+          title: pageSeed.title,
+          slug: candidate,
+          summary: pageSeed.summary ?? null,
+          contentMd: pageSeed.content,
+          displayOrder,
+          createdBy: pageSeed.createdBy,
+          updatedBy: pageSeed.updatedBy
+        },
+        { transaction }
+      )
+
+      createdPages += 1
+      displayOrder += 1
+
+      if (pageSeed.revisions.length > 0) {
+        const revisionPayload = pageSeed.revisions.map((revision) => ({
+          id: randomUUID(),
+          pageId: page.id,
+          title: revision.title,
+          summary: revision.summary ?? null,
+          contentMd: revision.content,
+          createdBy: revision.authorId
+        }))
+        await WikiRevision.bulkCreate(revisionPayload, { transaction })
+        createdRevisions += revisionPayload.length
       }
     }
 
-    logger.debug(
-      `Seeded project ${seed.key} with ${seed.members.length} members, ${seed.tags.length} tags, ${seed.tasks.length} tasks, ${commentTotal} comments, ${noteCount} notes and ${wikiPageCount} wiki pages`,
-      'Seed'
-    )
-    return {
-      project,
-      taskCount: seed.tasks.length,
-      commentCount: commentTotal,
-      noteCount,
-      wikiPageCount,
-      wikiRevisionCount: wikiRevisionTotal
-    }
+    return { createdPages, createdRevisions }
   }
 }
