@@ -181,10 +181,11 @@ export class TaskService {
         { model: Project },
         { model: User, as: 'assignee' },
         { model: User, as: 'owner' },
-        { model: Sprint, as: 'sprint' },
+        { model: Sprint, as: 'sprint', required: false },
         {
           model: Note,
-          through: { attributes: [] }
+          through: { attributes: [] },
+          required: false
         }
       ]
     })
@@ -265,10 +266,11 @@ export class TaskService {
         include: [
           { model: User, as: 'assignee' },
           { model: User, as: 'owner' },
-          { model: Sprint, as: 'sprint' },
+          { model: Sprint, as: 'sprint', required: false },
           {
             model: Note,
-            through: { attributes: [] }
+            through: { attributes: [] },
+            required: false
           }
         ],
         // Distinct is required to avoid duplicates produced by the note join,
@@ -386,24 +388,21 @@ export class TaskService {
           { transaction }
         )
 
-        const reloaded = await Task.findByPk(task.id, {
+        await task.reload({
           include: [
             { model: User, as: 'assignee' },
             { model: User, as: 'owner' },
-            { model: Sprint, as: 'sprint' },
+            { model: Sprint, as: 'sprint', required: false },
             {
               model: Note,
-              through: { attributes: [] }
+              through: { attributes: [] },
+              required: false
             }
           ],
           transaction
         })
 
-        if (!reloaded) {
-          throw new AppError('ERR_INTERNAL', 'Task creato non reperibile')
-        }
-
-        return reloaded
+        return task
       })
 
       await this.auditService.record(actor.userId, 'task', createdTask.id, 'create', {
@@ -613,10 +612,11 @@ export class TaskService {
           { model: User, as: 'assignee' },
           { model: User, as: 'owner' },
           { model: Project },
-          { model: Sprint, as: 'sprint' },
+          { model: Sprint, as: 'sprint', required: false },
           {
             model: Note,
-            through: { attributes: [] }
+            through: { attributes: [] },
+            required: false
           }
         ],
         distinct: true

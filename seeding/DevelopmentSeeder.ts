@@ -62,13 +62,12 @@ export class DevelopmentSeeder {
       const existingProjects = await Project.count({ transaction })
       if (existingProjects > 0) {
         logger.info(
-          `Skipping development data seeding: already ${existingProjects} projects in storage`,
+          `Detected ${existingProjects} existing projects; topping up missing seed data where necessary`,
           'Seed'
         )
-        return
+      } else {
+        logger.info('Seeding development data...', 'Seed')
       }
-
-      logger.info('Seeding development data...', 'Seed')
 
       const userSeeds = this.userFactory.createSeeds()
       logger.debug(`Configured ${userSeeds.length} user seeds`, 'Seed')
