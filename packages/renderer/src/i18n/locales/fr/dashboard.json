@@ -7,6 +7,8 @@
     "users": {
       "ariaLabel": "Filtrer les utilisateurs",
       "searchPlaceholder": "Rechercher des utilisateurs...",
+      "usernamePlaceholder": "Filtrer par identifiant",
+      "displayNamePlaceholder": "Filtrer par nom",
       "openButton": "Filtres",
       "status": {
         "all": "Tous",
@@ -23,17 +25,37 @@
       },
       "lastLogin": "Derniere connexion : {{date}}",
       "lastLoginNever": "Derniere connexion : jamais",
-      "statusLabel": "Statut des utilisateurs"
+      "statusLabel": "Statut des utilisateurs",
+      "lastLoginRangeLabel": "Derniere connexion",
+      "createdRangeLabel": "Cree le",
+      "updatedRangeLabel": "Mis a jour le"
     },
     "panelTitle": "Filtres"
   },
   "table": {
+    "id": "ID utilisateur",
     "username": "Nom d'utilisateur",
     "displayName": "Nom",
     "roles": "Roles",
     "status": "Statut",
+    "lastLoginAt": "Derniere connexion",
+    "createdAt": "Cree le",
+    "updatedAt": "Mis a jour le",
+    "neverLoggedIn": "Jamais connecte",
     "actions": "Actions",
     "empty": "Aucun utilisateur"
+  },
+  "optionalColumns": {
+    "button": "Champs optionnels",
+    "modalTitle": "Champs optionnels",
+    "description": "Choisissez les colonnes supplementaires a afficher dans la vue tableau.",
+    "placeholder": "Selectionnez les colonnes optionnelles",
+    "columns": {
+      "id": "ID utilisateur",
+      "lastLoginAt": "Derniere connexion",
+      "createdAt": "Cree le",
+      "updatedAt": "Mis a jour le"
+    }
   },
   "status": {
     "active": "Actif",

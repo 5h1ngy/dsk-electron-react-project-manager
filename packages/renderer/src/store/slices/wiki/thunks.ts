@@ -200,15 +200,20 @@ export const restoreWikiRevision = createAsyncThunk<
   { projectId: string; page: WikiPageDetails },
   { projectId: string; pageId: string; revisionId: string },
   { state: RootState; rejectValue: string }
->('wiki/restoreRevision', async ({ projectId, pageId, revisionId }, { getState, dispatch, rejectWithValue }) => {
-  const token = ensureToken(getState())
-  if (!token) {
-    return rejectWithValue('Sessione non valida')
+>(
+  'wiki/restoreRevision',
+  async ({ projectId, pageId, revisionId }, { getState, dispatch, rejectWithValue }) => {
+    const token = ensureToken(getState())
+    if (!token) {
+      return rejectWithValue('Sessione non valida')
+    }
+    try {
+      const page = await handleResponse(
+        window.api.wiki.restore(token, projectId, pageId, revisionId)
+      )
+      return { projectId, page: toDetails(page) }
+    } catch (error) {
+      return handleWikiError(error, dispatch, rejectWithValue)
+    }
   }
-  try {
-    const page = await handleResponse(window.api.wiki.restore(token, projectId, pageId, revisionId))
-    return { projectId, page: toDetails(page) }
-  } catch (error) {
-    return handleWikiError(error, dispatch, rejectWithValue)
-  }
-})
+)

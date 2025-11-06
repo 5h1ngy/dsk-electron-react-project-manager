@@ -67,11 +67,7 @@ export const ProjectBoard = ({
         />
       ) : null}
       {showSkeleton ? (
-        <LoadingSkeleton
-          layout="columns"
-          items={Math.max(columns.length, 4)}
-          minHeight={420}
-        />
+        <LoadingSkeleton layout="columns" items={Math.max(columns.length, 4)} minHeight={420} />
       ) : hasTasks ? (
         <div style={boardContainerStyle}>
           <div
@@ -114,4 +110,3 @@ export const ProjectBoard = ({
 ProjectBoard.displayName = 'ProjectBoard'
 
 export default ProjectBoard
-

@@ -1,4 +1,7 @@
-import { buildCreateUserSchema, buildUpdateUserSchema } from '@renderer/pages/Dashboard/schemas/userSchemas'
+import {
+  buildCreateUserSchema,
+  buildUpdateUserSchema
+} from '@renderer/pages/Dashboard/schemas/userSchemas'
 
 describe('userSchemas', () => {
   const createMessages = {

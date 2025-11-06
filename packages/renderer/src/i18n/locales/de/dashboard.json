@@ -7,6 +7,8 @@
     "users": {
       "ariaLabel": "Benutzer filtern",
       "searchPlaceholder": "Benutzer suchen...",
+      "usernamePlaceholder": "Nach Benutzername filtern",
+      "displayNamePlaceholder": "Nach Name filtern",
       "openButton": "Filter",
       "status": {
         "all": "Alle",
@@ -23,17 +25,37 @@
       },
       "lastLogin": "Letzte Anmeldung: {{date}}",
       "lastLoginNever": "Letzte Anmeldung: nie",
-      "statusLabel": "Benutzerstatus"
+      "statusLabel": "Benutzerstatus",
+      "lastLoginRangeLabel": "Letzte Anmeldung",
+      "createdRangeLabel": "Erstellt am",
+      "updatedRangeLabel": "Aktualisiert am"
     },
     "panelTitle": "Filter"
   },
   "table": {
+    "id": "Benutzer-ID",
     "username": "Benutzername",
     "displayName": "Name",
     "roles": "Rollen",
     "status": "Status",
+    "lastLoginAt": "Letzte Anmeldung",
+    "createdAt": "Erstellt am",
+    "updatedAt": "Aktualisiert am",
+    "neverLoggedIn": "Noch nie angemeldet",
     "actions": "Aktionen",
     "empty": "Keine Benutzer"
+  },
+  "optionalColumns": {
+    "button": "Optionale Felder",
+    "modalTitle": "Optionale Felder",
+    "description": "Waehle die zusaetzlichen Spalten, die in der Tabelle angezeigt werden sollen.",
+    "placeholder": "Optionale Spalten auswaehlen",
+    "columns": {
+      "id": "Benutzer-ID",
+      "lastLoginAt": "Letzte Anmeldung",
+      "createdAt": "Erstellt am",
+      "updatedAt": "Aktualisiert am"
+    }
   },
   "status": {
     "active": "Aktiv",

@@ -1,8 +1,9 @@
-import type { WikiPageDetailsDTO, WikiPageSummaryDTO, WikiRevisionDTO } from '@main/services/wiki/types'
 import type {
-  CreateWikiPageInput,
-  UpdateWikiPageInput
-} from '@main/services/wiki/schemas'
+  WikiPageDetailsDTO,
+  WikiPageSummaryDTO,
+  WikiRevisionDTO
+} from '@main/services/wiki/types'
+import type { CreateWikiPageInput, UpdateWikiPageInput } from '@main/services/wiki/schemas'
 import { invokeIpc } from '@preload/api/shared'
 
 const CHANNELS = {
@@ -22,12 +23,8 @@ export const wikiApi = {
     await invokeIpc<WikiPageDetailsDTO>(CHANNELS.get, token, projectId, pageId),
   create: async (token: string, projectId: string, payload: CreateWikiPageInput) =>
     await invokeIpc<WikiPageDetailsDTO>(CHANNELS.create, token, projectId, payload),
-  update: async (
-    token: string,
-    projectId: string,
-    pageId: string,
-    payload: UpdateWikiPageInput
-  ) => await invokeIpc<WikiPageDetailsDTO>(CHANNELS.update, token, projectId, pageId, payload),
+  update: async (token: string, projectId: string, pageId: string, payload: UpdateWikiPageInput) =>
+    await invokeIpc<WikiPageDetailsDTO>(CHANNELS.update, token, projectId, pageId, payload),
   remove: async (token: string, projectId: string, pageId: string) =>
     await invokeIpc<{ success: boolean }>(CHANNELS.remove, token, projectId, pageId),
   revisions: async (token: string, projectId: string, pageId: string) =>

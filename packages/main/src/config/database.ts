@@ -21,7 +21,6 @@ import { View } from '@main/models/View'
 import { WikiPage } from '@main/models/WikiPage'
 import { WikiRevision } from '@main/models/WikiRevision'
 import { Sprint } from '@main/models/Sprint'
-import { TimeEntry } from '@main/models/TimeEntry'
 import { DEFAULT_TASK_STATUSES } from '@main/services/taskStatus/defaults'
 import type { DatabaseInitializationOptions } from '@main/config/database.types'
 import { logger } from '@main/config/logger'
@@ -93,7 +92,6 @@ export class DatabaseManager {
     Note,
     NoteTag,
     NoteTaskLink,
-    TimeEntry,
     View,
     WikiPage,
     WikiRevision

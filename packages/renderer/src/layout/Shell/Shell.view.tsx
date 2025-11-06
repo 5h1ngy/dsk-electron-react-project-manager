@@ -25,13 +25,17 @@ export const ShellView = ({
   onCloseMobileMenu
 }: ShellViewProps) => {
   const isMenuExpanded = isMobile ? mobileMenuVisible : !collapsed
-  const collapseIcon = isMobile
-    ? mobileMenuVisible
-      ? <MenuFoldOutlined />
-      : <MenuUnfoldOutlined />
-    : collapsed
-      ? <MenuUnfoldOutlined />
-      : <MenuFoldOutlined />
+  const collapseIcon = isMobile ? (
+    mobileMenuVisible ? (
+      <MenuFoldOutlined />
+    ) : (
+      <MenuUnfoldOutlined />
+    )
+  ) : collapsed ? (
+    <MenuUnfoldOutlined />
+  ) : (
+    <MenuFoldOutlined />
+  )
   const collapseAriaLabel = isMenuExpanded ? labels.collapseSidebar : labels.expandSidebar
 
   return (

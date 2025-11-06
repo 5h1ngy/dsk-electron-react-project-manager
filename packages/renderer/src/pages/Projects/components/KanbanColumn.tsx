@@ -136,35 +136,20 @@ export const KanbanColumn = ({
         }}
       >
         {renderComposer ? renderComposer() : null}
-        {tasks.length === 0 ? (
-          <Typography.Text
-            type="secondary"
-            style={{
-              textAlign: 'center',
-              padding: token.paddingSM,
-              borderRadius: token.borderRadius,
-              background: token.colorFillSecondary,
-              color: token.colorTextSecondary
-            }}
-          >
-            {t('board.emptyColumn')}
-          </Typography.Text>
-        ) : (
-          tasks.map((task) => (
-            <TaskCard
-              key={task.id}
-              task={task}
-              onSelect={() => onTaskSelect(task)}
-              onEdit={() => onTaskEdit(task)}
-              onDeleteRequest={() => onTaskDelete(task)}
-              deleting={deletingTaskId === task.id}
-              onDragStart={handleDragStart}
-              draggable={canManage}
-              canEdit={canManage}
-              canDelete={canDeleteTask(task)}
-            />
-          ))
-        )}
+        {tasks.map((task) => (
+          <TaskCard
+            key={task.id}
+            task={task}
+            onSelect={() => onTaskSelect(task)}
+            onEdit={() => onTaskEdit(task)}
+            onDeleteRequest={() => onTaskDelete(task)}
+            deleting={deletingTaskId === task.id}
+            onDragStart={handleDragStart}
+            draggable={canManage}
+            canEdit={canManage}
+            canDelete={canDeleteTask(task)}
+          />
+        ))}
       </Space>
     </Card>
   )

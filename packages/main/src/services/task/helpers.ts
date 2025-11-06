@@ -26,7 +26,6 @@ export const mapUserSummary = (user: User | null): UserSummaryDTO | null => {
 
 interface MapTaskDetailsOptions {
   sprint?: Sprint | null
-  timeSpentMinutes?: number
 }
 
 export const mapTaskDetails = (
@@ -36,8 +35,6 @@ export const mapTaskDetails = (
   options: MapTaskDetailsOptions = {}
 ): TaskDetailsDTO => {
   const sprint = options.sprint ?? task.sprint ?? null
-  const timeSpent = Number(options.timeSpentMinutes ?? 0)
-
   return {
     id: task.id,
     projectId: task.projectId,
@@ -59,7 +56,6 @@ export const mapTaskDetails = (
     sprintId: sprint?.id ?? task.sprintId ?? null,
     sprint: mapSprintSummary(sprint),
     estimatedMinutes: task.estimatedMinutes ?? null,
-    timeSpentMinutes: timeSpent,
     createdAt: task.createdAt!,
     updatedAt: task.updatedAt!,
     projectKey,

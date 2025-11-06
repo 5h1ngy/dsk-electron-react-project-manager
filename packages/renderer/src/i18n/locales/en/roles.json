@@ -4,7 +4,8 @@
     "refresh": "Refresh",
     "edit": "Edit",
     "delete": "Delete",
-    "deleteSelected": "Delete selected ({{count}})"
+    "deleteSelected": "Delete selected ({{count}})",
+    "syncDefaults": "Sync roles"
   },
   "table": {
     "name": "Name",
@@ -34,7 +35,8 @@
     "updateSuccess": "Role updated successfully",
     "deleteSuccess": "Role \"{{name}}\" deleted",
     "deleteBulkSuccess": "Deleted {{count}} roles",
-    "deletePartialWarning": "{{count}} selected roles cannot be removed because they are protected or still assigned."
+    "deletePartialWarning": "{{count}} selected roles cannot be removed because they are protected or still assigned.",
+    "syncSuccess": "System roles refreshed successfully"
   },
   "errors": {
     "title": "Unable to load roles",

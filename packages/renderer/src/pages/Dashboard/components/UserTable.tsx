@@ -43,8 +43,7 @@ export const UserTable = ({
         },
         getCheckboxProps: (record) => ({
           disabled:
-            Boolean(rowSelection.disabled) ||
-            Boolean(rowSelection.disableKeys?.includes(record.id))
+            Boolean(rowSelection.disabled) || Boolean(rowSelection.disableKeys?.includes(record.id))
         })
       }
     : undefined

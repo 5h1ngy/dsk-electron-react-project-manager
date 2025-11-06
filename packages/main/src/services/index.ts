@@ -8,4 +8,3 @@ export * from '@main/services/view'
 export * from '@main/services/roles'
 export * from '@main/services/databaseMaintenance'
 export * from '@main/services/wiki'
-

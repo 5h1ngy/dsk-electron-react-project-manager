@@ -19,7 +19,6 @@ import { ViewIpcRegistrar } from '@main/ipc/view'
 import { RoleIpcRegistrar } from '@main/ipc/role'
 import { WikiIpcRegistrar } from '@main/ipc/wiki'
 import { SprintIpcRegistrar } from '@main/ipc/sprint'
-import { TimeTrackingIpcRegistrar } from '@main/ipc/timeTracking'
 import { HealthIpcRegistrar } from '@main/ipc/health'
 import { DatabaseMaintenanceService } from '@main/services/databaseMaintenance'
 import { DatabaseIpcRegistrar } from '@main/ipc/database'
@@ -234,8 +233,7 @@ class MainProcessApplication {
       viewService,
       roleService,
       wikiService,
-      sprintService,
-      timeTrackingService
+      sprintService
     } = this.deps.context
     if (
       !projectService ||
@@ -245,11 +243,10 @@ class MainProcessApplication {
       !viewService ||
       !roleService ||
       !wikiService ||
-      !sprintService ||
-      !timeTrackingService
+      !sprintService
     ) {
       throw new Error(
-        'Project, Task, TaskStatus, Note, View, Role, Wiki, Sprint e TimeTracking services must be initialized before registering IPC'
+        'Project, Task, TaskStatus, Note, View, Role, Wiki e Sprint services must be initialized before registering IPC'
       )
     }
 
@@ -296,12 +293,6 @@ class MainProcessApplication {
       sprintService,
       registrar: this.deps.ipcRegistrar
     }).register()
-    new TimeTrackingIpcRegistrar({
-      authService: this.deps.context.authService,
-      timeTrackingService,
-      registrar: this.deps.ipcRegistrar
-    }).register()
-
     const databaseService = new DatabaseMaintenanceService({
       authService: this.deps.context.authService,
       auditService: this.deps.context.auditService,
@@ -320,7 +311,7 @@ class MainProcessApplication {
     }).register()
 
     this.deps.logger.debug(
-      'Auth, Project, Task, TaskStatus, Note, View, Role, Wiki, Sprint, TimeTracking e Database IPC channels registered',
+      'Auth, Project, Task, TaskStatus, Note, View, Role, Wiki, Sprint e Database IPC channels registered',
       'IPC'
     )
   }

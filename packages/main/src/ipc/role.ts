@@ -48,6 +48,11 @@ export class RoleIpcRegistrar {
       await this.roleService.deleteRole(actor, roleId)
       return { success: true }
     })
+
+    this.registrar.register('role:sync-defaults', async (token: string) => {
+      const actor = await this.resolveActor(token)
+      return await this.roleService.syncDefaults(actor)
+    })
   }
 
   private async resolveActor(token: string) {

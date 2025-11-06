@@ -1,12 +1,11 @@
 import { randomUUID } from 'node:crypto'
-import { Op, col, fn, type Sequelize, type Transaction } from 'sequelize'
+import { Op, fn, type Sequelize, type Transaction } from 'sequelize'
 
 import { AuditService } from '@main/services/audit'
 import { Sprint } from '@main/models/Sprint'
 import { Project } from '@main/models/Project'
 import { ProjectMember, type ProjectMembershipRole } from '@main/models/ProjectMember'
 import { Task } from '@main/models/Task'
-import { TimeEntry } from '@main/models/TimeEntry'
 import { Comment } from '@main/models/Comment'
 import { User } from '@main/models/User'
 import { Note } from '@main/models/Note'
@@ -55,8 +54,6 @@ export class SprintService {
         }
       })
 
-      const timeByTask = await this.loadTimeTotals(tasks.map((task) => task.id))
-
       const tasksBySprint = new Map<string, Task[]>()
       tasks.forEach((task) => {
         if (!task.sprintId) {
@@ -73,7 +70,7 @@ export class SprintService {
           throw new AppError('ERR_INTERNAL', 'Impossibile mappare i dati sprint')
         }
         const sprintTasks = tasksBySprint.get(sprint.id) ?? []
-        const metrics = this.buildMetrics(sprint, sprintTasks, timeByTask)
+        const metrics = this.buildMetrics(sprintTasks)
         return {
           ...summary,
           metrics
@@ -113,23 +110,16 @@ export class SprintService {
 
       const taskIds = tasks.map((task) => task.id)
       const commentCounts = await this.loadCommentCounts(taskIds)
-      const timeByTask = await this.loadTimeTotals(taskIds)
 
       const summary = mapSprintSummary(sprint)
       if (!summary) {
         throw new AppError('ERR_INTERNAL', 'Impossibile mappare i dati sprint')
       }
 
-      const metrics = this.buildMetrics(
-        sprint,
-        tasks.map((task) => task as Task),
-        timeByTask
-      )
+      const metrics = this.buildMetrics(tasks.map((task) => task as Task))
 
       const taskDtos = tasks.map((task) =>
-        mapTaskDetails(task, project.key, commentCounts.get(task.id) ?? 0, {
-          timeSpentMinutes: timeByTask.get(task.id) ?? 0
-        })
+        mapTaskDetails(task, project.key, commentCounts.get(task.id) ?? 0)
       )
 
       return {
@@ -189,7 +179,7 @@ export class SprintService {
 
       return {
         ...summary,
-        metrics: this.buildMetrics(sprint, [], new Map())
+        metrics: this.buildMetrics([])
       }
     } catch (error) {
       throw wrapError(error)
@@ -253,7 +243,6 @@ export class SprintService {
         attributes: ['id', 'sprintId', 'status', 'estimatedMinutes'],
         where: { sprintId: sprint.id }
       })
-      const timeByTask = await this.loadTimeTotals(tasks.map((task) => task.id))
 
       const summary = mapSprintSummary(sprint)
       if (!summary) {
@@ -262,7 +251,7 @@ export class SprintService {
 
       return {
         ...summary,
-        metrics: this.buildMetrics(sprint, tasks, timeByTask)
+        metrics: this.buildMetrics(tasks)
       }
     } catch (error) {
       throw wrapError(error)
@@ -355,34 +344,11 @@ export class SprintService {
     return map
   }
 
-  private async loadTimeTotals(taskIds: string[]): Promise<Map<string, number>> {
-    if (!taskIds.length) {
-      return new Map()
-    }
-
-    const rows = (await TimeEntry.findAll({
-      attributes: ['taskId', [fn('SUM', col('durationMinutes')), 'totalMinutes']],
-      where: { taskId: { [Op.in]: taskIds } },
-      group: ['taskId'],
-      raw: true
-    })) as unknown as Array<{ taskId: string; totalMinutes: number }>
-
-    const map = new Map<string, number>()
-    rows.forEach((row) => map.set(row.taskId, Number(row.totalMinutes ?? 0)))
-    return map
-  }
-
-  private buildMetrics(
-    sprint: Sprint,
-    tasks: Task[],
-    timeByTask: Map<string, number>
-  ): SprintMetricsDTO {
+  private buildMetrics(tasks: Task[]): SprintMetricsDTO {
     const metrics: SprintMetricsDTO = {
       totalTasks: tasks.length,
       estimatedMinutes: 0,
-      timeSpentMinutes: 0,
-      statusBreakdown: {},
-      utilizationPercent: null
+      statusBreakdown: {}
     }
 
     for (const task of tasks) {
@@ -391,15 +357,6 @@ export class SprintService {
       if (task.estimatedMinutes) {
         metrics.estimatedMinutes += task.estimatedMinutes
       }
-      metrics.timeSpentMinutes += timeByTask.get(task.id) ?? 0
-    }
-
-    if (sprint.capacityMinutes) {
-      const utilization =
-        sprint.capacityMinutes === 0 ? 0 : metrics.timeSpentMinutes / sprint.capacityMinutes
-      metrics.utilizationPercent = Number.isFinite(utilization)
-        ? Number((utilization * 100).toFixed(2))
-        : null
     }
 
     return metrics

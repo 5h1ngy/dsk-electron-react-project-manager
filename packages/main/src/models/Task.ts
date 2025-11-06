@@ -15,7 +15,6 @@ import { Comment } from '@main/models/Comment'
 import { Note } from '@main/models/Note'
 import { NoteTaskLink } from '@main/models/NoteTaskLink'
 import { Sprint } from '@main/models/Sprint'
-import { TimeEntry } from '@main/models/TimeEntry'
 
 export type TaskStatus = string
 export type TaskPriority = 'low' | 'medium' | 'high' | 'critical'
@@ -134,9 +133,6 @@ export class Task extends Model {
 
   @HasMany(() => Comment)
   declare comments?: Comment[]
-
-  @HasMany(() => TimeEntry)
-  declare timeEntries?: TimeEntry[]
 
   @BelongsToMany(() => Note, () => NoteTaskLink)
   declare notes?: Note[]

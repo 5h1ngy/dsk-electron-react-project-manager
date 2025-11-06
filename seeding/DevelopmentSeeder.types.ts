@@ -75,7 +75,6 @@ export interface ProjectSeedDefinition {
   notes: NoteSeedDefinition[]
   wikiPages: WikiPageSeedDefinition[]
   sprints: SprintSeedDefinition[]
-  timeEntries: TimeEntrySeedDefinition[]
 }
 
 export interface SeederState {
@@ -92,12 +91,4 @@ export interface SprintSeedDefinition {
   status: SprintStatus
   capacityMinutes: number | null
   sequence: number
-}
-
-export interface TimeEntrySeedDefinition {
-  taskIndex: number
-  userId: string
-  entryDate: string
-  durationMinutes: number
-  description: string | null
 }

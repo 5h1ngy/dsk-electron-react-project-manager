@@ -55,4 +55,3 @@ export class WikiRevision extends Model {
   @BelongsTo(() => User, 'createdBy')
   declare author?: User
 }
-

@@ -57,85 +57,76 @@ const SprintGroup = ({
 
   return (
     <Space direction="vertical" size={token.marginSM} style={{ width: '100%' }}>
-    <div
-      style={{
-        display: 'grid',
-        gridTemplateColumns: `240px repeat(${timelineSlots.length}, minmax(${slotWidth}px, 1fr))`,
-        alignItems: 'stretch',
-        padding: `${token.paddingSM}px 0`,
-        background: token.colorBgLayout,
-        borderRadius: token.borderRadiusSM,
-        minWidth: contentMinWidth
-      }}
-    >
-      <div style={{ paddingInline: token.paddingMD }}>
-        <Space size={8} wrap align="center">
-          <Typography.Text strong>{group.label}</Typography.Text>
-          <Typography.Text type="secondary">
-            {t('sprints.group.totalTasks', { defaultValue: 'Task' })}: {group.totals.tasks}
-          </Typography.Text>
-          <Typography.Text type="secondary">
-            {t('sprints.estimatedMinutes', { defaultValue: 'Stimati' })}: {group.totals.estimated}
-          </Typography.Text>
-          <Typography.Text type="secondary">
-            {t('sprints.spentMinutes', { defaultValue: 'Registrati' })}: {group.totals.spent}
-          </Typography.Text>
-          {group.totals.utilization !== null ? (
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: `240px repeat(${timelineSlots.length}, minmax(${slotWidth}px, 1fr))`,
+          alignItems: 'stretch',
+          padding: `${token.paddingSM}px 0`,
+          background: token.colorBgLayout,
+          borderRadius: token.borderRadiusSM,
+          minWidth: contentMinWidth
+        }}
+      >
+        <div style={{ paddingInline: token.paddingMD }}>
+          <Space size={8} wrap align="center">
+            <Typography.Text strong>{group.label}</Typography.Text>
             <Typography.Text type="secondary">
-              {t('sprints.utilization', { defaultValue: 'Utilizzo' })}:{' '}
-              {Math.round(group.totals.utilization)}%
+              {t('sprints.group.totalTasks', { defaultValue: 'Task' })}: {group.totals.tasks}
             </Typography.Text>
-          ) : null}
-        </Space>
+            <Typography.Text type="secondary">
+              {t('sprints.estimatedMinutes', { defaultValue: 'Stimati' })}: {group.totals.estimated}
+            </Typography.Text>
+          </Space>
+        </div>
+        {timelineSlots.map((slot, index) => {
+          const { label, subLabel } = formatSlotLabel(slot)
+          return (
+            <div
+              key={`${group.status}-slot-${slot.valueOf()}`}
+              style={{
+                borderLeft: index === 0 ? 'none' : `1px solid ${token.colorSplit}`,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: 4
+              }}
+            >
+              <Typography.Text strong>{label}</Typography.Text>
+              <Typography.Text type="secondary">{subLabel}</Typography.Text>
+            </div>
+          )
+        })}
       </div>
-      {timelineSlots.map((slot, index) => {
-        const { label, subLabel } = formatSlotLabel(slot)
-        return (
-          <div
-            key={`${group.status}-slot-${slot.valueOf()}`}
-            style={{
-              borderLeft: index === 0 ? 'none' : `1px solid ${token.colorSplit}`,
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: 4
-            }}
-          >
-            <Typography.Text strong>{label}</Typography.Text>
-            <Typography.Text type="secondary">{subLabel}</Typography.Text>
-          </div>
-        )
-      })}
-    </div>
 
-    <Space
-      direction="vertical"
-      size={token.marginSM}
-      style={{ width: '100%', minWidth: contentMinWidth }}
-    >
-      {group.sprints.map((sprint) => (
-        <SprintLane
-          key={sprint.id}
-          sprint={sprint}
-          isExpanded={expandedSprintIds.includes(sprint.id)}
-          onToggle={onToggleSprint}
-          timelineSlots={timelineSlots}
-          slotWidth={slotWidth}
-          computeRangePosition={computeRangePosition}
-          sprintStatusColors={sprintStatusColors}
-          token={token}
-          t={t}
-          sprintKeyPrefix={sprintKeyPrefix}
-          canManage={canManage}
-          onEdit={onEditSprint}
-          onDelete={onDeleteSprint}
-          formatDateRange={formatDateRange}
-          detailsState={sprintDetailsMap[sprint.id]}
-          taskTableColumns={taskTableColumns}
-        />
-      ))}
+      <Space
+        direction="vertical"
+        size={token.marginSM}
+        style={{ width: '100%', minWidth: contentMinWidth }}
+      >
+        {group.sprints.map((sprint) => (
+          <SprintLane
+            key={sprint.id}
+            sprint={sprint}
+            isExpanded={expandedSprintIds.includes(sprint.id)}
+            onToggle={onToggleSprint}
+            timelineSlots={timelineSlots}
+            slotWidth={slotWidth}
+            computeRangePosition={computeRangePosition}
+            sprintStatusColors={sprintStatusColors}
+            token={token}
+            t={t}
+            sprintKeyPrefix={sprintKeyPrefix}
+            canManage={canManage}
+            onEdit={onEditSprint}
+            onDelete={onDeleteSprint}
+            formatDateRange={formatDateRange}
+            detailsState={sprintDetailsMap[sprint.id]}
+            taskTableColumns={taskTableColumns}
+          />
+        ))}
+      </Space>
     </Space>
-  </Space>
   )
 }
 

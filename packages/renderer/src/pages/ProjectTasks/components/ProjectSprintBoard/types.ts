@@ -45,8 +45,6 @@ export type GroupedSprints = {
   totals: {
     tasks: number
     estimated: number
-    spent: number
-    utilization: number | null
   }
 }
 
@@ -55,8 +53,6 @@ export type SprintDetailsSelectorResult = {
     metrics: {
       totalTasks: number
       estimatedMinutes: number | null
-      timeSpentMinutes: number
-      utilizationPercent: number | null
     }
     tasks: TaskDetailsDTO[]
   } | null

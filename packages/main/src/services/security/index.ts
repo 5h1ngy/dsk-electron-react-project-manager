@@ -79,7 +79,11 @@ export const shouldAllowRequest = (url: URL, isPackaged: boolean): boolean => {
     return true
   }
 
-  if (shouldEnableDevtools() && url.protocol === 'https:' && DEVTOOLS_ALLOWED_HOSTS.has(url.hostname)) {
+  if (
+    shouldEnableDevtools() &&
+    url.protocol === 'https:' &&
+    DEVTOOLS_ALLOWED_HOSTS.has(url.hostname)
+  ) {
     return true
   }
 

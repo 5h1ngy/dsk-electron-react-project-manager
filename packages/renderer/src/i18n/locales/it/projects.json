@@ -5,8 +5,7 @@
     "list": "Vista elenco",
     "cards": "Vista card",
     "board": "Vista kanban",
-    "sprint": "Vista sprint",
-    "timeline": "Monitoraggio tempo"
+    "sprint": "Vista sprint"
   },
   "actions": {
     "refresh": "Aggiorna",
@@ -660,39 +659,5 @@
       "emptyTasks": "Nessun task presente nello sprint."
     },
     "selectPrompt": "Seleziona uno sprint per visualizzare i dettagli."
-  },
-  "time": {
-    "tracking": {
-      "title": "Monitoraggio tempo",
-      "actions": {
-        "logTime": "Registra tempo"
-      },
-      "createTitle": "Registra tempo",
-      "editTitle": "Modifica registrazione",
-      "createSuccess": "Tempo registrato",
-      "updateSuccess": "Registrazione aggiornata",
-      "deleteTitle": "Elimina registrazione",
-      "deleteBody": "Vuoi eliminare questa registrazione di tempo?",
-      "deleteSuccess": "Registrazione eliminata",
-      "totalMinutes": "Minuti registrati",
-      "byUser": "Per utente",
-      "byTask": "Per task",
-      "noData": "Nessun dato disponibile",
-      "noEntries": "Nessuna registrazione per il periodo selezionato.",
-      "noTasks": "Crea un task prima di registrare il tempo.",
-      "columns": {
-        "date": "Data",
-        "task": "Task",
-        "user": "Utente",
-        "minutes": "Minuti",
-        "description": "Descrizione"
-      },
-      "fields": {
-        "task": "Task",
-        "entryDate": "Data",
-        "duration": "Durata (minuti)",
-        "description": "Descrizione"
-      }
-    }
   }
 }

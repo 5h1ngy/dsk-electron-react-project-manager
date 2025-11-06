@@ -42,6 +42,8 @@ export interface UserCardsGridProps {
   page: number
   pageSize: number
   onPageChange: (page: number) => void
+  onPageSizeChange: (page: number, pageSize: number) => void
+  pageSizeOptions?: number[]
   onEdit: (user: UserDTO) => void
   onDelete: (user: UserDTO) => void
   isDeleting: (userId: string) => boolean
@@ -55,6 +57,8 @@ export const UserCardsGrid = ({
   page,
   pageSize,
   onPageChange,
+  onPageSizeChange,
+  pageSizeOptions = [8, 12, 16, 24],
   onEdit,
   onDelete,
   isDeleting,
@@ -169,16 +173,16 @@ export const UserCardsGrid = ({
           </Card>
         ))}
       </div>
-      {users.length > pageSize ? (
-        <Pagination
-          current={page}
-          total={users.length}
-          pageSize={pageSize}
-          onChange={onPageChange}
-          showSizeChanger={false}
-          style={{ alignSelf: 'center' }}
-        />
-      ) : null}
+      <Pagination
+        current={page}
+        total={users.length}
+        pageSize={pageSize}
+        onChange={onPageChange}
+        showSizeChanger
+        pageSizeOptions={pageSizeOptions.map(String)}
+        onShowSizeChange={onPageSizeChange}
+        style={{ alignSelf: 'flex-end' }}
+      />
     </Space>
   )
 }

@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useState, type JSX } from 'react'
 import {
   Avatar,
-  Button,
   Card,
   DatePicker,
   Empty,
@@ -19,14 +18,7 @@ import {
   theme
 } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
-import {
-  DeleteOutlined,
-  EditOutlined,
-  PlusOutlined,
-  UserOutlined,
-  ZoomInOutlined,
-  ZoomOutOutlined
-} from '@ant-design/icons'
+import { UserOutlined } from '@ant-design/icons'
 import dayjs from 'dayjs'
 import type { ManipulateType } from 'dayjs'
 import { useTranslation } from 'react-i18next'
@@ -57,7 +49,6 @@ import type {
   SprintDetailsSelectorResult,
   SprintStatusFilter,
   TaskTableColumns,
-  TaskTableRecord,
   TimelinePosition,
   UnassignedTaskRecord,
   ViewScale
@@ -223,25 +214,13 @@ export const ProjectSprintBoard = ({
         (acc, sprint) => {
           acc.tasks += sprint.metrics.totalTasks
           acc.estimated += sprint.metrics.estimatedMinutes ?? 0
-          acc.spent += sprint.metrics.timeSpentMinutes
-          if (typeof sprint.metrics.utilizationPercent === 'number') {
-            acc.utilizationValues.push(sprint.metrics.utilizationPercent)
-          }
           return acc
         },
         {
           tasks: 0,
-          estimated: 0,
-          spent: 0,
-          utilizationValues: [] as number[]
+          estimated: 0
         }
       )
-
-      const utilization =
-        totals.utilizationValues.length > 0
-          ? totals.utilizationValues.reduce((sum, value) => sum + value, 0) /
-            totals.utilizationValues.length
-          : null
 
       return {
         status,
@@ -249,9 +228,7 @@ export const ProjectSprintBoard = ({
         sprints: statusSprints,
         totals: {
           tasks: totals.tasks,
-          estimated: totals.estimated,
-          spent: totals.spent,
-          utilization
+          estimated: totals.estimated
         }
       }
     }).filter(Boolean) as GroupedSprints[]
@@ -321,14 +298,11 @@ export const ProjectSprintBoard = ({
         : startInput
       const clampedEnd = endInput.isAfter(timelineBounds.end) ? timelineBounds.end : endInput
 
-      const safeEnd = clampedEnd.isBefore(clampedStart)
-        ? clampedStart.add(6, 'hour')
-        : clampedEnd
+      const safeEnd = clampedEnd.isBefore(clampedStart) ? clampedStart.add(6, 'hour') : clampedEnd
 
       const leftPercent =
         (clampedStart.diff(timelineBounds.start, 'hour', true) / totalTimelineHours) * 100
-      const widthPercent =
-        (safeEnd.diff(clampedStart, 'hour', true) / totalTimelineHours) * 100
+      const widthPercent = (safeEnd.diff(clampedStart, 'hour', true) / totalTimelineHours) * 100
 
       return {
         left: `${Math.max(0, Math.min(leftPercent, 100))}%`,
@@ -371,12 +345,7 @@ export const ProjectSprintBoard = ({
       completed: token.colorSuccess,
       archived: token.colorTextQuaternary
     }),
-    [
-      token.colorPrimary,
-      token.colorSuccess,
-      token.colorTextQuaternary,
-      token.colorWarning
-    ]
+    [token.colorPrimary, token.colorSuccess, token.colorTextQuaternary, token.colorWarning]
   )
 
   const taskStatusColors = useMemo<Record<string, string>>(
@@ -523,7 +492,7 @@ export const ProjectSprintBoard = ({
         dataIndex: 'estimatedMinutes',
         key: 'estimatedMinutes',
         width: 160,
-        render: (value: number | null) => (value ?? 'N/A')
+        render: (value: number | null) => value ?? 'N/A'
       }
     ],
     [t, taskStatusColors, token.colorBorder, token.controlHeightSM]
@@ -582,9 +551,7 @@ export const ProjectSprintBoard = ({
 
   const handleToggleSprint = useCallback((sprintId: string) => {
     setExpandedSprintIds((current) =>
-      current.includes(sprintId)
-        ? current.filter((id) => id !== sprintId)
-        : [...current, sprintId]
+      current.includes(sprintId) ? current.filter((id) => id !== sprintId) : [...current, sprintId]
     )
   }, [])
 
@@ -611,8 +578,12 @@ export const ProjectSprintBoard = ({
 
   const handleDelete = useCallback(
     async (sprint: SprintDTO) => {
+      if (!projectId) {
+        messageApi.error(t('sprints.form.invalidProject', { defaultValue: 'Progetto non valido' }))
+        return
+      }
       try {
-        await dispatch(deleteSprint(sprint.id)).unwrap()
+        await dispatch(deleteSprint({ projectId, sprintId: sprint.id })).unwrap()
         messageApi.success(
           t('sprints.deleteSuccess', { defaultValue: 'Sprint eliminato correttamente' })
         )
@@ -625,7 +596,7 @@ export const ProjectSprintBoard = ({
         }
       }
     },
-    [dispatch, messageApi, t]
+    [dispatch, messageApi, projectId, t]
   )
 
   const handleFormSubmit = useCallback(async () => {
@@ -643,16 +614,14 @@ export const ProjectSprintBoard = ({
       }
 
       if (!projectId) {
-        throw new Error(
-          t('sprints.form.invalidProject', { defaultValue: 'Progetto non valido' })
-        )
+        throw new Error(t('sprints.form.invalidProject', { defaultValue: 'Progetto non valido' }))
       }
 
       if (editingSprint) {
         await dispatch(
           updateSprint({
             sprintId: editingSprint.id,
-            data: payload
+            input: payload
           })
         ).unwrap()
         messageApi.success(

@@ -124,7 +124,9 @@ export const ProjectTasksList = ({
             key={task.id}
             onClick={() => onSelect(task)}
             onMouseEnter={() => setHoveredTaskId(task.id)}
-            onMouseLeave={() => setHoveredTaskId((current) => (current === task.id ? null : current))}
+            onMouseLeave={() =>
+              setHoveredTaskId((current) => (current === task.id ? null : current))
+            }
             style={{
               cursor: 'pointer',
               paddingInline: token.paddingLG,

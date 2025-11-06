@@ -16,7 +16,6 @@ import { ViewService } from '@main/services/view'
 import { RoleService } from '@main/services/roles'
 import { WikiService } from '@main/services/wiki'
 import { SprintService } from '@main/services/sprint'
-import { TimeTrackingService } from '@main/services/timeTracking'
 
 export const MAIN_WINDOW_OPTIONS: Electron.BrowserWindowConstructorOptions = {
   width: 1280,
@@ -315,7 +314,6 @@ class AppContext {
   roleService?: RoleService
   wikiService?: WikiService
   sprintService?: SprintService
-  timeTrackingService?: TimeTrackingService
   private databasePath?: string
 
   setDatabase(sequelize: Sequelize, storagePath: string): void {
@@ -329,7 +327,6 @@ class AppContext {
     this.roleService = new RoleService(sequelize, this.auditService)
     this.wikiService = new WikiService(sequelize, this.auditService)
     this.sprintService = new SprintService(sequelize, this.auditService)
-    this.timeTrackingService = new TimeTrackingService(sequelize, this.auditService)
   }
 
   getDatabasePath(): string | null {
@@ -349,7 +346,6 @@ class AppContext {
     this.roleService = undefined
     this.wikiService = undefined
     this.sprintService = undefined
-    this.timeTrackingService = undefined
   }
 }
 

@@ -22,7 +22,6 @@ export interface TaskDTO {
   sprintId: string | null
   sprint: SprintSummaryDTO | null
   estimatedMinutes: number | null
-  timeSpentMinutes: number
   createdAt: Date
   updatedAt: Date
 }

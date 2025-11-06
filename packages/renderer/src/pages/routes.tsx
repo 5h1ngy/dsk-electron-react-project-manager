@@ -8,7 +8,6 @@ import ProjectLayout from '@renderer/pages/ProjectLayout'
 import ProjectOverviewPage from '@renderer/pages/ProjectOverview'
 import ProjectTasksPage from '@renderer/pages/ProjectTasks'
 import ProjectSprintsPage from '@renderer/pages/ProjectSprints'
-import ProjectTimeTrackingPage from '@renderer/pages/ProjectTimeTracking'
 import ProjectNotesPage from '@renderer/pages/ProjectNotes'
 import ProjectWikiPage from '@renderer/pages/ProjectWiki'
 import SettingsPage from '@renderer/pages/Settings'
@@ -36,7 +35,6 @@ export const AppRoutes = () => (
         <Route index element={<ProjectOverviewPage />} />
         <Route path="sprints" element={<ProjectSprintsPage />} />
         <Route path="tasks" element={<ProjectTasksPage />} />
-        <Route path="time-tracking" element={<ProjectTimeTrackingPage />} />
         <Route path="notes" element={<ProjectNotesPage />} />
         <Route path="wiki" element={<ProjectWikiPage />} />
       </Route>
@@ -45,4 +43,3 @@ export const AppRoutes = () => (
     <Route path="*" element={<Navigate to="/" replace />} />
   </Routes>
 )
-

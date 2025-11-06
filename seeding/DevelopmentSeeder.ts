@@ -48,8 +48,7 @@ export class DevelopmentSeeder {
       this.config.comments,
       this.config.notes,
       this.config.wiki,
-      this.config.sprints,
-      this.config.timeTracking
+      this.config.sprints
     )
     this.userSeeder = new UserSeeder(this.options.passwordSeed, this.random)
     this.projectSeeder = new ProjectSeeder()
@@ -121,8 +120,6 @@ export class DevelopmentSeeder {
     let noteTotal = 0
     let wikiPageTotal = 0
     let wikiRevisionTotal = 0
-    let timeEntryTotal = 0
-
     for (const seed of seeds) {
       const result = await this.projectSeeder.upsert(transaction, seed)
       sprintTotal += result.sprintCount ?? 0
@@ -131,14 +128,13 @@ export class DevelopmentSeeder {
       noteTotal += result.noteCount
       wikiPageTotal += result.wikiPageCount
       wikiRevisionTotal += result.wikiRevisionCount
-      timeEntryTotal += result.timeEntryCount ?? 0
       if (result.project) {
         createdProjects += 1
       }
     }
 
     logger.success(
-      `Seed complete: ${createdProjects} projects, ${sprintTotal} sprints, ${taskTotal} tasks, ${commentTotal} comments, ${noteTotal} notes, ${wikiPageTotal} wiki pages, ${wikiRevisionTotal} wiki revisions, ${timeEntryTotal} time entries`,
+      `Seed complete: ${createdProjects} projects, ${sprintTotal} sprints, ${taskTotal} tasks, ${commentTotal} comments, ${noteTotal} notes, ${wikiPageTotal} wiki pages, ${wikiRevisionTotal} wiki revisions`,
       'Seed'
     )
   }

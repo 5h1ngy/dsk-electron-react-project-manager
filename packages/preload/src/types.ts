@@ -49,12 +49,6 @@ import type { CreateRoleInput, UpdateRoleInput } from '@main/services/roles/sche
 import type { SprintDTO, SprintDetailsDTO } from '@main/services/sprint/types'
 import type { CreateSprintInput, UpdateSprintInput } from '@main/services/sprint/schemas'
 import type {
-  CreateTimeEntryInput,
-  UpdateTimeEntryInput,
-  ProjectTimeSummaryInput
-} from '@main/services/timeTracking/schemas'
-import type { ProjectTimeSummaryDTO, TimeEntryDTO } from '@main/services/timeTracking/types'
-import type {
   DatabaseExportResult,
   DatabaseImportResult,
   DatabaseProgressUpdate,
@@ -229,6 +223,7 @@ export interface RoleApi {
     payload: UpdateRoleInput
   ) => Promise<IpcResponse<RoleSummary>>
   remove: (token: string, roleId: string) => Promise<IpcResponse<{ success: boolean }>>
+  syncDefaults: (token: string) => Promise<IpcResponse<RoleSummary[]>>
 }
 
 export interface DatabaseApi {
@@ -251,20 +246,6 @@ export interface SprintApi {
   remove: (token: string, sprintId: string) => Promise<IpcResponse<{ success: boolean }>>
 }
 
-export interface TimeTrackingApi {
-  log: (token: string, payload: CreateTimeEntryInput) => Promise<IpcResponse<TimeEntryDTO>>
-  update: (
-    token: string,
-    entryId: string,
-    payload: UpdateTimeEntryInput
-  ) => Promise<IpcResponse<TimeEntryDTO>>
-  remove: (token: string, entryId: string) => Promise<IpcResponse<{ success: boolean }>>
-  summary: (
-    token: string,
-    payload: ProjectTimeSummaryInput
-  ) => Promise<IpcResponse<ProjectTimeSummaryDTO>>
-}
-
 export interface PreloadApi {
   health: HealthApi
   auth: AuthApi
@@ -277,5 +258,4 @@ export interface PreloadApi {
   role: RoleApi
   database: DatabaseApi
   sprint: SprintApi
-  timeTracking: TimeTrackingApi
 }

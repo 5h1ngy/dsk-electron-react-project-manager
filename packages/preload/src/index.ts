@@ -10,7 +10,6 @@ import { viewApi } from '@preload/api/view'
 import { roleApi } from '@preload/api/role'
 import { databaseApi } from '@preload/api/database'
 import { sprintApi } from '@preload/api/sprint'
-import { timeTrackingApi } from '@preload/api/timeTracking'
 import type { PreloadApi } from '@preload/types'
 
 const parseDevtoolsToggle = (value: string | undefined): boolean | null => {
@@ -49,8 +48,7 @@ const api: PreloadApi = Object.freeze({
   view: viewApi,
   role: roleApi,
   database: databaseApi,
-  sprint: sprintApi,
-  timeTracking: timeTrackingApi
+  sprint: sprintApi
 })
 
 const devtoolsConfig = Object.freeze({
