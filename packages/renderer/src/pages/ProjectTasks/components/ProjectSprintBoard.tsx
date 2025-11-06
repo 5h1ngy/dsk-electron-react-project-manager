@@ -43,6 +43,8 @@ import {
   selectSprintsForProject,
   updateSprint
 } from '@renderer/store/slices/sprints'
+import { selectProjectTasks } from '@renderer/store/slices/tasks/selectors'
+import type { TaskDetails } from '@renderer/store/slices/tasks'
 import type { SprintDTO } from '@main/services/sprint/types'
 import type { TaskDetailsDTO } from '@main/services/task/types'
 
@@ -96,13 +98,23 @@ type TaskTableRecord = {
   dueDate: string | null
 }
 
+type UnassignedTaskRecord = {
+  key: string
+  title: string
+  status: TaskDetailsDTO['status']
+  priority: TaskDetailsDTO['priority']
+  assignee: string
+  dueDate: string | null
+  estimatedMinutes: number | null
+}
+
 export interface ProjectSprintBoardProps {
   projectId: string | null
   canManage: boolean
 }
 
 const formatDateRange = (start: string, end: string) =>
-  `${dayjs(start).format('DD MMM YYYY')} → ${dayjs(end).format('DD MMM YYYY')}`
+  `${dayjs(start).format('DD MMM YYYY')}  ${dayjs(end).format('DD MMM YYYY')}`
 
 export const ProjectSprintBoard = ({
   projectId,
@@ -145,9 +157,18 @@ export const ProjectSprintBoard = ({
     [projectId]
   )
 
+  const taskSelector = useMemo(
+    () => (projectId ? selectProjectTasks(projectId) : null),
+    [projectId]
+  )
+
   const sprintState = useAppSelector((state) =>
     sprintSelector ? sprintSelector(state) : undefined
   )
+
+  const projectTasks = useAppSelector((state) =>
+    taskSelector ? taskSelector(state) : []
+  ) as TaskDetails[]
 
   const sprints = useMemo(() => {
     if (!sprintState) {
@@ -450,7 +471,7 @@ export const ProjectSprintBoard = ({
         title: t('sprints.deleteConfirmTitle', { defaultValue: 'Elimina sprint' }),
         content: t('sprints.deleteConfirmBody', {
           defaultValue:
-            'Confermi di voler eliminare questo sprint? I task rimarranno ma non saranno più associati.'
+            'Confermi di voler eliminare questo sprint? I task rimarranno ma non saranno pi associati.'
         }),
         okText: t('common.delete', { defaultValue: 'Elimina' }),
         okButtonProps: { danger: true },
@@ -467,7 +488,7 @@ export const ProjectSprintBoard = ({
             messageApi.success(t('sprints.deleteSuccess', { defaultValue: 'Sprint eliminato' }))
           } catch (error) {
             messageApi.error(
-              t('sprints.deleteError', { defaultValue: 'Errore durante l’eliminazione' })
+              t('sprints.deleteError', { defaultValue: 'Errore durante leliminazione' })
             )
           }
         }
@@ -544,7 +565,7 @@ export const ProjectSprintBoard = ({
     }
     return selectedDetails.tasks.map((task) => ({
       key: task.id,
-      title: `${task.key} — ${task.title}`,
+      title: `${task.key}  ${task.title}`,
       status: task.status,
       assignee:
         task.assignee?.displayName ??
@@ -597,6 +618,89 @@ export const ProjectSprintBoard = ({
     ],
     [t, taskStatusColors, token.colorBorder]
   )
+
+  const unscheduledTasks = useMemo(
+    () => projectTasks.filter((task) => !task.sprintId),
+    [projectTasks]
+  )
+
+  const unassignedTaskData = useMemo<UnassignedTaskRecord[]>(
+    () =>
+      unscheduledTasks.map((task) => ({
+        key: task.id,
+        title: `${task.key}  ${task.title}`,
+        status: task.status,
+        priority: task.priority,
+        assignee:
+          task.assignee?.displayName ??
+          t('tasks.details.unassigned', { defaultValue: 'Non assegnato' }),
+        dueDate: task.dueDate,
+        estimatedMinutes: task.estimatedMinutes ?? null
+      })),
+    [unscheduledTasks, t]
+  )
+
+  const unassignedTaskColumns: ColumnsType<UnassignedTaskRecord> = useMemo(() => {
+    return [
+      {
+        title: t('tasks.fields.task', { defaultValue: 'Task' }),
+        dataIndex: 'title',
+        key: 'title',
+        render: (value: string) => (
+          <Typography.Text ellipsis={{ tooltip: value }}>{value}</Typography.Text>
+        )
+      },
+      {
+        title: t('tasks.fields.status', { defaultValue: 'Stato' }),
+        dataIndex: 'status',
+        key: 'status',
+        width: 160,
+        render: (value: string) => (
+          <Tag color={taskStatusColors[value] ?? token.colorBorder}>
+            {t(`tasks.status.${value}`, { defaultValue: value })}
+          </Tag>
+        )
+      },
+      {
+        title: t('tasks.fields.priority', { defaultValue: 'Priorita' }),
+        dataIndex: 'priority',
+        key: 'priority',
+        width: 160,
+        render: (value: string) => (
+          <Tag bordered={false} style={{ textTransform: 'uppercase' }}>
+            {t(`details.priority.${value}`, { defaultValue: value })}
+          </Tag>
+        )
+      },
+      {
+        title: t('tasks.fields.assignee', { defaultValue: 'Assegnatario' }),
+        dataIndex: 'assignee',
+        key: 'assignee',
+        width: 220,
+        render: (value: string) => (
+          <Space size={8}>
+            <Avatar size="small" icon={<UserOutlined />} />
+            <Typography.Text>{value}</Typography.Text>
+          </Space>
+        )
+      },
+      {
+        title: t('tasks.fields.dueDate', { defaultValue: 'Scadenza' }),
+        dataIndex: 'dueDate',
+        key: 'dueDate',
+        width: 180,
+        render: (value: string | null) =>
+          value ? dayjs(value).format('DD MMM YYYY') : t('tasks.details.noDueDate')
+      },
+      {
+        title: t('tasks.fields.estimatedMinutes', { defaultValue: 'Minuti stimati' }),
+        dataIndex: 'estimatedMinutes',
+        key: 'estimatedMinutes',
+        width: 160,
+        render: (value: number | null) => (value ?? 'N/A')
+      }
+    ]
+  }, [t, taskStatusColors, token.colorBorder])
 
   if (!projectId) {
     return (
@@ -681,52 +785,58 @@ export const ProjectSprintBoard = ({
     return (
       <div
         key={sprint.id}
-        onClick={() => handleSprintClick(sprint.id)}
         style={{
-          display: 'grid',
-          gridTemplateColumns,
-          alignItems: 'stretch',
           borderRadius: token.borderRadiusLG,
           border: isSelected
             ? `2px solid ${token.colorPrimary}`
             : `1px solid ${token.colorBorderSecondary}`,
-          background: isSelected ? token.colorPrimaryBg : token.colorBgContainer,
-          boxShadow: 'none',
-          cursor: 'pointer',
-          transition: 'border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease'
+          background: token.colorBgContainer,
+          overflow: 'hidden',
+          transition: 'border-color 0.2s ease'
         }}
       >
         <div
+          onClick={() => handleSprintClick(sprint.id)}
           style={{
-            padding: `${token.paddingMD}px ${token.paddingLG}px`,
-            borderRight: `1px solid ${token.colorSplit}`,
-            display: 'flex',
-            flexDirection: 'column',
-            gap: token.marginXS
+            display: 'grid',
+            gridTemplateColumns,
+            alignItems: 'stretch',
+            cursor: 'pointer',
+            background: isSelected ? token.colorPrimaryBg : token.colorBgContainer,
+            transition: 'background-color 0.2s ease'
           }}
         >
-          <Space size={token.marginXS} wrap align="center">
-            <Typography.Text type="secondary">{prefix}</Typography.Text>
-            <Typography.Text strong>{sprint.name}</Typography.Text>
-          </Space>
-          <Space size={token.marginXS} wrap>
-            <Tag color={sprintStatusColors[sprint.status]} bordered={false}>
-              {t(`sprints.status.${sprint.status}`, { defaultValue: sprint.status })}
-            </Tag>
-            <Tag bordered={false}>
-              {t('sprints.totalTasks', { defaultValue: 'Task totali' })}:{' '}
-              {sprint.metrics.totalTasks}
-            </Tag>
-            {sprint.capacityMinutes !== null ? (
-              <Tag bordered={false}>
-                {t('sprints.capacityMinutes', { defaultValue: 'Capacità (minuti)' })}:{' '}
-                {sprint.capacityMinutes}
+          <div
+            style={{
+              padding: `${token.paddingMD}px ${token.paddingLG}px`,
+              borderRight: `1px solid ${token.colorSplit}`,
+              display: 'flex',
+              flexDirection: 'column',
+              gap: token.marginXS
+            }}
+          >
+            <Space size={token.marginXS} wrap align="center">
+              <Typography.Text type="secondary">{prefix}</Typography.Text>
+              <Typography.Text strong>{sprint.name}</Typography.Text>
+            </Space>
+            <Space size={token.marginXS} wrap>
+              <Tag color={sprintStatusColors[sprint.status]} bordered={false}>
+                {t(`sprints.status.${sprint.status}`, { defaultValue: sprint.status })}
               </Tag>
-            ) : null}
-          </Space>
-          <Typography.Text type="secondary">
-            {formatDateRange(sprint.startDate, sprint.endDate)}
-          </Typography.Text>
+              <Tag bordered={false}>
+                {t('sprints.totalTasks', { defaultValue: 'Task totali' })}:{' '}
+                {sprint.metrics.totalTasks}
+              </Tag>
+              {sprint.capacityMinutes !== null ? (
+                <Tag bordered={false}>
+                  {t('sprints.capacityMinutes', { defaultValue: 'Capacita (minuti)' })}:{' '}
+                  {sprint.capacityMinutes}
+                </Tag>
+              ) : null}
+            </Space>
+            <Typography.Text type="secondary">
+              {formatDateRange(sprint.startDate, sprint.endDate)}
+            </Typography.Text>
             {sprint.goal ? (
               <Typography.Paragraph
                 type="secondary"
@@ -736,123 +846,209 @@ export const ProjectSprintBoard = ({
                 {sprint.goal}
               </Typography.Paragraph>
             ) : null}
-          {canManage ? (
-            <Space size={token.marginXS} wrap>
-              <Button
-                type="text"
-                icon={<EditOutlined />}
-                onClick={(event) => {
-                  event.stopPropagation()
-                  handleOpenEdit(sprint)
-                }}
-              >
-                {t('common.edit', { defaultValue: 'Modifica' })}
-              </Button>
-              <Button
-                type="text"
-                danger
-                icon={<DeleteOutlined />}
-                onClick={(event) => {
-                  event.stopPropagation()
-                  handleDelete(sprint)
-                }}
-              >
-                {t('common.delete', { defaultValue: 'Elimina' })}
-              </Button>
-            </Space>
-          ) : null}
-        </div>
-        <div
-          style={{
-            position: 'relative',
-            gridColumn: `2 / span ${timelineSlots.length}`,
-            minHeight: 120,
-            overflow: 'hidden'
-          }}
-        >
-          <div
-            style={{
-              position: 'absolute',
-              inset: 0,
-              display: 'grid',
-              gridTemplateColumns: `repeat(${timelineSlots.length}, minmax(${slotWidth}px, 1fr))`,
-              pointerEvents: 'none'
-            }}
-          >
-            {timelineSlots.map((slot, index) => (
-              <div
-                key={`${sprint.id}-grid-${slot.valueOf()}`}
-                style={{
-                  borderLeft: index === 0 ? 'none' : `1px solid ${token.colorSplit}`
-                }}
-              />
-            ))}
-          </div>
-
-          <div
-            style={{
-              position: 'absolute',
-              top: token.paddingMD,
-              height: 56,
-              borderRadius: token.borderRadiusLG,
-              background: sprintStatusColors[sprint.status],
-              color: token.colorWhite,
-              padding: `${token.paddingXS}px ${token.paddingSM}px`,
-              display: 'flex',
-              alignItems: 'center',
-              gap: token.marginSM,
-              boxShadow: token.boxShadowTertiary,
-              ...{ left, width }
-            }}
-          >
-            <Typography.Text strong style={{ color: token.colorWhite }}>
-              {sprint.name}
-            </Typography.Text>
-            <Typography.Text style={{ color: token.colorWhite }}>
-              {t('sprints.totalTasks', { defaultValue: 'Task totali' })}:{' '}
-              {sprint.metrics.totalTasks}
-            </Typography.Text>
-            {typeof sprint.metrics.utilizationPercent === 'number' ? (
-              <Typography.Text style={{ color: token.colorWhite }}>
-                {t('sprints.utilization', { defaultValue: 'Utilizzo' })}:{' '}
-                {Math.round(sprint.metrics.utilizationPercent)}%
-              </Typography.Text>
+            {canManage ? (
+              <Space size={token.marginXS} wrap>
+                <Button
+                  type="text"
+                  icon={<EditOutlined />}
+                  onClick={(event) => {
+                    event.stopPropagation()
+                    handleOpenEdit(sprint)
+                  }}
+                >
+                  {t('common.edit', { defaultValue: 'Modifica' })}
+                </Button>
+                <Button
+                  type="text"
+                  danger
+                  icon={<DeleteOutlined />}
+                  onClick={(event) => {
+                    event.stopPropagation()
+                    handleDelete(sprint)
+                  }}
+                >
+                  {t('common.delete', { defaultValue: 'Elimina' })}
+                </Button>
+              </Space>
             ) : null}
           </div>
+          <div
+            style={{
+              position: 'relative',
+              gridColumn: `2 / span ${timelineSlots.length}`,
+              minHeight: 120,
+              overflow: 'hidden'
+            }}
+          >
+            <div
+              style={{
+                position: 'absolute',
+                inset: 0,
+                display: 'grid',
+                gridTemplateColumns: `repeat(${timelineSlots.length}, minmax(${slotWidth}px, 1fr))`,
+                pointerEvents: 'none'
+              }}
+            >
+              {timelineSlots.map((slot, index) => (
+                <div
+                  key={`${sprint.id}-grid-${slot.valueOf()}`}
+                  style={{
+                    borderLeft: index === 0 ? 'none' : `1px solid ${token.colorSplit}`
+                  }}
+                />
+              ))}
+            </div>
 
-          {tasksForSprint.map((task) => {
-            const taskStart = dayjs(task.createdAt)
-            const taskEnd = task.dueDate ? dayjs(task.dueDate).endOf('day') : taskStart.add(12, 'hour')
-            const position = computeRangePosition(taskStart, taskEnd)
-            return (
-              <div
-                key={task.id}
-                style={{
-                  position: 'absolute',
-                  top: 72,
-                  height: 40,
-                  borderRadius: token.borderRadiusSM,
-                  background: token.colorInfoBg,
-                  border: `1px solid ${token.colorInfoBorder}`,
-                  color: token.colorInfoText,
-                  padding: `${token.paddingXXS}px ${token.paddingXS}px`,
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: token.marginXS,
-                  boxShadow: token.boxShadowTertiary,
-                  ...position
-                }}
-              >
-                <Typography.Text strong ellipsis style={{ maxWidth: '60%' }}>
-                  {task.key}
+            <div
+              style={{
+                position: 'absolute',
+                top: token.paddingMD,
+                height: 56,
+                borderRadius: token.borderRadiusLG,
+                background: sprintStatusColors[sprint.status],
+                color: token.colorWhite,
+                padding: `${token.paddingXS}px ${token.paddingSM}px`,
+                display: 'flex',
+                alignItems: 'center',
+                gap: token.marginSM,
+                boxShadow: token.boxShadowTertiary,
+                ...{ left, width }
+              }}
+            >
+              <Typography.Text strong style={{ color: token.colorWhite }}>
+                {sprint.name}
+              </Typography.Text>
+              <Typography.Text style={{ color: token.colorWhite }}>
+                {t('sprints.totalTasks', { defaultValue: 'Task totali' })}:{' '}
+                {sprint.metrics.totalTasks}
+              </Typography.Text>
+              {typeof sprint.metrics.utilizationPercent === 'number' ? (
+                <Typography.Text style={{ color: token.colorWhite }}>
+                  {t('sprints.utilization', { defaultValue: 'Utilizzo' })}:{' '}
+                  {Math.round(sprint.metrics.utilizationPercent)}%
                 </Typography.Text>
-                <Typography.Text ellipsis style={{ maxWidth: '40%' }}>
-                  {task.title}
-                </Typography.Text>
-              </div>
-            )
-          })}
+              ) : null}
+            </div>
+
+            {tasksForSprint.map((task) => {
+              const taskStart = dayjs(task.createdAt)
+              const taskEnd = task.dueDate
+                ? dayjs(task.dueDate).endOf('day')
+                : taskStart.add(12, 'hour')
+              const position = computeRangePosition(taskStart, taskEnd)
+              return (
+                <div
+                  key={task.id}
+                  style={{
+                    position: 'absolute',
+                    top: 72,
+                    height: 40,
+                    borderRadius: token.borderRadiusSM,
+                    background: token.colorInfoBg,
+                    border: `1px solid ${token.colorInfoBorder}`,
+                    color: token.colorInfoText,
+                    padding: `${token.paddingXXS}px ${token.paddingXS}px`,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: token.marginXS,
+                    boxShadow: token.boxShadowTertiary,
+                    ...position
+                  }}
+                >
+                  <Typography.Text strong ellipsis style={{ maxWidth: '60%' }}>
+                    {task.key}
+                  </Typography.Text>
+                  <Typography.Text ellipsis style={{ maxWidth: '40%' }}>
+                    {task.title}
+                  </Typography.Text>
+                </div>
+              )
+            })}
+          </div>
         </div>
+        {isSelected && selectedDetails ? (
+          <div
+            onClick={(event) => event.stopPropagation()}
+            style={{
+              padding: token.paddingLG,
+              borderTop: `1px solid ${token.colorSplit}`,
+              background: token.colorBgElevated
+            }}
+          >
+            <Space direction="vertical" size={token.marginMD} style={{ width: '100%' }}>
+              <Typography.Text type="secondary">
+                {formatDateRange(selectedDetails.startDate, selectedDetails.endDate)}
+              </Typography.Text>
+              {selectedDetails.goal ? (
+                <Typography.Paragraph style={{ marginBottom: 0 }}>
+                  {selectedDetails.goal}
+                </Typography.Paragraph>
+              ) : null}
+              <Flex gap={token.marginLG} wrap>
+                <Space direction="vertical" size={4}>
+                  <Typography.Text type="secondary">
+                    {t('sprints.totalTasks', { defaultValue: 'Task totali' })}
+                  </Typography.Text>
+                  <Typography.Text strong>
+                    {selectedDetails.metrics.totalTasks}
+                  </Typography.Text>
+                </Space>
+                <Space direction="vertical" size={4}>
+                  <Typography.Text type="secondary">
+                    {t('sprints.estimatedMinutes', { defaultValue: 'Stimati' })}
+                  </Typography.Text>
+                  <Typography.Text strong>
+                    {selectedDetails.metrics.estimatedMinutes ?? 0}
+                  </Typography.Text>
+                </Space>
+                <Space direction="vertical" size={4}>
+                  <Typography.Text type="secondary">
+                    {t('sprints.spentMinutes', { defaultValue: 'Registrati' })}
+                  </Typography.Text>
+                  <Typography.Text strong>
+                    {selectedDetails.metrics.timeSpentMinutes}
+                  </Typography.Text>
+                </Space>
+                <Space direction="vertical" size={4}>
+                  <Typography.Text type="secondary">
+                    {t('sprints.utilization', { defaultValue: 'Utilizzo' })}
+                  </Typography.Text>
+                  <Typography.Text strong>
+                    {selectedDetails.metrics.utilizationPercent
+                      ? Math.round(selectedDetails.metrics.utilizationPercent)
+                      : 0}
+                    %
+                  </Typography.Text>
+                </Space>
+              </Flex>
+              {isLoadingDetails ? (
+                <Flex
+                  align="center"
+                  justify="center"
+                  style={{ width: '100%', minHeight: 160 }}
+                >
+                  <Spin />
+                </Flex>
+              ) : (
+                <Table<TaskTableRecord>
+                  size="small"
+                  rowKey="key"
+                  columns={taskTableColumns}
+                  dataSource={taskTableData}
+                  pagination={{
+                    pageSize: 8,
+                    showSizeChanger: false
+                  }}
+                  locale={{
+                    emptyText: t('sprints.details.emptyTasks', {
+                      defaultValue: 'Nessun task nello sprint'
+                    })
+                  }}
+                />
+              )}
+            </Space>
+          </div>
+        ) : null}
       </div>
     )
   }
@@ -1037,103 +1233,33 @@ export const ProjectSprintBoard = ({
         )}
       </Card>
 
-      {selectedSprintId && selectedDetails ? (
-        <Flex gap={token.marginMD} wrap style={{ width: '100%' }}>
-          <Card
-            title={selectedDetails.name}
-            style={{ flex: '1 1 320px', minWidth: 320 }}
-            extra={
-              <Tag color={sprintStatusColors[selectedDetails.status]} bordered={false}>
-                {t(`sprints.status.${selectedDetails.status}`, {
-                  defaultValue: selectedDetails.status
-                })}
-              </Tag>
-            }
-          >
-            <Space
-              direction="vertical"
-              size={token.marginSM}
-              style={{ width: '100%' }}
-            >
-              <Typography.Text type="secondary">
-                {formatDateRange(selectedDetails.startDate, selectedDetails.endDate)}
-              </Typography.Text>
-              {selectedDetails.goal ? (
-                <Typography.Paragraph style={{ marginBottom: 0 }}>
-                  {selectedDetails.goal}
-                </Typography.Paragraph>
-              ) : null}
-              <Flex gap={token.marginLG} wrap>
-                <Space direction="vertical" size={4}>
-                  <Typography.Text type="secondary">
-                    {t('sprints.totalTasks', { defaultValue: 'Task totali' })}
-                  </Typography.Text>
-                  <Typography.Text strong>{selectedDetails.metrics.totalTasks}</Typography.Text>
-                </Space>
-                <Space direction="vertical" size={4}>
-                  <Typography.Text type="secondary">
-                    {t('sprints.estimatedMinutes', { defaultValue: 'Stimati' })}
-                  </Typography.Text>
-                  <Typography.Text strong>
-                    {selectedDetails.metrics.estimatedMinutes ?? 0}
-                  </Typography.Text>
-                </Space>
-                <Space direction="vertical" size={4}>
-                  <Typography.Text type="secondary">
-                    {t('sprints.spentMinutes', { defaultValue: 'Registrati' })}
-                  </Typography.Text>
-                  <Typography.Text strong>
-                    {selectedDetails.metrics.timeSpentMinutes}
-                  </Typography.Text>
-                </Space>
-                <Space direction="vertical" size={4}>
-                  <Typography.Text type="secondary">
-                    {t('sprints.utilization', { defaultValue: 'Utilizzo' })}
-                  </Typography.Text>
-                  <Typography.Text strong>
-                    {selectedDetails.metrics.utilizationPercent
-                      ? Math.round(selectedDetails.metrics.utilizationPercent)
-                      : 0}
-                    %
-                  </Typography.Text>
-                </Space>
-              </Flex>
-            </Space>
-          </Card>
-
-          <Card
-            title={t('sprints.tasksOverview', { defaultValue: 'Task dello sprint' })}
-            style={{ flex: '2 1 480px', minWidth: 360 }}
-            bodyStyle={{ padding: 0 }}
-          >
-            {isLoadingDetails ? (
-              <Flex
-                align="center"
-                justify="center"
-                style={{ width: '100%', minHeight: 240 }}
-              >
-                <Spin />
-              </Flex>
-            ) : (
-              <Table<TaskTableRecord>
-                size="small"
-                rowKey="key"
-                columns={taskTableColumns}
-                dataSource={taskTableData}
-                pagination={{
-                  pageSize: 8,
-                  showSizeChanger: false
-                }}
-                locale={{
-                  emptyText: t('sprints.details.emptyTasks', {
-                    defaultValue: 'Nessun task nello sprint'
-                  })
-                }}
-              />
-            )}
-          </Card>
-        </Flex>
-      ) : null}
+      <Card
+        title={t('sprints.unassignedTasks.title', { defaultValue: 'Task senza sprint' })}
+        bordered={false}
+        style={{
+          borderRadius: token.borderRadiusLG,
+          background: token.colorBgContainer,
+          boxShadow: token.boxShadowTertiary
+        }}
+        bodyStyle={{ padding: 0 }}
+      >
+        <Table<UnassignedTaskRecord>
+          size="small"
+          rowKey="key"
+          columns={unassignedTaskColumns}
+          dataSource={unassignedTaskData}
+          pagination={{
+            pageSize: 10,
+            showSizeChanger: true,
+            pageSizeOptions: ['10', '20', '50']
+          }}
+          locale={{
+            emptyText: t('sprints.unassignedTasks.empty', {
+              defaultValue: 'Tutti i task sono assegnati a uno sprint.'
+            })
+          }}
+        />
+      </Card>
 
       <Modal
         title={
@@ -1212,7 +1338,7 @@ export const ProjectSprintBoard = ({
           </Form.Item>
 
           <Form.Item
-            label={t('sprints.fields.capacityMinutes', { defaultValue: 'Capacità (minuti)' })}
+            label={t('sprints.fields.capacityMinutes', { defaultValue: 'Capacita (minuti)' })}
             name="capacityMinutes"
           >
             <InputNumber min={0} max={1_000_000} style={{ width: '100%' }} />
