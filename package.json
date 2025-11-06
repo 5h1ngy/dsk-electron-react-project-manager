@@ -52,6 +52,7 @@
     "@ant-design/icons": "^5.6.1",
     "@ant-design/plots": "^2.1.9",
     "@ant-design/v5-patch-for-react-19": "^1.0.3",
+    "@asteasolutions/zod-to-openapi": "^7.3.4",
     "@electron-toolkit/preload": "^3.0.2",
     "@electron-toolkit/utils": "^4.0.0",
     "@faker-js/faker": "^8.4.1",

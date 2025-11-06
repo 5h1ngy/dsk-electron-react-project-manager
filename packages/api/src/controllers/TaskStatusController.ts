@@ -12,8 +12,10 @@ import {
 import { Service } from 'typedi'
 
 import { BaseController } from '@api/controllers/BaseController'
+import { ApiBearerAuth, ApiRequestBody, ApiResponse } from '@api/openapi/decorators'
 
 @Service()
+@ApiBearerAuth()
 @JsonController()
 export class TaskStatusController extends BaseController {
   private get statusService() {
@@ -21,6 +23,7 @@ export class TaskStatusController extends BaseController {
   }
 
   @Get('/projects/:projectId/statuses')
+  @ApiResponse('TaskStatusList')
   async listStatuses(
     @Req() request: Request,
     @Param('projectId') projectId: string
@@ -30,6 +33,8 @@ export class TaskStatusController extends BaseController {
   }
 
   @Post('/projects/:projectId/statuses')
+  @ApiRequestBody('CreateTaskStatusRequest')
+  @ApiResponse('TaskStatusDTO')
   async createStatus(
     @Req() request: Request,
     @Param('projectId') projectId: string,
@@ -43,6 +48,8 @@ export class TaskStatusController extends BaseController {
   }
 
   @Put('/statuses/:statusId')
+  @ApiRequestBody('UpdateTaskStatusRequest')
+  @ApiResponse('TaskStatusDTO')
   async updateStatus(
     @Req() request: Request,
     @Param('statusId') statusId: string,
@@ -53,6 +60,8 @@ export class TaskStatusController extends BaseController {
   }
 
   @Post('/projects/:projectId/statuses/reorder')
+  @ApiRequestBody('ReorderTaskStatusRequest')
+  @ApiResponse('TaskStatusList')
   async reorderStatuses(
     @Req() request: Request,
     @Param('projectId') projectId: string,
@@ -66,6 +75,8 @@ export class TaskStatusController extends BaseController {
   }
 
   @Delete('/statuses/:statusId')
+  @ApiRequestBody('DeleteTaskStatusRequest')
+  @ApiResponse('OperationResult')
   async deleteStatus(
     @Req() request: Request,
     @Param('statusId') statusId: string,

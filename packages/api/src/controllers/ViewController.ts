@@ -12,8 +12,10 @@ import {
 import { Service } from 'typedi'
 
 import { BaseController } from '@api/controllers/BaseController'
+import { ApiBearerAuth, ApiRequestBody, ApiResponse } from '@api/openapi/decorators'
 
 @Service()
+@ApiBearerAuth()
 @JsonController()
 export class ViewController extends BaseController {
   private get viewService() {
@@ -21,6 +23,7 @@ export class ViewController extends BaseController {
   }
 
   @Get('/projects/:projectId/views')
+  @ApiResponse('SavedViewList')
   async listViews(
     @Req() request: Request,
     @Param('projectId') projectId: string
@@ -30,6 +33,8 @@ export class ViewController extends BaseController {
   }
 
   @Post('/projects/:projectId/views')
+  @ApiRequestBody('CreateViewRequest')
+  @ApiResponse('SavedViewDTO')
   async createView(
     @Req() request: Request,
     @Param('projectId') projectId: string,
@@ -43,6 +48,8 @@ export class ViewController extends BaseController {
   }
 
   @Put('/views/:viewId')
+  @ApiRequestBody('UpdateViewRequest')
+  @ApiResponse('SavedViewDTO')
   async updateView(
     @Req() request: Request,
     @Param('viewId') viewId: string,
@@ -53,6 +60,7 @@ export class ViewController extends BaseController {
   }
 
   @Delete('/views/:viewId')
+  @ApiResponse('OperationResult')
   async deleteView(@Req() request: Request, @Param('viewId') viewId: string) {
     const { actor } = await this.requireActor(request)
     await this.viewService.deleteView(actor, viewId)

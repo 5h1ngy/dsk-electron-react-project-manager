@@ -14,8 +14,10 @@ import {
 import { Service } from 'typedi'
 
 import { BaseController } from '@api/controllers/BaseController'
+import { ApiBearerAuth, ApiRequestBody, ApiResponse } from '@api/openapi/decorators'
 
 @Service()
+@ApiBearerAuth()
 @JsonController()
 export class TaskController extends BaseController {
   private get taskService() {
@@ -23,6 +25,7 @@ export class TaskController extends BaseController {
   }
 
   @Get('/projects/:projectId/tasks')
+  @ApiResponse('TaskDetailsList')
   async listByProject(
     @Req() request: Request,
     @Param('projectId') projectId: string
@@ -32,18 +35,23 @@ export class TaskController extends BaseController {
   }
 
   @Get('/tasks/:taskId')
+  @ApiResponse('TaskDetailsDTO')
   async getTask(@Req() request: Request, @Param('taskId') taskId: string) {
     const { actor } = await this.requireActor(request)
     return await this.taskService.getTask(actor, taskId)
   }
 
   @Post('/tasks')
+  @ApiRequestBody('CreateTaskRequest')
+  @ApiResponse('TaskDetailsDTO')
   async createTask(@Req() request: Request, @Body() payload: unknown) {
     const { actor } = await this.requireActor(request)
     return await this.taskService.createTask(actor, payload)
   }
 
   @Put('/tasks/:taskId')
+  @ApiRequestBody('UpdateTaskRequest')
+  @ApiResponse('TaskDetailsDTO')
   async updateTask(
     @Req() request: Request,
     @Param('taskId') taskId: string,
@@ -54,6 +62,8 @@ export class TaskController extends BaseController {
   }
 
   @Post('/tasks/:taskId/move')
+  @ApiRequestBody('MoveTaskRequest')
+  @ApiResponse('TaskDetailsDTO')
   async moveTask(
     @Req() request: Request,
     @Param('taskId') taskId: string,
@@ -64,6 +74,7 @@ export class TaskController extends BaseController {
   }
 
   @Delete('/tasks/:taskId')
+  @ApiResponse('OperationResult')
   async deleteTask(@Req() request: Request, @Param('taskId') taskId: string) {
     const { actor } = await this.requireActor(request)
     await this.taskService.deleteTask(actor, taskId)
@@ -71,6 +82,7 @@ export class TaskController extends BaseController {
   }
 
   @Get('/tasks/:taskId/comments')
+  @ApiResponse('CommentList')
   async listComments(
     @Req() request: Request,
     @Param('taskId') taskId: string
@@ -80,6 +92,8 @@ export class TaskController extends BaseController {
   }
 
   @Post('/tasks/:taskId/comments')
+  @ApiRequestBody('CreateCommentRequest')
+  @ApiResponse('CommentDTO')
   async addComment(
     @Req() request: Request,
     @Param('taskId') taskId: string,
@@ -93,6 +107,7 @@ export class TaskController extends BaseController {
   }
 
   @Get('/tasks/search')
+  @ApiResponse('TaskDetailsList')
   async searchTasks(
     @Req() request: Request,
     @QueryParam('q') query: string | undefined,
@@ -109,6 +124,8 @@ export class TaskController extends BaseController {
   }
 
   @Post('/tasks/search')
+  @ApiRequestBody('SearchTasksRequest')
+  @ApiResponse('TaskDetailsList')
   async searchTasksAdvanced(
     @Req() request: Request,
     @Body() payload: unknown

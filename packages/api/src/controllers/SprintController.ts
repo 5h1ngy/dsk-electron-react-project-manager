@@ -12,8 +12,10 @@ import {
 import { Service } from 'typedi'
 
 import { BaseController } from '@api/controllers/BaseController'
+import { ApiBearerAuth, ApiRequestBody, ApiResponse } from '@api/openapi/decorators'
 
 @Service()
+@ApiBearerAuth()
 @JsonController()
 export class SprintController extends BaseController {
   private get sprintService() {
@@ -21,6 +23,7 @@ export class SprintController extends BaseController {
   }
 
   @Get('/projects/:projectId/sprints')
+  @ApiResponse('SprintList')
   async listSprints(
     @Req() request: Request,
     @Param('projectId') projectId: string
@@ -30,6 +33,7 @@ export class SprintController extends BaseController {
   }
 
   @Get('/sprints/:sprintId')
+  @ApiResponse('SprintDetailsDTO')
   async getSprint(
     @Req() request: Request,
     @Param('sprintId') sprintId: string
@@ -39,6 +43,8 @@ export class SprintController extends BaseController {
   }
 
   @Post('/projects/:projectId/sprints')
+  @ApiRequestBody('CreateSprintRequest')
+  @ApiResponse('SprintDTO')
   async createSprint(
     @Req() request: Request,
     @Param('projectId') projectId: string,
@@ -52,6 +58,8 @@ export class SprintController extends BaseController {
   }
 
   @Put('/sprints/:sprintId')
+  @ApiRequestBody('UpdateSprintRequest')
+  @ApiResponse('SprintDTO')
   async updateSprint(
     @Req() request: Request,
     @Param('sprintId') sprintId: string,
@@ -62,6 +70,7 @@ export class SprintController extends BaseController {
   }
 
   @Delete('/sprints/:sprintId')
+  @ApiResponse('OperationResult')
   async deleteSprint(
     @Req() request: Request,
     @Param('sprintId') sprintId: string

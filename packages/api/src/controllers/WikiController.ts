@@ -12,8 +12,10 @@ import type { Request } from 'express'
 import { Service } from 'typedi'
 
 import { BaseController } from '@api/controllers/BaseController'
+import { ApiBearerAuth, ApiRequestBody, ApiResponse } from '@api/openapi/decorators'
 
 @Service()
+@ApiBearerAuth()
 @JsonController('/projects/:projectId/wiki')
 export class WikiController extends BaseController {
   private get wikiService() {
@@ -21,6 +23,7 @@ export class WikiController extends BaseController {
   }
 
   @Get()
+  @ApiResponse('WikiPageSummaryList')
   async listPages(
     @Req() request: Request,
     @Param('projectId') projectId: string
@@ -30,6 +33,7 @@ export class WikiController extends BaseController {
   }
 
   @Get('/:pageId')
+  @ApiResponse('WikiPageDetailsDTO')
   async getPage(
     @Req() request: Request,
     @Param('projectId') projectId: string,
@@ -40,6 +44,8 @@ export class WikiController extends BaseController {
   }
 
   @Post()
+  @ApiRequestBody('CreateWikiPageRequest')
+  @ApiResponse('WikiPageDetailsDTO')
   async createPage(
     @Req() request: Request,
     @Param('projectId') projectId: string,
@@ -50,6 +56,8 @@ export class WikiController extends BaseController {
   }
 
   @Put('/:pageId')
+  @ApiRequestBody('UpdateWikiPageRequest')
+  @ApiResponse('WikiPageDetailsDTO')
   async updatePage(
     @Req() request: Request,
     @Param('projectId') projectId: string,
@@ -61,6 +69,7 @@ export class WikiController extends BaseController {
   }
 
   @Delete('/:pageId')
+  @ApiResponse('OperationResult')
   async deletePage(
     @Req() request: Request,
     @Param('projectId') projectId: string,
@@ -72,6 +81,7 @@ export class WikiController extends BaseController {
   }
 
   @Get('/:pageId/revisions')
+  @ApiResponse('WikiRevisionList')
   async listRevisions(
     @Req() request: Request,
     @Param('projectId') projectId: string,
@@ -82,6 +92,7 @@ export class WikiController extends BaseController {
   }
 
   @Post('/:pageId/revisions/:revisionId/restore')
+  @ApiResponse('WikiPageDetailsDTO')
   async restoreRevision(
     @Req() request: Request,
     @Param('projectId') projectId: string,

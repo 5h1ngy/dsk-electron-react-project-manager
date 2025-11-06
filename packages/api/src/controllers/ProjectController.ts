@@ -12,8 +12,10 @@ import {
 import { Service } from 'typedi'
 
 import { BaseController } from '@api/controllers/BaseController'
+import { ApiBearerAuth, ApiRequestBody, ApiResponse } from '@api/openapi/decorators'
 
 @Service()
+@ApiBearerAuth()
 @JsonController('/projects')
 export class ProjectController extends BaseController {
   private get projectService() {
@@ -21,12 +23,14 @@ export class ProjectController extends BaseController {
   }
 
   @Get()
+  @ApiResponse('ProjectSummaryList')
   async listProjects(@Req() request: Request) {
     const { actor } = await this.requireActor(request)
     return await this.projectService.listProjects(actor)
   }
 
   @Get('/:projectId')
+  @ApiResponse('ProjectDetailsDTO')
   async getProject(
     @Req() request: Request,
     @Param('projectId') projectId: string
@@ -36,12 +40,16 @@ export class ProjectController extends BaseController {
   }
 
   @Post()
+  @ApiRequestBody('CreateProjectRequest')
+  @ApiResponse('ProjectDetailsDTO')
   async createProject(@Req() request: Request, @Body() payload: unknown) {
     const { actor } = await this.requireActor(request)
     return await this.projectService.createProject(actor, payload)
   }
 
   @Put('/:projectId')
+  @ApiRequestBody('UpdateProjectRequest')
+  @ApiResponse('ProjectDetailsDTO')
   async updateProject(
     @Req() request: Request,
     @Param('projectId') projectId: string,
@@ -52,6 +60,7 @@ export class ProjectController extends BaseController {
   }
 
   @Delete('/:projectId')
+  @ApiResponse('OperationResult')
   async deleteProject(
     @Req() request: Request,
     @Param('projectId') projectId: string
@@ -62,6 +71,8 @@ export class ProjectController extends BaseController {
   }
 
   @Put('/:projectId/members')
+  @ApiRequestBody('ProjectMemberRequest')
+  @ApiResponse('ProjectDetailsDTO')
   async upsertMember(
     @Req() request: Request,
     @Param('projectId') projectId: string,
@@ -72,6 +83,7 @@ export class ProjectController extends BaseController {
   }
 
   @Delete('/:projectId/members/:userId')
+  @ApiResponse('ProjectDetailsDTO')
   async removeMember(
     @Req() request: Request,
     @Param('projectId') projectId: string,

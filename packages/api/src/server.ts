@@ -9,6 +9,8 @@ import {
 import { Container } from 'typedi'
 import { routingControllersToSpec } from 'routing-controllers-openapi'
 import swaggerUi from 'swagger-ui-express'
+import { OpenApiGeneratorV3 } from '@asteasolutions/zod-to-openapi'
+import type { ComponentsObject } from 'openapi3-ts'
 
 import {
   AuthController,
@@ -28,6 +30,7 @@ import { bootstrapDomain } from '@api/startup/bootstrap'
 import { ApiContextToken } from '@api/startup/context'
 import { logger } from '@services/config/logger'
 import { env } from '@services/config/env'
+import { apiRegistry } from '@api/openapi/schemas'
 
 const DEFAULT_PORT = 3333
 
@@ -65,6 +68,32 @@ const controllers = [
   SeedController
 ]
 
+const mergeComponents = (
+  base: ComponentsObject | undefined,
+  extra: ComponentsObject | undefined
+): ComponentsObject | undefined => {
+  if (!extra) {
+    return base
+  }
+
+  if (!base) {
+    return extra
+  }
+
+  return {
+    ...extra,
+    ...base,
+    schemas: {
+      ...(extra.schemas ?? {}),
+      ...(base.schemas ?? {})
+    },
+    securitySchemes: {
+      ...(extra.securitySchemes ?? {}),
+      ...(base.securitySchemes ?? {})
+    }
+  }
+}
+
 const main = async () => {
   useContainer(Container)
   const runtime = await bootstrapDomain()
@@ -98,6 +127,9 @@ const main = async () => {
       security: [{ bearerAuth: [] }]
     }
   )
+  const generator = new OpenApiGeneratorV3(apiRegistry.definitions)
+  const generated = generator.generateComponents()
+  openApiSpec.components = mergeComponents(openApiSpec.components, generated.components)
 
   app.use('/docs', swaggerUi.serve, swaggerUi.setup(openApiSpec))
   app.get('/docs.json', (_req, res) => {

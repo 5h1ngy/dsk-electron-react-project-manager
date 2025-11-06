@@ -13,8 +13,10 @@ import {
 import { Service } from 'typedi'
 
 import { BaseController } from '@api/controllers/BaseController'
+import { ApiBearerAuth, ApiRequestBody, ApiResponse } from '@api/openapi/decorators'
 
 @Service()
+@ApiBearerAuth()
 @JsonController()
 export class NoteController extends BaseController {
   private get noteService() {
@@ -22,6 +24,7 @@ export class NoteController extends BaseController {
   }
 
   @Get('/projects/:projectId/notes')
+  @ApiResponse('NoteSummaryList')
   async listNotes(
     @Req() request: Request,
     @Param('projectId') projectId: string,
@@ -40,18 +43,23 @@ export class NoteController extends BaseController {
   }
 
   @Get('/notes/:noteId')
+  @ApiResponse('NoteDetailsDTO')
   async getNote(@Req() request: Request, @Param('noteId') noteId: string) {
     const { actor } = await this.requireActor(request)
     return await this.noteService.getNote(actor, noteId)
   }
 
   @Post('/notes')
+  @ApiRequestBody('CreateNoteRequest')
+  @ApiResponse('NoteDetailsDTO')
   async createNote(@Req() request: Request, @Body() payload: unknown) {
     const { actor } = await this.requireActor(request)
     return await this.noteService.createNote(actor, payload)
   }
 
   @Put('/notes/:noteId')
+  @ApiRequestBody('UpdateNoteRequest')
+  @ApiResponse('NoteDetailsDTO')
   async updateNote(
     @Req() request: Request,
     @Param('noteId') noteId: string,
@@ -62,6 +70,7 @@ export class NoteController extends BaseController {
   }
 
   @Delete('/notes/:noteId')
+  @ApiResponse('OperationResult')
   async deleteNote(@Req() request: Request, @Param('noteId') noteId: string) {
     const { actor } = await this.requireActor(request)
     await this.noteService.deleteNote(actor, noteId)
@@ -69,6 +78,7 @@ export class NoteController extends BaseController {
   }
 
   @Get('/notes/search')
+  @ApiResponse('NoteSearchResultList')
   async searchNotes(
     @Req() request: Request,
     @QueryParam('q') query: string,
@@ -82,6 +92,8 @@ export class NoteController extends BaseController {
   }
 
   @Post('/notes/search')
+  @ApiRequestBody('SearchNotesRequest')
+  @ApiResponse('NoteSearchResultList')
   async searchNotesAdvanced(
     @Req() request: Request,
     @Body() payload: unknown
@@ -91,6 +103,8 @@ export class NoteController extends BaseController {
   }
 
   @Post('/notes/query')
+  @ApiRequestBody('ListNotesRequest')
+  @ApiResponse('NoteSummaryList')
   async listNotesAdvanced(
     @Req() request: Request,
     @Body() payload: unknown
