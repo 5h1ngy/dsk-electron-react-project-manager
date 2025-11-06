@@ -30,6 +30,9 @@
             ],
             "@api/*":  [
                 "packages/api/src/*"
+            ],
+            "@seeding/*": [
+                "seeding/*"
             ]
         }
     }

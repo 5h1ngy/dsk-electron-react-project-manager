@@ -9,6 +9,9 @@ import { Task } from '@services/models/Task'
 import { Note } from '@services/models/Note'
 import { Comment } from '@services/models/Comment'
 import { View } from '@services/models/View'
+import { AuditLog } from '@services/models/AuditLog'
+import { WikiPage } from '@services/models/WikiPage'
+import { WikiRevision } from '@services/models/WikiRevision'
 import { hashPassword, verifyPassword } from '@services/services/auth/password'
 import { SessionManager, SessionRecord } from '@services/services/auth/sessionManager'
 import { AuditService } from '@services/services/audit'
@@ -434,6 +437,23 @@ export class AuthService {
         await Project.update(
           { createdBy: replacementUserId },
           { where: { createdBy: user.id }, transaction }
+        )
+
+        await WikiPage.update(
+          { createdBy: replacementUserId },
+          { where: { createdBy: user.id }, transaction }
+        )
+        await WikiPage.update(
+          { updatedBy: replacementUserId },
+          { where: { updatedBy: user.id }, transaction }
+        )
+        await WikiRevision.update(
+          { createdBy: replacementUserId },
+          { where: { createdBy: user.id }, transaction }
+        )
+        await AuditLog.update(
+          { userId: null },
+          { where: { userId: user.id }, transaction }
         )
 
         await UserRole.destroy({ where: { userId: user.id }, transaction })

@@ -4,6 +4,7 @@ import {
   HttpError,
   Middleware
 } from 'routing-controllers'
+import { Service } from 'typedi'
 
 import {
   AppError,
@@ -27,6 +28,7 @@ const mapAppErrorToStatus = (error: AppError): number => {
   }
 }
 
+@Service()
 @Middleware({ type: 'after' })
 export class AppErrorHandler implements ExpressErrorMiddlewareInterface {
   error(

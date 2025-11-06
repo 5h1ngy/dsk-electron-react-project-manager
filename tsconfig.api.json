@@ -1,9 +1,12 @@
 {
   "extends": "./tsconfig.node.json",
-  "include": ["packages/services/src/**/*", "packages/api/src/**/*"],
+  "include": ["packages/services/src/**/*", "packages/api/src/**/*", "seeding/**/*"],
   "compilerOptions": {
     "outDir": "./out/api",
-    "rootDir": "./packages",
-    "composite": false
+    "rootDir": ".",
+    "composite": false,
+    "paths": {
+      "@seeding/*": ["seeding/*"]
+    }
   }
 }

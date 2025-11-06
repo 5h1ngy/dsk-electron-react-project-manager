@@ -2,6 +2,8 @@ import { resolve } from 'path'
 import { defineConfig, externalizeDepsPlugin } from 'electron-vite'
 import react from '@vitejs/plugin-react'
 
+const API_PROXY_TARGET = process.env.API_PROXY_TARGET ?? 'http://localhost:3333'
+
 export default defineConfig({
   main: {
     resolve: {
@@ -46,6 +48,16 @@ export default defineConfig({
       }
     },
     plugins: [react()],
+    server: {
+      proxy: {
+        '/api': {
+          target: API_PROXY_TARGET,
+          changeOrigin: true,
+          secure: false,
+          rewrite: (path) => path.replace(/^\/api/, '')
+        }
+      }
+    },
     build: {
       rollupOptions: {
         input: resolve(__dirname, 'packages/renderer/index.html')

@@ -1,8 +1,14 @@
 import 'reflect-metadata'
 
 import express from 'express'
-import { createExpressServer, useContainer } from 'routing-controllers'
+import {
+  createExpressServer,
+  getMetadataArgsStorage,
+  useContainer
+} from 'routing-controllers'
 import { Container } from 'typedi'
+import { routingControllersToSpec } from 'routing-controllers-openapi'
+import swaggerUi from 'swagger-ui-express'
 
 import {
   AuthController,
@@ -14,12 +20,14 @@ import {
   RoleController,
   SprintController,
   WikiController,
-  HealthController
+  HealthController,
+  SeedController
 } from '@api/controllers'
 import { AppErrorHandler } from '@api/middleware/errorHandler'
 import { bootstrapDomain } from '@api/startup/bootstrap'
 import { ApiContextToken } from '@api/startup/context'
 import { logger } from '@services/config/logger'
+import { env } from '@services/config/env'
 
 const DEFAULT_PORT = 3333
 
@@ -43,6 +51,20 @@ const registerShutdownHooks = (
   process.on('SIGTERM', () => void shutdown('SIGTERM'))
 }
 
+const controllers = [
+  AuthController,
+  ProjectController,
+  TaskController,
+  TaskStatusController,
+  NoteController,
+  ViewController,
+  RoleController,
+  SprintController,
+  WikiController,
+  HealthController,
+  SeedController
+]
+
 const main = async () => {
   useContainer(Container)
   const runtime = await bootstrapDomain()
@@ -50,21 +72,36 @@ const main = async () => {
 
   const app = createExpressServer({
     middlewares: [AppErrorHandler],
-    controllers: [
-      AuthController,
-      ProjectController,
-      TaskController,
-      TaskStatusController,
-      NoteController,
-      ViewController,
-      RoleController,
-      SprintController,
-      WikiController,
-      HealthController
-    ],
+    controllers,
     defaultErrorHandler: false,
     cors: true,
     validation: false
+  })
+
+  const storage = getMetadataArgsStorage()
+  const openApiSpec = routingControllersToSpec(
+    storage,
+    { controllers },
+    {
+      info: {
+        title: 'DSK Project Manager API',
+        version: env.appVersion
+      },
+      components: {
+        securitySchemes: {
+          bearerAuth: {
+            type: 'http',
+            scheme: 'bearer'
+          }
+        }
+      },
+      security: [{ bearerAuth: [] }]
+    }
+  )
+
+  app.use('/docs', swaggerUi.serve, swaggerUi.setup(openApiSpec))
+  app.get('/docs.json', (_req, res) => {
+    res.json(openApiSpec)
   })
 
   const port = resolvePort()
