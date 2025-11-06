@@ -132,6 +132,23 @@ export const ProjectSprintBoard = ({
   const [editingSprint, setEditingSprint] = useState<SprintDTO | null>(null)
   const [form] = Form.useForm()
 
+  const segmentedStyle = useMemo(
+    () => ({
+      background: token.colorFillTertiary,
+      border: `${token.lineWidth}px solid ${token.colorFillQuaternary}`,
+      boxShadow: 'none',
+      padding: token.paddingXXS,
+      borderRadius: token.borderRadiusLG
+    }),
+    [
+      token.borderRadiusLG,
+      token.colorFillQuaternary,
+      token.colorFillTertiary,
+      token.lineWidth,
+      token.paddingXXS
+    ]
+  )
+
   const handleZoomIn = useCallback(() => {
     setViewScale((current) => {
       const currentIndex = zoomLevels.indexOf(current)
@@ -1108,6 +1125,7 @@ export const ProjectSprintBoard = ({
                   value: 'archived'
                 }
               ]}
+              style={segmentedStyle}
             />
           </Space>
         </Flex>
@@ -1328,6 +1346,7 @@ export const ProjectSprintBoard = ({
                   value: 'archived'
                 }
               ]}
+              style={{ ...segmentedStyle, width: '100%' }}
             />
           </Form.Item>
 
