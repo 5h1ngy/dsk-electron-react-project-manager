@@ -687,11 +687,11 @@ export const ProjectSprintBoard = ({
           gridTemplateColumns,
           alignItems: 'stretch',
           borderRadius: token.borderRadiusLG,
-          border: `1px solid ${
-            isSelected ? token.colorPrimaryBorder : token.colorBorderSecondary
-          }`,
-          background: isSelected ? token.colorBgElevated : token.colorBgContainer,
-          boxShadow: isSelected ? token.boxShadowSecondary : 'none',
+          border: isSelected
+            ? `2px solid ${token.colorPrimary}`
+            : `1px solid ${token.colorBorderSecondary}`,
+          background: isSelected ? token.colorPrimaryBg : token.colorBgContainer,
+          boxShadow: 'none',
           cursor: 'pointer',
           transition: 'border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease'
         }}
