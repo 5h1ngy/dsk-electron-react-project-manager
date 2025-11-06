@@ -50,21 +50,12 @@ export const ProjectBoard = ({
     () => ({
       width: '100%',
       overflowX: 'auto',
-      background: token.colorBgElevated,
-      border: `${token.lineWidth}px solid ${token.colorBorderSecondary}`,
+      background: token.colorBgContainer,
       borderRadius: token.borderRadiusLG,
       padding: token.paddingMD,
-      boxShadow: token.boxShadowSecondary,
       transition: 'background-color 0.2s ease'
     }),
-    [
-      token.borderRadiusLG,
-      token.boxShadowSecondary,
-      token.colorBgElevated,
-      token.colorBorderSecondary,
-      token.lineWidth,
-      token.paddingMD
-    ]
+    [token.borderRadiusLG, token.colorBgContainer, token.paddingMD]
   )
 
   return (
@@ -127,3 +118,4 @@ export const ProjectBoard = ({
 ProjectBoard.displayName = 'ProjectBoard'
 
 export default ProjectBoard
+

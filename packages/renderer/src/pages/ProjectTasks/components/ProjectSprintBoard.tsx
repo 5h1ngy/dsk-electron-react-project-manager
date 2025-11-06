@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useState, type JSX } from 'react'
-import { Bar } from '@ant-design/plots'
+import { useCallback, useEffect, useMemo, useState, type JSX } from 'react'
 import {
+  Avatar,
   Button,
   Card,
   DatePicker,
@@ -10,27 +10,30 @@ import {
   Input,
   InputNumber,
   Modal,
-  Select,
+  Segmented,
   Space,
   Spin,
-  Statistic,
+  Table,
   Tag,
   Typography,
-  theme,
-  message
+  message,
+  theme
 } from 'antd'
+import type { ColumnsType } from 'antd/es/table'
 import {
-  CalendarOutlined,
   DeleteOutlined,
   EditOutlined,
   PlusOutlined,
-  ClockCircleOutlined
+  UserOutlined,
+  ZoomInOutlined,
+  ZoomOutOutlined
 } from '@ant-design/icons'
 import dayjs from 'dayjs'
+import type { ManipulateType } from 'dayjs'
 import { useTranslation } from 'react-i18next'
 
-import { useAppDispatch, useAppSelector } from '@renderer/store/hooks'
 import { BorderedPanel } from '@renderer/components/Surface/BorderedPanel'
+import { useAppDispatch, useAppSelector } from '@renderer/store/hooks'
 import {
   createSprint,
   deleteSprint,
@@ -45,31 +48,61 @@ import type { TaskDetailsDTO } from '@main/services/task/types'
 
 const { RangePicker } = DatePicker
 
-interface ProjectSprintBoardProps {
+const MIN_RANGE_WIDTH_PERCENT = 4
+const STATUS_ORDER: Array<SprintDTO['status']> = ['active', 'planned', 'completed', 'archived']
+
+type ViewScale = 'week' | 'month' | 'year'
+
+const zoomLevels: ViewScale[] = ['week', 'month', 'year']
+
+const zoomSettings: Record<
+  ViewScale,
+  {
+    unit: ManipulateType
+    align: ManipulateType
+    step: number
+    slotWidth: number
+  }
+> = {
+  week: { unit: 'day', align: 'day', step: 1, slotWidth: 160 },
+  month: { unit: 'week', align: 'week', step: 1, slotWidth: 200 },
+  year: { unit: 'month', align: 'month', step: 1, slotWidth: 220 }
+}
+
+type SprintStatusFilter = 'all' | SprintDTO['status']
+
+type TimelinePosition = {
+  left: string
+  width: string
+}
+
+type GroupedSprints = {
+  status: SprintDTO['status']
+  label: string
+  sprints: SprintDTO[]
+  totals: {
+    tasks: number
+    estimated: number
+    spent: number
+    utilization: number | null
+  }
+}
+
+type TaskTableRecord = {
+  key: string
+  title: string
+  status: TaskDetailsDTO['status']
+  assignee: string
+  dueDate: string | null
+}
+
+export interface ProjectSprintBoardProps {
   projectId: string | null
   canManage: boolean
 }
 
-type SprintTimelineDatum = {
-  id: string
-  name: string
-  status: SprintDTO['status']
-  start: number
-  end: number
-  range: [number, number]
-  metrics: SprintDTO['metrics']
-  goal: string | null
-  key: string
-}
-
-type TaskTimelineDatum = {
-  id: string
-  key: string
-  title: string
-  status: TaskDetailsDTO['status']
-  range: [number, number]
-  assignee: string
-}
+const formatDateRange = (start: string, end: string) =>
+  `${dayjs(start).format('DD MMM YYYY')} → ${dayjs(end).format('DD MMM YYYY')}`
 
 export const ProjectSprintBoard = ({
   projectId,
@@ -80,9 +113,42 @@ export const ProjectSprintBoard = ({
   const [messageApi, messageContext] = message.useMessage()
   const { token } = theme.useToken()
 
-  const sprintState = useAppSelector((state) =>
-    projectId ? selectSprintsForProject(projectId)(state) : undefined
+  const [statusFilter, setStatusFilter] = useState<SprintStatusFilter>('all')
+  const [viewScale, setViewScale] = useState<ViewScale>('week')
+  const [selectedSprintId, setSelectedSprintId] = useState<string | null>(null)
+  const [formVisible, setFormVisible] = useState(false)
+  const [editingSprint, setEditingSprint] = useState<SprintDTO | null>(null)
+  const [form] = Form.useForm()
+
+  const handleZoomIn = useCallback(() => {
+    setViewScale((current) => {
+      const currentIndex = zoomLevels.indexOf(current)
+      if (currentIndex <= 0) {
+        return current
+      }
+      return zoomLevels[currentIndex - 1]
+    })
+  }, [])
+
+  const handleZoomOut = useCallback(() => {
+    setViewScale((current) => {
+      const currentIndex = zoomLevels.indexOf(current)
+      if (currentIndex >= zoomLevels.length - 1) {
+        return current
+      }
+      return zoomLevels[currentIndex + 1]
+    })
+  }, [])
+
+  const sprintSelector = useMemo(
+    () => (projectId ? selectSprintsForProject(projectId) : null),
+    [projectId]
   )
+
+  const sprintState = useAppSelector((state) =>
+    sprintSelector ? sprintSelector(state) : undefined
+  )
+
   const sprints = useMemo(() => {
     if (!sprintState) {
       return []
@@ -95,21 +161,11 @@ export const ProjectSprintBoard = ({
   const sprintStatus = sprintState?.status ?? 'idle'
   const isLoadingSprints = sprintStatus === 'loading'
 
-  const [selectedSprintId, setSelectedSprintId] = useState<string | null>(null)
-  const selectedSprint = useMemo(
-    () => sprints.find((sprint) => sprint.id === selectedSprintId) ?? null,
-    [selectedSprintId, sprints]
-  )
-
-  const selectedDetailsState = useAppSelector((state) =>
-    selectedSprintId ? selectSprintDetails(selectedSprintId)(state) : undefined
-  )
-  const selectedDetails = selectedDetailsState?.data ?? null
-  const isLoadingDetails = selectedDetailsState?.status === 'loading'
-
-  const [formVisible, setFormVisible] = useState(false)
-  const [form] = Form.useForm()
-  const [editingSprint, setEditingSprint] = useState<SprintDTO | null>(null)
+  const zoomIndex = zoomLevels.indexOf(viewScale)
+  const canZoomIn = zoomIndex > 0
+  const canZoomOut = zoomIndex < zoomLevels.length - 1
+  const currentZoomSetting = zoomSettings[viewScale]
+  const slotWidth = currentZoomSetting.slotWidth
 
   useEffect(() => {
     if (projectId && sprintStatus === 'idle') {
@@ -119,7 +175,74 @@ export const ProjectSprintBoard = ({
 
   useEffect(() => {
     setSelectedSprintId(null)
+    setStatusFilter('all')
   }, [projectId])
+
+  const filteredSprints = useMemo(() => {
+    const sorted = [...sprints].sort(
+      (a, b) => dayjs(a.startDate).valueOf() - dayjs(b.startDate).valueOf()
+    )
+    if (statusFilter === 'all') {
+      return sorted
+    }
+    return sorted.filter((sprint) => sprint.status === statusFilter)
+  }, [sprints, statusFilter])
+
+  useEffect(() => {
+    if (selectedSprintId && !filteredSprints.some((sprint) => sprint.id === selectedSprintId)) {
+      setSelectedSprintId(null)
+    }
+  }, [filteredSprints, selectedSprintId])
+
+  const groupedSprints = useMemo<GroupedSprints[]>(() => {
+    return STATUS_ORDER.map((status) => {
+      const statusSprints = filteredSprints.filter((sprint) => sprint.status === status)
+      if (statusSprints.length === 0) {
+        return null
+      }
+      const totals = statusSprints.reduce(
+        (acc, sprint) => {
+          acc.tasks += sprint.metrics.totalTasks
+          acc.estimated += sprint.metrics.estimatedMinutes ?? 0
+          acc.spent += sprint.metrics.timeSpentMinutes
+          if (typeof sprint.metrics.utilizationPercent === 'number') {
+            acc.utilizationValues.push(sprint.metrics.utilizationPercent)
+          }
+          return acc
+        },
+        {
+          tasks: 0,
+          estimated: 0,
+          spent: 0,
+          utilizationValues: [] as number[]
+        }
+      )
+
+      const utilization =
+        totals.utilizationValues.length > 0
+          ? totals.utilizationValues.reduce((sum, value) => sum + value, 0) /
+            totals.utilizationValues.length
+          : null
+
+      return {
+        status,
+        label: t(`sprints.status.${status}`, { defaultValue: status }),
+        sprints: statusSprints,
+        totals: {
+          tasks: totals.tasks,
+          estimated: totals.estimated,
+          spent: totals.spent,
+          utilization
+        }
+      }
+    }).filter(Boolean) as GroupedSprints[]
+  }, [filteredSprints, t])
+
+  const selectedDetailsState = useAppSelector((state) =>
+    selectedSprintId ? selectSprintDetails(selectedSprintId)(state) : undefined
+  )
+  const selectedDetails = selectedDetailsState?.data ?? null
+  const isLoadingDetails = selectedDetailsState?.status === 'loading'
 
   useEffect(() => {
     if (selectedSprintId) {
@@ -127,11 +250,353 @@ export const ProjectSprintBoard = ({
     }
   }, [dispatch, selectedSprintId])
 
-  useEffect(() => {
-    if (selectedSprintId && !sprints.some((sprint) => sprint.id === selectedSprintId)) {
-      setSelectedSprintId(null)
+  const sprintKeyPrefix = t('sprints.keyPrefix', { defaultValue: 'SPR' })
+
+  const sprintStatusColors: Record<SprintDTO['status'], string> = useMemo(
+    () => ({
+      planned: token.colorWarning,
+      active: token.colorPrimary,
+      completed: token.colorSuccess,
+      archived: token.colorTextQuaternary
+    }),
+    [
+      token.colorPrimary,
+      token.colorSuccess,
+      token.colorTextQuaternary,
+      token.colorWarning
+    ]
+  )
+
+  const taskStatusColors = useMemo<Record<string, string>>(
+    () => ({
+      todo: token.colorWarning,
+      backlog: token.colorWarning,
+      in_progress: token.colorPrimary,
+      review: token.colorInfo,
+      done: token.colorSuccess,
+      completed: token.colorSuccess,
+      blocked: token.colorError,
+      cancelled: token.colorTextDisabled
+    }),
+    [
+      token.colorError,
+      token.colorInfo,
+      token.colorPrimary,
+      token.colorSuccess,
+      token.colorTextDisabled,
+      token.colorWarning
+    ]
+  )
+
+  const timelineBounds = useMemo(() => {
+    if (filteredSprints.length === 0) {
+      return null
     }
-  }, [selectedSprintId, sprints])
+
+    let minDate = dayjs(filteredSprints[0].startDate)
+    let maxDate = dayjs(filteredSprints[0].endDate)
+
+    for (const sprint of filteredSprints) {
+      const start = dayjs(sprint.startDate)
+      const end = dayjs(sprint.endDate)
+      if (start.isBefore(minDate)) {
+        minDate = start
+      }
+      if (end.isAfter(maxDate)) {
+        maxDate = end
+      }
+    }
+
+    if (selectedDetails?.tasks?.length) {
+      for (const task of selectedDetails.tasks) {
+        const created = dayjs(task.createdAt)
+        const due = task.dueDate ? dayjs(task.dueDate) : created
+        if (created.isBefore(minDate)) {
+          minDate = created
+        }
+        if (due.isAfter(maxDate)) {
+          maxDate = due
+        }
+      }
+    }
+
+    const start = minDate.startOf(currentZoomSetting.align)
+    let end = maxDate.endOf(currentZoomSetting.align)
+
+    if (!end.isAfter(start)) {
+      end = start.add(currentZoomSetting.step, currentZoomSetting.unit)
+    } else {
+      end = end.add(currentZoomSetting.step, currentZoomSetting.unit)
+    }
+
+    return { start, end }
+  }, [filteredSprints, selectedDetails, currentZoomSetting])
+
+  const totalTimelineHours = useMemo(() => {
+    if (!timelineBounds) {
+      return 24
+    }
+    const hours = timelineBounds.end.diff(timelineBounds.start, 'hour', true)
+    return Math.max(24, hours)
+  }, [timelineBounds])
+
+  const timelineSlots = useMemo(() => {
+    if (!timelineBounds) {
+      return []
+    }
+    const slots: dayjs.Dayjs[] = []
+    let cursor = timelineBounds.start
+
+    while (cursor.isBefore(timelineBounds.end)) {
+      slots.push(cursor)
+      cursor = cursor.add(currentZoomSetting.step, currentZoomSetting.unit)
+    }
+
+    return slots
+  }, [timelineBounds, currentZoomSetting])
+
+  const gridTemplateColumns = useMemo(
+    () => `240px repeat(${timelineSlots.length}, minmax(${slotWidth}px, 1fr))`,
+    [timelineSlots.length, slotWidth]
+  )
+
+  const boardMinWidth = useMemo(
+    () => 240 + timelineSlots.length * slotWidth,
+    [slotWidth, timelineSlots.length]
+  )
+
+  const computeRangePosition = useCallback(
+    (startInput: dayjs.Dayjs, endInput: dayjs.Dayjs): TimelinePosition => {
+      if (!timelineBounds) {
+        return { left: '0%', width: '0%' }
+      }
+
+      const clampedStart = startInput.isBefore(timelineBounds.start)
+        ? timelineBounds.start
+        : startInput
+      const clampedEnd = endInput.isAfter(timelineBounds.end)
+        ? timelineBounds.end
+        : endInput
+
+      const safeEnd = clampedEnd.isBefore(clampedStart)
+        ? clampedStart.add(6, 'hour')
+        : clampedEnd
+
+      const leftPercent =
+        (clampedStart.diff(timelineBounds.start, 'hour', true) / totalTimelineHours) * 100
+      const widthPercent =
+        (safeEnd.diff(clampedStart, 'hour', true) / totalTimelineHours) * 100
+
+      return {
+        left: `${Math.max(0, Math.min(leftPercent, 100))}%`,
+        width: `${Math.max(widthPercent, MIN_RANGE_WIDTH_PERCENT)}%`
+      }
+    },
+    [timelineBounds, totalTimelineHours]
+  )
+
+  const handleSprintClick = useCallback((sprintId: string) => {
+    setSelectedSprintId((current) => (current === sprintId ? null : sprintId))
+  }, [])
+
+  const formatSlotLabel = useCallback(
+    (date: dayjs.Dayjs) => {
+      switch (viewScale) {
+        case 'week':
+          return {
+            label: date.format('DD MMM'),
+            subLabel: date.format('ddd')
+          }
+        case 'month':
+          return {
+            label: date.format('DD MMM'),
+            subLabel: date.format('MMM YYYY')
+          }
+        case 'year':
+        default:
+          return {
+            label: date.format('MMM'),
+            subLabel: date.format('YYYY')
+          }
+      }
+    },
+    [viewScale]
+  )
+
+  const handleOpenCreate = useCallback(() => {
+    form.resetFields()
+    setEditingSprint(null)
+    setFormVisible(true)
+  }, [form])
+
+  const handleOpenEdit = useCallback(
+    (sprint: SprintDTO) => {
+      setEditingSprint(sprint)
+      setFormVisible(true)
+      form.setFieldsValue({
+        name: sprint.name,
+        goal: sprint.goal ?? '',
+        status: sprint.status,
+        capacityMinutes: sprint.capacityMinutes ?? null,
+        dateRange: [dayjs(sprint.startDate), dayjs(sprint.endDate)]
+      })
+    },
+    [form]
+  )
+
+  const handleDelete = useCallback(
+    (sprint: SprintDTO) => {
+      Modal.confirm({
+        title: t('sprints.deleteConfirmTitle', { defaultValue: 'Elimina sprint' }),
+        content: t('sprints.deleteConfirmBody', {
+          defaultValue:
+            'Confermi di voler eliminare questo sprint? I task rimarranno ma non saranno più associati.'
+        }),
+        okText: t('common.delete', { defaultValue: 'Elimina' }),
+        okButtonProps: { danger: true },
+        cancelText: t('common.cancel', { defaultValue: 'Annulla' }),
+        onOk: async () => {
+          try {
+            if (!projectId) {
+              return
+            }
+            await dispatch(deleteSprint({ projectId, sprintId: sprint.id })).unwrap()
+            if (selectedSprintId === sprint.id) {
+              setSelectedSprintId(null)
+            }
+            messageApi.success(t('sprints.deleteSuccess', { defaultValue: 'Sprint eliminato' }))
+          } catch (error) {
+            messageApi.error(
+              t('sprints.deleteError', { defaultValue: 'Errore durante l’eliminazione' })
+            )
+          }
+        }
+      })
+    },
+    [dispatch, messageApi, projectId, selectedSprintId, t]
+  )
+
+  const handleFormSubmit = useCallback(async () => {
+    try {
+      const values = await form.validateFields()
+      if (!projectId) {
+        return
+      }
+
+      const [start, end] = values.dateRange as [dayjs.Dayjs, dayjs.Dayjs]
+      const goal = typeof values.goal === 'string' ? values.goal : undefined
+      const capacityMinutes =
+        typeof values.capacityMinutes === 'number' ? values.capacityMinutes : undefined
+      const startDate = start.format('YYYY-MM-DD')
+      const endDate = end.format('YYYY-MM-DD')
+
+      if (editingSprint) {
+        await dispatch(
+          updateSprint({
+            sprintId: editingSprint.id,
+            input: {
+              name: values.name as string,
+              goal,
+              status: values.status as SprintDTO['status'],
+              capacityMinutes,
+              startDate,
+              endDate
+            }
+          })
+        ).unwrap()
+        messageApi.success(t('sprints.updateSuccess', { defaultValue: 'Sprint aggiornato' }))
+      } else {
+        const created = await dispatch(
+          createSprint({
+            projectId,
+            name: values.name as string,
+            goal,
+            status: values.status as SprintDTO['status'],
+            capacityMinutes,
+            startDate,
+            endDate
+          })
+        ).unwrap()
+        setSelectedSprintId(created.id)
+        messageApi.success(t('sprints.createSuccess', { defaultValue: 'Sprint creato' }))
+      }
+
+      setFormVisible(false)
+      setEditingSprint(null)
+      form.resetFields()
+    } catch (error) {
+      if (error instanceof Error && 'errorFields' in error) {
+        return
+      }
+      if (error instanceof Error) {
+        messageApi.error(error.message)
+      } else {
+        messageApi.error(
+          t('sprints.form.invalid', { defaultValue: 'Compila tutti i campi obbligatori' })
+        )
+      }
+    }
+  }, [dispatch, editingSprint, form, messageApi, projectId, t])
+
+  const taskTableData = useMemo<TaskTableRecord[]>(() => {
+    if (!selectedDetails) {
+      return []
+    }
+    return selectedDetails.tasks.map((task) => ({
+      key: task.id,
+      title: `${task.key} — ${task.title}`,
+      status: task.status,
+      assignee:
+        task.assignee?.displayName ??
+        t('tasks.details.unassigned', { defaultValue: 'Non assegnato' }),
+      dueDate: task.dueDate
+    }))
+  }, [selectedDetails, t])
+
+  const taskTableColumns: ColumnsType<TaskTableRecord> = useMemo(
+    () => [
+      {
+        title: t('tasks.fields.task', { defaultValue: 'Task' }),
+        dataIndex: 'title',
+        key: 'title',
+        render: (value: string) => (
+          <Typography.Text ellipsis={{ tooltip: value }}>{value}</Typography.Text>
+        )
+      },
+      {
+        title: t('tasks.fields.status', { defaultValue: 'Stato' }),
+        dataIndex: 'status',
+        key: 'status',
+        width: 160,
+        render: (value: string) => (
+          <Tag color={taskStatusColors[value] ?? token.colorBorder}>
+            {t(`tasks.status.${value}`, { defaultValue: value })}
+          </Tag>
+        )
+      },
+      {
+        title: t('tasks.fields.assignee', { defaultValue: 'Assegnatario' }),
+        dataIndex: 'assignee',
+        key: 'assignee',
+        width: 220,
+        render: (value: string) => (
+          <Space size={8}>
+            <Avatar size="small" icon={<UserOutlined />} />
+            <Typography.Text>{value}</Typography.Text>
+          </Space>
+        )
+      },
+      {
+        title: t('tasks.fields.dueDate', { defaultValue: 'Scadenza' }),
+        dataIndex: 'dueDate',
+        key: 'dueDate',
+        width: 180,
+        render: (value: string | null) =>
+          value ? dayjs(value).format('DD MMM YYYY') : t('tasks.details.noDueDate')
+      }
+    ],
+    [t, taskStatusColors, token.colorBorder]
+  )
 
   if (!projectId) {
     return (
@@ -145,456 +610,526 @@ export const ProjectSprintBoard = ({
     )
   }
 
-  const handleOpenCreate = () => {
-    setEditingSprint(null)
-    form.resetFields()
-    form.setFieldsValue({
-      name: '',
-      goal: '',
-      status: 'planned',
-      capacityMinutes: null,
-      dateRange: [dayjs().startOf('day'), dayjs().add(14, 'day').startOf('day')]
-    })
-    setFormVisible(true)
-  }
-
-  const handleOpenEdit = (sprint: SprintDTO) => {
-    setEditingSprint(sprint)
-    form.resetFields()
-    form.setFieldsValue({
-      name: sprint.name,
-      goal: sprint.goal ?? '',
-      status: sprint.status,
-      capacityMinutes: sprint.capacityMinutes ?? null,
-      dateRange: [dayjs(sprint.startDate), dayjs(sprint.endDate)]
-    })
-    setFormVisible(true)
-  }
-
-  const handleDelete = (sprint: SprintDTO) => {
-    Modal.confirm({
-      title: t('sprints.deleteConfirmTitle', { defaultValue: 'Elimina sprint' }),
-      content: t('sprints.deleteConfirmBody', {
-        defaultValue:
-          'Confermi di voler eliminare questo sprint? I task rimarranno ma non saranno più associati.'
-      }),
-      okType: 'danger',
-      okText: t('common.delete', { defaultValue: 'Elimina' }),
-      cancelText: t('common.cancel', { defaultValue: 'Annulla' }),
-      onOk: async () => {
-        try {
-          await dispatch(deleteSprint({ projectId, sprintId: sprint.id })).unwrap()
-          messageApi.success(t('sprints.deleteSuccess', { defaultValue: 'Sprint eliminato' }))
-        } catch (error) {
-          const errorMessage = error instanceof Error ? error.message : String(error)
-          messageApi.error(errorMessage)
-        }
-      }
-    })
-  }
-
-  const handleFormSubmit = async () => {
-    try {
-      const values = await form.validateFields()
-      const [start, end] = values.dateRange ?? []
-      const payload = {
-        name: values.name?.trim() ?? '',
-        goal: values.goal?.trim() ? values.goal.trim() : null,
-        startDate: start ? dayjs(start).format('YYYY-MM-DD') : undefined,
-        endDate: end ? dayjs(end).format('YYYY-MM-DD') : undefined,
-        status: values.status,
-        capacityMinutes:
-          values.capacityMinutes === null || values.capacityMinutes === undefined
-            ? null
-            : Number(values.capacityMinutes)
-      }
-
-      if (!payload.name || !payload.startDate || !payload.endDate) {
-        messageApi.error(
-          t('sprints.form.invalid', { defaultValue: 'Compila tutti i campi obbligatori' })
+  const renderGroupHeader = (group: GroupedSprints) => (
+    <div
+      key={`${group.status}-header`}
+      style={{
+        display: 'grid',
+        gridTemplateColumns,
+        alignItems: 'stretch',
+        padding: `${token.paddingSM}px 0`,
+        background: token.colorBgLayout,
+        borderRadius: token.borderRadiusSM
+      }}
+    >
+      <div style={{ paddingInline: token.paddingMD }}>
+        <Space size={8} wrap align="center">
+          <Typography.Text strong>{group.label}</Typography.Text>
+          <Tag color={sprintStatusColors[group.status]} bordered={false}>
+            {group.sprints.length}
+          </Tag>
+          <Typography.Text type="secondary">
+            {t('sprints.group.totalTasks', { defaultValue: 'Task' })}: {group.totals.tasks}
+          </Typography.Text>
+          <Typography.Text type="secondary">
+            {t('sprints.estimatedMinutes', { defaultValue: 'Stimati' })}:{' '}
+            {group.totals.estimated}
+          </Typography.Text>
+          <Typography.Text type="secondary">
+            {t('sprints.spentMinutes', { defaultValue: 'Registrati' })}:{' '}
+            {group.totals.spent}
+          </Typography.Text>
+          {group.totals.utilization !== null ? (
+            <Typography.Text type="secondary">
+              {t('sprints.utilization', { defaultValue: 'Utilizzo' })}:{' '}
+              {Math.round(group.totals.utilization)}%
+            </Typography.Text>
+          ) : null}
+        </Space>
+      </div>
+      {timelineSlots.map((slot, index) => {
+        const { label, subLabel } = formatSlotLabel(slot)
+        return (
+          <div
+            key={`${group.status}-slot-${slot.valueOf()}`}
+            style={{
+              borderLeft: index === 0 ? 'none' : `1px solid ${token.colorSplit}`,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: 4
+            }}
+          >
+            <Typography.Text strong>{label}</Typography.Text>
+            <Typography.Text type="secondary">{subLabel}</Typography.Text>
+          </div>
         )
-        return
-      }
-
-      if (editingSprint) {
-        await dispatch(
-          updateSprint({
-            sprintId: editingSprint.id,
-            input: payload
-          })
-        ).unwrap()
-        messageApi.success(t('sprints.updateSuccess', { defaultValue: 'Sprint aggiornato' }))
-      } else {
-        await dispatch(
-          createSprint({
-            projectId,
-            name: payload.name,
-            goal: payload.goal,
-            startDate: payload.startDate,
-            endDate: payload.endDate,
-            status: payload.status,
-            capacityMinutes: payload.capacityMinutes ?? null
-          })
-        ).unwrap()
-        messageApi.success(t('sprints.createSuccess', { defaultValue: 'Sprint creato' }))
-      }
-
-      setFormVisible(false)
-      setEditingSprint(null)
-    } catch (error) {
-      if (error instanceof Error) {
-        messageApi.error(error.message)
-      }
-    }
-  }
-
-  const sprintStatusColors: Record<SprintDTO['status'], string> = {
-    planned: token.colorWarning,
-    active: token.colorPrimary,
-    completed: token.colorSuccess,
-    archived: token.colorTextTertiary
-  }
-
-  const taskStatusColors: Record<TaskDetailsDTO['status'], string> = {
-    todo: token.colorTextTertiary,
-    in_progress: token.colorPrimary,
-    blocked: token.colorError,
-    done: token.colorSuccess
-  }
-
-  const sprintTimelineData: SprintTimelineDatum[] = useMemo(
-    () =>
-      sprints.map((sprint) => {
-        const start = dayjs(sprint.startDate).valueOf()
-        const end = dayjs(sprint.endDate).valueOf()
-        const key = `SPR-${String(sprint.sequence ?? 0).padStart(2, '0')}`
-        return {
-          id: sprint.id,
-          name: sprint.name,
-          status: sprint.status,
-          start,
-          end,
-          range: [start, end],
-          metrics: sprint.metrics,
-          goal: sprint.goal ?? null,
-          key
-        }
-      }),
-    [sprints]
+      })}
+    </div>
   )
 
-  const sprintTimelineConfig = useMemo(
-    () => ({
-      data: sprintTimelineData,
-      xField: 'range',
-      yField: 'key',
-      isRange: true,
-      seriesField: 'status',
-      legend: false,
-      interactions: [
-        { type: 'element-highlight' },
-        { type: 'element-active' }
-      ],
-      tooltip: {
-        customContent: (_value: string, items: Array<{ data: SprintTimelineDatum }> | undefined) => {
-          if (!items || items.length === 0) {
-            return ''
-          }
-          const datum = items[0].data
-          const startLabel = dayjs(datum.start).format('DD MMM YYYY')
-          const endLabel = dayjs(datum.end).format('DD MMM YYYY')
-          return `<div class="g2-tooltip">
-              <div style="margin-bottom:4px;font-weight:600;">${datum.key}</div>
-              <div style="margin-bottom:4px;font-weight:600;">${datum.name}</div>
-              <div>${t('sprints.status.label', {
-                defaultValue: 'Stato'
-              })}: ${t(`sprints.status.${datum.status}`, { defaultValue: datum.status })}</div>
-              <div>${startLabel} - ${endLabel}</div>
-              <div>${t('sprints.totalTasks', { defaultValue: 'Task totali' })}: ${
-                datum.metrics.totalTasks
-              }</div>
-            </div>`
-        }
-      },
-      xAxis: {
-        type: 'time',
-        tickCount: 6,
-        label: {
-          autoRotate: true,
-          formatter: (value: string) => dayjs(Number(value)).format('DD MMM YYYY')
-        }
-      },
-      state: {
-        active: {
-          style: {
-            lineWidth: 2,
-            stroke: token.colorPrimary,
-            shadowColor: token.colorPrimary,
-            shadowBlur: 12,
-            fillOpacity: 1
-          }
-        },
-        inactive: {
-          style: {
-            fillOpacity: 0.2
-          }
-        }
-      },
-      barStyle: (datum: SprintTimelineDatum) => ({
-        fill: sprintStatusColors[datum.status],
-        fillOpacity: datum.id === selectedSprint?.id ? 0.85 : 0.45,
-        stroke: datum.id === selectedSprint?.id ? token.colorPrimary : token.colorBorderSecondary,
-        lineWidth: datum.id === selectedSprint?.id ? 2 : 1
-      })
-    }),
-    [sprintTimelineData, sprintStatusColors, selectedSprint?.id, token, t]
-  )
+  const renderSprintRow = (sprint: SprintDTO) => {
+    const isSelected = selectedSprintId === sprint.id
+    const prefix = `${sprintKeyPrefix}-${String(sprint.sequence ?? 0).padStart(2, '0')}`
+    const sprintStart = dayjs(sprint.startDate).startOf('day')
+    const sprintEnd = dayjs(sprint.endDate).endOf('day')
+    const { left, width } = computeRangePosition(sprintStart, sprintEnd)
 
-  const tasksTimelineData: TaskTimelineDatum[] = useMemo(() => {
-    if (!selectedDetails?.tasks) {
-      return []
-    }
-    return selectedDetails.tasks.map((task) => {
-      const start = dayjs(task.createdAt).valueOf()
-      const due = task.dueDate ? dayjs(task.dueDate).valueOf() : undefined
-      const fallbackEnd = task.status === 'done' ? dayjs(task.updatedAt).valueOf() : start
-      let end = due ?? fallbackEnd
-      if (end < start) {
-        end = start
-      }
-      return {
-        id: task.id,
-        key: task.key,
-        title: task.title,
-        status: task.status,
-        range: [start, end],
-        assignee: task.assignee?.displayName ?? task.assignee?.username ?? t('common.unassigned')
-      }
-    })
-  }, [selectedDetails?.tasks, t])
+    const tasksForSprint =
+      isSelected && selectedDetails ? selectedDetails.tasks : ([] as TaskDetailsDTO[])
 
-  const tasksTimelineConfig = useMemo(
-    () => ({
-      data: tasksTimelineData,
-      xField: 'range',
-      yField: 'key',
-      isRange: true,
-      legend: false,
-      interactions: [
-        { type: 'element-highlight' },
-        { type: 'element-active' }
-      ],
-      tooltip: {
-        customContent: (_value: string, items: Array<{ data: TaskTimelineDatum }> | undefined) => {
-          if (!items || items.length === 0) {
-            return ''
-          }
-          const datum = items[0].data
-          const startLabel = dayjs(datum.range[0]).format('DD MMM YYYY')
-          const endLabel = dayjs(datum.range[1]).format('DD MMM YYYY')
-          return `<div class="g2-tooltip">
-              <div style="margin-bottom:4px;font-weight:600;">${datum.key}</div>
-              <div>${datum.title}</div>
-              <div>${t('tasks.details.assignee', { defaultValue: 'Assegnatario' })}: ${
-                datum.assignee
-              }</div>
-              <div>${t('tasks.details.status', { defaultValue: 'Stato' })}: ${
-                datum.status
-              }</div>
-              <div>${startLabel} - ${endLabel}</div>
-            </div>`
-        }
-      },
-      xAxis: {
-        type: 'time',
-        tickCount: 6,
-        label: {
-          formatter: (value: string) => dayjs(Number(value)).format('DD MMM YYYY')
-        }
-      },
-      state: {
-        active: {
-          style: {
-            lineWidth: 1.5,
-            stroke: token.colorPrimary,
-            shadowColor: token.colorPrimary,
-            shadowBlur: 10,
-            fillOpacity: 1
-          }
-        },
-        inactive: {
-          style: {
-            fillOpacity: 0.3
-          }
-        }
-      },
-      barStyle: (datum: TaskTimelineDatum) => ({
-        fill: taskStatusColors[datum.status],
-        fillOpacity: 0.75,
-        stroke: token.colorBorderSecondary,
-        lineWidth: 0.8,
-        radius: token.borderRadiusSM
-      })
-    }),
-    [taskStatusColors, tasksTimelineData, token, t]
-  )
+    return (
+      <div
+        key={sprint.id}
+        onClick={() => handleSprintClick(sprint.id)}
+        style={{
+          display: 'grid',
+          gridTemplateColumns,
+          alignItems: 'stretch',
+          borderRadius: token.borderRadiusLG,
+          border: `1px solid ${
+            isSelected ? token.colorPrimaryBorder : token.colorBorderSecondary
+          }`,
+          background: isSelected ? token.colorBgElevated : token.colorBgContainer,
+          boxShadow: isSelected ? token.boxShadowSecondary : 'none',
+          cursor: 'pointer',
+          transition: 'border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease'
+        }}
+      >
+        <div
+          style={{
+            padding: `${token.paddingMD}px ${token.paddingLG}px`,
+            borderRight: `1px solid ${token.colorSplit}`,
+            display: 'flex',
+            flexDirection: 'column',
+            gap: token.marginXS
+          }}
+        >
+          <Space size={token.marginXS} wrap align="center">
+            <Typography.Text type="secondary">{prefix}</Typography.Text>
+            <Typography.Text strong>{sprint.name}</Typography.Text>
+          </Space>
+          <Space size={token.marginXS} wrap>
+            <Tag color={sprintStatusColors[sprint.status]} bordered={false}>
+              {t(`sprints.status.${sprint.status}`, { defaultValue: sprint.status })}
+            </Tag>
+            <Tag bordered={false}>
+              {t('sprints.totalTasks', { defaultValue: 'Task totali' })}:{' '}
+              {sprint.metrics.totalTasks}
+            </Tag>
+            {sprint.capacityMinutes !== null ? (
+              <Tag bordered={false}>
+                {t('sprints.capacityMinutes', { defaultValue: 'Capacità (minuti)' })}:{' '}
+                {sprint.capacityMinutes}
+              </Tag>
+            ) : null}
+          </Space>
+          <Typography.Text type="secondary">
+            {formatDateRange(sprint.startDate, sprint.endDate)}
+          </Typography.Text>
+            {sprint.goal ? (
+              <Typography.Paragraph
+                type="secondary"
+                ellipsis={{ rows: 2, expandable: false }}
+                style={{ marginBottom: 0 }}
+              >
+                {sprint.goal}
+              </Typography.Paragraph>
+            ) : null}
+          {canManage ? (
+            <Space size={token.marginXS} wrap>
+              <Button
+                type="text"
+                icon={<EditOutlined />}
+                onClick={(event) => {
+                  event.stopPropagation()
+                  handleOpenEdit(sprint)
+                }}
+              >
+                {t('common.edit', { defaultValue: 'Modifica' })}
+              </Button>
+              <Button
+                type="text"
+                danger
+                icon={<DeleteOutlined />}
+                onClick={(event) => {
+                  event.stopPropagation()
+                  handleDelete(sprint)
+                }}
+              >
+                {t('common.delete', { defaultValue: 'Elimina' })}
+              </Button>
+            </Space>
+          ) : null}
+        </div>
+        <div
+          style={{
+            position: 'relative',
+            gridColumn: `2 / span ${timelineSlots.length}`,
+            minHeight: 120,
+            overflow: 'hidden'
+          }}
+        >
+          <div
+            style={{
+              position: 'absolute',
+              inset: 0,
+              display: 'grid',
+              gridTemplateColumns: `repeat(${timelineSlots.length}, minmax(${slotWidth}px, 1fr))`,
+              pointerEvents: 'none'
+            }}
+          >
+            {timelineSlots.map((slot, index) => (
+              <div
+                key={`${sprint.id}-grid-${slot.valueOf()}`}
+                style={{
+                  borderLeft: index === 0 ? 'none' : `1px solid ${token.colorSplit}`
+                }}
+              />
+            ))}
+          </div>
 
-  const selectedTasksCount = selectedDetails?.tasks?.length ?? 0
-  const selectedSprintMetrics = selectedSprint?.metrics
+          <div
+            style={{
+              position: 'absolute',
+              top: token.paddingMD,
+              height: 56,
+              borderRadius: token.borderRadiusLG,
+              background: sprintStatusColors[sprint.status],
+              color: token.colorWhite,
+              padding: `${token.paddingXS}px ${token.paddingSM}px`,
+              display: 'flex',
+              alignItems: 'center',
+              gap: token.marginSM,
+              boxShadow: token.boxShadowTertiary,
+              ...{ left, width }
+            }}
+          >
+            <Typography.Text strong style={{ color: token.colorWhite }}>
+              {sprint.name}
+            </Typography.Text>
+            <Typography.Text style={{ color: token.colorWhite }}>
+              {t('sprints.totalTasks', { defaultValue: 'Task totali' })}:{' '}
+              {sprint.metrics.totalTasks}
+            </Typography.Text>
+            {typeof sprint.metrics.utilizationPercent === 'number' ? (
+              <Typography.Text style={{ color: token.colorWhite }}>
+                {t('sprints.utilization', { defaultValue: 'Utilizzo' })}:{' '}
+                {Math.round(sprint.metrics.utilizationPercent)}%
+              </Typography.Text>
+            ) : null}
+          </div>
 
-  const handleSprintChartReady = (plot: any) => {
-    plot.on('element:click', (event: { data?: { data?: SprintTimelineDatum } }) => {
-      const datum = event?.data?.data
-      if (datum?.id) {
-        setSelectedSprintId((current) => (current === datum.id ? null : datum.id))
-      }
-    })
+          {tasksForSprint.map((task) => {
+            const taskStart = dayjs(task.createdAt)
+            const taskEnd = task.dueDate ? dayjs(task.dueDate).endOf('day') : taskStart.add(12, 'hour')
+            const position = computeRangePosition(taskStart, taskEnd)
+            return (
+              <div
+                key={task.id}
+                style={{
+                  position: 'absolute',
+                  top: 72,
+                  height: 40,
+                  borderRadius: token.borderRadiusSM,
+                  background: token.colorInfoBg,
+                  border: `1px solid ${token.colorInfoBorder}`,
+                  color: token.colorInfoText,
+                  padding: `${token.paddingXXS}px ${token.paddingXS}px`,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: token.marginXS,
+                  boxShadow: token.boxShadowTertiary,
+                  ...position
+                }}
+              >
+                <Typography.Text strong ellipsis style={{ maxWidth: '60%' }}>
+                  {task.key}
+                </Typography.Text>
+                <Typography.Text ellipsis style={{ maxWidth: '40%' }}>
+                  {task.title}
+                </Typography.Text>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+    )
   }
-
-  const selectedSprintTimeRange = selectedSprint
-    ? `${dayjs(selectedSprint.startDate).format('DD MMM YYYY')} - ${dayjs(
-        selectedSprint.endDate
-      ).format('DD MMM YYYY')}`
-    : ''
 
   return (
-    <Flex vertical gap={24} style={{ width: '100%' }}>
+    <Flex vertical gap={token.marginLG} style={{ width: '100%' }}>
       {messageContext}
-      <BorderedPanel padding="md" style={{ width: '100%' }}>
-        <Flex align="center" gap={12} wrap>
-          {canManage ? (
-            <Button type="primary" icon={<PlusOutlined />} onClick={handleOpenCreate}>
-              {t('sprints.actions.create', { defaultValue: 'Nuovo sprint' })}
-            </Button>
-          ) : null}
+      <BorderedPanel>
+        <Flex
+          align="center"
+          justify="space-between"
+          wrap
+          gap={token.marginMD}
+          style={{ width: '100%' }}
+        >
+          <Space size={token.marginXS}>
+            <Typography.Title
+              level={5}
+              style={{ margin: 0, color: token.colorTextSecondary, fontWeight: 500 }}
+            >
+              {t('sprints.board.title', { defaultValue: 'Pianificazione sprint' })}
+            </Typography.Title>
+            {canManage ? (
+              <Button type="primary" icon={<PlusOutlined />} onClick={handleOpenCreate}>
+                {t('sprints.actions.create', { defaultValue: 'Nuovo sprint' })}
+              </Button>
+            ) : null}
+          </Space>
+          <Space size={token.marginXS} align="center">
+            <Button
+              type="text"
+              icon={<ZoomOutOutlined />}
+              onClick={handleZoomOut}
+              disabled={!canZoomOut}
+              title={t('sprints.board.zoomOut', { defaultValue: 'Riduci dettaglio' })}
+            />
+            <Button
+              type="text"
+              icon={<ZoomInOutlined />}
+              onClick={handleZoomIn}
+              disabled={!canZoomIn}
+              title={t('sprints.board.zoomIn', { defaultValue: 'Aumenta dettaglio' })}
+            />
+            <Segmented
+              value={statusFilter}
+              onChange={(value) => setStatusFilter(value as SprintStatusFilter)}
+              options={[
+                { label: t('sprints.filters.all', { defaultValue: 'Tutti' }), value: 'all' },
+                {
+                  label: t('sprints.status.active', { defaultValue: 'In corso' }),
+                  value: 'active'
+                },
+                {
+                  label: t('sprints.status.planned', { defaultValue: 'Pianificato' }),
+                  value: 'planned'
+                },
+                {
+                  label: t('sprints.status.completed', { defaultValue: 'Completato' }),
+                  value: 'completed'
+                },
+                {
+                  label: t('sprints.status.archived', { defaultValue: 'Archiviato' }),
+                  value: 'archived'
+                }
+              ]}
+            />
+          </Space>
         </Flex>
       </BorderedPanel>
 
-      <Card styles={{ body: { padding: 24 } }}>
+      <Card
+        bordered={false}
+        style={{
+          borderRadius: token.borderRadiusLG,
+          background: token.colorBgContainer,
+          boxShadow: token.boxShadowTertiary,
+          overflow: 'hidden'
+        }}
+        bodyStyle={{ padding: token.paddingLG }}
+      >
         {isLoadingSprints ? (
-          <Flex justify="center" align="center" style={{ width: '100%', minHeight: 280 }}>
-            <Spin size="large" />
+          <Flex
+            align="center"
+            justify="center"
+            style={{ width: '100%', minHeight: 320 }}
+          >
+            <Spin />
           </Flex>
-        ) : sprintTimelineData.length === 0 ? (
-          <Empty
-            image={Empty.PRESENTED_IMAGE_SIMPLE}
-            description={t('sprints.empty', {
-              defaultValue: 'Non ci sono sprint per questo progetto.'
-            })}
-          />
+        ) : filteredSprints.length === 0 ? (
+          <Flex
+            align="center"
+            justify="center"
+            style={{ width: '100%', minHeight: 320 }}
+          >
+            <Empty
+              image={Empty.PRESENTED_IMAGE_SIMPLE}
+              description={t('sprints.empty', {
+                defaultValue: 'Non ci sono sprint per questo progetto.'
+              })}
+            />
+          </Flex>
         ) : (
-          <Bar {...sprintTimelineConfig} onReady={handleSprintChartReady} />
+          <div style={{ width: '100%', overflowX: 'auto' }}>
+            <div style={{ minWidth: boardMinWidth }}>
+              <div>
+                <div
+                  style={{
+                    padding: `${token.paddingSM}px ${token.paddingMD}px`,
+                    borderRight: `1px solid ${token.colorSplit}`,
+                    background: token.colorBgElevated,
+                    borderRadius: `${token.borderRadiusSM}px ${token.borderRadiusSM}px 0 0`
+                  }}
+                >
+                  <Typography.Text type="secondary">
+                    {t('sprints.board.laneHeader', { defaultValue: 'Sprint' })}
+                  </Typography.Text>
+                </div>
+              </div>
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: gridTemplateColumns,
+                  background: token.colorBgElevated,
+                  borderRadius: `0 0 ${token.borderRadiusSM}px ${token.borderRadiusSM}px`,
+                  border: `1px solid ${token.colorBorderSecondary}`,
+                  borderTop: 'none'
+                }}
+              >
+                <div />
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: `repeat(${timelineSlots.length}, minmax(${slotWidth}px, 1fr))`
+                  }}
+                >
+                  {timelineSlots.map((slot, index) => (
+                    <div
+                      key={`header-slot-${slot.valueOf()}`}
+                      style={{
+                        padding: `${token.paddingSM}px ${token.paddingXS}px`,
+                        borderLeft: index === 0 ? 'none' : `1px solid ${token.colorSplit}`,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        gap: 4
+                      }}
+                    >
+                      <Typography.Text strong>
+                        {slot.format('DD MMM')}
+                      </Typography.Text>
+                      <Typography.Text type="secondary">{slot.format('ddd')}</Typography.Text>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <Space
+                direction="vertical"
+                size={token.marginMD}
+                style={{ width: '100%', marginTop: token.marginMD }}
+              >
+                {groupedSprints.map((group) => (
+                  <Space
+                    direction="vertical"
+                    size={token.marginSM}
+                    key={group.status}
+                    style={{ width: '100%' }}
+                  >
+                    {renderGroupHeader(group)}
+                    <Space
+                      direction="vertical"
+                      size={token.marginSM}
+                      style={{ width: '100%' }}
+                    >
+                      {group.sprints.map(renderSprintRow)}
+                    </Space>
+                  </Space>
+                ))}
+              </Space>
+            </div>
+          </div>
         )}
       </Card>
 
-      {!selectedSprint && !isLoadingSprints && sprintTimelineData.length > 0 ? (
-        <Empty
-          image={Empty.PRESENTED_IMAGE_SIMPLE}
-          description={t('sprints.selectPrompt', {
-            defaultValue: 'Seleziona uno sprint per visualizzare i dettagli.'
-          })}
-        />
-      ) : null}
-
-      {selectedSprint ? (
-        <Flex gap={16} wrap style={{ width: '100%' }}>
+      {selectedSprintId && selectedDetails ? (
+        <Flex gap={token.marginMD} wrap style={{ width: '100%' }}>
           <Card
-            title={selectedSprint.name}
-            style={{ flex: '1 1 320px', minWidth: 280 }}
-            actions={
-              canManage
-                ? [
-                    <Button
-                      key="edit"
-                      type="text"
-                      icon={<EditOutlined />}
-                      onClick={() => handleOpenEdit(selectedSprint)}
-                    >
-                      {t('common.edit', { defaultValue: 'Modifica' })}
-                    </Button>,
-                    <Button
-                      key="delete"
-                      type="text"
-                      danger
-                      icon={<DeleteOutlined />}
-                      onClick={() => handleDelete(selectedSprint)}
-                    >
-                      {t('common.delete', { defaultValue: 'Elimina' })}
-                    </Button>
-                  ]
-                : undefined
-            }
-          >
-            <Space size={12} wrap>
-              <Tag color={sprintStatusColors[selectedSprint.status]}>
-                {t(`sprints.status.${selectedSprint.status}`, {
-                  defaultValue: selectedSprint.status
+            title={selectedDetails.name}
+            style={{ flex: '1 1 320px', minWidth: 320 }}
+            extra={
+              <Tag color={sprintStatusColors[selectedDetails.status]} bordered={false}>
+                {t(`sprints.status.${selectedDetails.status}`, {
+                  defaultValue: selectedDetails.status
                 })}
               </Tag>
-              <Space size={6} align="center">
-                <CalendarOutlined />
-                <Typography.Text>{selectedSprintTimeRange}</Typography.Text>
-              </Space>
-              {selectedSprint.capacityMinutes !== null ? (
-                <Space size={6} align="center">
-                  <ClockCircleOutlined />
-                  <Typography.Text>
-                    {t('sprints.capacityMinutes', { defaultValue: 'Capacità' })}:{' '}
-                    {selectedSprint.capacityMinutes}
+            }
+          >
+            <Space
+              direction="vertical"
+              size={token.marginSM}
+              style={{ width: '100%' }}
+            >
+              <Typography.Text type="secondary">
+                {formatDateRange(selectedDetails.startDate, selectedDetails.endDate)}
+              </Typography.Text>
+              {selectedDetails.goal ? (
+                <Typography.Paragraph style={{ marginBottom: 0 }}>
+                  {selectedDetails.goal}
+                </Typography.Paragraph>
+              ) : null}
+              <Flex gap={token.marginLG} wrap>
+                <Space direction="vertical" size={4}>
+                  <Typography.Text type="secondary">
+                    {t('sprints.totalTasks', { defaultValue: 'Task totali' })}
+                  </Typography.Text>
+                  <Typography.Text strong>{selectedDetails.metrics.totalTasks}</Typography.Text>
+                </Space>
+                <Space direction="vertical" size={4}>
+                  <Typography.Text type="secondary">
+                    {t('sprints.estimatedMinutes', { defaultValue: 'Stimati' })}
+                  </Typography.Text>
+                  <Typography.Text strong>
+                    {selectedDetails.metrics.estimatedMinutes ?? 0}
                   </Typography.Text>
                 </Space>
-              ) : null}
-            </Space>
-            {selectedSprint.goal ? (
-              <Typography.Paragraph style={{ marginTop: 16 }} type="secondary">
-                {selectedSprint.goal}
-              </Typography.Paragraph>
-            ) : null}
-
-            {selectedSprintMetrics ? (
-              <Flex wrap gap={16} style={{ marginTop: 16 }}>
-                <Statistic
-                  title={t('sprints.totalTasks', { defaultValue: 'Task totali' })}
-                  value={selectedSprintMetrics.totalTasks}
-                />
-                <Statistic
-                  title={t('sprints.estimatedMinutes', { defaultValue: 'Stimati' })}
-                  value={selectedSprintMetrics.estimatedMinutes ?? 0}
-                />
-                <Statistic
-                  title={t('sprints.spentMinutes', { defaultValue: 'Registrati' })}
-                  value={selectedSprintMetrics.timeSpentMinutes}
-                />
-                <Statistic
-                  title={t('sprints.utilization', { defaultValue: 'Utilizzo' })}
-                  value={
-                    Number.isFinite(selectedSprintMetrics.utilizationPercent)
-                      ? Math.round(selectedSprintMetrics.utilizationPercent ?? 0)
-                      : 0
-                  }
-                  suffix="%"
-                />
+                <Space direction="vertical" size={4}>
+                  <Typography.Text type="secondary">
+                    {t('sprints.spentMinutes', { defaultValue: 'Registrati' })}
+                  </Typography.Text>
+                  <Typography.Text strong>
+                    {selectedDetails.metrics.timeSpentMinutes}
+                  </Typography.Text>
+                </Space>
+                <Space direction="vertical" size={4}>
+                  <Typography.Text type="secondary">
+                    {t('sprints.utilization', { defaultValue: 'Utilizzo' })}
+                  </Typography.Text>
+                  <Typography.Text strong>
+                    {selectedDetails.metrics.utilizationPercent
+                      ? Math.round(selectedDetails.metrics.utilizationPercent)
+                      : 0}
+                    %
+                  </Typography.Text>
+                </Space>
               </Flex>
-            ) : null}
+            </Space>
           </Card>
 
-        <Card
-            title={t('sprints.tasksTimeline', { defaultValue: 'Timeline dei task' })}
-            style={{ flex: '2 1 480px', minWidth: 320 }}
+          <Card
+            title={t('sprints.tasksOverview', { defaultValue: 'Task dello sprint' })}
+            style={{ flex: '2 1 480px', minWidth: 360 }}
+            bodyStyle={{ padding: 0 }}
           >
             {isLoadingDetails ? (
-              <Flex justify="center" align="center" style={{ width: '100%', minHeight: 240 }}>
+              <Flex
+                align="center"
+                justify="center"
+                style={{ width: '100%', minHeight: 240 }}
+              >
                 <Spin />
               </Flex>
-            ) : selectedTasksCount === 0 ? (
-              <Empty
-                image={Empty.PRESENTED_IMAGE_SIMPLE}
-                description={t('sprints.details.emptyTasks', {
-                  defaultValue: 'Nessun task nello sprint'
-                })}
-              />
             ) : (
-              <Bar {...tasksTimelineConfig} />
+              <Table<TaskTableRecord>
+                size="small"
+                rowKey="key"
+                columns={taskTableColumns}
+                dataSource={taskTableData}
+                pagination={{
+                  pageSize: 8,
+                  showSizeChanger: false
+                }}
+                locale={{
+                  emptyText: t('sprints.details.emptyTasks', {
+                    defaultValue: 'Nessun task nello sprint'
+                  })
+                }}
+              />
             )}
           </Card>
         </Flex>
@@ -610,6 +1145,7 @@ export const ProjectSprintBoard = ({
         onCancel={() => {
           setFormVisible(false)
           setEditingSprint(null)
+          form.resetFields()
         }}
         onOk={handleFormSubmit}
         okText={t('common.save', { defaultValue: 'Salva' })}
@@ -629,9 +1165,11 @@ export const ProjectSprintBoard = ({
           >
             <Input />
           </Form.Item>
+
           <Form.Item label={t('sprints.fields.goal', { defaultValue: 'Obiettivo' })} name="goal">
             <Input.TextArea rows={3} maxLength={500} showCount />
           </Form.Item>
+
           <Form.Item
             label={t('sprints.fields.dateRange', { defaultValue: 'Periodo' })}
             name="dateRange"
@@ -644,20 +1182,35 @@ export const ProjectSprintBoard = ({
           >
             <RangePicker style={{ width: '100%' }} format="YYYY-MM-DD" />
           </Form.Item>
+
           <Form.Item
             label={t('sprints.fields.status', { defaultValue: 'Stato' })}
             name="status"
             rules={[{ required: true }]}
           >
-            <Select
+            <Segmented
+              block
               options={[
-                { value: 'planned', label: t('sprints.status.planned', { defaultValue: 'Pianificato' }) },
-                { value: 'active', label: t('sprints.status.active', { defaultValue: 'In corso' }) },
-                { value: 'completed', label: t('sprints.status.completed', { defaultValue: 'Completato' }) },
-                { value: 'archived', label: t('sprints.status.archived', { defaultValue: 'Archiviato' }) }
+                {
+                  label: t('sprints.status.planned', { defaultValue: 'Pianificato' }),
+                  value: 'planned'
+                },
+                {
+                  label: t('sprints.status.active', { defaultValue: 'In corso' }),
+                  value: 'active'
+                },
+                {
+                  label: t('sprints.status.completed', { defaultValue: 'Completato' }),
+                  value: 'completed'
+                },
+                {
+                  label: t('sprints.status.archived', { defaultValue: 'Archiviato' }),
+                  value: 'archived'
+                }
               ]}
             />
           </Form.Item>
+
           <Form.Item
             label={t('sprints.fields.capacityMinutes', { defaultValue: 'Capacità (minuti)' })}
             name="capacityMinutes"
@@ -669,7 +1222,5 @@ export const ProjectSprintBoard = ({
     </Flex>
   )
 }
-
-ProjectSprintBoard.displayName = 'ProjectSprintBoard'
 
 export default ProjectSprintBoard

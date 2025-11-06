@@ -1,8 +1,9 @@
-import { Button, Space, Table, Tag, Typography } from 'antd'
+import { Button, Space, Table, Tag, Typography, theme } from 'antd'
 import type { ColumnsType, TablePaginationConfig } from 'antd/es/table'
 import type { TableProps } from 'antd'
 import { useTranslation } from 'react-i18next'
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons'
+import { useState } from 'react'
 
 import { EmptyState, LoadingSkeleton } from '@renderer/components/DataStates'
 import { useDelayedLoading } from '@renderer/hooks/useDelayedLoading'
@@ -51,6 +52,8 @@ export const ProjectList = ({
   const { t, i18n } = useTranslation('projects')
   const showSkeleton = useDelayedLoading(loading)
   const badgeTokens = useSemanticBadges()
+  const { token } = theme.useToken()
+  const [hoveredRowId, setHoveredRowId] = useState<string | null>(null)
   const includeOwner = visibleOptionalColumns.includes('owner')
 
   const columns: ColumnsType<ProjectRow> = [
@@ -205,7 +208,16 @@ export const ProjectList = ({
       scroll={{ x: 'max-content' }}
       onRow={(record) => ({
         onClick: () => onSelect(record.id),
-        style: { cursor: 'pointer' }
+        onMouseEnter: () => setHoveredRowId(record.id),
+        onMouseLeave: () =>
+          setHoveredRowId((current) => (current === record.id ? null : current)),
+        style: {
+          cursor: 'pointer',
+          background:
+            hoveredRowId === record.id ? token.colorFillTertiary : token.colorBgContainer,
+          transition: 'background-color 0.2s ease, box-shadow 0.2s ease',
+          boxShadow: hoveredRowId === record.id ? token.boxShadowTertiary : 'none'
+        }
       })}
       locale={{
         emptyText: (

@@ -4,19 +4,32 @@ import {
   Alert,
   Breadcrumb,
   Button,
+  Card,
   Checkbox,
+  Empty,
   Flex,
   Form,
   Input,
+  List,
   Modal,
+  Segmented,
   Space,
+  Spin,
   Table,
   Tag,
   Typography,
-  message
+  message,
+  theme
 } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
-import { DeleteOutlined, PlusOutlined, ReloadOutlined } from '@ant-design/icons'
+import {
+  AppstoreOutlined,
+  DeleteOutlined,
+  PlusOutlined,
+  ReloadOutlined,
+  TableOutlined,
+  UnorderedListOutlined
+} from '@ant-design/icons'
 import { Navigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 
@@ -49,6 +62,7 @@ const RoleManagementPage = (): JSX.Element => {
   const dispatch = useAppDispatch()
   const currentUser = useAppSelector(selectCurrentUser)
   const token = useAppSelector(selectToken)
+  const { token: themeToken } = theme.useToken()
 
   const isAdmin = (currentUser?.roles ?? []).includes('Admin')
 
@@ -68,6 +82,8 @@ const RoleManagementPage = (): JSX.Element => {
   const [selectedRoleIds, setSelectedRoleIds] = useState<string[]>([])
   const [deleteTargets, setDeleteTargets] = useState<RoleSummary[] | null>(null)
   const [deleteLoading, setDeleteLoading] = useState(false)
+  const [viewMode, setViewMode] = useState<'table' | 'list' | 'cards'>('table')
+  const [hoveredRoleId, setHoveredRoleId] = useState<string | null>(null)
 
   const permissionMetadata = useMemo(() => {
     const map = new Map<string, { label: string; description: string }>()
@@ -137,6 +153,23 @@ const RoleManagementPage = (): JSX.Element => {
     () => roles.filter((role) => selectedRoleIds.includes(role.id)),
     [roles, selectedRoleIds]
   )
+
+  const isRoleSelectable = useCallback(
+    (role: RoleSummary) => !role.isSystemRole && role.userCount === 0,
+    []
+  )
+
+  const handleRoleSelectionChange = useCallback((roleId: string, checked: boolean) => {
+    setSelectedRoleIds((current) => {
+      if (checked) {
+        if (current.includes(roleId)) {
+          return current
+        }
+        return [...current, roleId]
+      }
+      return current.filter((id) => id !== roleId)
+    })
+  }, [])
 
   const openCreateModal = useCallback(() => {
     createForm.resetFields()
@@ -505,6 +538,27 @@ const RoleManagementPage = (): JSX.Element => {
             >
               {t('roles:actions.refresh')}
             </Button>
+            <Segmented
+              value={viewMode}
+              onChange={(value) => setViewMode(value as typeof viewMode)}
+              options={[
+                {
+                  value: 'table',
+                  label: t('roles:view.table', { defaultValue: 'Tabellare' }),
+                  icon: <TableOutlined />
+                },
+                {
+                  value: 'list',
+                  label: t('roles:view.list', { defaultValue: 'Elenco' }),
+                  icon: <UnorderedListOutlined />
+                },
+                {
+                  value: 'cards',
+                  label: t('roles:view.cards', { defaultValue: 'Card' }),
+                  icon: <AppstoreOutlined />
+                }
+              ]}
+            />
           </Space>
         </Space>
       </ShellHeaderPortal>
@@ -519,21 +573,223 @@ const RoleManagementPage = (): JSX.Element => {
             onClose={() => setError(undefined)}
           />
         ) : null}
-        <Table<RoleSummary>
-          rowKey="id"
-          dataSource={roles}
-          columns={columns}
-          rowSelection={rowSelection}
-          loading={loading}
-          pagination={{
-            pageSize: 10,
-            showSizeChanger: true,
-            pageSizeOptions: ['10', '20', '50', '100']
-          }}
-          locale={{
-            emptyText: hasLoaded || !loading ? t('roles:emptyState') : t('roles:loadingState')
-          }}
-        />
+        {viewMode === 'table' ? (
+          <Table<RoleSummary>
+            rowKey="id"
+            dataSource={roles}
+            columns={columns}
+            rowSelection={rowSelection}
+            loading={loading}
+            pagination={{
+              pageSize: 10,
+              showSizeChanger: true,
+              pageSizeOptions: ['10', '20', '50', '100']
+            }}
+            locale={{
+              emptyText: hasLoaded || !loading ? t('roles:emptyState') : t('roles:loadingState')
+            }}
+          />
+        ) : null}
+        {viewMode === 'list' ? (
+          <List<RoleSummary>
+            dataSource={roles}
+            loading={loading}
+            locale={{
+              emptyText: hasLoaded || !loading ? t('roles:emptyState') : t('roles:loadingState')
+            }}
+            renderItem={(role) => {
+              const selectable = isRoleSelectable(role)
+              const selected = selectedRoleIds.includes(role.id)
+              const permissions = Array.isArray(role.permissions) ? role.permissions : []
+              const visiblePermissions = permissions.slice(0, 6)
+              const remainingPermissions = permissions.length - visiblePermissions.length
+
+              const itemActions: JSX.Element[] = [
+                <Button
+                  key="edit"
+                  type="link"
+                  onClick={() => openEditModal(role)}
+                  disabled={role.isSystemRole || deleteLoading}
+                >
+                  {t('roles:actions.edit')}
+                </Button>,
+                <Button
+                  key="delete"
+                  type="link"
+                  danger
+                  disabled={role.isSystemRole || role.userCount > 0 || deleteLoading}
+                  onClick={() => openDeleteConfirm(role)}
+                >
+                  {t('roles:actions.delete')}
+                </Button>
+              ]
+
+              return (
+                <List.Item
+                  key={role.id}
+                  actions={itemActions}
+                  onMouseEnter={() => setHoveredRoleId(role.id)}
+                  onMouseLeave={() =>
+                    setHoveredRoleId((current) => (current === role.id ? null : current))
+                  }
+                  style={{
+                    borderRadius: themeToken.borderRadiusLG,
+                    padding: themeToken.paddingLG,
+                    background:
+                      hoveredRoleId === role.id
+                        ? themeToken.colorFillTertiary
+                        : themeToken.colorBgContainer,
+                    transition: 'background-color 0.2s ease, box-shadow 0.2s ease',
+                    boxShadow: hoveredRoleId === role.id ? themeToken.boxShadowTertiary : 'none'
+                  }}
+                >
+                  <List.Item.Meta
+                    avatar={
+                      <Checkbox
+                        checked={selected}
+                        disabled={!selectable || deleteLoading}
+                        onChange={(event) =>
+                          selectable
+                            ? handleRoleSelectionChange(role.id, event.target.checked)
+                            : undefined
+                        }
+                      />
+                    }
+                    title={
+                      <Space align="center" size={8} wrap>
+                        <Typography.Text strong>{role.name}</Typography.Text>
+                        <Tag color={role.isSystemRole ? 'red' : 'blue'} bordered={false}>
+                          {role.isSystemRole
+                            ? t('roles:table.systemRole')
+                            : t('roles:table.customRole')}
+                        </Tag>
+                        <Tag bordered={false}>
+                          {t('roles:table.userCount')}: {role.userCount}
+                        </Tag>
+                      </Space>
+                    }
+                    description={
+                      <Space direction="vertical" size={4} style={{ width: '100%' }}>
+                        {role.description ? (
+                          <Typography.Text type="secondary">{role.description}</Typography.Text>
+                        ) : null}
+                        <Space size={4} wrap>
+                          {visiblePermissions.map((permission) => {
+                            const meta = permissionMetadata.get(permission)
+                            return (
+                              <Tag key={permission} bordered={false}>
+                                {meta?.label ?? permission}
+                              </Tag>
+                            )
+                          })}
+                          {remainingPermissions > 0 ? (
+                            <Tag bordered={false}>+{remainingPermissions}</Tag>
+                          ) : null}
+                        </Space>
+                      </Space>
+                    }
+                  />
+                </List.Item>
+              )
+            }}
+          />
+        ) : null}
+        {viewMode === 'cards' ? (
+          loading ? (
+            <Flex justify="center" align="center" style={{ width: '100%', minHeight: 240 }}>
+              <Spin />
+            </Flex>
+          ) : roles.length === 0 ? (
+            <Flex justify="center" align="center" style={{ width: '100%', minHeight: 240 }}>
+              <Empty description={t('roles:emptyState')} />
+            </Flex>
+          ) : (
+            <Flex wrap gap={themeToken.marginLG}>
+              {roles.map((role) => {
+                const selectable = isRoleSelectable(role)
+                const selected = selectedRoleIds.includes(role.id)
+                const permissions = Array.isArray(role.permissions) ? role.permissions : []
+                const visiblePermissions = permissions.slice(0, 6)
+                const remainingPermissions = permissions.length - visiblePermissions.length
+                return (
+                  <Card
+                    key={role.id}
+                    hoverable
+                    style={{
+                      width: 320,
+                      borderColor: selected ? themeToken.colorPrimary : undefined,
+                      boxShadow: selected ? themeToken.boxShadowSecondary : undefined,
+                      transition: 'box-shadow 0.2s ease, border-color 0.2s ease'
+                    }}
+                    bodyStyle={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: themeToken.marginSM
+                    }}
+                  >
+                    <Flex align="flex-start" justify="space-between" gap={themeToken.marginSM}>
+                      <Space direction="vertical" size={4}>
+                        <Typography.Text strong>{role.name}</Typography.Text>
+                        <Tag color={role.isSystemRole ? 'red' : 'blue'} bordered={false}>
+                          {role.isSystemRole
+                            ? t('roles:table.systemRole')
+                            : t('roles:table.customRole')}
+                        </Tag>
+                      </Space>
+                      <Checkbox
+                        checked={selected}
+                        disabled={!selectable || deleteLoading}
+                        onChange={(event) =>
+                          selectable
+                            ? handleRoleSelectionChange(role.id, event.target.checked)
+                            : undefined
+                        }
+                      />
+                    </Flex>
+                    {role.description ? (
+                      <Typography.Paragraph type="secondary" style={{ marginBottom: 0 }}>
+                        {role.description}
+                      </Typography.Paragraph>
+                    ) : null}
+                    <Typography.Text type="secondary">
+                      {t('roles:table.userCount')}: {role.userCount}
+                    </Typography.Text>
+                    <Space size={4} wrap>
+                      {visiblePermissions.map((permission) => {
+                        const meta = permissionMetadata.get(permission)
+                        return (
+                          <Tag key={permission} bordered={false}>
+                            {meta?.label ?? permission}
+                          </Tag>
+                        )
+                      })}
+                      {remainingPermissions > 0 ? (
+                        <Tag bordered={false}>+{remainingPermissions}</Tag>
+                      ) : null}
+                    </Space>
+                    <Space size={8} wrap>
+                      <Button
+                        type="link"
+                        onClick={() => openEditModal(role)}
+                        disabled={role.isSystemRole || deleteLoading}
+                      >
+                        {t('roles:actions.edit')}
+                      </Button>
+                      <Button
+                        type="link"
+                        danger
+                        disabled={role.isSystemRole || role.userCount > 0 || deleteLoading}
+                        onClick={() => openDeleteConfirm(role)}
+                      >
+                        {t('roles:actions.delete')}
+                      </Button>
+                    </Space>
+                  </Card>
+                )
+              })}
+            </Flex>
+          )
+        ) : null}
       </Space>
       <Modal
         open={Boolean(deleteTargets && deleteTargets.length > 0)}
