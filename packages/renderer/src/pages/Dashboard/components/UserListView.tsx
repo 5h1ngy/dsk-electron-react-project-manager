@@ -1,4 +1,4 @@
-import { Button, Flex, List, Space, Tag, Typography, theme } from 'antd'
+import { Avatar, Badge, Button, Flex, List, Space, Tag, Typography, theme } from 'antd'
 import { ClockCircleOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons'
 import { useMemo, useState, type JSX } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -66,6 +66,39 @@ export const UserListView = ({
     })
   }
 
+  const getUserInitials = (user: UserDTO) => {
+    const source = user.displayName && user.displayName.trim().length > 0 ? user.displayName : user.username
+    const [first = '', second = ''] = source.trim().split(' ')
+    const initials = `${first.charAt(0)}${second.charAt(0)}`.toUpperCase()
+    if (initials.trim().length === 0 && user.username) {
+      return user.username.slice(0, 2).toUpperCase()
+    }
+    return initials
+  }
+
+  const renderActions = (user: UserDTO) => (
+    <Space size={token.marginSM} wrap>
+      <Button
+        type="text"
+        icon={<EditOutlined />}
+        onClick={() => onEdit(user)}
+        disabled={deleteDisabled && isDeleting(user.id)}
+      >
+        {t('actions.edit')}
+      </Button>
+      <Button
+        type="text"
+        danger
+        icon={<DeleteOutlined />}
+        onClick={() => onDelete(user)}
+        loading={isDeleting(user.id)}
+        disabled={deleteDisabled && !isDeleting(user.id)}
+      >
+        {t('actions.delete')}
+      </Button>
+    </Space>
+  )
+
   return (
     <List
       dataSource={pagedUsers}
@@ -73,9 +106,7 @@ export const UserListView = ({
       split={false}
       itemLayout="vertical"
       renderItem={(user) => {
-        const statusBadge = user.isActive
-          ? badgeTokens.userStatus.active
-          : badgeTokens.userStatus.inactive
+        const statusSpec = user.isActive ? badgeTokens.userStatus.active : badgeTokens.userStatus.inactive
         const isHovered = hoveredId === user.id
 
         return (
@@ -83,77 +114,44 @@ export const UserListView = ({
             key={user.id}
             style={{
               padding: token.paddingLG,
-              borderRadius: token.borderRadiusLG,
+              borderRadius: token.borderRadius,
               transition:
                 'background-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease',
-              backgroundColor: isHovered ? token.colorFillTertiary : token.colorBgContainer,
-              boxShadow: isHovered ? token.boxShadowSecondary : 'none',
+              backgroundColor: isHovered ? token.colorFillTertiary : 'transparent',
               border: `${token.lineWidth}px solid ${
                 isHovered ? token.colorPrimaryBorder : token.colorBorderSecondary
               }`,
-              transform: isHovered ? 'translateY(-2px)' : 'none'
+              transform: isHovered ? 'translateY(-1px)' : 'none'
             }}
             onMouseEnter={() => setHoveredId(user.id)}
             onMouseLeave={() => setHoveredId((current) => (current === user.id ? null : current))}
-            actions={[
-              <Button
-                key="edit"
-                type="default"
-                icon={<EditOutlined />}
-                onClick={() => onEdit(user)}
-                size="middle"
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}
-              >
-                {t('actions.edit')}
-              </Button>,
-              <Button
-                key="delete"
-                type="default"
-                danger
-                icon={<DeleteOutlined />}
-                onClick={() => onDelete(user)}
-                loading={isDeleting(user.id)}
-                disabled={deleteDisabled && !isDeleting(user.id)}
-                size="middle"
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}
-              >
-                {t('actions.delete')}
-              </Button>
-            ]}
           >
-            <List.Item.Meta
-              title={
-                <Flex
-                  align="center"
-                  justify="space-between"
-                  gap={token.marginSM}
-                  wrap
-                  style={{ width: '100%' }}
+            <Flex
+              align="stretch"
+              justify="space-between"
+              gap={token.marginLG}
+              wrap
+              style={{ width: '100%' }}
+            >
+              <Flex align="center" gap={token.marginMD} wrap>
+                <Avatar
+                  size={48}
+                  style={{
+                    backgroundColor: token.colorPrimaryBg,
+                    color: token.colorPrimaryText,
+                    fontWeight: 600
+                  }}
                 >
-                  <Space align="center" size={token.marginSM} wrap>
-                    <Typography.Text strong>
-                      {user.displayName && user.displayName.trim().length > 0
-                        ? user.displayName
-                        : user.username}
-                    </Typography.Text>
-                    <Typography.Text type="secondary">@{user.username}</Typography.Text>
-                  </Space>
-                  <Tag bordered={false} style={buildBadgeStyle(statusBadge)}>
-                    {user.isActive ? t('status.active') : t('status.inactive')}
-                  </Tag>
-                </Flex>
-              }
-              description={
-                <Flex vertical gap={token.marginXS} style={{ width: '100%' }}>
-                  <Space size={token.marginXS} wrap>
+                  {getUserInitials(user)}
+                </Avatar>
+                <Flex vertical gap={token.marginXXS} style={{ minWidth: 180 }}>
+                  <Typography.Text strong ellipsis={{ tooltip: user.displayName || user.username }}>
+                    {user.displayName && user.displayName.trim().length > 0
+                      ? user.displayName
+                      : user.username}
+                  </Typography.Text>
+                  <Typography.Text type="secondary">@{user.username}</Typography.Text>
+                  <Space size={token.marginXXS} wrap>
                     {user.roles.map((role) => {
                       const badge = badgeTokens.userRole[role] ?? badgeTokens.userRole.Viewer
                       return (
@@ -163,16 +161,32 @@ export const UserListView = ({
                       )
                     })}
                   </Space>
-                  <Typography.Text
-                    type="secondary"
-                    style={{ display: 'flex', alignItems: 'center', gap: token.marginXS }}
-                  >
+                </Flex>
+              </Flex>
+              <Flex
+                vertical
+                align="flex-end"
+                justify="space-between"
+                gap={token.marginSM}
+                style={{ flex: '1 1 240px' }}
+              >
+                <Flex align="center" gap={token.marginSM} wrap justify="flex-end">
+                  <Badge
+                    color={statusSpec.background}
+                    text={
+                      <Typography.Text style={{ color: statusSpec.color, fontWeight: 500 }}>
+                        {user.isActive ? t('status.active') : t('status.inactive')}
+                      </Typography.Text>
+                    }
+                  />
+                  <Typography.Text type="secondary" style={{ display: 'flex', gap: token.marginXS }}>
                     <ClockCircleOutlined />
                     {formatLastLogin(user.lastLoginAt ?? null)}
                   </Typography.Text>
                 </Flex>
-              }
-            />
+                {renderActions(user)}
+              </Flex>
+            </Flex>
           </List.Item>
         )
       }}

@@ -8,7 +8,7 @@ import {
   OPTION_LABEL_KEYS,
   type OptionalUserColumn
 } from './UserColumnVisibilityControls.constants'
-import { useSemanticBadges, buildBadgeStyle } from '@renderer/theme/hooks/useSemanticBadges'
+import { useSemanticBadges } from '@renderer/theme/hooks/useSemanticBadges'
 
 export { OPTIONAL_USER_COLUMNS } from './UserColumnVisibilityControls.constants'
 export type { OptionalUserColumn } from './UserColumnVisibilityControls.constants'
@@ -36,10 +36,18 @@ export const UserColumnVisibilityControls = ({
   const badgeTokens = useSemanticBadges()
 
   const getColumnBadgeStyle = useMemo(() => {
-    const cache = new Map<OptionalUserColumn, ReturnType<typeof buildBadgeStyle>>()
+    const cache = new Map<
+      OptionalUserColumn,
+      { color: string; borderColor: string; fontWeight: number }
+    >()
     return (column: OptionalUserColumn) => {
       if (!cache.has(column)) {
-        cache.set(column, buildBadgeStyle(badgeTokens.tag(column)))
+        const badge = badgeTokens.tag(column)
+        cache.set(column, {
+          color: badge.color,
+          borderColor: badge.border ?? badge.color,
+          fontWeight: 600
+        })
       }
       return cache.get(column)!
     }
@@ -52,7 +60,7 @@ export const UserColumnVisibilityControls = ({
       value: column,
       disabled: disabled.has(column)
     }))
-  }, [columns, disabledOptions, getColumnBadgeStyle, t])
+  }, [columns, disabledOptions, t])
 
   const renderTag = useCallback(
     (tagProps: CustomTagProps) => {
@@ -64,6 +72,7 @@ export const UserColumnVisibilityControls = ({
         event.preventDefault()
         event.stopPropagation()
       }
+      const columnStyle = getColumnBadgeStyle(column)
       const labelKey = OPTION_LABEL_KEYS[column]
       const label =
         labelKey !== undefined
@@ -75,12 +84,20 @@ export const UserColumnVisibilityControls = ({
       return (
         <Tag
           className={className}
-          bordered={false}
+          bordered
           closable={closable && !disabled}
           onClose={onClose}
           onMouseDown={preventMouseDown}
           closeIcon={closeIcon}
-          style={{ ...getColumnBadgeStyle(column), marginInlineEnd: 4 }}
+          style={{
+            color: columnStyle.color,
+            backgroundColor: 'transparent',
+            borderColor: columnStyle.borderColor,
+            borderWidth: 1,
+            borderStyle: 'solid',
+            fontWeight: columnStyle.fontWeight,
+            marginInlineEnd: 4
+          }}
         >
           {label}
         </Tag>
