@@ -52,7 +52,7 @@ const SprintGroup = ({
   token,
   t,
   taskTableColumns
-: SprintGroupProps): JSX.Element => {
+}: SprintGroupProps): JSX.Element => {
   const contentMinWidth = 240 + timelineSlots.length * slotWidth
 
   return (

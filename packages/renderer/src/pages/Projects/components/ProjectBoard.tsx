@@ -50,12 +50,9 @@ export const ProjectBoard = ({
     () => ({
       width: '100%',
       overflowX: 'auto',
-      background: token.colorBgContainer,
-      borderRadius: token.borderRadiusLG,
-      padding: token.paddingMD,
-      transition: 'background-color 0.2s ease'
+      paddingBottom: token.paddingSM
     }),
-    [token.borderRadiusLG, token.colorBgContainer, token.paddingMD]
+    [token.paddingSM]
   )
 
   return (
@@ -82,8 +79,7 @@ export const ProjectBoard = ({
               display: 'grid',
               gridAutoFlow: 'column',
               gridAutoColumns: 'minmax(280px, 320px)',
-              gap: token.marginLG,
-              paddingBottom: token.paddingSM
+              gap: token.marginLG
             }}
           >
             {columns.map((column) => (

@@ -11,4 +11,5 @@ export interface SiderProps {
   title: string
   onSelect: NonNullable<MenuProps['onClick']>
   footer?: ReactNode
+  variant?: 'desktop' | 'mobile'
 }

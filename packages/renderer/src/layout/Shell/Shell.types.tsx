@@ -27,6 +27,9 @@ export interface UseShellLayoutResult {
   handleToggleCollapse: () => void
   handleCollapseChange: (collapsed: boolean) => void
   handleBreakpoint: (broken: boolean) => void
+  isMobile: boolean
+  mobileMenuVisible: boolean
+  handleCloseMobileMenu: () => void
   labels: ShellLabels
 }
 
@@ -44,4 +47,7 @@ export interface ShellViewProps {
   onToggleCollapse: () => void
   onCollapseChange: (collapsed: boolean) => void
   onBreakpoint: (broken: boolean) => void
+  isMobile: boolean
+  mobileMenuVisible: boolean
+  onCloseMobileMenu: () => void
 }

@@ -1,6 +1,7 @@
 import { Button, Flex, Space, Spin, Table, Tag, Typography } from 'antd'
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons'
-import type dayjs from 'dayjs'
+import dayjs from 'dayjs'
+import type { Dayjs } from 'dayjs'
 import type { ColumnsType } from 'antd/es/table'
 import type { TFunction } from 'i18next'
 import type { SprintDTO } from '@main/services/sprint/types'
@@ -18,9 +19,9 @@ interface SprintLaneProps {
   sprint: SprintDTO
   isExpanded: boolean
   onToggle: (sprintId: string) => void
-  timelineSlots: dayjs.Dayjs[]
+  timelineSlots: Dayjs[]
   slotWidth: number
-  computeRangePosition: (start: dayjs.Dayjs, end: dayjs.Dayjs) => TimelinePosition
+  computeRangePosition: (start: Dayjs, end: Dayjs) => TimelinePosition
   sprintStatusColors: Record<SprintDTO['status'], string>
   token: GlobalToken
   t: TFunction<'projects'>

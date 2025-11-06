@@ -33,12 +33,14 @@ import { useTranslation } from 'react-i18next'
 
 import { BorderedPanel } from '@renderer/components/Surface/BorderedPanel'
 import { useAppDispatch, useAppSelector } from '@renderer/store/hooks'
+import { shallowEqual } from 'react-redux'
 import {
   createSprint,
   deleteSprint,
   fetchSprintDetails,
   fetchSprints,
   selectSprintDetails,
+  selectSprintList,
   selectSprintsForProject,
   updateSprint
 } from '@renderer/store/slices/sprints'
@@ -127,6 +129,10 @@ export const ProjectSprintBoard = ({
     () => (projectId ? selectSprintsForProject(projectId) : null),
     [projectId]
   )
+  const sprintListSelector = useMemo(
+    () => (projectId ? selectSprintList(projectId) : null),
+    [projectId]
+  )
 
   const taskSelector = useMemo(
     () => (projectId ? selectProjectTasks(projectId) : null),
@@ -136,18 +142,24 @@ export const ProjectSprintBoard = ({
   const sprintState = useAppSelector((state) =>
     sprintSelector ? sprintSelector(state) : undefined
   )
-  const sprints = sprintState?.data ?? []
+  const sprints = useAppSelector(
+    (state) => (sprintListSelector ? sprintListSelector(state) : []),
+    shallowEqual
+  )
   const sprintStatus = sprintState?.status ?? 'idle'
 
-  const projectTasks = useAppSelector((state) =>
-    taskSelector ? taskSelector(state) : []
+  const projectTasks = useAppSelector(
+    (state) => (taskSelector ? taskSelector(state) : []),
+    shallowEqual
   ) as TaskDetails[]
 
-  const expandedSprintDetails = useAppSelector((state) =>
-    expandedSprintIds.map((id) => ({
-      id,
-      state: selectSprintDetails(id)(state)
-    }))
+  const expandedSprintDetails = useAppSelector(
+    (state) =>
+      expandedSprintIds.map((id) => ({
+        id,
+        state: selectSprintDetails(id)(state)
+      })),
+    shallowEqual
   )
 
   const sprintDetailsMap = useMemo(() => {
@@ -188,9 +200,16 @@ export const ProjectSprintBoard = ({
   }, [sprints, statusFilter])
 
   useEffect(() => {
-    setExpandedSprintIds((current) =>
-      current.filter((id) => filteredSprints.some((sprint) => sprint.id === id))
-    )
+    setExpandedSprintIds((current) => {
+      if (current.length === 0) {
+        return current
+      }
+      const filtered = current.filter((id) => filteredSprints.some((sprint) => sprint.id === id))
+      if (filtered.length === current.length) {
+        return current
+      }
+      return filtered
+    })
   }, [filteredSprints])
 
   const groupedSprints = useMemo<GroupedSprints[]>(() => {
