@@ -287,29 +287,29 @@ export const TaskFiltersBar = ({
         wrap={!isCompact}
         style={{ flex: '1 1 auto' }}
       >
-        {secondaryActions ? (
-          <Space size="small" wrap>
-            {secondaryActions}
-          </Space>
-        ) : null}
-        {onCreate ? (
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            onClick={onCreate}
-            disabled={!canCreate}
-            style={buttonFullWidthStyle}
-          >
-            {t('tasks.actions.create')}
-          </Button>
-        ) : null}
-        {primaryActions.length
-          ? primaryActions.map((action, index) => (
-              <div key={`primary-action-${index}`} style={buttonFullWidthStyle}>
-                {action}
-              </div>
-            ))
-          : null}
+        <Space size={12} wrap>
+          {onCreate ? (
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={onCreate}
+              disabled={!canCreate}
+              style={buttonFullWidthStyle}
+            >
+              {t('tasks.actions.create')}
+            </Button>
+          ) : null}
+          {secondaryActions ? (
+            <div style={buttonFullWidthStyle}>{secondaryActions}</div>
+          ) : null}
+          {primaryActions.length
+            ? primaryActions.map((action, index) => (
+                <div key={`primary-action-${index}`} style={buttonFullWidthStyle}>
+                  {action}
+                </div>
+              ))
+            : null}
+        </Space>
       </Flex>
       <Flex
         align={isCompact ? 'stretch' : 'center'}
