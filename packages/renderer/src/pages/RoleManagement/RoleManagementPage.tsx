@@ -9,6 +9,7 @@ import {
   Empty,
   Flex,
   Form,
+  Grid,
   Input,
   List,
   Modal,
@@ -37,6 +38,7 @@ import type { RoleSummary } from '@main/services/roles'
 import type { RolePermissionDefinition } from '@main/services/roles/constants'
 
 import { ShellHeaderPortal } from '@renderer/layout/Shell/ShellHeader.context'
+import { BorderedPanel } from '@renderer/components/Surface/BorderedPanel'
 import { usePrimaryBreadcrumb } from '@renderer/layout/Shell/hooks/usePrimaryBreadcrumb'
 import { useBreadcrumbStyle } from '@renderer/layout/Shell/hooks/useBreadcrumbStyle'
 import { useAppDispatch, useAppSelector } from '@renderer/store/hooks'
@@ -63,6 +65,7 @@ const RoleManagementPage = (): JSX.Element => {
   const currentUser = useAppSelector(selectCurrentUser)
   const token = useAppSelector(selectToken)
   const { token: themeToken } = theme.useToken()
+  const screens = Grid.useBreakpoint()
 
   const isAdmin = (currentUser?.roles ?? []).includes('Admin')
 
@@ -170,6 +173,70 @@ const RoleManagementPage = (): JSX.Element => {
       return current.filter((id) => id !== roleId)
     })
   }, [])
+
+  const isCompact = !screens.md
+
+  const toolbarSegmentedStyle = useMemo(
+    () => ({
+      background: themeToken.colorFillTertiary,
+      border: `${themeToken.lineWidth}px solid ${themeToken.colorFillQuaternary}`,
+      boxShadow: 'none',
+      padding: themeToken.paddingXXS,
+      borderRadius: themeToken.borderRadiusLG
+    }),
+    [
+      themeToken.borderRadiusLG,
+      themeToken.colorFillQuaternary,
+      themeToken.colorFillTertiary,
+      themeToken.lineWidth,
+      themeToken.paddingXXS
+    ]
+  )
+
+  const viewSegmentedOptions = useMemo(
+    () => [
+      {
+        value: 'table',
+        label: (
+          <Space size={6} style={{ color: 'inherit' }}>
+            <TableOutlined />
+            {!isCompact ? <span>{t('roles:view.table', { defaultValue: 'Tabellare' })}</span> : null}
+          </Space>
+        )
+      },
+      {
+        value: 'list',
+        label: (
+          <Space size={6} style={{ color: 'inherit' }}>
+            <UnorderedListOutlined />
+            {!isCompact ? <span>{t('roles:view.list', { defaultValue: 'Elenco' })}</span> : null}
+          </Space>
+        )
+      },
+      {
+        value: 'cards',
+        label: (
+          <Space size={6} style={{ color: 'inherit' }}>
+            <AppstoreOutlined />
+            {!isCompact ? <span>{t('roles:view.cards', { defaultValue: 'Card' })}</span> : null}
+          </Space>
+        )
+      }
+    ],
+    [isCompact, t]
+  )
+
+  const segmentedStyle = useMemo(
+    () => ({
+      ...toolbarSegmentedStyle,
+      width: isCompact ? '100%' : undefined,
+      display: 'flex',
+      justifyContent: 'space-between'
+    }),
+    [isCompact, toolbarSegmentedStyle]
+  )
+
+  const actionButtonStyle = useMemo(() => (isCompact ? { width: '100%' } : undefined), [isCompact])
 
   const openCreateModal = useCallback(() => {
     createForm.resetFields()
@@ -497,73 +564,73 @@ const RoleManagementPage = (): JSX.Element => {
       <ShellHeaderPortal>
         <Space
           size={12}
+          align="center"
           wrap
-          style={{
-            width: '100%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'flex-start'
-          }}
+          style={{ width: '100%', display: 'flex', justifyContent: 'space-between' }}
         >
           <Breadcrumb items={breadcrumbItems} style={breadcrumbStyle} />
-          <Space size={12} wrap>
-            <Button
-              type="primary"
-              icon={<PlusOutlined />}
-              onClick={openCreateModal}
-              disabled={loading}
-            >
-              {t('roles:actions.create')}
-            </Button>
-            <Button
-              icon={<DeleteOutlined />}
-              danger
-              onClick={() => openDeleteConfirm(selectedRoles)}
-              disabled={selectedRoles.length === 0 || deleteLoading}
-              loading={deleteLoading}
-            >
-              {t('roles:actions.deleteSelected', {
-                count: selectedRoles.length,
-                defaultValue:
-                  selectedRoles.length > 0
-                    ? `Delete selected (${selectedRoles.length})`
-                    : 'Delete selected'
-              })}
-            </Button>
-            <Button
-              icon={<ReloadOutlined />}
-              onClick={() => void refreshData()}
-              disabled={loading}
-              loading={loading}
-            >
-              {t('roles:actions.refresh')}
-            </Button>
-            <Segmented
-              value={viewMode}
-              onChange={(value) => setViewMode(value as typeof viewMode)}
-              options={[
-                {
-                  value: 'table',
-                  label: t('roles:view.table', { defaultValue: 'Tabellare' }),
-                  icon: <TableOutlined />
-                },
-                {
-                  value: 'list',
-                  label: t('roles:view.list', { defaultValue: 'Elenco' }),
-                  icon: <UnorderedListOutlined />
-                },
-                {
-                  value: 'cards',
-                  label: t('roles:view.cards', { defaultValue: 'Card' }),
-                  icon: <AppstoreOutlined />
-                }
-              ]}
-            />
-          </Space>
+          <Button
+            icon={<ReloadOutlined />}
+            onClick={() => void refreshData()}
+            disabled={loading}
+            loading={loading}
+          >
+            {t('roles:actions.refresh')}
+          </Button>
         </Space>
       </ShellHeaderPortal>
       <Space direction="vertical" size="large" style={{ width: '100%' }}>
         {messageContext}
+        <BorderedPanel>
+          <Flex
+            align={isCompact ? 'stretch' : 'center'}
+            justify="space-between"
+            wrap
+            gap={16}
+            style={{ width: '100%' }}
+          >
+            <Space
+              size={12}
+              wrap
+              direction={isCompact ? 'vertical' : 'horizontal'}
+              style={{ width: isCompact ? '100%' : 'auto' }}
+            >
+              <Button
+                type="primary"
+                icon={<PlusOutlined />}
+                onClick={openCreateModal}
+                disabled={loading}
+                style={actionButtonStyle}
+              >
+                {t('roles:actions.create')}
+              </Button>
+              <Button
+                icon={<DeleteOutlined />}
+                danger
+                onClick={() => openDeleteConfirm(selectedRoles)}
+                disabled={selectedRoles.length === 0 || deleteLoading}
+                loading={deleteLoading}
+                style={actionButtonStyle}
+              >
+                {t('roles:actions.deleteSelected', {
+                  count: selectedRoles.length,
+                  defaultValue:
+                    selectedRoles.length > 0
+                      ? `Delete selected (${selectedRoles.length})`
+                      : 'Delete selected'
+                })}
+              </Button>
+            </Space>
+            <Segmented
+              size="large"
+              block={isCompact}
+              value={viewMode}
+              onChange={(value) => setViewMode(value as typeof viewMode)}
+              options={viewSegmentedOptions}
+              style={segmentedStyle}
+            />
+          </Flex>
+        </BorderedPanel>
         {error ? (
           <Alert
             type="error"
