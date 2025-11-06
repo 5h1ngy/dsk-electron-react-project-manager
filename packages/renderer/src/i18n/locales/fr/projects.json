@@ -1,4 +1,4 @@
-﻿{
+{
   "title": "Projets",
   "viewSwitcher": {
     "table": "Vue tableau",
@@ -34,7 +34,7 @@
     },
     "ownedOptions": {
       "all": "Tous les projets",
-      "mine": "CrÃƒÂ©ÃƒÂ©s par moi"
+      "mine": "CrÃ©Ã©s par moi"
     },
     "panelTitle": "Filtres"
   },
@@ -223,6 +223,9 @@
       "timing": "Chronologie",
       "createdAt": "Cree le {{date}}",
       "dueDate": "Echeance le {{date}}",
+      "sprintLabel": "Sprint",
+      "sprint": "Sprint : {{sprint}}",
+      "noSprint": "Backlog",
       "empty": "Selectionnez une tache pour voir les details"
     },
     "missingId": "Identifiant du projet manquant",
@@ -301,48 +304,48 @@
     "optionalColumns": {
       "label": "Champs optionnels",
       "button": "Champs optionnels",
-      "modalTitle": "Sélectionnez les champs optionnels",
-      "description": "Choisissez les champs supplémentaires à afficher dans la vue tableau."
+      "modalTitle": "S�lectionnez les champs optionnels",
+      "description": "Choisissez les champs suppl�mentaires � afficher dans la vue tableau."
     },
     "deleteModal": {
-      "title": "Supprimer la tâche",
-      "message": "La suppression de « {{title}} » supprimera définitivement la tâche, ses commentaires et tous les liens vers les notes.",
-      "warning": "Cette action est irréversible.",
-      "confirm": "Supprimer la tâche",
+      "title": "Supprimer la t�che",
+      "message": "La suppression de ��{{title}}�� supprimera d�finitivement la t�che, ses commentaires et tous les liens vers les notes.",
+      "warning": "Cette action est irr�versible.",
+      "confirm": "Supprimer la t�che",
       "cancel": "Annuler"
     },
     "statusManager": {
-      "manageButton": "GÃ©rer les statuts",
-      "title": "Statuts des tÃ¢ches",
+      "manageButton": "Gérer les statuts",
+      "title": "Statuts des tâches",
       "add": "Ajouter un statut",
-      "empty": "Aucun statut dÃ©fini",
+      "empty": "Aucun statut défini",
       "messages": {
-        "created": "Statut crÃ©Ã©",
-        "updated": "Statut mis Ã  jour",
-        "deleted": "Statut supprimÃ©",
-        "reordered": "Ordre mis Ã  jour",
-        "error": "OpÃ©ration Ã©chouÃ©e"
+        "created": "Statut créé",
+        "updated": "Statut mis à jour",
+        "deleted": "Statut supprimé",
+        "reordered": "Ordre mis à jour",
+        "error": "Opération échouée"
       },
       "deleteTitle": "Supprimer le statut",
-      "deleteDescription": "Voulez-vous supprimer Â« {{status}} Â» ?",
-      "deletePrompt": "La suppression de Â« {{status}} Â» dÃ©placera les tÃ¢ches vers le statut de secours.",
+      "deleteDescription": "Voulez-vous supprimer « {{status}} » ?",
+      "deletePrompt": "La suppression de « {{status}} » déplacera les tâches vers le statut de secours.",
       "confirm": "Confirmer",
       "cancel": "Annuler",
-      "createTitle": "CrÃ©er un statut",
+      "createTitle": "Créer un statut",
       "editTitle": "Modifier le statut",
       "fields": {
-        "label": "LibellÃ©",
+        "label": "Libellé",
         "fallback": "Statut de secours"
       },
       "validation": {
-        "labelRequired": "Saisissez un libellÃ©",
-        "labelMax": "80 caractÃ¨res maximum",
-        "fallbackRequired": "SÃ©lectionnez un statut de secours"
+        "labelRequired": "Saisissez un libellé",
+        "labelMax": "80 caractères maximum",
+        "fallbackRequired": "Sélectionnez un statut de secours"
       }
     },
     "savedViews": {
-      "placeholder": "Vues enregistrÃƒÆ’Ã‚Â©es",
-      "panelTitle": "Vues enregistrÃƒÆ’Ã‚Â©es",
+      "placeholder": "Vues enregistrÃƒÂ©es",
+      "panelTitle": "Vues enregistrÃƒÂ©es",
       "saveButton": "Enregistrer la vue",
       "deleteButton": "Supprimer",
       "modalTitle": "Enregistrer la vue actuelle",
@@ -372,14 +375,18 @@
         "priority": "Priorite",
         "assignee": "Assignation",
         "owner": "Proprietaire",
-        "dueDate": "Date limite"
+        "dueDate": "Date limite",
+        "sprint": "Sprint",
+        "estimatedMinutes": "Minutes estimees"
       },
       "placeholders": {
         "title": "Titre de la tache",
         "description": "Description (optionnelle)",
         "assignee": "Selectionnez un responsable",
         "owner": "Selectionnez un proprietaire",
-        "dueDate": "Choisir la date limite"
+        "dueDate": "Choisir la date limite",
+        "sprint": "Selectionnez un sprint",
+        "estimatedMinutes": "Minutes (optionnel)"
       }
     },
     "messages": {
@@ -397,8 +404,11 @@
       "assignee": "Assigne : {{assignee}}",
       "createdAt": "Cree le {{date}}",
       "dueDate": "Echeance le {{date}}",
-      "linkedNotes": "Notes liÃƒÆ’Ã‚Â©es",
-      "noLinkedNotes": "Aucune note liÃƒÆ’Ã‚Â©e",
+      "sprintLabel": "Sprint",
+      "sprint": "Sprint : {{sprint}}",
+      "noSprint": "Backlog",
+      "linkedNotes": "Notes liÃƒÂ©es",
+      "noLinkedNotes": "Aucune note liÃƒÂ©e",
       "empty": "Aucune tache selectionnee",
       "comments": {
         "title": "Commentaires",
@@ -408,18 +418,18 @@
         "addLabel": "Ajouter un commentaire",
         "validation": "Saisissez un commentaire",
         "submit": "Publier",
-        "success": "Commentaire ajouté"
+        "success": "Commentaire ajout�"
       },
-      "loadingTitle": "Détails de la tâche",
-      "goBack": "Retour aux tâches",
-      "propertiesTitle": "Propriétés de la tâche",
+      "loadingTitle": "D�tails de la t�che",
+      "goBack": "Retour aux t�ches",
+      "propertiesTitle": "Propri�t�s de la t�che",
       "statusLabel": "Statut",
-      "priorityLabel": "Priorité",
-      "ownerLabel": "Propriétaire",
-      "assigneeLabel": "Assigné à",
-      "createdAtLabel": "Créé le",
-      "dueDateLabel": "Date d'échéance",
-      "updatedAtLabel": "Dernière mise à jour"
+      "priorityLabel": "Priorit�",
+      "ownerLabel": "Propri�taire",
+      "assigneeLabel": "Assign� �",
+      "createdAtLabel": "Cr�� le",
+      "dueDateLabel": "Date d'�ch�ance",
+      "updatedAtLabel": "Derni�re mise � jour"
     },
     "filterPanel": "Filtres",
     "actionsPanel": "Actions",
@@ -478,7 +488,7 @@
         "title": "Titre",
         "notebook": "Carnet",
         "tags": "Tags",
-        "visibility": "VisibilitÃƒÆ’Ã‚Â©",
+        "visibility": "VisibilitÃƒÂ©",
         "body": "Contenu Markdown",
         "linkedTasks": "Taches liees"
       },
@@ -542,13 +552,13 @@
     "openTask": "Ouvrir"
   },
   "views": {
-    "placeholder": "Vues enregistrÃ©es",
-    "panelTitle": "Vues enregistrÃ©es",
+    "placeholder": "Vues enregistrées",
+    "panelTitle": "Vues enregistrées",
     "saveButton": "Enregistrer la vue",
     "deleteButton": "Supprimer",
-    "saveSuccess": "Vue enregistrÃ©e",
+    "saveSuccess": "Vue enregistrée",
     "saveError": "Impossible d'enregistrer la vue",
-    "deleteSuccess": "Vue supprimÃ©e",
+    "deleteSuccess": "Vue supprimée",
     "modal": {
       "title": "Enregistrer une vue projet",
       "save": "Enregistrer",
@@ -562,7 +572,7 @@
     "actions": {
       "refresh": "Actualiser",
       "create": "Nouvelle page",
-      "createFirst": "Créer la première page",
+      "createFirst": "Cr�er la premi�re page",
       "edit": "Modifier",
       "delete": "Supprimer",
       "history": "Historique",
@@ -571,7 +581,7 @@
     },
     "fields": {
       "title": "Titre",
-      "summary": "Résumé",
+      "summary": "R�sum�",
       "content": "Contenu"
     },
     "validation": {
@@ -580,17 +590,17 @@
     },
     "emptyState": "Aucune page wiki pour le moment.",
     "list": {
-      "noSummary": "Aucun résumé disponible"
+      "noSummary": "Aucun r�sum� disponible"
     },
-    "noSelection": "Sélectionnez une page dans la liste.",
+    "noSelection": "S�lectionnez une page dans la liste.",
     "create": {
-      "title": "Créer une page"
+      "title": "Cr�er une page"
     },
     "feedback": {
-      "created": "Page créée.",
-      "updated": "Page mise à jour.",
-      "deleted": "Page supprimée.",
-      "restored": "Version restaurée."
+      "created": "Page cr��e.",
+      "updated": "Page mise � jour.",
+      "deleted": "Page supprim�e.",
+      "restored": "Version restaur�e."
     },
     "delete": {
       "confirmTitle": "Supprimer la page ?",
@@ -601,53 +611,54 @@
     "revisions": {
       "title": "Historique des versions",
       "restore": "Restaurer",
-      "noSummary": "Aucun résumé",
+      "noSummary": "Aucun r�sum�",
       "empty": "Aucune version disponible."
     }
   },
   "sprints": {
     "title": "Sprints du projet",
-    "noProjectSelected": "Sélectionnez un projet pour afficher ses sprints.",
-    "empty": "Aucun sprint défini pour ce projet.",
-    "totalTasks": "Tâches totales",
-    "estimatedMinutes": "Estimées",
-    "spentMinutes": "Enregistrées",
-    "capacityMinutes": "Capacité",
+    "noProjectSelected": "S�lectionnez un projet pour afficher ses sprints.",
+    "empty": "Aucun sprint d�fini pour ce projet.",
+    "totalTasks": "T�ches totales",
+    "estimatedMinutes": "Estim�es",
+    "spentMinutes": "Enregistr�es",
+    "capacityMinutes": "Capacit�",
     "utilization": "Utilisation",
     "actions": {
       "create": "Nouveau sprint",
-      "viewTasks": "Voir les tâches"
+      "viewTasks": "Voir les t�ches"
     },
     "deleteConfirmTitle": "Supprimer le sprint",
-    "deleteConfirmBody": "La suppression d’un sprint retire l’association des tâches mais celles-ci restent disponibles dans le backlog.",
-    "deleteSuccess": "Sprint supprimé",
+    "deleteConfirmBody": "La suppression d�un sprint retire l�association des t�ches mais celles-ci restent disponibles dans le backlog.",
+    "deleteSuccess": "Sprint supprim�",
     "form": {
       "invalid": "Veuillez remplir tous les champs obligatoires.",
       "nameRequired": "Le nom est obligatoire",
-      "dateRequired": "Sélectionnez les dates de début et de fin"
+      "dateRequired": "S�lectionnez les dates de d�but et de fin"
     },
-    "createTitle": "Créer un sprint",
+    "createTitle": "Cr�er un sprint",
     "editTitle": "Modifier le sprint",
-    "createSuccess": "Sprint créé",
-    "updateSuccess": "Sprint mis à jour",
+    "createSuccess": "Sprint cr��",
+    "updateSuccess": "Sprint mis � jour",
     "status": {
-      "planned": "Planifié",
+      "planned": "Planifi�",
       "active": "En cours",
-      "completed": "Terminé",
-      "archived": "Archivé"
+      "completed": "Termin�",
+      "archived": "Archiv�"
     },
     "fields": {
       "name": "Nom",
       "goal": "Objectif",
-      "dateRange": "Période",
+      "dateRange": "P�riode",
       "status": "Statut",
-      "capacityMinutes": "Capacité (minutes)"
+      "capacityMinutes": "Capacit� (minutes)"
     },
     "details": {
-      "title": "Détails du sprint",
-      "tasks": "Tâches",
-      "emptyTasks": "Aucune tâche dans ce sprint."
-    }
+      "title": "D�tails du sprint",
+      "tasks": "T�ches",
+      "emptyTasks": "Aucune t�che dans ce sprint."
+    },
+    "selectPrompt": "Sélectionnez un sprint pour afficher les détails."
   },
   "time": {
     "tracking": {
@@ -656,29 +667,29 @@
         "logTime": "Enregistrer du temps"
       },
       "createTitle": "Enregistrer du temps",
-      "editTitle": "Modifier l’enregistrement",
-      "createSuccess": "Temps enregistré",
-      "updateSuccess": "Enregistrement mis à jour",
-      "deleteTitle": "Supprimer l’enregistrement",
-      "deleteBody": "Voulez-vous supprimer cet enregistrement de temps ?",
-      "deleteSuccess": "Enregistrement supprimé",
-      "totalMinutes": "Minutes enregistrées",
+      "editTitle": "Modifier l�enregistrement",
+      "createSuccess": "Temps enregistr�",
+      "updateSuccess": "Enregistrement mis � jour",
+      "deleteTitle": "Supprimer l�enregistrement",
+      "deleteBody": "Voulez-vous supprimer cet enregistrement de temps�?",
+      "deleteSuccess": "Enregistrement supprim�",
+      "totalMinutes": "Minutes enregistr�es",
       "byUser": "Par utilisateur",
-      "byTask": "Par tâche",
-      "noData": "Aucune donnée disponible",
-      "noEntries": "Aucun enregistrement pour la période sélectionnée.",
-      "noTasks": "Créez une tâche avant d\u2019enregistrer du temps.",
+      "byTask": "Par t�che",
+      "noData": "Aucune donn�e disponible",
+      "noEntries": "Aucun enregistrement pour la p�riode s�lectionn�e.",
+      "noTasks": "Cr�ez une t�che avant d’enregistrer du temps.",
       "columns": {
         "date": "Date",
-        "task": "Tâche",
+        "task": "T�che",
         "user": "Utilisateur",
         "minutes": "Minutes",
         "description": "Description"
       },
       "fields": {
-        "task": "Tâche",
+        "task": "T�che",
         "entryDate": "Date",
-        "duration": "Durée (minutes)",
+        "duration": "Dur�e (minutes)",
         "description": "Description"
       }
     }

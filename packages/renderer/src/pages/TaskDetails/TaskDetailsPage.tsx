@@ -6,7 +6,8 @@
   PlusOutlined,
   ReloadOutlined,
   SaveOutlined,
-  UserOutlined
+  UserOutlined,
+  FlagOutlined
 } from '@ant-design/icons'
 import {
   Alert,
@@ -53,6 +54,11 @@ import { buildBadgeStyle, useSemanticBadges } from '@renderer/theme/hooks/useSem
 import { useProjectDetails } from '@renderer/pages/Projects/hooks/useProjectDetails'
 import { taskFormSchema, type TaskFormValues } from '@renderer/pages/Projects/schemas/taskSchemas'
 import { selectCurrentUser } from '@renderer/store/slices/auth/selectors'
+import {
+  fetchSprints,
+  selectSprintsForProject,
+  selectSprintList
+} from '@renderer/store/slices/sprints'
 
 const { TextArea } = Input
 
@@ -84,6 +90,26 @@ const TaskDetailsContent = ({
     canManageTasks,
     messageContext: projectMessageContext
   } = useProjectDetails(projectId)
+
+  const sprintStateSelector = useMemo(() => selectSprintsForProject(projectId), [projectId])
+  const sprintListSelector = useMemo(() => selectSprintList(projectId), [projectId])
+  const sprintState = useAppSelector(sprintStateSelector)
+  const sprintList = useAppSelector(sprintListSelector)
+
+  useEffect(() => {
+    if (sprintState.status === 'idle') {
+      void dispatch(fetchSprints(projectId))
+    }
+  }, [dispatch, projectId, sprintState.status])
+
+  const sprintOptions = useMemo(
+    () =>
+      sprintList.map((sprint) => ({
+        value: sprint.id,
+        label: sprint.name
+      })),
+    [sprintList]
+  )
   const currentUser = useAppSelector(selectCurrentUser)
   const [searchParams, setSearchParams] = useSearchParams()
 
@@ -694,6 +720,28 @@ const TaskDetailsContent = ({
                           />
                         </Form.Item>
                         <Form.Item
+                          label={t('tasks.form.fields.sprint')}
+                          validateStatus={editFormState.errors.sprintId ? 'error' : undefined}
+                          help={editFormState.errors.sprintId?.toString()}
+                        >
+                          <Controller
+                            control={editControl}
+                            name="sprintId"
+                            render={({ field }) => (
+                              <Select
+                                value={field.value ?? undefined}
+                                allowClear
+                                placeholder={t('tasks.form.placeholders.sprint')}
+                                options={sprintOptions}
+                                onChange={(value) => field.onChange(value ?? null)}
+                                showSearch
+                                optionFilterProp="label"
+                                disabled={updatingTask || sprintOptions.length === 0}
+                              />
+                            )}
+                          />
+                        </Form.Item>
+                        <Form.Item
                           label={t('tasks.form.fields.assignee')}
                           validateStatus={editFormState.errors.assigneeId ? 'error' : undefined}
                           help={editFormState.errors.assigneeId?.toString()}
@@ -790,7 +838,21 @@ const TaskDetailsContent = ({
                             <Typography.Text>
                               {task.dueDate
                                 ? formatDate(task.dueDate, i18n.language, t('details.noDueDate'))
-                                : t('details.noDueDate')}
+                              : t('details.noDueDate')}
+                            </Typography.Text>
+                          </Space>
+                        </div>
+                        <div>
+                          <Typography.Text type="secondary">
+                            {t('tasks.details.sprintLabel')}
+                          </Typography.Text>
+                          <br />
+                          <Space size={6} align="center">
+                            <FlagOutlined aria-hidden />
+                            <Typography.Text>
+                              {task.sprint
+                                ? task.sprint.name
+                                : t('tasks.details.noSprint')}
                             </Typography.Text>
                           </Space>
                         </div>
