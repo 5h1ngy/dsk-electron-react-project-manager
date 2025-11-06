@@ -4,19 +4,37 @@ import type { HealthResponse } from '@main/ipc/health'
 type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE'
 
 const resolveBaseUrl = (): string => {
-  if (typeof window !== 'undefined') {
+  let clientOrigin: string | undefined
+  if (typeof window !== 'undefined' && window.location) {
+    clientOrigin = window.location.origin
     const override = (window as unknown as { __API_BASE_URL?: string }).__API_BASE_URL
     if (override) {
-      return override.replace(/\/$/, '')
+      return normalizeBaseUrl(override, clientOrigin)
     }
   }
+
   const nodeEnvValue =
     typeof process !== 'undefined' && process.env ? process.env.API_BASE_URL : undefined
-  const envValue =
-    (import.meta.env?.VITE_API_BASE_URL as string | undefined) ??
-    nodeEnvValue ??
-    'http://localhost:3333'
-  return envValue.replace(/\/$/, '')
+
+  const importMetaEnv = typeof import.meta !== 'undefined' ? import.meta.env : undefined
+  const viteValue = importMetaEnv?.VITE_API_BASE_URL as string | undefined
+  const devDefault =
+    importMetaEnv && 'DEV' in importMetaEnv && (importMetaEnv.DEV as boolean) && clientOrigin
+      ? `${clientOrigin}/api`
+      : undefined
+
+  const envValue = viteValue ?? nodeEnvValue ?? devDefault ?? 'http://localhost:3333'
+  return normalizeBaseUrl(envValue, clientOrigin)
+}
+
+const normalizeBaseUrl = (value: string, clientOrigin?: string): string => {
+  if (value.startsWith('/') && clientOrigin) {
+    return `${clientOrigin}${value}`.replace(/\/$/, '')
+  }
+  if (!value.startsWith('http')) {
+    return `http://${value}`.replace(/\/$/, '')
+  }
+  return value.replace(/\/$/, '')
 }
 
 const baseUrl = resolveBaseUrl()
