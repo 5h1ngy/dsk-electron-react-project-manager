@@ -191,7 +191,7 @@ const buildHttpBridge = (): PreloadApi => ({
     remove: async (token, payload) =>
       await httpRequest('DELETE', `/statuses/${payload.statusId}`, {
         token,
-        query: { fallback: payload.fallbackStatusId }
+        body: { fallbackStatusId: payload.fallbackStatusId }
       })
   },
   note: {

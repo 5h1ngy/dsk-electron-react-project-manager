@@ -7,7 +7,6 @@ import {
   Param,
   Post,
   Put,
-  QueryParam,
   Req
 } from 'routing-controllers'
 import { Service } from 'typedi'
@@ -70,12 +69,12 @@ export class TaskStatusController extends BaseController {
   async deleteStatus(
     @Req() request: Request,
     @Param('statusId') statusId: string,
-    @QueryParam('fallback') fallbackStatusId?: string
+    @Body() payload: { fallbackStatusId?: string }
   ) {
     const { actor } = await this.requireActor(request)
     return await this.statusService.deleteStatus(actor, {
       statusId,
-      fallbackStatusId: fallbackStatusId ?? undefined
+      fallbackStatusId: payload?.fallbackStatusId
     })
   }
 }

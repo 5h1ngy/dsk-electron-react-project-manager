@@ -1,6 +1,7 @@
 import type { Request } from 'express'
 import {
   Body,
+  Delete,
   Get,
   JsonController,
   Param,
@@ -62,5 +63,12 @@ export class AuthController extends BaseController {
   ) {
     const { token } = await this.requireActor(request)
     return await this.authService.updateUser(token, userId, payload)
+  }
+
+  @Delete('/users/:userId')
+  async deleteUser(@Req() request: Request, @Param('userId') userId: string) {
+    const { token } = await this.requireActor(request)
+    await this.authService.deleteUser(token, userId)
+    return { success: true }
   }
 }
