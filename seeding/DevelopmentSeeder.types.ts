@@ -1,7 +1,8 @@
-import type { RoleName } from '../packages/main/src/services/auth/constants'
 import type { ProjectMembershipRole } from '../packages/main/src/models/ProjectMember'
 import type { TaskPriority, TaskStatus } from '../packages/main/src/models/Task'
+import type { SprintStatus } from '../packages/main/src/models/Sprint'
 import type { User } from '../packages/main/src/models/User'
+import type { RoleName } from '../packages/main/src/services/auth/constants'
 
 export interface DevelopmentSeederOptions {
   fakerSeed?: number
@@ -33,6 +34,8 @@ export interface TaskSeedDefinition {
   assigneeId: string | null
   ownerId: string
   comments: CommentSeedDefinition[]
+  sprintIndex: number | null
+  estimatedMinutes: number | null
 }
 
 export interface NoteSeedDefinition {
@@ -71,10 +74,30 @@ export interface ProjectSeedDefinition {
   tasks: TaskSeedDefinition[]
   notes: NoteSeedDefinition[]
   wikiPages: WikiPageSeedDefinition[]
+  sprints: SprintSeedDefinition[]
+  timeEntries: TimeEntrySeedDefinition[]
 }
 
 export interface SeederState {
   adminUser: User
   seededUsers: Record<string, User>
   userRoles: Map<string, RoleName[]>
+}
+
+export interface SprintSeedDefinition {
+  name: string
+  goal: string | null
+  startDate: string
+  endDate: string
+  status: SprintStatus
+  capacityMinutes: number | null
+  sequence: number
+}
+
+export interface TimeEntrySeedDefinition {
+  taskIndex: number
+  userId: string
+  entryDate: string
+  durationMinutes: number
+  description: string | null
 }
