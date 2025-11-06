@@ -431,34 +431,42 @@ const ProjectOverviewPage: FC<ProjectOverviewPageProps> = () => {
 
   return (
       <Space direction="vertical" size={16} style={{ width: '100%' }}>
-        <BorderedPanel padding="lg" style={{ width: '100%' }}>
-          <Flex align="center" gap={12} wrap style={{ width: '100%' }}>
-            <Flex align="center" gap={12} wrap style={{ flex: '1 1 auto' }}>
-              {canEditProject ? (
-                <div style={isCompact ? { width: '100%' } : undefined}>
-                  <Button
-                    type="primary"
-                    icon={<EditOutlined />}
-                    onClick={handleOpenEdit}
-                    disabled={!project}
-                    style={isCompact ? { width: '100%' } : undefined}
-                  >
-                    {t('details.summary.editProject', { defaultValue: 'Edit project' })}
-                  </Button>
-                </div>
-              ) : null}
-              <div style={isCompact ? { width: '100%' } : undefined}>
-                <Button
-                  icon={<SettingOutlined />}
-                  onClick={handleCustomizeOpen}
-                  style={isCompact ? { width: '100%' } : undefined}
-                >
-                  {t('details.overview.customizeButton', { defaultValue: 'Customize overview' })}
-                </Button>
-              </div>
-            </Flex>
-          </Flex>
-        </BorderedPanel>
+      <BorderedPanel padding="lg" style={{ width: '100%' }}>
+        <Flex align="center" wrap gap={12} style={{ width: '100%' }}>
+          {canEditProject ? (
+            <div style={isCompact ? { width: '100%' } : undefined}>
+              <Button
+                type="primary"
+                icon={<EditOutlined />}
+                onClick={handleOpenEdit}
+                disabled={!project}
+                style={isCompact ? { width: '100%' } : undefined}
+              >
+                {t('details.summary.editProject', { defaultValue: 'Edit project' })}
+              </Button>
+            </div>
+          ) : null}
+          <div
+            style={
+              isCompact
+                ? {
+                    width: '100%',
+                    display: 'flex',
+                    justifyContent: 'flex-end'
+                  }
+                : { marginLeft: 'auto' }
+            }
+          >
+            <Button
+              icon={<SettingOutlined />}
+              onClick={handleCustomizeOpen}
+              style={isCompact ? { width: '100%' } : undefined}
+            >
+              {t('details.overview.customizeButton', { defaultValue: 'Customize overview' })}
+            </Button>
+          </div>
+        </Flex>
+      </BorderedPanel>
         <Row gutter={[16, 32]} style={{ width: '100%' }}>
         <Col xs={24} lg={12} xl={6}>
           <ProjectDetailsCard

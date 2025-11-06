@@ -399,9 +399,14 @@ const TaskDetailsContent = ({
               </Button>
             </>
           ) : (
-            <Button icon={<EditOutlined />} onClick={() => setIsEditing(true)}>
-              {t('tasks.actions.edit')}
-            </Button>
+            <Space size={8} wrap>
+              <Button icon={<PlusOutlined />} onClick={handleAddNote}>
+                {t('tasks.details.addNote')}
+              </Button>
+              <Button icon={<EditOutlined />} onClick={() => setIsEditing(true)}>
+                {t('tasks.actions.edit')}
+              </Button>
+            </Space>
           )}
         </Space>
       ) : null}
@@ -490,9 +495,6 @@ const TaskDetailsContent = ({
               <Typography.Title level={3} style={{ marginBottom: 0 }}>
                 {task.title}
               </Typography.Title>
-              <Button icon={<PlusOutlined />} onClick={handleAddNote}>
-                {t('tasks.details.addNote')}
-              </Button>
             </Space>
           )}
           <Typography.Text type="secondary">{projectReference}</Typography.Text>
