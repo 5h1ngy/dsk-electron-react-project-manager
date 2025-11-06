@@ -19,13 +19,17 @@ const ShellContainer = ({ currentUser, onLogout, children }: ShellProps): JSX.El
     handleToggleCollapse,
     handleCollapseChange,
     handleBreakpoint,
-    labels
+    labels,
+    isMobile,
+    mobileMenuVisible,
+    handleCloseMobileMenu
   } = useShellLayout(currentUser)
 
   const styles = useShellStyles({
     menuTheme,
     collapsed,
-    displayName: currentUser.displayName
+    displayName: currentUser.displayName,
+    isMobile
   })
   const { accountButtonStyle, accountAvatarStyle, accountAvatarSizes, dropdownWidth, token } =
     styles
@@ -114,6 +118,9 @@ const ShellContainer = ({ currentUser, onLogout, children }: ShellProps): JSX.El
         onToggleCollapse={handleToggleCollapse}
         onCollapseChange={handleCollapseChange}
         onBreakpoint={handleBreakpoint}
+        isMobile={isMobile}
+        mobileMenuVisible={mobileMenuVisible}
+        onCloseMobileMenu={handleCloseMobileMenu}
       >
         {children}
       </ShellView>

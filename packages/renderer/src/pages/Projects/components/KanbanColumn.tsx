@@ -68,8 +68,8 @@ export const KanbanColumn = ({
 
   const taskCountLabel = t('board.taskCount', { count: tasks.length })
   const highlightBorder = `${token.lineWidth}px dashed ${token.colorPrimary}`
-  const idleBorder = `${token.lineWidth}px solid ${token.colorBorderSecondary}`
-  const baseBackground = token.colorFillSecondary
+  const idleBorder = `${token.lineWidth}px solid ${token.colorBorder}`
+  const baseBackground = token.colorBgElevated
 
   return (
     <Card
@@ -83,7 +83,7 @@ export const KanbanColumn = ({
         border: isDragOver ? highlightBorder : idleBorder,
         background: isDragOver ? token.colorPrimaryBg : baseBackground,
         transition: 'border 0.2s ease, background 0.2s ease',
-        boxShadow: isDragOver ? token.boxShadowSecondary : token.boxShadowTertiary
+        boxShadow: token.boxShadowTertiary
       }}
       styles={{
         body: {
@@ -112,8 +112,8 @@ export const KanbanColumn = ({
         <Tag
           bordered={false}
           style={{
-            background: token.colorPrimaryBg,
-            color: token.colorPrimaryText,
+            background: token.colorFillSecondary,
+            color: token.colorText,
             fontWeight: 600
           }}
         >
@@ -143,7 +143,8 @@ export const KanbanColumn = ({
               textAlign: 'center',
               padding: token.paddingSM,
               borderRadius: token.borderRadius,
-              background: token.colorFillQuaternary
+              background: token.colorFillSecondary,
+              color: token.colorTextSecondary
             }}
           >
             {t('board.emptyColumn')}

@@ -214,6 +214,7 @@ const ProjectNotesPage = (): ReactElement => {
   const [selectedNoteIds, setSelectedNoteIds] = useState<string[]>([])
   const [bulkDeleteTargets, setBulkDeleteTargets] = useState<NoteSummary[] | null>(null)
   const [bulkDeleteLoading, setBulkDeleteLoading] = useState(false)
+  const [hoveredNoteId, setHoveredNoteId] = useState<string | null>(null)
   const canDeleteNote = useCallback(
     (note: NoteSummary | NoteDetails) => {
       if (canManageNotes) {
@@ -794,7 +795,21 @@ const ProjectNotesPage = (): ReactElement => {
               const ownedByUser = note.owner.id === userId
               const checked = selectedNoteIds.includes(note.id)
               return (
-                <List.Item key={note.id}>
+                <List.Item
+                  key={note.id}
+                  onMouseEnter={() => setHoveredNoteId(note.id)}
+                  onMouseLeave={() =>
+                    setHoveredNoteId((current) => (current === note.id ? null : current))
+                  }
+                  style={{
+                    borderRadius: token.borderRadiusLG,
+                    padding: token.paddingMD,
+                    background:
+                      hoveredNoteId === note.id ? token.colorFillTertiary : token.colorBgContainer,
+                    transition: 'background-color 0.2s ease, box-shadow 0.2s ease',
+                    boxShadow: hoveredNoteId === note.id ? token.boxShadowTertiary : 'none'
+                  }}
+                >
                   <Flex align="flex-start" gap={12} style={{ width: '100%' }}>
                     {canManageNotes ? (
                       <Checkbox
@@ -1423,6 +1438,8 @@ const NoteSearchDrawer = ({
   onSelect
 }: NoteSearchDrawerProps): ReactElement => {
   const { t } = useTranslation('projects')
+  const { token } = theme.useToken()
+  const [hoveredNoteId, setHoveredNoteId] = useState<string | null>(null)
 
   return (
     <Drawer
@@ -1440,11 +1457,23 @@ const NoteSearchDrawer = ({
           renderItem={(note) => (
             <List.Item
               key={note.id}
+              onMouseEnter={() => setHoveredNoteId(note.id)}
+              onMouseLeave={() =>
+                setHoveredNoteId((current) => (current === note.id ? null : current))
+              }
               actions={[
                 <Button type="link" onClick={() => onSelect(note.id)} key="open">
                   {t('notes.search.open')}
                 </Button>
               ]}
+              style={{
+                borderRadius: token.borderRadiusLG,
+                padding: token.paddingMD,
+                background:
+                  hoveredNoteId === note.id ? token.colorFillTertiary : token.colorBgContainer,
+                transition: 'background-color 0.2s ease, box-shadow 0.2s ease',
+                boxShadow: hoveredNoteId === note.id ? token.boxShadowTertiary : 'none'
+              }}
             >
               <List.Item.Meta
                 title={note.title}

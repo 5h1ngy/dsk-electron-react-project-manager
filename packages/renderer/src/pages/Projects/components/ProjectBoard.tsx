@@ -1,5 +1,6 @@
 import { Alert, Space, theme } from 'antd'
-import type { JSX } from 'react'
+import { useMemo, type JSX } from 'react'
+import type { CSSProperties } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { EmptyState, LoadingSkeleton } from '@renderer/components/DataStates'
@@ -45,6 +46,15 @@ export const ProjectBoard = ({
   const showSkeleton = useDelayedLoading(isLoading)
   const hasTasks = columns.some((column) => column.tasks.length > 0)
 
+  const boardContainerStyle = useMemo<CSSProperties>(
+    () => ({
+      width: '100%',
+      overflowX: 'auto',
+      paddingBottom: token.paddingSM
+    }),
+    [token.paddingSM]
+  )
+
   return (
     <Space direction="vertical" size={16} style={{ width: '100%' }}>
       {messageContext}
@@ -63,14 +73,13 @@ export const ProjectBoard = ({
           minHeight={420}
         />
       ) : hasTasks ? (
-        <div style={{ width: '100%', overflowX: 'auto' }}>
+        <div style={boardContainerStyle}>
           <div
             style={{
               display: 'grid',
               gridAutoFlow: 'column',
               gridAutoColumns: 'minmax(280px, 320px)',
-              gap: token.marginLG,
-              paddingBottom: token.paddingSM
+              gap: token.marginLG
             }}
           >
             {columns.map((column) => (
@@ -105,3 +114,4 @@ export const ProjectBoard = ({
 ProjectBoard.displayName = 'ProjectBoard'
 
 export default ProjectBoard
+

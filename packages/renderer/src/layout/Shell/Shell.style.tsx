@@ -11,6 +11,7 @@ interface UseShellStylesParams {
   menuTheme: MenuTheme
   collapsed: boolean
   displayName: string
+  isMobile: boolean
 }
 
 export interface ShellStyleResult {
@@ -36,10 +37,14 @@ export interface ShellStyleResult {
 export const useShellStyles = ({
   menuTheme,
   collapsed,
-  displayName
+  displayName,
+  isMobile
 }: UseShellStylesParams): ShellStyleResult => {
   const { token } = theme.useToken()
   const { spacing } = useThemeTokens()
+  const spacingSm = spacing.sm
+  const spacingLg = spacing.lg
+  const spacingXl = spacing.xl
 
   const palette = useMemo(() => resolvePalette(menuTheme), [menuTheme])
   const avatarPalette = useMemo(
@@ -61,40 +66,50 @@ export const useShellStyles = ({
     [avatarColor, palette, menuTheme]
   )
 
-  const layoutStyle: CSSProperties = {
-    height: '100vh',
-    padding: token.paddingSM,
-    gap: spacing.xl,
-    background: token.colorBgLayout,
-    display: 'flex',
-    alignItems: 'stretch',
-    width: '100%',
-    boxSizing: 'border-box',
-    overflow: 'hidden'
-  }
+  const layoutStyle: CSSProperties = useMemo(
+    () => ({
+      height: '100vh',
+      padding: isMobile ? token.paddingXS : token.paddingSM,
+      gap: isMobile ? spacingSm : spacingXl,
+      background: token.colorBgLayout,
+      display: 'flex',
+      flexDirection: isMobile ? 'column' : 'row',
+      alignItems: 'stretch',
+      width: '100%',
+      boxSizing: 'border-box',
+      overflow: 'hidden'
+    }),
+    [isMobile, spacingSm, spacingXl, token.colorBgLayout, token.paddingSM, token.paddingXS]
+  )
 
-  const innerLayoutStyle: CSSProperties = {
-    display: 'flex',
-    flexDirection: 'column',
-    flex: 1,
-    minWidth: 0,
-    background: 'transparent',
-    overflow: 'hidden'
-  }
+  const innerLayoutStyle: CSSProperties = useMemo(
+    () => ({
+      display: 'flex',
+      flexDirection: 'column',
+      flex: 1,
+      minWidth: 0,
+      background: 'transparent',
+      overflow: 'hidden'
+    }),
+    []
+  )
 
-  const contentStyle: CSSProperties = {
-    paddingInlineStart: token.paddingXL,
-    paddingInlineEnd: token.paddingXL * 1.75,
-    paddingBlock: token.paddingLG,
-    display: 'flex',
-    flexDirection: 'column',
-    gap: spacing.lg,
-    minHeight: 0,
-    background: 'transparent',
-    flex: 1,
-    height: '100%',
-    overflow: 'hidden'
-  }
+  const contentStyle: CSSProperties = useMemo(
+    () => ({
+      paddingInlineStart: isMobile ? token.paddingMD : token.paddingXL,
+      paddingInlineEnd: isMobile ? token.paddingMD : token.paddingXL * 1.75,
+      paddingBlock: isMobile ? token.paddingMD : token.paddingLG,
+      display: 'flex',
+      flexDirection: 'column',
+      gap: spacingLg,
+      minHeight: 0,
+      background: 'transparent',
+      flex: 1,
+      height: '100%',
+      overflow: 'hidden'
+    }),
+    [isMobile, spacingLg, token.paddingLG, token.paddingMD, token.paddingXL]
+  )
 
   const collapseButtonStyle: CSSProperties = {
     borderRadius: token.borderRadiusLG,
@@ -102,7 +117,9 @@ export const useShellStyles = ({
     borderColor: token.colorBorderSecondary,
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    width: isMobile ? token.controlHeight : token.controlHeightLG,
+    height: isMobile ? token.controlHeight : token.controlHeightLG
   }
 
   const accountButtonStyle: CSSProperties = {
@@ -129,7 +146,8 @@ export const useShellStyles = ({
 
   const headerContainerStyle: CSSProperties = {
     flex: 1,
-    minHeight: token.controlHeightLG
+    minHeight: token.controlHeightLG,
+    width: isMobile ? '100%' : undefined
   }
 
   return {

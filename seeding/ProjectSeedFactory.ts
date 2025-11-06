@@ -7,7 +7,9 @@ import type {
   NoteSeedDefinition,
   ProjectMemberSeed,
   ProjectSeedDefinition,
+  SprintSeedDefinition,
   TaskSeedDefinition,
+  TimeEntrySeedDefinition,
   WikiPageSeedDefinition,
   WikiRevisionSeedDefinition
 } from './DevelopmentSeeder.types'
@@ -15,6 +17,8 @@ import type {
   CommentsSeedConfig,
   ProjectsSeedConfig,
   NotesSeedConfig,
+  SprintsSeedConfig,
+  TimeTrackingSeedConfig,
   WikiSeedConfig
 } from './seedConfig'
 import { capitalize, formatIsoDate, pickWeighted, type WeightedValue } from './seed.helpers'
@@ -89,7 +93,9 @@ export class ProjectSeedFactory {
     private readonly projectConfig: ProjectsSeedConfig,
     private readonly commentConfig: CommentsSeedConfig,
     private readonly notesConfig: NotesSeedConfig,
-    private readonly wikiConfig: WikiSeedConfig
+    private readonly wikiConfig: WikiSeedConfig,
+    private readonly sprintConfig: SprintsSeedConfig,
+    private readonly timeTrackingConfig: TimeTrackingSeedConfig
   ) {}
 
   createSeeds(
@@ -153,11 +159,14 @@ export class ProjectSeedFactory {
       const commentAuthors = Array.from(members.keys())
       const memberIds = Array.from(new Set([...commentAuthors, primaryOwner.id, adminUser.id]))
 
+      const sprints = this.buildSprintSeeds()
+
       const tasks = this.buildTaskSeeds({
         assigneeCandidates,
         ownerCandidates,
         commentAuthors,
-        createdBy: primaryOwner.id
+        createdBy: primaryOwner.id,
+        sprints
       })
 
       const notes = this.buildNoteSeeds({
@@ -173,6 +182,13 @@ export class ProjectSeedFactory {
         projectTags: tags
       })
 
+      const timeEntries = this.buildTimeEntrySeeds({
+        tasks,
+        memberIds,
+        fallbackUserId: primaryOwner.id,
+        sprints
+      })
+
       seeds.push({
         key,
         name: this.random.company.catchPhrase(),
@@ -182,7 +198,9 @@ export class ProjectSeedFactory {
         tags,
         tasks,
         notes,
-        wikiPages
+        wikiPages,
+        sprints,
+        timeEntries
       })
     }
 
@@ -254,6 +272,7 @@ export class ProjectSeedFactory {
     ownerCandidates: string[]
     commentAuthors: string[]
     createdBy: string
+    sprints: SprintSeedDefinition[]
   }): TaskSeedDefinition[] {
     const taskConfig = this.projectConfig.tasksPerProject
     const baseCount = this.random.number.int({
@@ -281,7 +300,8 @@ export class ProjectSeedFactory {
           assigneeCandidates: params.assigneeCandidates,
           ownerCandidates: params.ownerCandidates,
           commentAuthors: params.commentAuthors,
-          createdBy: params.createdBy
+          createdBy: params.createdBy,
+          sprints: params.sprints
         })
       )
     }
@@ -294,6 +314,7 @@ export class ProjectSeedFactory {
     ownerCandidates: string[]
     commentAuthors: string[]
     createdBy: string
+    sprints: SprintSeedDefinition[]
   }): TaskSeedDefinition {
     const status = pickWeighted(this.random, STATUS_WEIGHTS)
     const priority = pickWeighted(this.random, PRIORITY_WEIGHTS)
@@ -322,6 +343,22 @@ export class ProjectSeedFactory {
       commentAuthors: params.commentAuthors
     })
 
+    const sprintIndex =
+      params.sprints.length > 0 &&
+      this.random.number.float({ min: 0, max: 1 }) < this.sprintConfig.assignmentProbability
+        ? this.random.number.int({ min: 0, max: params.sprints.length - 1 })
+        : null
+
+    const estimatedMinutes =
+      this.random.helpers.maybe(
+        () =>
+          this.random.number.int({
+            min: 120,
+            max: 960
+          }),
+        { probability: 0.75 }
+      ) ?? null
+
     return {
       title: this.buildTaskTitle(),
       description: this.buildTaskDescription(status, priority),
@@ -330,8 +367,213 @@ export class ProjectSeedFactory {
       dueDate,
       assigneeId: assigneeId ?? null,
       ownerId,
-      comments
+      comments,
+      sprintIndex,
+      estimatedMinutes
     }
+  }
+
+  private buildSprintSeeds(): SprintSeedDefinition[] {
+    const config = this.sprintConfig
+    const max = Math.max(0, config.perProject.max)
+    if (max === 0) {
+      return []
+    }
+
+    const count = this.random.number.int({
+      min: Math.max(0, config.perProject.min),
+      max
+    })
+
+    if (count === 0) {
+      return []
+    }
+
+    const sprints: SprintSeedDefinition[] = []
+    const today = new Date()
+    const startOffset = this.random.number.int({ min: 45, max: 140 })
+    let currentStart = new Date(today)
+    currentStart.setDate(currentStart.getDate() - startOffset)
+
+    for (let index = 0; index < count; index += 1) {
+      const duration = this.random.number.int({
+        min: Math.max(5, config.durationDays.min),
+        max: Math.max(config.durationDays.min, config.durationDays.max)
+      })
+      const startDate = new Date(currentStart)
+      const endDate = new Date(startDate)
+      endDate.setDate(endDate.getDate() + duration)
+
+      const status = this.resolveSprintStatus(index, count)
+      const capacityMinutes = this.random.number.int({
+        min: Math.max(0, config.capacityMinutes.min),
+        max: Math.max(config.capacityMinutes.min, config.capacityMinutes.max)
+      })
+
+      sprints.push({
+        name: `Sprint ${index + 1}`,
+        goal:
+          this.random.helpers.maybe(
+            () => this.random.company.bs(),
+            { probability: 0.6 }
+          ) ?? null,
+        startDate: formatIsoDate(startDate),
+        endDate: formatIsoDate(endDate),
+        status,
+        capacityMinutes,
+        sequence: index + 1
+      })
+
+      const gapDays = this.random.number.int({
+        min: Math.max(0, config.gapDays.min),
+        max: Math.max(config.gapDays.min, config.gapDays.max)
+      })
+      currentStart = new Date(endDate)
+      currentStart.setDate(currentStart.getDate() + gapDays)
+    }
+
+    return sprints
+  }
+
+  private resolveSprintStatus(index: number, total: number): SprintSeedDefinition['status'] {
+    if (total <= 1) {
+      return 'planned'
+    }
+    if (index === total - 1) {
+      return 'planned'
+    }
+    if (index === total - 2) {
+      return 'active'
+    }
+    if (index === total - 3) {
+      return 'completed'
+    }
+    return this.random.number.float({ min: 0, max: 1 }) < 0.5 ? 'archived' : 'completed'
+  }
+
+  private buildTimeEntrySeeds(params: {
+    tasks: TaskSeedDefinition[]
+    memberIds: string[]
+    fallbackUserId: string
+    sprints: SprintSeedDefinition[]
+  }): TimeEntrySeedDefinition[] {
+    const config = this.timeTrackingConfig
+    const entries: TimeEntrySeedDefinition[] = []
+    if (config.entriesPerTask.max <= 0) {
+      return entries
+    }
+
+    const userPool =
+      params.memberIds.length > 0 ? params.memberIds : [params.fallbackUserId]
+    const templates = config.descriptionTemplates ?? []
+
+    params.tasks.forEach((task, index) => {
+      const maxEntries = Math.max(config.entriesPerTask.min, config.entriesPerTask.max)
+      if (maxEntries <= 0) {
+        return
+      }
+
+      const desiredCount = this.random.number.int({
+        min: Math.max(0, config.entriesPerTask.min),
+        max: maxEntries
+      })
+
+      for (let entryIndex = 0; entryIndex < desiredCount; entryIndex += 1) {
+        if (
+          this.random.number.float({ min: 0, max: 1 }) > config.includeProbability ||
+          userPool.length === 0
+        ) {
+          continue
+        }
+
+        const userId = this.random.helpers.arrayElement(userPool)
+        const entryDate = this.buildTimeEntryDate({
+          task,
+          sprints: params.sprints,
+          recentDays: config.recentDays
+        })
+        const durationMinutes = this.random.number.int({
+          min: Math.max(5, config.durationMinutes.min),
+          max: Math.max(config.durationMinutes.min, config.durationMinutes.max)
+        })
+        const description =
+          templates.length > 0
+            ? this.random.helpers.maybe(
+                () => this.random.helpers.arrayElement(templates),
+                { probability: config.descriptionProbability }
+              ) ?? null
+            : null
+
+        entries.push({
+          taskIndex: index,
+          userId,
+          entryDate,
+          durationMinutes,
+          description
+        })
+      }
+    })
+
+    return entries
+  }
+
+  private buildTimeEntryDate(params: {
+    task: TaskSeedDefinition
+    sprints: SprintSeedDefinition[]
+    recentDays: number
+  }): string {
+    const today = new Date()
+    let from = new Date(today)
+    let to = new Date(today)
+
+    if (params.task.sprintIndex !== null) {
+      const sprint = params.sprints[params.task.sprintIndex]
+      if (sprint) {
+        from = new Date(sprint.startDate)
+        to = new Date(sprint.endDate)
+      }
+    } else if (params.task.dueDate) {
+      to = new Date(params.task.dueDate)
+      from = new Date(to)
+      from.setDate(from.getDate() - 14)
+    } else {
+      from = new Date(today)
+      from.setDate(from.getDate() - params.recentDays)
+    }
+
+    const earliest = new Date(today)
+    earliest.setDate(earliest.getDate() - params.recentDays)
+    if (from.getTime() < earliest.getTime()) {
+      from = earliest
+    }
+    if (to.getTime() > today.getTime()) {
+      to = today
+    }
+    if (from.getTime() > to.getTime()) {
+      from = new Date(to)
+      from.setDate(from.getDate() - 1)
+    }
+
+    const range = this.clampDateRange(from, to)
+    if (range.from.getTime() === range.to.getTime()) {
+      return formatIsoDate(range.from)
+    }
+
+    const picked = this.random.date.between({
+      from: range.from,
+      to: range.to
+    })
+    return formatIsoDate(picked)
+  }
+
+  private clampDateRange(from: Date, to: Date): { from: Date; to: Date } {
+    if (from.getTime() > to.getTime()) {
+      return {
+        from: new Date(to),
+        to
+      }
+    }
+    return { from, to }
   }
 
   private buildNoteSeeds(params: {
@@ -787,3 +1029,4 @@ export class ProjectSeedFactory {
     return sections.join('\n\n')
   }
 }
+

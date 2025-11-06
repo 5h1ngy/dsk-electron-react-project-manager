@@ -1,6 +1,6 @@
 import { Button, List, Space, Tag, Typography, theme } from 'antd'
 import { DeleteOutlined, EditOutlined, MessageOutlined } from '@ant-design/icons'
-import { useMemo, type JSX } from 'react'
+import { useMemo, useState, type JSX } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { EmptyState, LoadingSkeleton } from '@renderer/components/DataStates'
@@ -41,6 +41,7 @@ export const ProjectTasksList = ({
   const { token } = theme.useToken()
   const badgeTokens = useSemanticBadges()
   const showSkeleton = useDelayedLoading(loading)
+  const [hoveredTaskId, setHoveredTaskId] = useState<string | null>(null)
 
   const pagedTasks = useMemo(() => {
     const start = (page - 1) * pageSize
@@ -122,7 +123,17 @@ export const ProjectTasksList = ({
           <List.Item
             key={task.id}
             onClick={() => onSelect(task)}
-            style={{ cursor: 'pointer', paddingInline: token.paddingLG }}
+            onMouseEnter={() => setHoveredTaskId(task.id)}
+            onMouseLeave={() => setHoveredTaskId((current) => (current === task.id ? null : current))}
+            style={{
+              cursor: 'pointer',
+              paddingInline: token.paddingLG,
+              borderRadius: token.borderRadiusLG,
+              background:
+                hoveredTaskId === task.id ? token.colorFillTertiary : token.colorBgContainer,
+              transition: 'background-color 0.2s ease, box-shadow 0.2s ease',
+              boxShadow: hoveredTaskId === task.id ? token.boxShadowTertiary : 'none'
+            }}
             actions={itemActions.length > 0 ? itemActions : undefined}
           >
             <List.Item.Meta

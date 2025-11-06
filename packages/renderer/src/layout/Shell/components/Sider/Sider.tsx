@@ -19,22 +19,25 @@ const Sider = ({
   themeMode,
   title,
   onSelect,
-  footer
+  footer,
+  variant = 'desktop'
 }: SiderProps): JSX.Element => {
   const { token } = theme.useToken()
   const { background, borderColor, accent, accentForeground, muted, text, shadow } =
     useSiderStyles(themeMode)
-  const verticalPadding = collapsed ? token.paddingSM : token.paddingLG
-  const horizontalPadding = collapsed ? token.paddingSM : token.paddingLG
+  const isMobileVariant = variant === 'mobile'
+  const effectiveCollapsed = isMobileVariant ? false : collapsed
+  const verticalPadding = effectiveCollapsed ? token.paddingSM : token.paddingLG
+  const horizontalPadding = effectiveCollapsed ? token.paddingSM : token.paddingLG
   const containerPadding = `${verticalPadding}px ${horizontalPadding}px`
-  const sectionGap = collapsed ? token.marginSM : token.marginMD
+  const sectionGap = effectiveCollapsed ? token.marginSM : token.marginMD
   const headerHeight = token.controlHeightLG
-  const emblemSize = collapsed ? token.controlHeightSM : token.controlHeightLG
-  const footerPadding = collapsed ? token.paddingSM : token.paddingLG
-  const menuIndent = collapsed ? 0 : token.marginXL
-  const titleGap = collapsed ? 0 : token.marginXXS
+  const emblemSize = effectiveCollapsed ? token.controlHeightSM : token.controlHeightLG
+  const footerPadding = effectiveCollapsed ? token.paddingSM : token.paddingLG
+  const menuIndent = effectiveCollapsed ? 0 : token.marginXL
+  const titleGap = effectiveCollapsed ? 0 : token.marginXXS
   const menuItemStyle = useMemo(() => {
-    const basePadding = collapsed ? token.paddingSM : token.paddingLG
+    const basePadding = effectiveCollapsed ? token.paddingSM : token.paddingLG
     return {
       borderRadius: token.borderRadius,
       marginBlock: token.marginXXS,
@@ -42,11 +45,11 @@ const Sider = ({
       paddingBlock: token.paddingXS,
       display: 'flex',
       alignItems: 'center',
-      justifyContent: collapsed ? 'center' : 'flex-start',
-      gap: collapsed ? 0 : token.marginSM
+      justifyContent: effectiveCollapsed ? 'center' : 'flex-start',
+      gap: effectiveCollapsed ? 0 : token.marginSM
     }
   }, [
-    collapsed,
+    effectiveCollapsed,
     token.borderRadius,
     token.marginSM,
     token.marginXXS,
@@ -77,7 +80,7 @@ const Sider = ({
         return {
           ...item,
           icon: undefined,
-          title: collapsed ? null : undefined,
+          title: effectiveCollapsed ? null : undefined,
           style: {
             ...(item.style ?? {}),
             ...menuItemStyle
@@ -86,10 +89,10 @@ const Sider = ({
           label: (
             <Flex
               align="center"
-              justify={collapsed ? 'center' : 'flex-start'}
-              gap={collapsed ? 0 : token.marginSM}
+              justify={effectiveCollapsed ? 'center' : 'flex-start'}
+              gap={effectiveCollapsed ? 0 : token.marginSM}
               style={{ width: '100%', color: 'inherit' }}
-              aria-label={collapsed ? undefined : ariaLabel}
+              aria-label={effectiveCollapsed ? undefined : ariaLabel}
             >
               {iconNode ? (
                 <span
@@ -102,7 +105,7 @@ const Sider = ({
                   {iconNode}
                 </span>
               ) : null}
-              {!collapsed && labelNode ? (
+              {!effectiveCollapsed && labelNode ? (
                 <span style={{ flex: 1, whiteSpace: 'nowrap' }}>{labelNode}</span>
               ) : null}
             </Flex>
@@ -112,7 +115,93 @@ const Sider = ({
     }
 
     return decorate(items)
-  }, [collapsed, items, menuItemStyle, token.marginSM])
+  }, [collapsed, effectiveCollapsed, items, menuItemStyle, token.marginSM])
+
+  const content = (
+    <Flex vertical gap={sectionGap} style={{ height: '100%' }}>
+      <Flex
+        align="center"
+        justify={effectiveCollapsed ? 'center' : 'flex-start'}
+        gap={effectiveCollapsed ? 0 : token.marginSM}
+        style={{ minHeight: headerHeight }}
+      >
+        <Avatar
+          shape="square"
+          size={emblemSize}
+          style={{
+            backgroundColor: accent,
+            color: accentForeground,
+            fontWeight: token.fontWeightStrong,
+            fontSize: effectiveCollapsed ? token.fontSize : token.fontSizeLG,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}
+        >
+          {title.slice(0, 1)}
+        </Avatar>
+        {!effectiveCollapsed && (
+          <Flex vertical gap={titleGap}>
+            <Typography.Text strong style={{ color: text }}>
+              {title}
+            </Typography.Text>
+            <Typography.Text type="secondary" style={{ color: muted }}>
+              Workspace
+            </Typography.Text>
+          </Flex>
+        )}
+      </Flex>
+      <Flex vertical flex={1} style={{ overflow: 'hidden' }}>
+        <Menu
+          mode="inline"
+          theme={themeMode}
+          items={menuItems}
+          selectedKeys={selectedKeys}
+          onClick={onSelect}
+          style={{
+            borderInlineEnd: 'none',
+            background: 'transparent',
+            padding: 0,
+            margin: 0,
+            flex: 1,
+            overflowY: 'auto'
+          }}
+          inlineCollapsed={false}
+          inlineIndent={menuIndent}
+        />
+      </Flex>
+      {footer && (
+        <Flex
+          justify="center"
+          style={{
+            paddingBlock: `${footerPadding}px`,
+            paddingInline: `${horizontalPadding}px`,
+            borderBlockStart: `${token.lineWidth}px solid ${borderColor}`
+          }}
+        >
+          {footer}
+        </Flex>
+      )}
+    </Flex>
+  )
+
+  if (isMobileVariant) {
+    return (
+      <div
+        style={{
+          background,
+          padding: containerPadding,
+          borderRadius: token.borderRadiusLG,
+          boxShadow: shadow,
+          boxSizing: 'border-box',
+          height: '100vh',
+          overflow: 'hidden'
+        }}
+      >
+        {content}
+      </div>
+    )
+  }
 
   return (
     <AntSider
@@ -134,71 +223,7 @@ const Sider = ({
         boxSizing: 'border-box'
       }}
     >
-      <Flex vertical gap={sectionGap} style={{ height: '100%' }}>
-        <Flex
-          align="center"
-          justify={collapsed ? 'center' : 'flex-start'}
-          gap={collapsed ? 0 : token.marginSM}
-          style={{ minHeight: headerHeight }}
-        >
-          <Avatar
-            shape="square"
-            size={emblemSize}
-            style={{
-              backgroundColor: accent,
-              color: accentForeground,
-              fontWeight: token.fontWeightStrong,
-              fontSize: collapsed ? token.fontSize : token.fontSizeLG,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}
-          >
-            {title.slice(0, 1)}
-          </Avatar>
-          {!collapsed && (
-            <Flex vertical gap={titleGap}>
-              <Typography.Text strong style={{ color: text }}>
-                {title}
-              </Typography.Text>
-              <Typography.Text type="secondary" style={{ color: muted }}>
-                Workspace
-              </Typography.Text>
-            </Flex>
-          )}
-        </Flex>
-        <Flex vertical flex={1} style={{ overflow: 'hidden' }}>
-          <Menu
-            mode="inline"
-            theme={themeMode}
-            items={menuItems}
-            selectedKeys={selectedKeys}
-            onClick={onSelect}
-            style={{
-              borderInlineEnd: 'none',
-              background: 'transparent',
-              padding: 0,
-              margin: 0,
-              flex: 1,
-              overflowY: 'auto'
-            }}
-            inlineCollapsed={false}
-            inlineIndent={menuIndent}
-          />
-        </Flex>
-        {footer && (
-          <Flex
-            justify="center"
-            style={{
-              paddingBlock: `${footerPadding}px`,
-              paddingInline: `${horizontalPadding}px`,
-              borderBlockStart: `${token.lineWidth}px solid ${borderColor}`
-            }}
-          >
-            {footer}
-          </Flex>
-        )}
-      </Flex>
+      {content}
     </AntSider>
   )
 }

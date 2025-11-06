@@ -404,6 +404,9 @@
       "assignee": "Assigned to: {{assignee}}",
       "createdAt": "Created on {{date}}",
       "dueDate": "Due by {{date}}",
+      "sprintLabel": "Sprint",
+      "sprint": "Sprint: {{sprint}}",
+      "noSprint": "No sprint",
       "linkedNotes": "Linked notes",
       "noLinkedNotes": "No linked notes yet",
       "empty": "No task selected",
@@ -657,7 +660,8 @@
       "title": "Sprint details",
       "tasks": "Tasks",
       "emptyTasks": "No tasks in this sprint yet."
-    }
+    },
+    "selectPrompt": "Select a sprint to see details."
   },
   "time": {
     "tracking": {

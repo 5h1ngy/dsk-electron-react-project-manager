@@ -1,4 +1,5 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { Grid } from 'antd'
 import type { MenuProps } from 'antd'
 import { useTranslation } from 'react-i18next'
 import { useLocation, useNavigate } from 'react-router-dom'
@@ -16,7 +17,10 @@ export const useShellLayout = (currentUser?: UserDTO): UseShellLayoutResult => {
 
   const [collapsed, setCollapsed] = useState(false)
   const [breakpointCollapsed, setBreakpointCollapsed] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
+  const [mobileMenuVisible, setMobileMenuVisible] = useState(false)
   const mode = useAppSelector(selectThemeMode)
+  const screens = Grid.useBreakpoint()
 
   const menuTheme: 'light' | 'dark' = useMemo(() => (mode === 'dark' ? 'dark' : 'light'), [mode])
 
@@ -35,16 +39,27 @@ export const useShellLayout = (currentUser?: UserDTO): UseShellLayoutResult => {
     return key ? [key] : []
   }, [includeUserManagement, location.pathname])
 
+  const handleCloseMobileMenu = useCallback(() => {
+    setMobileMenuVisible(false)
+  }, [])
+
   const handleMenuSelect = useCallback<NonNullable<MenuProps['onClick']>>(
     ({ key }) => {
       if (location.pathname !== key) {
         navigate(String(key))
       }
+      if (isMobile) {
+        handleCloseMobileMenu()
+      }
     },
-    [navigate, location.pathname]
+    [handleCloseMobileMenu, isMobile, navigate, location.pathname]
   )
 
   const handleToggleCollapse = useCallback(() => {
+    if (isMobile) {
+      setMobileMenuVisible((visible) => !visible)
+      return
+    }
     setCollapsed((value) => {
       const next = !value
       if (!next) {
@@ -52,16 +67,22 @@ export const useShellLayout = (currentUser?: UserDTO): UseShellLayoutResult => {
       }
       return next
     })
-  }, [setBreakpointCollapsed])
+  }, [isMobile, setBreakpointCollapsed])
 
   const handleCollapseChange = useCallback(
     (value: boolean) => {
+      if (isMobile) {
+        if (!value) {
+          handleCloseMobileMenu()
+        }
+        return
+      }
       setCollapsed(value)
       if (!value) {
         setBreakpointCollapsed(false)
       }
     },
-    [setBreakpointCollapsed]
+    [handleCloseMobileMenu, isMobile, setBreakpointCollapsed]
   )
 
   const handleBreakpoint = useCallback(
@@ -76,6 +97,23 @@ export const useShellLayout = (currentUser?: UserDTO): UseShellLayoutResult => {
     },
     [breakpointCollapsed, setBreakpointCollapsed]
   )
+
+  useEffect(() => {
+    if (screens.lg === undefined) {
+      return
+    }
+    if (!screens.lg) {
+      setIsMobile(true)
+      setCollapsed(true)
+      setBreakpointCollapsed(true)
+      handleCloseMobileMenu()
+    } else {
+      setIsMobile(false)
+      setBreakpointCollapsed(false)
+      setCollapsed(false)
+      handleCloseMobileMenu()
+    }
+  }, [handleCloseMobileMenu, screens.lg])
 
   const labels = useMemo(
     () => ({
@@ -96,6 +134,9 @@ export const useShellLayout = (currentUser?: UserDTO): UseShellLayoutResult => {
     handleToggleCollapse,
     handleCollapseChange,
     handleBreakpoint,
+    isMobile,
+    mobileMenuVisible,
+    handleCloseMobileMenu,
     labels
   }
 }

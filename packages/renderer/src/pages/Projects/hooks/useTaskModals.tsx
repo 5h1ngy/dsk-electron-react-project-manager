@@ -287,7 +287,9 @@ export const useTaskModals = ({
               priority: values.priority,
               dueDate: values.dueDate,
               assigneeId: values.assigneeId,
-              ownerId: values.ownerId
+              ownerId: values.ownerId,
+              sprintId: values.sprintId,
+              estimatedMinutes: values.estimatedMinutes
             }
           })
         ).unwrap()

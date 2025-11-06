@@ -7,6 +7,8 @@ import { ProjectMember } from '../packages/main/src/models/ProjectMember'
 import { ProjectTag } from '../packages/main/src/models/ProjectTag'
 import { Task } from '../packages/main/src/models/Task'
 import { TaskStatus } from '../packages/main/src/models/TaskStatus'
+import { Sprint } from '../packages/main/src/models/Sprint'
+import { TimeEntry } from '../packages/main/src/models/TimeEntry'
 import { Note } from '../packages/main/src/models/Note'
 import { NoteTag } from '../packages/main/src/models/NoteTag'
 import { NoteTaskLink } from '../packages/main/src/models/NoteTaskLink'
@@ -18,7 +20,9 @@ import { DEFAULT_TASK_STATUSES } from '../packages/main/src/services/taskStatus/
 import type {
   NoteSeedDefinition,
   ProjectSeedDefinition,
+  SprintSeedDefinition,
   TaskSeedDefinition,
+  TimeEntrySeedDefinition,
   WikiPageSeedDefinition
 } from './DevelopmentSeeder.types'
 
@@ -35,11 +39,13 @@ export class ProjectSeeder {
     seed: ProjectSeedDefinition
   ): Promise<{
     project: Project | null
+    sprintCount: number
     taskCount: number
     commentCount: number
     noteCount: number
     wikiPageCount: number
     wikiRevisionCount: number
+    timeEntryCount: number
   }> {
     const existing = await Project.findOne({ where: { key: seed.key }, transaction })
 
@@ -73,22 +79,42 @@ export class ProjectSeeder {
     await this.syncTags(project, seed.tags, transaction)
     await this.ensureTaskStatuses(project, transaction)
 
-    const taskSync = await this.syncTasks(project, seed.tasks, seed.createdBy, transaction)
+    const sprintSync = await this.syncSprints(
+      project,
+      seed.sprints ?? [],
+      transaction
+    )
+
+    const taskSync = await this.syncTasks(
+      project,
+      seed.tasks,
+      seed.createdBy,
+      sprintSync.sprints,
+      transaction
+    )
     const noteSync = await this.syncNotes(project, seed.notes, taskSync.orderedTasks, transaction)
     const wikiSync = await this.syncWiki(project, seed.wikiPages, transaction)
+    const timeTrackingSync = await this.syncTimeEntries(
+      project,
+      seed.timeEntries ?? [],
+      taskSync.orderedTasks,
+      transaction
+    )
 
     if (createdProject) {
       logger.debug(
-        `Seeded project ${project.key} with ${seed.members.length} members, ${seed.tags.length} tags, ${taskSync.createdTasks} tasks, ${taskSync.createdComments} comments, ${noteSync.createdNotes} notes and ${wikiSync.createdPages} wiki pages`,
+        `Seeded project ${project.key} with ${seed.members.length} members, ${seed.tags.length} tags, ${sprintSync.createdSprints} sprints, ${taskSync.createdTasks} tasks, ${taskSync.createdComments} comments, ${noteSync.createdNotes} notes, ${wikiSync.createdPages} wiki pages and ${timeTrackingSync.createdEntries} time entries`,
         'Seed'
       )
     } else if (
+      sprintSync.createdSprints > 0 ||
       taskSync.createdTasks > 0 ||
       noteSync.createdNotes > 0 ||
-      wikiSync.createdPages > 0
+      wikiSync.createdPages > 0 ||
+      timeTrackingSync.createdEntries > 0
     ) {
       logger.debug(
-        `Topped up project ${project.key}: +${taskSync.createdTasks} tasks, +${taskSync.createdComments} comments, +${noteSync.createdNotes} notes, +${wikiSync.createdPages} wiki pages`,
+        `Topped up project ${project.key}: +${sprintSync.createdSprints} sprints, +${taskSync.createdTasks} tasks, +${taskSync.createdComments} comments, +${noteSync.createdNotes} notes, +${wikiSync.createdPages} wiki pages, +${timeTrackingSync.createdEntries} time entries`,
         'Seed'
       )
     } else {
@@ -97,11 +123,13 @@ export class ProjectSeeder {
 
     return {
       project: createdProject ? project : null,
+      sprintCount: sprintSync.createdSprints,
       taskCount: taskSync.createdTasks,
       commentCount: taskSync.createdComments,
       noteCount: noteSync.createdNotes,
       wikiPageCount: wikiSync.createdPages,
-      wikiRevisionCount: wikiSync.createdRevisions
+      wikiRevisionCount: wikiSync.createdRevisions,
+      timeEntryCount: timeTrackingSync.createdEntries
     }
   }
 
@@ -190,6 +218,81 @@ export class ProjectSeeder {
     )
   }
 
+  private async syncSprints(
+    project: Project,
+    sprintSeeds: SprintSeedDefinition[],
+    transaction: Transaction
+  ): Promise<{ createdSprints: number; updatedSprints: number; sprints: Sprint[] }> {
+    if (sprintSeeds.length === 0) {
+      const existingSprints = await Sprint.findAll({
+        where: { projectId: project.id },
+        order: [['sequence', 'ASC']],
+        transaction
+      })
+      return { createdSprints: 0, updatedSprints: 0, sprints: existingSprints }
+    }
+
+    const existing = await Sprint.findAll({
+      where: { projectId: project.id },
+      order: [['sequence', 'ASC']],
+      transaction
+    })
+
+    let created = 0
+    let updated = 0
+    const sprints: Sprint[] = []
+
+    for (let index = 0; index < sprintSeeds.length; index += 1) {
+      const seed = sprintSeeds[index]
+      const current = existing[index]
+
+      if (current) {
+        const goal = seed.goal ?? null
+        const capacity = seed.capacityMinutes ?? null
+        const needsUpdate =
+          current.name !== seed.name ||
+          (current.goal ?? null) !== goal ||
+          current.startDate !== seed.startDate ||
+          current.endDate !== seed.endDate ||
+          current.status !== seed.status ||
+          current.capacityMinutes !== capacity ||
+          current.sequence !== seed.sequence
+
+        if (needsUpdate) {
+          current.name = seed.name
+          current.goal = goal
+          current.startDate = seed.startDate
+          current.endDate = seed.endDate
+          current.status = seed.status
+          current.capacityMinutes = capacity
+          current.sequence = seed.sequence
+          await current.save({ transaction })
+          updated += 1
+        }
+        sprints.push(current)
+      } else {
+        const sprint = await Sprint.create(
+          {
+            id: randomUUID(),
+            projectId: project.id,
+            name: seed.name,
+            goal: seed.goal,
+            startDate: seed.startDate,
+            endDate: seed.endDate,
+            status: seed.status,
+            capacityMinutes: seed.capacityMinutes,
+            sequence: seed.sequence
+          },
+          { transaction }
+        )
+        created += 1
+        sprints.push(sprint)
+      }
+    }
+
+    return { createdSprints: created, updatedSprints: updated, sprints }
+  }
+
   private resolveTaskSequence(prefix: string, tasks: Task[]): number {
     let max = 0
 
@@ -213,6 +316,7 @@ export class ProjectSeeder {
     project: Project,
     taskSeeds: TaskSeedDefinition[],
     createdByFallback: string,
+    sprints: Sprint[],
     transaction: Transaction
   ): Promise<{ createdTasks: number; createdComments: number; orderedTasks: Task[] }> {
     if (taskSeeds.length === 0) {
@@ -246,6 +350,9 @@ export class ProjectSeeder {
       const key = `${project.key}-${String(nextSequence).padStart(3, '0')}`
       nextSequence += 1
 
+      const sprint =
+        taskSeed.sprintIndex !== null ? sprints[taskSeed.sprintIndex] : undefined
+
       const task = await Task.create(
         {
           id: randomUUID(),
@@ -258,7 +365,9 @@ export class ProjectSeeder {
           priority: taskSeed.priority,
           dueDate: taskSeed.dueDate,
           assigneeId: taskSeed.assigneeId,
-          ownerUserId: taskSeed.ownerId ?? createdByFallback
+          ownerUserId: taskSeed.ownerId ?? createdByFallback,
+          sprintId: sprint?.id ?? null,
+          estimatedMinutes: taskSeed.estimatedMinutes ?? null
         },
         { transaction }
       )
@@ -279,6 +388,60 @@ export class ProjectSeeder {
     }
 
     return { createdTasks, createdComments, orderedTasks }
+  }
+
+  private async syncTimeEntries(
+    project: Project,
+    timeEntrySeeds: TimeEntrySeedDefinition[],
+    taskIndexMap: Task[],
+    transaction: Transaction
+  ): Promise<{ createdEntries: number }> {
+    if (timeEntrySeeds.length === 0 || taskIndexMap.length === 0) {
+      return { createdEntries: 0 }
+    }
+
+    const existingEntries = await TimeEntry.findAll({
+      where: { projectId: project.id },
+      attributes: ['taskId', 'userId', 'entryDate', 'durationMinutes'],
+      transaction
+    })
+
+    const existingKeys = new Set(
+      existingEntries.map(
+        (entry) => `${entry.taskId}:${entry.userId}:${entry.entryDate}:${entry.durationMinutes}`
+      )
+    )
+
+    let createdEntries = 0
+
+    for (const entrySeed of timeEntrySeeds) {
+      const task = taskIndexMap[entrySeed.taskIndex]
+      if (!task) {
+        continue
+      }
+
+      const key = `${task.id}:${entrySeed.userId}:${entrySeed.entryDate}:${entrySeed.durationMinutes}`
+      if (existingKeys.has(key)) {
+        continue
+      }
+
+      await TimeEntry.create(
+        {
+          id: randomUUID(),
+          projectId: project.id,
+          taskId: task.id,
+          userId: entrySeed.userId,
+          entryDate: entrySeed.entryDate,
+          durationMinutes: entrySeed.durationMinutes,
+          description: entrySeed.description ?? null
+        },
+        { transaction }
+      )
+      createdEntries += 1
+      existingKeys.add(key)
+    }
+
+    return { createdEntries }
   }
 
   private async syncNotes(

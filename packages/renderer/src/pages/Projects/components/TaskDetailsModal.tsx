@@ -24,7 +24,8 @@ import {
   MessageOutlined,
   FileMarkdownOutlined,
   LockOutlined,
-  CheckOutlined
+  CheckOutlined,
+  FlagOutlined
 } from '@ant-design/icons'
 import { Controller, useForm, type Resolver } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
@@ -59,6 +60,7 @@ export interface TaskDetailsModalProps {
   assigneeOptions?: Array<{ label: string; value: string }>
   statusOptions?: Array<{ label: string; value: string }>
   ownerOptions?: Array<{ label: string; value: string }>
+  sprintOptions?: Array<{ label: string; value: string }>
 }
 
 const PRIORITY_ORDER: TaskDetails['priority'][] = ['low', 'medium', 'high', 'critical']
@@ -89,7 +91,8 @@ export const TaskDetailsModal = ({
   deleting = false,
   assigneeOptions = [],
   statusOptions = [],
-  ownerOptions = []
+  ownerOptions = [],
+  sprintOptions = []
 }: TaskDetailsModalProps): JSX.Element => {
   const { t, i18n } = useTranslation('projects')
   const { token } = theme.useToken()
@@ -552,6 +555,30 @@ export const TaskDetailsModal = ({
                 </Form.Item>
 
                 <Form.Item
+                  label={t('tasks.form.fields.sprint')}
+                  style={{ flex: 1, minWidth: 200 }}
+                  validateStatus={editErrors.sprintId ? 'error' : ''}
+                  help={editErrors.sprintId?.toString()}
+                >
+                  <Controller
+                    control={editControl}
+                    name="sprintId"
+                    render={({ field }) => (
+                      <Select
+                        value={field.value ?? undefined}
+                        allowClear
+                        placeholder={t('tasks.form.placeholders.sprint')}
+                        options={sprintOptions}
+                        onChange={(value) => field.onChange(value ?? null)}
+                        showSearch
+                        optionFilterProp="label"
+                        disabled={updating || sprintOptions.length === 0}
+                      />
+                    )}
+                  />
+                </Form.Item>
+
+                <Form.Item
                   label={t('tasks.form.fields.assignee')}
                   style={{ flex: 1, minWidth: 200 }}
                   validateStatus={editErrors.assigneeId ? 'error' : ''}
@@ -574,6 +601,7 @@ export const TaskDetailsModal = ({
                     )}
                   />
                 </Form.Item>
+
                 <Form.Item
                   label={t('tasks.form.fields.owner')}
                   style={{ flex: 1, minWidth: 200 }}
@@ -658,6 +686,14 @@ export const TaskDetailsModal = ({
                 {t('tasks.details.assignee', {
                   assignee: task.assignee?.displayName ?? t('details.noAssignee')
                 })}
+              </Typography.Text>
+            </Space>
+            <Space size={6} align="center">
+              <FlagOutlined style={{ color: token.colorInfo }} aria-hidden />
+              <Typography.Text type="secondary">
+                {task.sprint
+                  ? t('tasks.details.sprint', { sprint: task.sprint.name })
+                  : t('tasks.details.noSprint')}
               </Typography.Text>
             </Space>
           </Space>

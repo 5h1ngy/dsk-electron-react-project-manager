@@ -373,14 +373,18 @@
         "priority": "Priorita",
         "assignee": "Assegnatario",
         "owner": "Proprietario",
-        "dueDate": "Scadenza"
+        "dueDate": "Scadenza",
+        "sprint": "Sprint",
+        "estimatedMinutes": "Minuti stimati"
       },
       "placeholders": {
         "title": "Titolo del task",
         "description": "Descrizione (opzionale)",
         "assignee": "Seleziona assegnatario",
         "owner": "Seleziona proprietario",
-        "dueDate": "Seleziona la scadenza"
+        "dueDate": "Seleziona la scadenza",
+        "sprint": "Seleziona sprint",
+        "estimatedMinutes": "Minuti (opzionale)"
       }
     },
     "messages": {
@@ -398,6 +402,9 @@
       "assignee": "Assegnato a: {{assignee}}",
       "createdAt": "Creato il {{date}}",
       "dueDate": "Scadenza il {{date}}",
+      "sprintLabel": "Sprint",
+      "sprint": "Sprint: {{sprint}}",
+      "noSprint": "Nessuno sprint",
       "linkedNotes": "Note collegate",
       "noLinkedNotes": "Nessuna nota collegata",
       "empty": "Nessun task selezionato",
@@ -651,7 +658,8 @@
       "title": "Dettagli sprint",
       "tasks": "Task",
       "emptyTasks": "Nessun task presente nello sprint."
-    }
+    },
+    "selectPrompt": "Seleziona uno sprint per visualizzare i dettagli."
   },
   "time": {
     "tracking": {

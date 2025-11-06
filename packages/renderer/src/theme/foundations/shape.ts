@@ -14,8 +14,8 @@ export const shapeTokens: ShapeTokens = {
   radiusLG: 12,
   radiusXL: 16,
   controlHeightSM: 32,
-  controlHeight: 38,
-  controlHeightLG: 46
+  controlHeight: 40,
+  controlHeightLG: 48
 }
 
 export const buildShapeTokenOverrides = () => ({

@@ -4,8 +4,6 @@ import {
   AppstoreOutlined,
   BarsOutlined,
   ColumnWidthOutlined,
-  DeploymentUnitOutlined,
-  FieldTimeOutlined,
   PlusOutlined,
   TableOutlined
 } from '@ant-design/icons'
@@ -44,8 +42,8 @@ export interface TaskFiltersBarProps {
   assigneeOptions: SelectOption[]
   sprintOptions?: SelectOption[]
   onChange: (patch: Partial<TaskFilters>) => void
-  viewMode: 'table' | 'list' | 'cards' | 'board' | 'sprint' | 'timeline'
-  onViewModeChange: (mode: 'table' | 'list' | 'cards' | 'board' | 'sprint' | 'timeline') => void
+  viewMode: 'table' | 'list' | 'cards' | 'board'
+  onViewModeChange: (mode: 'table' | 'list' | 'cards' | 'board') => void
   onCreate?: () => void
   canCreate?: boolean
   secondaryActions?: ReactNode
@@ -143,24 +141,6 @@ export const TaskFiltersBar = ({
           </Space>
         ),
         value: 'cards'
-      },
-      {
-        label: (
-          <Space size={6} style={{ color: 'inherit' }}>
-            <DeploymentUnitOutlined />
-            {!isCompact ? <span>{t('viewSwitcher.sprint')}</span> : null}
-          </Space>
-        ),
-        value: 'sprint'
-      },
-      {
-        label: (
-          <Space size={6} style={{ color: 'inherit' }}>
-            <FieldTimeOutlined />
-            {!isCompact ? <span>{t('viewSwitcher.timeline')}</span> : null}
-          </Space>
-        ),
-        value: 'timeline'
       }
     ],
     [isCompact, t]
@@ -307,29 +287,29 @@ export const TaskFiltersBar = ({
         wrap={!isCompact}
         style={{ flex: '1 1 auto' }}
       >
-        {secondaryActions ? (
-          <Space size="small" wrap>
-            {secondaryActions}
-          </Space>
-        ) : null}
-        {onCreate ? (
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            onClick={onCreate}
-            disabled={!canCreate}
-            style={buttonFullWidthStyle}
-          >
-            {t('tasks.actions.create')}
-          </Button>
-        ) : null}
-        {primaryActions.length
-          ? primaryActions.map((action, index) => (
-              <div key={`primary-action-${index}`} style={buttonFullWidthStyle}>
-                {action}
-              </div>
-            ))
-          : null}
+        <Space size={12} wrap>
+          {onCreate ? (
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={onCreate}
+              disabled={!canCreate}
+              style={buttonFullWidthStyle}
+            >
+              {t('tasks.actions.create')}
+            </Button>
+          ) : null}
+          {secondaryActions ? (
+            <div style={buttonFullWidthStyle}>{secondaryActions}</div>
+          ) : null}
+          {primaryActions.length
+            ? primaryActions.map((action, index) => (
+                <div key={`primary-action-${index}`} style={buttonFullWidthStyle}>
+                  {action}
+                </div>
+              ))
+            : null}
+        </Space>
       </Flex>
       <Flex
         align={isCompact ? 'stretch' : 'center'}
@@ -340,9 +320,7 @@ export const TaskFiltersBar = ({
         <Segmented
           size="large"
           value={viewMode}
-          onChange={(next) =>
-            onViewModeChange(next as 'table' | 'list' | 'cards' | 'board' | 'sprint' | 'timeline')
-          }
+          onChange={(next) => onViewModeChange(next as 'table' | 'list' | 'cards' | 'board')}
           options={viewSegmentedOptions}
           block={isCompact}
           style={segmentedStyle}
