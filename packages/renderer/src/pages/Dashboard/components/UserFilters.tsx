@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState, type JSX, type ReactNode } from 'react'
+import { useCallback, useMemo, useState, type CSSProperties, type JSX, type ReactNode } from 'react'
 import {
   Button,
   DatePicker,
@@ -17,7 +17,6 @@ import {
   AppstoreOutlined,
   BarsOutlined,
   FilterOutlined,
-  ReloadOutlined,
   SearchOutlined,
   TableOutlined,
   UserSwitchOutlined
@@ -50,8 +49,6 @@ export interface UserFiltersProps {
   viewMode: 'table' | 'list' | 'cards'
   onViewModeChange: (mode: 'table' | 'list' | 'cards') => void
   primaryActions?: ReactNode[]
-  onRefresh?: () => void
-  refreshing?: boolean
   onOpenOptionalFields?: () => void
   hasOptionalFields?: boolean
   optionalFieldsDisabled?: boolean
@@ -66,8 +63,6 @@ export const UserFilters = ({
   viewMode,
   onViewModeChange,
   primaryActions = [],
-  onRefresh,
-  refreshing = false,
   onOpenOptionalFields,
   hasOptionalFields = false,
   optionalFieldsDisabled = false
@@ -78,7 +73,15 @@ export const UserFilters = ({
   const screens = Grid.useBreakpoint()
   const isCompact = !screens.md
   const { token } = theme.useToken()
-  const buttonFullWidthStyle = useMemo(() => (isCompact ? { width: '100%' } : undefined), [isCompact])
+  const toolbarButtonStyle = useMemo(() => {
+    const base: CSSProperties = {
+      minHeight: token.controlHeightLG,
+      display: 'inline-flex',
+      alignItems: 'center',
+      justifyContent: 'center'
+    }
+    return isCompact ? { ...base, width: '100%' } : base
+  }, [isCompact, token.controlHeightLG])
 
   const toolbarSegmentedStyle = useMemo(
     () => ({
@@ -100,16 +103,19 @@ export const UserFilters = ({
   const toPickerValue = useCallback(
     (range: UserFiltersValue['lastLoginRange']) =>
       range
-        ? ([
-            range[0] ? dayjs(range[0]) : null,
-            range[1] ? dayjs(range[1]) : null
-          ] as [Dayjs | null, Dayjs | null])
+        ? ([range[0] ? dayjs(range[0]) : null, range[1] ? dayjs(range[1]) : null] as [
+            Dayjs | null,
+            Dayjs | null
+          ])
         : null,
     []
   )
 
   const handleRangeChange = useCallback(
-    (key: 'lastLoginRange' | 'createdRange' | 'updatedRange', dates: [Dayjs | null, Dayjs | null] | null) => {
+    (
+      key: 'lastLoginRange' | 'createdRange' | 'updatedRange',
+      dates: [Dayjs | null, Dayjs | null] | null
+    ) => {
       if (!dates) {
         onChange({ [key]: null } as Partial<UserFiltersValue>)
         return
@@ -125,9 +131,18 @@ export const UserFilters = ({
     [onChange]
   )
 
-  const lastLoginValue = useMemo(() => toPickerValue(value.lastLoginRange), [toPickerValue, value.lastLoginRange])
-  const createdValue = useMemo(() => toPickerValue(value.createdRange), [toPickerValue, value.createdRange])
-  const updatedValue = useMemo(() => toPickerValue(value.updatedRange), [toPickerValue, value.updatedRange])
+  const lastLoginValue = useMemo(
+    () => toPickerValue(value.lastLoginRange),
+    [toPickerValue, value.lastLoginRange]
+  )
+  const createdValue = useMemo(
+    () => toPickerValue(value.createdRange),
+    [toPickerValue, value.createdRange]
+  )
+  const updatedValue = useMemo(
+    () => toPickerValue(value.updatedRange),
+    [toPickerValue, value.updatedRange]
+  )
 
   const filtersContent = (
     <Flex vertical gap={16}>
@@ -143,7 +158,9 @@ export const UserFilters = ({
       <Input
         allowClear
         prefix={<SearchOutlined />}
-        placeholder={t('filters.users.usernamePlaceholder', { defaultValue: 'Filtra per username' })}
+        placeholder={t('filters.users.usernamePlaceholder', {
+          defaultValue: 'Filtra per username'
+        })}
         value={value.username}
         onChange={(event) => onChange({ username: event.target.value })}
         style={{ width: '100%' }}
@@ -231,7 +248,13 @@ export const UserFilters = ({
       (['table', 'list', 'cards'] as const).map((key) => ({
         label: (
           <Space size={6} style={{ color: 'inherit' }}>
-            {key === 'table' ? <TableOutlined /> : key === 'list' ? <BarsOutlined /> : <AppstoreOutlined />}
+            {key === 'table' ? (
+              <TableOutlined />
+            ) : key === 'list' ? (
+              <BarsOutlined />
+            ) : (
+              <AppstoreOutlined />
+            )}
             {!isCompact ? <span>{t(`filters.users.view.${key}`)}</span> : null}
           </Space>
         ),
@@ -243,30 +266,25 @@ export const UserFilters = ({
   const actionsContent = (
     <Flex align="center" wrap gap={12} style={{ width: '100%' }}>
       <Space size="small" wrap style={{ flex: '1 1 auto' }}>
-        {onRefresh ? (
-          <Button
-            icon={<ReloadOutlined />}
-            onClick={onRefresh}
-            loading={refreshing}
-            disabled={refreshing}
-            size="large"
-            style={buttonFullWidthStyle}
-          >
-            {t('dashboard:actionBar.refresh')}
-          </Button>
-        ) : null}
         <Button
           type="primary"
           onClick={onCreate}
           disabled={!canCreate}
           size="large"
-          style={buttonFullWidthStyle}
+          style={toolbarButtonStyle}
         >
           {t('dashboard:actionBar.create')}
         </Button>
         {primaryActions.length
           ? primaryActions.map((action, index) => (
-              <div key={`primary-action-${index}`} style={buttonFullWidthStyle}>
+              <div
+                key={`primary-action-${index}`}
+                style={
+                  isCompact
+                    ? { width: '100%', display: 'inline-flex', alignItems: 'stretch' }
+                    : { display: 'inline-flex', alignItems: 'stretch' }
+                }
+              >
                 {action}
               </div>
             ))
@@ -287,7 +305,7 @@ export const UserFilters = ({
             size="large"
             disabled={optionalFieldsDisabled}
             onClick={onOpenOptionalFields}
-            style={buttonFullWidthStyle}
+            style={toolbarButtonStyle}
           >
             {t('dashboard:optionalColumns.button', { defaultValue: 'Campi opzionali' })}
           </Button>
@@ -296,7 +314,7 @@ export const UserFilters = ({
           icon={<FilterOutlined />}
           onClick={() => setFiltersOpen(true)}
           size="large"
-          style={buttonFullWidthStyle}
+          style={toolbarButtonStyle}
         >
           {t('filters.users.openButton')}
         </Button>
@@ -364,4 +382,3 @@ export const UserFilters = ({
 UserFilters.displayName = 'UserFilters'
 
 export default UserFilters
-

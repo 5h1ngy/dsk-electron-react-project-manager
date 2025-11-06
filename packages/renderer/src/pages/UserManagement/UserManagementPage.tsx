@@ -1,6 +1,6 @@
 import type { JSX } from 'react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Alert, Breadcrumb, Button, Flex, Modal, Space, Typography } from 'antd'
+import { Alert, Breadcrumb, Button, Flex, Modal, Space, Typography, theme } from 'antd'
 import { ROLE_NAMES } from '@main/services/auth/constants'
 import { DeleteOutlined, ReloadOutlined } from '@ant-design/icons'
 import { Navigate } from 'react-router-dom'
@@ -20,11 +20,11 @@ import {
 import { UserListView } from '@renderer/pages/Dashboard/components/UserListView'
 import { UserTable } from '@renderer/pages/Dashboard/components/UserTable'
 import { useUserManagement } from '@renderer/pages/Dashboard/hooks/useUserManagement'
+import { UserColumnVisibilityControls } from '@renderer/pages/Dashboard/components/UserColumnVisibilityControls'
 import {
   OPTIONAL_USER_COLUMNS,
-  OptionalUserColumn,
-  UserColumnVisibilityControls
-} from '@renderer/pages/Dashboard/components/UserColumnVisibilityControls'
+  type OptionalUserColumn
+} from '@renderer/pages/Dashboard/components/UserColumnVisibilityControls.constants'
 import { useAppDispatch, useAppSelector } from '@renderer/store/hooks'
 import { selectCurrentUser, selectToken } from '@renderer/store/slices/auth/selectors'
 import { forceLogout } from '@renderer/store/slices/auth'
@@ -41,6 +41,7 @@ const UserManagementPage = (): JSX.Element | null => {
     { title: t('appShell.navigation.userManagement', { ns: 'common' }) }
   ])
   const breadcrumbStyle = useBreadcrumbStyle(breadcrumbItems)
+  const { token: themeToken } = theme.useToken()
   const currentUser = useAppSelector(selectCurrentUser)
   const dispatch = useAppDispatch()
   const token = useAppSelector(selectToken)
@@ -183,7 +184,9 @@ const UserManagementPage = (): JSX.Element | null => {
     }
 
     return users.filter((user) => {
-      const baseValues = [user.username, user.displayName, user.id].filter(Boolean).map((value) => value.toLowerCase())
+      const baseValues = [user.username, user.displayName, user.id]
+        .filter(Boolean)
+        .map((value) => value.toLowerCase())
       if (searchNeedle.length > 0 && !baseValues.some((value) => value.includes(searchNeedle))) {
         return false
       }
@@ -246,10 +249,7 @@ const UserManagementPage = (): JSX.Element | null => {
       ...baseColumns,
       ...visibleUserColumns
         .map((key) => optionalColumns[key])
-        .filter(
-          (column): column is (typeof baseColumns)[number] =>
-            Boolean(column)
-        ),
+        .filter((column): column is (typeof baseColumns)[number] => Boolean(column)),
       actionsColumn
     ],
     [actionsColumn, baseColumns, optionalColumns, visibleUserColumns]
@@ -326,6 +326,13 @@ const UserManagementPage = (): JSX.Element | null => {
         onClick={handleBulkDelete}
         disabled={selectedUsers.length === 0 || deleteLoading}
         loading={deleteLoading && selectedUsers.length > 0}
+        size="large"
+        style={{
+          minHeight: themeToken.controlHeightLG,
+          display: 'inline-flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}
       >
         {t('dashboard:actions.deleteSelected', {
           count: selectedUsers.length
@@ -422,6 +429,7 @@ const UserManagementPage = (): JSX.Element | null => {
             onClick={refreshUsers}
             loading={loading}
             disabled={loading}
+            size="large"
           >
             {t('dashboard:actionBar.refresh')}
           </Button>
@@ -442,8 +450,6 @@ const UserManagementPage = (): JSX.Element | null => {
             setUserViewMode(mode)
           }}
           primaryActions={bulkDeleteButton ? [bulkDeleteButton] : []}
-          onRefresh={refreshUsers}
-          refreshing={loading}
           onOpenOptionalFields={() => setOptionalFieldsOpen(true)}
           hasOptionalFields={OPTIONAL_USER_COLUMNS.length > 0}
           optionalFieldsDisabled={userViewMode !== 'table'}
@@ -525,8 +531,16 @@ const UserManagementPage = (): JSX.Element | null => {
           footer={null}
           centered
           destroyOnClose={false}
+          styles={{
+            body: {
+              padding: themeToken.paddingLG,
+              display: 'flex',
+              flexDirection: 'column',
+              gap: themeToken.marginMD
+            }
+          }}
         >
-          <Space direction="vertical" size="middle" style={{ width: '100%' }}>
+          <Space direction="vertical" size="large" style={{ width: '100%' }}>
             <UserColumnVisibilityControls
               columns={OPTIONAL_USER_COLUMNS}
               selectedColumns={visibleUserColumns}

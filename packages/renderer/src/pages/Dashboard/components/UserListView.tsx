@@ -1,4 +1,4 @@
-import { Button, List, Space, Tag, Typography, theme } from 'antd'
+import { Button, Flex, List, Space, Tag, Typography, theme } from 'antd'
 import { ClockCircleOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons'
 import { useMemo, useState, type JSX } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -70,36 +70,60 @@ export const UserListView = ({
     <List
       dataSource={pagedUsers}
       style={{ width: '100%' }}
+      split={false}
+      itemLayout="vertical"
       renderItem={(user) => {
         const statusBadge = user.isActive
           ? badgeTokens.userStatus.active
           : badgeTokens.userStatus.inactive
+        const isHovered = hoveredId === user.id
 
         return (
           <List.Item
             key={user.id}
             style={{
-              paddingInline: token.paddingLG,
+              padding: token.paddingLG,
               borderRadius: token.borderRadiusLG,
-              transition: 'background-color 0.2s ease, box-shadow 0.2s ease',
-              background:
-                hoveredId === user.id ? token.colorFillTertiary : token.colorBgContainer,
-              boxShadow: hoveredId === user.id ? token.boxShadowTertiary : 'none'
+              transition:
+                'background-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease',
+              backgroundColor: isHovered ? token.colorFillTertiary : token.colorBgContainer,
+              boxShadow: isHovered ? token.boxShadowSecondary : 'none',
+              border: `${token.lineWidth}px solid ${
+                isHovered ? token.colorPrimaryBorder : token.colorBorderSecondary
+              }`,
+              transform: isHovered ? 'translateY(-2px)' : 'none'
             }}
             onMouseEnter={() => setHoveredId(user.id)}
             onMouseLeave={() => setHoveredId((current) => (current === user.id ? null : current))}
             actions={[
-              <Button key="edit" type="text" icon={<EditOutlined />} onClick={() => onEdit(user)}>
+              <Button
+                key="edit"
+                type="default"
+                icon={<EditOutlined />}
+                onClick={() => onEdit(user)}
+                size="middle"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+              >
                 {t('actions.edit')}
               </Button>,
               <Button
                 key="delete"
-                type="text"
+                type="default"
                 danger
                 icon={<DeleteOutlined />}
                 onClick={() => onDelete(user)}
                 loading={isDeleting(user.id)}
                 disabled={deleteDisabled && !isDeleting(user.id)}
+                size="middle"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
               >
                 {t('actions.delete')}
               </Button>
@@ -107,16 +131,28 @@ export const UserListView = ({
           >
             <List.Item.Meta
               title={
-                <Space align="center" size={token.marginSM} wrap>
-                  <Typography.Text strong>{user.displayName || user.username}</Typography.Text>
-                  <Typography.Text type="secondary">@{user.username}</Typography.Text>
+                <Flex
+                  align="center"
+                  justify="space-between"
+                  gap={token.marginSM}
+                  wrap
+                  style={{ width: '100%' }}
+                >
+                  <Space align="center" size={token.marginSM} wrap>
+                    <Typography.Text strong>
+                      {user.displayName && user.displayName.trim().length > 0
+                        ? user.displayName
+                        : user.username}
+                    </Typography.Text>
+                    <Typography.Text type="secondary">@{user.username}</Typography.Text>
+                  </Space>
                   <Tag bordered={false} style={buildBadgeStyle(statusBadge)}>
                     {user.isActive ? t('status.active') : t('status.inactive')}
                   </Tag>
-                </Space>
+                </Flex>
               }
               description={
-                <Space direction="vertical" size={token.marginXS} style={{ width: '100%' }}>
+                <Flex vertical gap={token.marginXS} style={{ width: '100%' }}>
                   <Space size={token.marginXS} wrap>
                     {user.roles.map((role) => {
                       const badge = badgeTokens.userRole[role] ?? badgeTokens.userRole.Viewer
@@ -134,7 +170,7 @@ export const UserListView = ({
                     <ClockCircleOutlined />
                     {formatLastLogin(user.lastLoginAt ?? null)}
                   </Typography.Text>
-                </Space>
+                </Flex>
               }
             />
           </List.Item>
@@ -146,7 +182,7 @@ export const UserListView = ({
         pageSize,
         onChange: onPageChange,
         showSizeChanger: false,
-        style: { marginTop: token.marginLG, textAlign: 'center' }
+        style: { marginTop: token.marginLG, textAlign: 'right' }
       }}
     />
   )
