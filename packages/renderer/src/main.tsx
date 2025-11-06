@@ -7,6 +7,9 @@ import { Provider } from 'react-redux'
 import { createRoot } from 'react-dom/client'
 import App from '@renderer/App'
 import { store } from '@renderer/store'
+import { ensureHttpBridge } from '@renderer/platform/httpBridge'
+
+ensureHttpBridge()
 
 const container = document.getElementById('root')
 

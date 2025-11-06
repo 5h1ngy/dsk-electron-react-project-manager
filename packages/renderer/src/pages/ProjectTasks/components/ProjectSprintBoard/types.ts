@@ -1,7 +1,7 @@
 import type dayjs from 'dayjs'
 import type { ColumnsType } from 'antd/es/table'
-import type { SprintDTO } from '@main/services/sprint/types'
-import type { TaskDetailsDTO } from '@main/services/task/types'
+import type { SprintDTO } from '@services/services/sprint/types'
+import type { TaskDetailsDTO } from '@services/services/task/types'
 
 export type TimelinePosition = {
   left: string

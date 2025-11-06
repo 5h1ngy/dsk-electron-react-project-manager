@@ -1,7 +1,7 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import type { AuthService } from '@main/services/auth'
-import type { ViewService } from '@main/services/view'
-import type { SavedViewDTO } from '@main/services/view/types'
+﻿/* eslint-disable @typescript-eslint/no-explicit-any */
+import type { AuthService } from '@services/services/auth'
+import type { ViewService } from '@services/services/view'
+import type { SavedViewDTO } from '@services/services/view/types'
 import { ViewIpcRegistrar } from '@main/ipc/view'
 import { IpcChannelRegistrar } from '@main/ipc/utils'
 
@@ -108,3 +108,4 @@ describe('ViewIpcRegistrar', () => {
     expect(response).toEqual({ ok: false, code: 'ERR_INTERNAL', message: 'boom' })
   })
 })
+

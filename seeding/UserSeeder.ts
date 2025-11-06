@@ -3,11 +3,11 @@ import { Op, type Transaction } from 'sequelize'
 
 import type { Faker } from '@faker-js/faker'
 
-import { hashPassword } from '../packages/main/src/services/auth/password'
-import { Role } from '../packages/main/src/models/Role'
-import { User } from '../packages/main/src/models/User'
-import { UserRole } from '../packages/main/src/models/UserRole'
-import { logger } from '../packages/main/src/config/logger'
+import { hashPassword } from '@services/services/auth/password'
+import { Role } from '@services/models/Role'
+import { User } from '@services/models/User'
+import { UserRole } from '@services/models/UserRole'
+import { logger } from '@services/config/logger'
 
 import type { UserSeedDefinition } from './DevelopmentSeeder.types'
 

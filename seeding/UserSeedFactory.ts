@@ -1,6 +1,6 @@
 import type { Faker } from '@faker-js/faker'
 
-import type { RoleName } from '../packages/main/src/services/auth/constants'
+import type { RoleName } from '@services/services/auth/constants'
 
 import type { UserSeedDefinition } from './DevelopmentSeeder.types'
 import type { UsersSeedConfig } from './seedConfig'

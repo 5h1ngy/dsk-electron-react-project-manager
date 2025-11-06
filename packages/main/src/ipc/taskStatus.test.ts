@@ -1,7 +1,7 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import type { AuthService } from '@main/services/auth'
-import type { TaskStatusService } from '@main/services/taskStatus'
-import type { TaskStatusDTO } from '@main/services/taskStatus/types'
+﻿/* eslint-disable @typescript-eslint/no-explicit-any */
+import type { AuthService } from '@services/services/auth'
+import type { TaskStatusService } from '@services/services/taskStatus'
+import type { TaskStatusDTO } from '@services/services/taskStatus/types'
 import { TaskStatusIpcRegistrar } from '@main/ipc/taskStatus'
 import { IpcChannelRegistrar } from '@main/ipc/utils'
 
@@ -108,3 +108,4 @@ describe('TaskStatusIpcRegistrar', () => {
     expect(response).toEqual({ ok: false, code: 'ERR_INTERNAL', message: 'boom' })
   })
 })
+

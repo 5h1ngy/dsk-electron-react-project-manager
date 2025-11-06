@@ -14,13 +14,22 @@
             "@renderer/*":  [
                 "packages/renderer/src/*"
             ],
-            "@preload/*":  [
-                "packages/preload/src/*"
-            ],
-            "@main/*":  [
-                "packages/main/src/*"
-            ]
-        },
+        "@preload/*":  [
+            "packages/preload/src/*"
+        ],
+        "@main/*":  [
+            "packages/main/src/*"
+        ],
+        "@services/*":  [
+            "packages/services/src/*"
+        ],
+        "@seeding/*": [
+            "seeding/*"
+        ],
+        "@api/*":  [
+            "packages/api/src/*"
+        ]
+    },
         "strict":  true,
         "types":  [
             "jest"

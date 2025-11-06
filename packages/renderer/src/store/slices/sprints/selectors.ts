@@ -1,6 +1,6 @@
 import type { RootState } from '@renderer/store/types'
 import type { SprintListState, SprintDetailsState } from '@renderer/store/slices/sprints/types'
-import type { SprintDTO } from '@main/services/sprint/types'
+import type { SprintDTO } from '@services/services/sprint/types'
 
 const emptyListState: SprintListState = Object.freeze({
   ids: [],

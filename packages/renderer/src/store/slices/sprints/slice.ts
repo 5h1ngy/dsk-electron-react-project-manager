@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
 
-import type { SprintDTO } from '@main/services/sprint/types'
+import type { SprintDTO } from '@services/services/sprint/types'
 import type { SprintListState, SprintsState } from '@renderer/store/slices/sprints/types'
 import {
   createSprint,

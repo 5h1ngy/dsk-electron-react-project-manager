@@ -1,21 +1,26 @@
-import { app, BrowserWindow } from 'electron'
+﻿import { app, BrowserWindow } from 'electron'
 import type { Session, WebContents } from 'electron'
 import { join } from 'node:path'
 import { existsSync } from 'node:fs'
 import type { Sequelize } from 'sequelize-typescript'
 
-import { logger, shouldSuppressDevtoolsMessage } from '@main/config/logger'
-import { SessionManager } from '@main/services/auth/sessionManager'
-import { AuditService } from '@main/services/audit'
-import { AuthService } from '@main/services/auth'
-import { ProjectService } from '@main/services/project'
-import { TaskService } from '@main/services/task'
-import { TaskStatusService } from '@main/services/taskStatus'
-import { NoteService } from '@main/services/note'
-import { ViewService } from '@main/services/view'
-import { RoleService } from '@main/services/roles'
-import { WikiService } from '@main/services/wiki'
-import { SprintService } from '@main/services/sprint'
+import { logger, shouldSuppressDevtoolsMessage } from '@services/config/logger'
+import { SessionManager } from '@services/services/auth/sessionManager'
+import { AuditService } from '@services/services/audit'
+import { AuthService } from '@services/services/auth'
+import { ProjectService } from '@services/services/project'
+import { TaskService } from '@services/services/task'
+import { TaskStatusService } from '@services/services/taskStatus'
+import { NoteService } from '@services/services/note'
+import { ViewService } from '@services/services/view'
+import { RoleService } from '@services/services/roles'
+import { WikiService } from '@services/services/wiki'
+import { SprintService } from '@services/services/sprint'
+import {
+  createDomainContext,
+  teardownDomainContext,
+  type DomainContext
+} from '@services/runtime/domainContext'
 
 export const MAIN_WINDOW_OPTIONS: Electron.BrowserWindowConstructorOptions = {
   width: 1280,
@@ -303,7 +308,7 @@ export class MainWindowManager {
 class AppContext {
   readonly sessionManager = new SessionManager()
   readonly auditService = new AuditService()
-  readonly authService = new AuthService(this.sessionManager, this.auditService)
+  authService = new AuthService(this.sessionManager, this.auditService)
 
   sequelize?: Sequelize
   projectService?: ProjectService
@@ -315,18 +320,29 @@ class AppContext {
   wikiService?: WikiService
   sprintService?: SprintService
   private databasePath?: string
+  private domainContext: DomainContext | null = null
 
   setDatabase(sequelize: Sequelize, storagePath: string): void {
     this.sequelize = sequelize
     this.databasePath = storagePath
-    this.projectService = new ProjectService(sequelize, this.auditService)
-    this.taskStatusService = new TaskStatusService(sequelize, this.auditService)
-    this.taskService = new TaskService(sequelize, this.auditService)
-    this.noteService = new NoteService(sequelize, this.auditService)
-    this.viewService = new ViewService(sequelize, this.auditService)
-    this.roleService = new RoleService(sequelize, this.auditService)
-    this.wikiService = new WikiService(sequelize, this.auditService)
-    this.sprintService = new SprintService(sequelize, this.auditService)
+
+    const domain = createDomainContext({
+      sequelize,
+      auditService: this.auditService,
+      sessionManager: this.sessionManager,
+      authService: this.authService
+    })
+
+    this.domainContext = domain
+    this.authService = domain.authService
+    this.projectService = domain.projectService
+    this.taskStatusService = domain.taskStatusService
+    this.taskService = domain.taskService
+    this.noteService = domain.noteService
+    this.viewService = domain.viewService
+    this.roleService = domain.roleService
+    this.wikiService = domain.wikiService
+    this.sprintService = domain.sprintService
   }
 
   getDatabasePath(): string | null {
@@ -334,9 +350,10 @@ class AppContext {
   }
 
   async teardownDatabase(): Promise<void> {
-    if (this.sequelize) {
-      await this.sequelize.close()
+    if (this.domainContext) {
+      await teardownDomainContext(this.domainContext)
     }
+    this.domainContext = null
     this.sequelize = undefined
     this.projectService = undefined
     this.taskStatusService = undefined
@@ -351,3 +368,4 @@ class AppContext {
 
 export const appContext = new AppContext()
 export const mainWindowManager = new MainWindowManager()
+

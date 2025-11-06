@@ -1,7 +1,7 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import type { AuthService } from '@main/services/auth'
-import type { TaskService } from '@main/services/task'
-import type { CommentDTO, TaskDetailsDTO } from '@main/services/task/types'
+﻿/* eslint-disable @typescript-eslint/no-explicit-any */
+import type { AuthService } from '@services/services/auth'
+import type { TaskService } from '@services/services/task'
+import type { CommentDTO, TaskDetailsDTO } from '@services/services/task/types'
 import { TaskIpcRegistrar } from '@main/ipc/task'
 import { IpcChannelRegistrar } from '@main/ipc/utils'
 
@@ -127,3 +127,4 @@ describe('TaskIpcRegistrar', () => {
     expect(result).toEqual({ ok: false, code: 'ERR_INTERNAL', message: 'boom' })
   })
 })
+

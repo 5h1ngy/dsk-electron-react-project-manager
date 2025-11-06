@@ -1,6 +1,6 @@
 import type { Sequelize } from 'sequelize-typescript'
 
-import { AppError } from '@main/config/appError'
+import { AppError } from '@services/config/appError'
 import { IpcChannelRegistrar } from '@main/ipc/utils'
 import type { IpcResponse } from '@main/ipc/utils'
 

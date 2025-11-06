@@ -1,0 +1,31 @@
+version: '3.9'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: docker/api.Dockerfile
+    environment:
+      NODE_ENV: production
+      DB_STORAGE_PATH: /data/app.sqlite
+      API_PORT: ${API_PORT:-3333}
+    ports:
+      - "${API_PORT:-3333}:3333"
+    volumes:
+      - api-data:/data
+
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/frontend.Dockerfile
+      args:
+        VITE_API_BASE_URL: ${API_BASE_URL:-http://localhost:3333}
+    depends_on:
+      - api
+    environment:
+      - API_BASE_URL=${API_BASE_URL:-http://api:3333}
+    ports:
+      - "${FRONTEND_PORT:-8080}:80"
+
+volumes:
+  api-data:

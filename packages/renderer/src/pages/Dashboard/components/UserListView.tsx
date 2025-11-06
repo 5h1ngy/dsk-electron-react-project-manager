@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next'
 
 import { EmptyState, LoadingSkeleton } from '@renderer/components/DataStates'
 import { useDelayedLoading } from '@renderer/hooks/useDelayedLoading'
-import type { UserDTO } from '@main/services/auth'
+import type { UserDTO } from '@services/services/auth'
 import { useSemanticBadges, buildBadgeStyle } from '@renderer/theme/hooks/useSemanticBadges'
 
 export interface UserListViewProps {

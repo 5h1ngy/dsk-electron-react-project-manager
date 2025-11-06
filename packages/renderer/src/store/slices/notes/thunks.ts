@@ -9,7 +9,7 @@ import {
 import { forceLogout } from '@renderer/store/slices/auth/slice'
 import type { RootState } from '@renderer/store/types'
 import type { NoteDetails, NoteSummary, NoteSearchResult } from '@renderer/store/slices/notes/types'
-import type { ListNotesInput, SearchNotesInput } from '@main/services/note/schemas'
+import type { ListNotesInput, SearchNotesInput } from '@services/services/note/schemas'
 
 const ensureToken = (state: RootState): string | null => state.auth.token
 

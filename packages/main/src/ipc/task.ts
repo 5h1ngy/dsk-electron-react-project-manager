@@ -1,5 +1,5 @@
-import type { AuthService } from '@main/services/auth'
-import type { TaskService } from '@main/services/task'
+﻿import type { AuthService } from '@services/services/auth'
+import type { TaskService } from '@services/services/task'
 import { IpcChannelRegistrar } from '@main/ipc/utils'
 
 export interface TaskIpcDependencies {
@@ -77,3 +77,4 @@ export class TaskIpcRegistrar {
     return await this.authService.resolveActor(token, { touch: true })
   }
 }
+

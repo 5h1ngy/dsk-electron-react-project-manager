@@ -1,10 +1,10 @@
-import type { NoteDetailsDTO, NoteSummaryDTO, NoteSearchResultDTO } from '@main/services/note/types'
+import type { NoteDetailsDTO, NoteSummaryDTO, NoteSearchResultDTO } from '@services/services/note/types'
 import type {
   CreateNoteInput,
   UpdateNoteInput,
   ListNotesInput,
   SearchNotesInput
-} from '@main/services/note/schemas'
+} from '@services/services/note/schemas'
 import { invokeIpc } from '@preload/api/shared'
 
 const CHANNELS = {

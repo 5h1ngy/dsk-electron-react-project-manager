@@ -4,6 +4,8 @@
         "electron.vite.config.*",
         "packages/main/src/**/*",
         "packages/preload/src/**/*",
+        "packages/services/src/**/*",
+        "packages/api/src/**/*",
         "seeding/**/*"
     ],
     "compilerOptions":  {
@@ -22,6 +24,15 @@
             ],
             "@preload/*":  [
                 "packages/preload/src/*"
+            ],
+            "@services/*":  [
+                "packages/services/src/*"
+            ],
+            "@api/*":  [
+                "packages/api/src/*"
+            ],
+            "@seeding/*": [
+                "seeding/*"
             ]
         }
     }

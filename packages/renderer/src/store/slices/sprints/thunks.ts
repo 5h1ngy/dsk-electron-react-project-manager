@@ -1,6 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit'
-import type { CreateSprintInput, UpdateSprintInput } from '@main/services/sprint/schemas'
-import type { SprintDTO, SprintDetailsDTO } from '@main/services/sprint/types'
+import type { CreateSprintInput, UpdateSprintInput } from '@services/services/sprint/schemas'
+import type { SprintDTO, SprintDetailsDTO } from '@services/services/sprint/types'
 
 import {
   extractErrorMessage,

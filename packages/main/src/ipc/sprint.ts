@@ -1,5 +1,5 @@
-import type { AuthService } from '@main/services/auth'
-import type { SprintService } from '@main/services/sprint'
+﻿import type { AuthService } from '@services/services/auth'
+import type { SprintService } from '@services/services/sprint'
 import { IpcChannelRegistrar } from '@main/ipc/utils'
 
 export interface SprintIpcDependencies {
@@ -48,3 +48,4 @@ export class SprintIpcRegistrar {
     return await this.deps.authService.resolveActor(token, { touch: true })
   }
 }
+

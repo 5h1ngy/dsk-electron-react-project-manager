@@ -1,4 +1,4 @@
-import type { TaskStatusDTO } from '@main/services/taskStatus/types'
+import type { TaskStatusDTO } from '@services/services/taskStatus/types'
 import type { LoadStatus } from '@renderer/store/slices/tasks/types'
 
 export type TaskStatusItem = TaskStatusDTO

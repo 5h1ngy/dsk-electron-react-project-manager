@@ -1,5 +1,5 @@
-import type { AuthService } from '@main/services/auth'
-import type { NoteService } from '@main/services/note'
+﻿import type { AuthService } from '@services/services/auth'
+import type { NoteService } from '@services/services/note'
 import { IpcChannelRegistrar } from '@main/ipc/utils'
 
 export interface NoteIpcDependencies {
@@ -59,3 +59,4 @@ export class NoteIpcRegistrar {
     return await this.authService.resolveActor(token, { touch: true })
   }
 }
+

@@ -7,7 +7,7 @@ import dayjs from 'dayjs'
 
 import { useSemanticBadges, buildBadgeStyle } from '@renderer/theme/hooks/useSemanticBadges'
 
-import type { UserDTO } from '@main/services/auth'
+import type { UserDTO } from '@services/services/auth'
 
 import { useAppSelector } from '@renderer/store/hooks'
 import { selectCurrentUser } from '@renderer/store/slices/auth'

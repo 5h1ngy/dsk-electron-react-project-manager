@@ -3,9 +3,9 @@ import { randomInt } from 'node:crypto'
 import type { Sequelize } from 'sequelize-typescript'
 import type { Transaction } from 'sequelize'
 
-import { logger } from '../packages/main/src/config/logger'
-import { Project } from '../packages/main/src/models/Project'
-import { User } from '../packages/main/src/models/User'
+import { logger } from '@services/config/logger'
+import { Project } from '@services/models/Project'
+import { User } from '@services/models/User'
 
 import type {
   DevelopmentSeederOptions,

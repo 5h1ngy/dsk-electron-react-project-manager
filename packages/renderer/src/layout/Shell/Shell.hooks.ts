@@ -8,7 +8,7 @@ import { useAppSelector } from '@renderer/store/hooks'
 import { selectThemeMode } from '@renderer/store/slices/theme'
 import { buildNavigationItems, resolveSelectedKey } from '@renderer/layout/Shell/Shell.helpers'
 import type { UseShellLayoutResult } from '@renderer/layout/Shell/Shell.types'
-import type { UserDTO } from '@main/services/auth'
+import type { UserDTO } from '@services/services/auth'
 
 export const useShellLayout = (currentUser?: UserDTO): UseShellLayoutResult => {
   const { t } = useTranslation()

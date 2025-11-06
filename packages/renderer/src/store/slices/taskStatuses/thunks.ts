@@ -5,8 +5,8 @@ import type {
   UpdateTaskStatusInput,
   ReorderTaskStatusesInput,
   DeleteTaskStatusInput
-} from '@main/services/taskStatus/schemas'
-import type { TaskStatusDTO } from '@main/services/taskStatus/types'
+} from '@services/services/taskStatus/schemas'
+import type { TaskStatusDTO } from '@services/services/taskStatus/types'
 
 import {
   extractErrorMessage,

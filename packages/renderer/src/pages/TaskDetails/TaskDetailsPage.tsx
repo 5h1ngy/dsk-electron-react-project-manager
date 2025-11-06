@@ -47,7 +47,7 @@ import {
   selectTaskComments,
   selectTaskMutationStatus
 } from '@renderer/store/slices/tasks/selectors'
-import type { CommentDTO } from '@main/services/task/types'
+import type { CommentDTO } from '@services/services/task/types'
 import type { TaskDetails } from '@renderer/store/slices/tasks/types'
 import { buildTags, formatDate } from '@renderer/pages/TaskDetails/TaskDetails.helpers'
 import { buildBadgeStyle, useSemanticBadges } from '@renderer/theme/hooks/useSemanticBadges'

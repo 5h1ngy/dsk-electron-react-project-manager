@@ -60,7 +60,7 @@ import {
 } from '@renderer/store/slices/notes'
 import type { NoteDetails, NoteSummary } from '@renderer/store/slices/notes/types'
 import type { TaskDetails } from '@renderer/store/slices/tasks/types'
-import type { SearchNotesInput } from '@main/services/note/schemas'
+import type { SearchNotesInput } from '@services/services/note/schemas'
 import { extractErrorMessage } from '@renderer/store/slices/auth/helpers'
 import { selectCurrentUser } from '@renderer/store/slices/auth/selectors'
 import MarkdownEditor, {

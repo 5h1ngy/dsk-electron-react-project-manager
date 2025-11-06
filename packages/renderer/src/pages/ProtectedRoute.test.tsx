@@ -7,7 +7,7 @@ import { ProtectedRoute } from '@renderer/pages/ProtectedRoute'
 import { logout, selectCurrentUser, selectIsAuthenticated } from '@renderer/store/slices/auth'
 import { useAppDispatch, useAppSelector } from '@renderer/store/hooks'
 import { useSessionWatcher } from '@renderer/hooks/useSessionWatcher'
-import type { UserDTO } from '@main/services/auth'
+import type { UserDTO } from '@services/services/auth'
 jest.mock('@renderer/hooks/useSessionWatcher', () => ({
   useSessionWatcher: jest.fn()
 }))

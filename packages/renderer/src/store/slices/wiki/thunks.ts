@@ -17,7 +17,7 @@ import type {
   WikiPageDetailsDTO,
   WikiPageSummaryDTO,
   WikiRevisionDTO
-} from '@main/services/wiki/types'
+} from '@services/services/wiki/types'
 
 const ensureToken = (state: RootState): string | null => state.auth.token
 

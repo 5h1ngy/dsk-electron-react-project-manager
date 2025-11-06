@@ -1,6 +1,6 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import type { AuthService, SessionPayload, UserDTO } from '@main/services/auth'
-import { AppError } from '@main/config/appError'
+﻿/* eslint-disable @typescript-eslint/no-explicit-any */
+import type { AuthService, SessionPayload, UserDTO } from '@services/services/auth'
+import { AppError } from '@services/config/appError'
 import { AuthIpcRegistrar } from '@main/ipc/auth'
 import { IpcChannelRegistrar } from '@main/ipc/utils'
 
@@ -120,3 +120,4 @@ describe('AuthIpcRegistrar', () => {
     })
   })
 })
+

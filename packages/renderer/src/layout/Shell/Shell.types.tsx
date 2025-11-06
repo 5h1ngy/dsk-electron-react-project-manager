@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import type { MenuProps } from 'antd'
-import type { UserDTO } from '@main/services/auth'
+import type { UserDTO } from '@services/services/auth'
 import type { ShellStyleResult } from '@renderer/layout/Shell/Shell.style'
 
 export type MenuTheme = 'light' | 'dark'
