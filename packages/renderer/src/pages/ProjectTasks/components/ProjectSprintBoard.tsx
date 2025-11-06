@@ -1065,12 +1065,6 @@ export const ProjectSprintBoard = ({
           style={{ width: '100%' }}
         >
           <Space size={token.marginXS}>
-            <Typography.Title
-              level={5}
-              style={{ margin: 0, color: token.colorTextSecondary, fontWeight: 500 }}
-            >
-              {t('sprints.board.title', { defaultValue: 'Pianificazione sprint' })}
-            </Typography.Title>
             {canManage ? (
               <Button type="primary" icon={<PlusOutlined />} onClick={handleOpenCreate}>
                 {t('sprints.actions.create', { defaultValue: 'Nuovo sprint' })}
