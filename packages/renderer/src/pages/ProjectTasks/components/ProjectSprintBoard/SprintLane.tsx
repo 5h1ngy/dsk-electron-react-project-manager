@@ -9,11 +9,7 @@ import type { TaskDetailsDTO } from '@main/services/task/types'
 import type { GlobalToken } from 'antd/es/theme/interface'
 import type { JSX } from 'react'
 
-import type {
-  SprintDetailsSelectorResult,
-  TaskTableRecord,
-  TimelinePosition
-} from './types'
+import type { SprintDetailsSelectorResult, TaskTableRecord, TimelinePosition } from './types'
 
 interface SprintLaneProps {
   sprint: SprintDTO
@@ -178,9 +174,9 @@ export const SprintLane = ({
               position: 'absolute',
               inset: 0,
               display: 'grid',
-            gridTemplateColumns: `repeat(${timelineSlots.length}, minmax(${slotWidth}px, 1fr))`,
-            pointerEvents: 'none'
-          }}
+              gridTemplateColumns: `repeat(${timelineSlots.length}, minmax(${slotWidth}px, 1fr))`,
+              pointerEvents: 'none'
+            }}
           >
             {timelineSlots.map((slot, index) => (
               <div

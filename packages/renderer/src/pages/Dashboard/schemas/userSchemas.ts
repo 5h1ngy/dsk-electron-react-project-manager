@@ -53,10 +53,7 @@ const buildUsernameSchema = (messages: CreateUserValidationMessages) =>
       .regex(USERNAME_REGEX, { message: messages.usernamePattern })
   )
 
-const buildDisplayNameSchema = (messages: {
-  required: string
-  max: string
-}) =>
+const buildDisplayNameSchema = (messages: { required: string; max: string }) =>
   trimInput(
     z
       .string({ required_error: messages.required })
@@ -65,9 +62,7 @@ const buildDisplayNameSchema = (messages: {
   )
 
 const buildRolesSchema = (message: string) =>
-  z
-    .array(trimInput(z.string().min(1, { message })))
-    .min(1, { message })
+  z.array(trimInput(z.string().min(1, { message }))).min(1, { message })
 
 const buildCreatePasswordSchema = (messages: CreateUserValidationMessages) =>
   z
@@ -83,10 +78,7 @@ const buildUpdatePasswordSchema = (messages: UpdateUserValidationMessages) =>
       const trimmed = value.trim()
       return trimmed.length === 0 ? undefined : trimmed
     },
-    z
-      .string()
-      .min(PASSWORD_POLICY.minLength, { message: messages.passwordMin })
-      .optional()
+    z.string().min(PASSWORD_POLICY.minLength, { message: messages.passwordMin }).optional()
   )
 
 export const buildCreateUserSchema = (messages: CreateUserValidationMessages) =>

@@ -73,12 +73,7 @@ const resolveErrorMessage = (error: unknown): string => {
 const ProjectWikiPage = (): JSX.Element => {
   const { t } = useTranslation('projects')
   const dispatch = useAppDispatch()
-  const {
-    projectId,
-    project,
-    canManageWiki,
-    refreshWiki
-  } = useProjectRouteContext()
+  const { projectId, project, canManageWiki, refreshWiki } = useProjectRouteContext()
 
   const safeProjectId = projectId ?? ''
 
@@ -102,7 +97,9 @@ const ProjectWikiPage = (): JSX.Element => {
     selectedPageId ? selectWikiPageError(safeProjectId, selectedPageId)(state) : undefined
   )
   const revisionsState = useAppSelector((state) =>
-    selectedPageId ? selectWikiRevisions(safeProjectId, selectedPageId)(state) : defaultRevisionsState
+    selectedPageId
+      ? selectWikiRevisions(safeProjectId, selectedPageId)(state)
+      : defaultRevisionsState
   )
 
   const [createForm] = Form.useForm<WikiFormValues>()
@@ -165,7 +162,9 @@ const ProjectWikiPage = (): JSX.Element => {
       const values = await createForm.validateFields()
       if (!createContent.trim()) {
         messageApi.warning(
-          t('wiki.validation.contentRequired', { defaultValue: 'Inserisci il contenuto della pagina.' })
+          t('wiki.validation.contentRequired', {
+            defaultValue: 'Inserisci il contenuto della pagina.'
+          })
         )
         return
       }
@@ -193,7 +192,9 @@ const ProjectWikiPage = (): JSX.Element => {
       const values = await editForm.validateFields()
       if (!editorContent.trim()) {
         messageApi.warning(
-          t('wiki.validation.contentRequired', { defaultValue: 'Inserisci il contenuto della pagina.' })
+          t('wiki.validation.contentRequired', {
+            defaultValue: 'Inserisci il contenuto della pagina.'
+          })
         )
         return
       }
@@ -281,9 +282,7 @@ const ProjectWikiPage = (): JSX.Element => {
           <Typography.Title level={4} style={{ marginBottom: 4 }}>
             {selectedPage.title}
           </Typography.Title>
-          <Typography.Text type="secondary">
-            {project?.name ?? ''}
-          </Typography.Text>
+          <Typography.Text type="secondary">{project?.name ?? ''}</Typography.Text>
         </div>
         <Space>
           {canEdit ? (
@@ -302,7 +301,11 @@ const ProjectWikiPage = (): JSX.Element => {
                   {t('wiki.actions.edit', { defaultValue: 'Modifica' })}
                 </Button>
               )}
-              <Button danger icon={<DeleteOutlined />} onClick={() => handleDeletePage(selectedPage.id)}>
+              <Button
+                danger
+                icon={<DeleteOutlined />}
+                onClick={() => handleDeletePage(selectedPage.id)}
+              >
                 {t('wiki.actions.delete', { defaultValue: 'Elimina' })}
               </Button>
             </>
@@ -323,7 +326,9 @@ const ProjectWikiPage = (): JSX.Element => {
           {t('wiki.title', { defaultValue: 'Wiki' })}
         </Typography.Title>
         <Space>
-          <Button onClick={() => refreshWiki()}>{t('wiki.actions.refresh', { defaultValue: 'Aggiorna' })}</Button>
+          <Button onClick={() => refreshWiki()}>
+            {t('wiki.actions.refresh', { defaultValue: 'Aggiorna' })}
+          </Button>
           {canEdit ? (
             <Button type="primary" icon={<PlusOutlined />} onClick={handleOpenCreateModal}>
               {t('wiki.actions.create', { defaultValue: 'Nuova pagina' })}
@@ -350,9 +355,12 @@ const ProjectWikiPage = (): JSX.Element => {
                   onClick={() => handleSelectPage(item.id)}
                   style={{
                     cursor: 'pointer',
-                    background: item.id === selectedPageId ? 'var(--ant-color-primary-bg)' : undefined,
+                    background:
+                      item.id === selectedPageId ? 'var(--ant-color-primary-bg)' : undefined,
                     borderLeft:
-                      item.id === selectedPageId ? '3px solid var(--ant-color-primary)' : '3px solid transparent',
+                      item.id === selectedPageId
+                        ? '3px solid var(--ant-color-primary)'
+                        : '3px solid transparent',
                     paddingLeft: 12,
                     paddingRight: 12
                   }}
@@ -366,15 +374,17 @@ const ProjectWikiPage = (): JSX.Element => {
                         </Typography.Text>
                       </Flex>
                     }
-                    description={item.summary ? (
-                      <Typography.Paragraph ellipsis={{ rows: 2 }} style={{ marginBottom: 0 }}>
-                        {item.summary}
-                      </Typography.Paragraph>
-                    ) : (
-                      <Typography.Text type="secondary">
-                        {t('wiki.list.noSummary', { defaultValue: 'Nessun riassunto' })}
-                      </Typography.Text>
-                    )}
+                    description={
+                      item.summary ? (
+                        <Typography.Paragraph ellipsis={{ rows: 2 }} style={{ marginBottom: 0 }}>
+                          {item.summary}
+                        </Typography.Paragraph>
+                      ) : (
+                        <Typography.Text type="secondary">
+                          {t('wiki.list.noSummary', { defaultValue: 'Nessun riassunto' })}
+                        </Typography.Text>
+                      )
+                    }
                   />
                 </List.Item>
               )}
@@ -410,11 +420,19 @@ const ProjectWikiPage = (): JSX.Element => {
                 <Form.Item
                   label={t('wiki.fields.title', { defaultValue: 'Titolo' })}
                   name="title"
-                  rules={[{ required: true, message: t('wiki.validation.title', { defaultValue: 'Inserisci un titolo.' }) }]}
+                  rules={[
+                    {
+                      required: true,
+                      message: t('wiki.validation.title', { defaultValue: 'Inserisci un titolo.' })
+                    }
+                  ]}
                 >
                   <Input maxLength={160} />
                 </Form.Item>
-                <Form.Item label={t('wiki.fields.summary', { defaultValue: 'Riassunto' })} name="summary">
+                <Form.Item
+                  label={t('wiki.fields.summary', { defaultValue: 'Riassunto' })}
+                  name="summary"
+                >
                   <TextArea maxLength={240} autoSize={{ minRows: 2, maxRows: 4 }} />
                 </Form.Item>
                 <Typography.Text strong>
@@ -434,7 +452,11 @@ const ProjectWikiPage = (): JSX.Element => {
             )
           ) : (
             <Flex justify="center" style={{ padding: 48 }}>
-              <Empty description={t('wiki.noSelection', { defaultValue: 'Seleziona una pagina dalla lista.' })} />
+              <Empty
+                description={t('wiki.noSelection', {
+                  defaultValue: 'Seleziona una pagina dalla lista.'
+                })}
+              />
             </Flex>
           )}
           {selectedPageError ? (
@@ -456,11 +478,19 @@ const ProjectWikiPage = (): JSX.Element => {
             <Form.Item
               label={t('wiki.fields.title', { defaultValue: 'Titolo' })}
               name="title"
-              rules={[{ required: true, message: t('wiki.validation.title', { defaultValue: 'Inserisci un titolo.' }) }]}
+              rules={[
+                {
+                  required: true,
+                  message: t('wiki.validation.title', { defaultValue: 'Inserisci un titolo.' })
+                }
+              ]}
             >
               <Input maxLength={160} />
             </Form.Item>
-            <Form.Item label={t('wiki.fields.summary', { defaultValue: 'Riassunto' })} name="summary">
+            <Form.Item
+              label={t('wiki.fields.summary', { defaultValue: 'Riassunto' })}
+              name="summary"
+            >
               <TextArea maxLength={240} autoSize={{ minRows: 2, maxRows: 4 }} />
             </Form.Item>
           </Form>
@@ -493,7 +523,11 @@ const ProjectWikiPage = (): JSX.Element => {
                 actions={
                   canEdit
                     ? [
-                        <Button key="restore" type="link" onClick={() => handleRestoreRevision(item)}>
+                        <Button
+                          key="restore"
+                          type="link"
+                          onClick={() => handleRestoreRevision(item)}
+                        >
                           {t('wiki.revisions.restore', { defaultValue: 'Ripristina' })}
                         </Button>
                       ]
@@ -505,7 +539,8 @@ const ProjectWikiPage = (): JSX.Element => {
                   description={
                     <Space direction="vertical" size={4}>
                       <Typography.Text type="secondary">
-                        {new Date(item.createdAt).toLocaleString()}  -  {item.createdBy.displayName ?? item.createdBy.username}
+                        {new Date(item.createdAt).toLocaleString()} -{' '}
+                        {item.createdBy.displayName ?? item.createdBy.username}
                       </Typography.Text>
                       {item.summary ? (
                         <Typography.Text>{item.summary}</Typography.Text>
@@ -521,7 +556,11 @@ const ProjectWikiPage = (): JSX.Element => {
             )}
           />
         ) : (
-          <Empty description={t('wiki.revisions.empty', { defaultValue: 'Nessuna revisione disponibile.' })} />
+          <Empty
+            description={t('wiki.revisions.empty', {
+              defaultValue: 'Nessuna revisione disponibile.'
+            })}
+          />
         )}
       </Modal>
     </Space>

@@ -6,7 +6,10 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { DeleteOutlined, ReloadOutlined } from '@ant-design/icons'
 import { ProjectsActionBar } from '@renderer/pages/Projects/components/ProjectsActionBar'
-import { ProjectList, type ProjectOptionalColumn } from '@renderer/pages/Projects/components/ProjectList'
+import {
+  ProjectList,
+  type ProjectOptionalColumn
+} from '@renderer/pages/Projects/components/ProjectList'
 import { ProjectCardsGrid } from '@renderer/pages/Projects/components/ProjectCardsGrid'
 import { ProjectSummaryList } from '@renderer/pages/Projects/components/ProjectSummaryList'
 import { CreateProjectModal } from '@renderer/pages/Projects/components/CreateProjectModal'
@@ -506,9 +509,7 @@ const ProjectsPage: FC<ProjectsPageProps> = () => {
               ))}
             </ul>
           ) : null}
-          <Typography.Text type="danger">
-            {t('modals.deleteProject.warning')}
-          </Typography.Text>
+          <Typography.Text type="danger">{t('modals.deleteProject.warning')}</Typography.Text>
         </Space>
       </Modal>
       <CreateProjectModal

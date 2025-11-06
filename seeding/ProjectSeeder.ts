@@ -76,11 +76,7 @@ export class ProjectSeeder {
     await this.syncTags(project, seed.tags, transaction)
     await this.ensureTaskStatuses(project, transaction)
 
-    const sprintSync = await this.syncSprints(
-      project,
-      seed.sprints ?? [],
-      transaction
-    )
+    const sprintSync = await this.syncSprints(project, seed.sprints ?? [], transaction)
 
     const taskSync = await this.syncTasks(
       project,
@@ -339,8 +335,7 @@ export class ProjectSeeder {
       const key = `${project.key}-${String(nextSequence).padStart(3, '0')}`
       nextSequence += 1
 
-      const sprint =
-        taskSeed.sprintIndex !== null ? sprints[taskSeed.sprintIndex] : undefined
+      const sprint = taskSeed.sprintIndex !== null ? sprints[taskSeed.sprintIndex] : undefined
 
       const task = await Task.create(
         {

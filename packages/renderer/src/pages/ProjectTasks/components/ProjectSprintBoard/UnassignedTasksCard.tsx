@@ -49,9 +49,7 @@ const UnassignedTasksCard = ({
           {count}
         </Tag>
       </Space>
-      {description ? (
-        <Typography.Text type="secondary">{description}</Typography.Text>
-      ) : null}
+      {description ? <Typography.Text type="secondary">{description}</Typography.Text> : null}
     </Flex>
     <div
       style={{

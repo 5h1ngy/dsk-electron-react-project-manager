@@ -292,7 +292,12 @@ export const ProjectsActionBar = ({
   )
 
   const actionsContent = (
-    <Flex vertical={isCompact} align={isCompact ? 'stretch' : 'center'} gap={12} style={{ width: '100%' }}>
+    <Flex
+      vertical={isCompact}
+      align={isCompact ? 'stretch' : 'center'}
+      gap={12}
+      style={{ width: '100%' }}
+    >
       <Flex
         align={isCompact ? 'stretch' : 'center'}
         vertical={isCompact}

@@ -83,7 +83,14 @@ const WIKI_TOPIC_PREFIXES = [
   'Compliance',
   'Performance'
 ] as const
-const WIKI_TITLE_SUFFIXES = ['Overview', 'Playbook', 'Guide', 'Reference', 'Deep Dive', 'Checklist'] as const
+const WIKI_TITLE_SUFFIXES = [
+  'Overview',
+  'Playbook',
+  'Guide',
+  'Reference',
+  'Deep Dive',
+  'Checklist'
+] as const
 
 export class ProjectSeedFactory {
   constructor(
@@ -402,10 +409,7 @@ export class ProjectSeedFactory {
       sprints.push({
         name: `Sprint ${index + 1}`,
         goal:
-          this.random.helpers.maybe(
-            () => this.random.company.bs(),
-            { probability: 0.6 }
-          ) ?? null,
+          this.random.helpers.maybe(() => this.random.company.bs(), { probability: 0.6 }) ?? null,
         startDate: formatIsoDate(startDate),
         endDate: formatIsoDate(endDate),
         status,
@@ -660,10 +664,7 @@ export class ProjectSeedFactory {
           : params.sections
 
       revisions.push({
-        title:
-          index === 0
-            ? `${params.baseTitle} (Draft)`
-            : `${params.baseTitle} (Rev ${index})`,
+        title: index === 0 ? `${params.baseTitle} (Draft)` : `${params.baseTitle} (Rev ${index})`,
         summary,
         content: this.buildWikiContent({
           title: params.baseTitle,
@@ -893,4 +894,3 @@ export class ProjectSeedFactory {
     return sections.join('\n\n')
   }
 }
-

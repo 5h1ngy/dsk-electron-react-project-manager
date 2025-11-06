@@ -152,7 +152,10 @@ export const UserFilters = ({
         </Button>
         {primaryActions.length
           ? primaryActions.map((action, index) => (
-              <div key={`primary-action-${index}`} style={isCompact ? { width: '100%' } : undefined}>
+              <div
+                key={`primary-action-${index}`}
+                style={isCompact ? { width: '100%' } : undefined}
+              >
                 {action}
               </div>
             ))

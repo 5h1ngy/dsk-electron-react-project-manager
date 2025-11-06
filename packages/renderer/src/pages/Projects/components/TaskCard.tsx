@@ -131,13 +131,7 @@ export const TaskCard = ({
       }
     >
       <Space direction="vertical" size={6} style={{ width: '100%' }}>
-        <Flex
-          align="center"
-          justify="space-between"
-          wrap
-          gap={8}
-          style={{ width: '100%' }}
-        >
+        <Flex align="center" justify="space-between" wrap gap={8} style={{ width: '100%' }}>
           <Flex align="center" gap={6} wrap style={{ flex: '1 1 auto', minWidth: 0 }}>
             <Tag color={token.colorPrimary} style={{ margin: 0, flexShrink: 0 }}>
               {task.key}
@@ -190,11 +184,7 @@ export const TaskCard = ({
           ) : null}
         </Flex>
         {summaryText ? (
-          <Typography.Paragraph
-            type="secondary"
-            ellipsis={{ rows: 2 }}
-            style={{ marginBottom: 0 }}
-          >
+          <Typography.Paragraph type="secondary" ellipsis={{ rows: 2 }} style={{ marginBottom: 0 }}>
             {summaryText}
           </Typography.Paragraph>
         ) : null}

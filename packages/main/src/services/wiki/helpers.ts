@@ -1,8 +1,15 @@
 import { WikiPage } from '@main/models/WikiPage'
 import { WikiRevision } from '@main/models/WikiRevision'
-import type { WikiPageDetailsDTO, WikiPageSummaryDTO, WikiRevisionDTO } from '@main/services/wiki/types'
+import type {
+  WikiPageDetailsDTO,
+  WikiPageSummaryDTO,
+  WikiRevisionDTO
+} from '@main/services/wiki/types'
 
-const mapUser = (fallbackId: string, user?: { id: string; username: string; displayName?: string | null }) => ({
+const mapUser = (
+  fallbackId: string,
+  user?: { id: string; username: string; displayName?: string | null }
+) => ({
   id: user?.id ?? fallbackId,
   username: user?.username ?? fallbackId,
   displayName: user?.displayName ?? null
@@ -34,4 +41,3 @@ export const mapWikiRevision = (revision: WikiRevision): WikiRevisionDTO => ({
   createdAt: revision.createdAt?.toISOString() ?? new Date().toISOString(),
   createdBy: mapUser(revision.createdBy, revision.author)
 })
-

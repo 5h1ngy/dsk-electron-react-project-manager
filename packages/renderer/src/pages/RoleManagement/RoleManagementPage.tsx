@@ -142,9 +142,7 @@ const RoleManagementPage = (): JSX.Element => {
       return
     }
     const deletableRoles = new Set(
-      roles
-        .filter((role) => !role.isSystemRole && role.userCount === 0)
-        .map((role) => role.id)
+      roles.filter((role) => !role.isSystemRole && role.userCount === 0).map((role) => role.id)
     )
     const cleaned = selectedRoleIds.filter((id) => deletableRoles.has(id))
     if (cleaned.length !== selectedRoleIds.length) {
@@ -200,7 +198,9 @@ const RoleManagementPage = (): JSX.Element => {
         label: (
           <Space size={6} style={{ color: 'inherit' }}>
             <TableOutlined />
-            {!isCompact ? <span>{t('roles:view.table', { defaultValue: 'Tabellare' })}</span> : null}
+            {!isCompact ? (
+              <span>{t('roles:view.table', { defaultValue: 'Tabellare' })}</span>
+            ) : null}
           </Space>
         )
       },
@@ -409,7 +409,10 @@ const RoleManagementPage = (): JSX.Element => {
       if (successCount === 1) {
         const role = deleteTargets.find((item) => removedIds.includes(item.id))
         messageApi.success(
-          t('roles:messages.deleteSuccess', { name: role?.name ?? '', defaultValue: 'Role deleted' })
+          t('roles:messages.deleteSuccess', {
+            name: role?.name ?? '',
+            defaultValue: 'Role deleted'
+          })
         )
       } else {
         messageApi.success(
@@ -425,15 +428,7 @@ const RoleManagementPage = (): JSX.Element => {
 
     setDeleteLoading(false)
     setDeleteTargets(null)
-  }, [
-    deleteTargets,
-    dispatch,
-    messageApi,
-    refreshData,
-    setSelectedRoleIds,
-    t,
-    token
-  ])
+  }, [deleteTargets, dispatch, messageApi, refreshData, setSelectedRoleIds, t, token])
 
   const columns = useMemo<ColumnsType<RoleSummary>>(
     () => [
@@ -890,9 +885,7 @@ const RoleManagementPage = (): JSX.Element => {
               ))}
             </ul>
           ) : null}
-          <Typography.Text type="danger">
-            {t('roles:modals.delete.warning')}
-          </Typography.Text>
+          <Typography.Text type="danger">{t('roles:modals.delete.warning')}</Typography.Text>
         </Space>
       </Modal>
       <Modal

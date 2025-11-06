@@ -1,6 +1,11 @@
 import { createSlice } from '@reduxjs/toolkit'
 
-import type { ProjectWikiState, WikiPageDetails, WikiPageSummary, WikiState } from '@renderer/store/slices/wiki/types'
+import type {
+  ProjectWikiState,
+  WikiPageDetails,
+  WikiPageSummary,
+  WikiState
+} from '@renderer/store/slices/wiki/types'
 import {
   createWikiPage,
   deleteWikiPage,
@@ -103,7 +108,8 @@ const wikiSlice = createSlice({
         const { projectId, pageId } = action.meta.arg
         const project = ensureProjectState(state, projectId)
         project.pageStatus[pageId] = 'failed'
-        project.pageErrors[pageId] = action.payload ?? action.error.message ?? 'Impossibile caricare la pagina'
+        project.pageErrors[pageId] =
+          action.payload ?? action.error.message ?? 'Impossibile caricare la pagina'
       })
       .addCase(createWikiPage.fulfilled, (state, action) => {
         const { projectId, page } = action.payload
@@ -123,7 +129,8 @@ const wikiSlice = createSlice({
         const { projectId, pageId } = action.meta.arg
         const project = ensureProjectState(state, projectId)
         project.pageStatus[pageId] = 'failed'
-        project.pageErrors[pageId] = action.payload ?? action.error.message ?? 'Aggiornamento non riuscito'
+        project.pageErrors[pageId] =
+          action.payload ?? action.error.message ?? 'Aggiornamento non riuscito'
       })
       .addCase(deleteWikiPage.fulfilled, (state, action) => {
         const { projectId, pageId } = action.payload
@@ -137,7 +144,8 @@ const wikiSlice = createSlice({
       .addCase(deleteWikiPage.rejected, (state, action) => {
         const { projectId, pageId } = action.meta.arg
         const project = ensureProjectState(state, projectId)
-        project.pageErrors[pageId] = action.payload ?? action.error.message ?? 'Eliminazione non riuscita'
+        project.pageErrors[pageId] =
+          action.payload ?? action.error.message ?? 'Eliminazione non riuscita'
       })
       .addCase(fetchWikiRevisions.pending, (state, action) => {
         const { projectId, pageId } = action.meta.arg
@@ -164,7 +172,8 @@ const wikiSlice = createSlice({
           project.revisions[pageId] = { items: [], status: 'idle', error: undefined }
         }
         project.revisions[pageId].status = 'failed'
-        project.revisions[pageId].error = action.payload ?? action.error.message ?? 'Caricamento revisioni non riuscito'
+        project.revisions[pageId].error =
+          action.payload ?? action.error.message ?? 'Caricamento revisioni non riuscito'
       })
       .addCase(restoreWikiRevision.fulfilled, (state, action) => {
         const { projectId, page } = action.payload
@@ -176,7 +185,8 @@ const wikiSlice = createSlice({
       .addCase(restoreWikiRevision.rejected, (state, action) => {
         const { projectId, pageId } = action.meta.arg
         const project = ensureProjectState(state, projectId)
-        project.pageErrors[pageId] = action.payload ?? action.error.message ?? 'Ripristino non riuscito'
+        project.pageErrors[pageId] =
+          action.payload ?? action.error.message ?? 'Ripristino non riuscito'
       })
   }
 })

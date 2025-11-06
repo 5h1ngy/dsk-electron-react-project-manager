@@ -294,22 +294,16 @@ const mergeConfig = (defaults: SeedConfig, overrides: DeepPartial<SeedConfig>): 
         ? overrides.wiki.sections
         : defaults.wiki.sections,
     paragraphsPerSection: {
-      min:
-        overrides.wiki?.paragraphsPerSection?.min ??
-        defaults.wiki.paragraphsPerSection.min,
-      max:
-        overrides.wiki?.paragraphsPerSection?.max ??
-        defaults.wiki.paragraphsPerSection.max
+      min: overrides.wiki?.paragraphsPerSection?.min ?? defaults.wiki.paragraphsPerSection.min,
+      max: overrides.wiki?.paragraphsPerSection?.max ?? defaults.wiki.paragraphsPerSection.max
     },
     revisionProbability: clampRatio(
       overrides.wiki?.revisionProbability,
       defaults.wiki.revisionProbability
     ),
     revisionsPerPage: {
-      min:
-        overrides.wiki?.revisionsPerPage?.min ?? defaults.wiki.revisionsPerPage.min,
-      max:
-        overrides.wiki?.revisionsPerPage?.max ?? defaults.wiki.revisionsPerPage.max
+      min: overrides.wiki?.revisionsPerPage?.min ?? defaults.wiki.revisionsPerPage.min,
+      max: overrides.wiki?.revisionsPerPage?.max ?? defaults.wiki.revisionsPerPage.max
     }
   },
   sprints: {

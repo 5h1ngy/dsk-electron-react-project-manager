@@ -212,8 +212,7 @@ export const ProjectTasksTable = ({
         style: {
           cursor: 'pointer',
           transition: 'background-color 0.2s ease, box-shadow 0.2s ease',
-          background:
-            hoveredRowId === record.id ? token.colorFillTertiary : token.colorBgContainer,
+          background: hoveredRowId === record.id ? token.colorFillTertiary : token.colorBgContainer,
           boxShadow: hoveredRowId === record.id ? token.boxShadowTertiary : undefined
         }
       })}

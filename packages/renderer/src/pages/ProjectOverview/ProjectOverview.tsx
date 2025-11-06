@@ -164,10 +164,7 @@ const ProjectOverviewPage: FC<ProjectOverviewPageProps> = () => {
       return
     }
     try {
-      window.localStorage.setItem(
-        OVERVIEW_CARDS_STORAGE_KEY,
-        JSON.stringify(visibleOverviewCards)
-      )
+      window.localStorage.setItem(OVERVIEW_CARDS_STORAGE_KEY, JSON.stringify(visibleOverviewCards))
     } catch {
       // ignore persistence errors
     }
@@ -217,9 +214,7 @@ const ProjectOverviewPage: FC<ProjectOverviewPageProps> = () => {
     if (customizeSelection.length !== DEFAULT_VISIBLE_OVERVIEW_CARDS.length) {
       return false
     }
-    return customizeSelection.every(
-      (key, index) => key === DEFAULT_VISIBLE_OVERVIEW_CARDS[index]
-    )
+    return customizeSelection.every((key, index) => key === DEFAULT_VISIBLE_OVERVIEW_CARDS[index])
   }, [customizeSelection])
 
   const handleCustomizeApply = useCallback(() => {
@@ -430,7 +425,7 @@ const ProjectOverviewPage: FC<ProjectOverviewPageProps> = () => {
   }
 
   return (
-      <Space direction="vertical" size={16} style={{ width: '100%' }}>
+    <Space direction="vertical" size={16} style={{ width: '100%' }}>
       <BorderedPanel padding="lg" style={{ width: '100%' }}>
         <Flex align="center" wrap gap={12} style={{ width: '100%' }}>
           {canEditProject ? (
@@ -467,7 +462,7 @@ const ProjectOverviewPage: FC<ProjectOverviewPageProps> = () => {
           </div>
         </Flex>
       </BorderedPanel>
-        <Row gutter={[16, 32]} style={{ width: '100%' }}>
+      <Row gutter={[16, 32]} style={{ width: '100%' }}>
         <Col xs={24} lg={12} xl={6}>
           <ProjectDetailsCard
             project={project ?? null}
@@ -565,7 +560,11 @@ const ProjectOverviewPage: FC<ProjectOverviewPageProps> = () => {
         {visibleCardsSet.has('trend') ? (
           <Col xs={24} lg={16} xl={16}>
             <Card title={t('details.overview.trendCard.title')} style={{ height: '100%' }}>
-              {showSkeleton ? <Skeleton active paragraph={{ rows: 4 }} title={false} /> : renderTrend()}
+              {showSkeleton ? (
+                <Skeleton active paragraph={{ rows: 4 }} title={false} />
+              ) : (
+                renderTrend()
+              )}
             </Card>
           </Col>
         ) : null}
@@ -680,11 +679,7 @@ const ProjectOverviewPage: FC<ProjectOverviewPageProps> = () => {
               <Button onClick={handleCustomizeCancel}>
                 {t('details.overview.customizeCancel', { defaultValue: 'Cancel' })}
               </Button>
-              <Button
-                type="primary"
-                onClick={handleCustomizeApply}
-                disabled={!customizeHasChanges}
-              >
+              <Button type="primary" onClick={handleCustomizeApply} disabled={!customizeHasChanges}>
                 {t('details.overview.customizeApply', { defaultValue: 'Apply changes' })}
               </Button>
             </Space>
@@ -701,9 +696,7 @@ const ProjectOverviewPage: FC<ProjectOverviewPageProps> = () => {
             value={customizeSelection}
             onChange={(values) => {
               setCustomizeError(null)
-              setCustomizeSelection(
-                normalizeOverviewSelection(values as OverviewCardKey[])
-              )
+              setCustomizeSelection(normalizeOverviewSelection(values as OverviewCardKey[]))
             }}
           >
             <Space direction="vertical" size={8} style={{ width: '100%' }}>

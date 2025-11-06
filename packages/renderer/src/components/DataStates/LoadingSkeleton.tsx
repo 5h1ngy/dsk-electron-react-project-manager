@@ -56,19 +56,13 @@ const SkeletonBlock = ({
   </Card>
 )
 
-const renderStack = (
-  blocks: ReactNode[],
-  gap: number
-): ReactNode => (
+const renderStack = (blocks: ReactNode[], gap: number): ReactNode => (
   <Space direction="vertical" size={gap} style={{ width: '100%' }}>
     {blocks}
   </Space>
 )
 
-const renderGrid = (
-  blocks: ReactNode[],
-  gap: number
-): ReactNode => (
+const renderGrid = (blocks: ReactNode[], gap: number): ReactNode => (
   <div
     style={{
       display: 'grid',
@@ -81,10 +75,7 @@ const renderGrid = (
   </div>
 )
 
-const renderColumns = (
-  blocks: ReactNode[],
-  gap: number
-): ReactNode => (
+const renderColumns = (blocks: ReactNode[], gap: number): ReactNode => (
   <div style={{ width: '100%', overflowX: 'auto' }}>
     <div
       style={{

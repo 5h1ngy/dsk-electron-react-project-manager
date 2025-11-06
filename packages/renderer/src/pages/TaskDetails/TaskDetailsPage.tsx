@@ -838,7 +838,7 @@ const TaskDetailsContent = ({
                             <Typography.Text>
                               {task.dueDate
                                 ? formatDate(task.dueDate, i18n.language, t('details.noDueDate'))
-                              : t('details.noDueDate')}
+                                : t('details.noDueDate')}
                             </Typography.Text>
                           </Space>
                         </div>
@@ -850,9 +850,7 @@ const TaskDetailsContent = ({
                           <Space size={6} align="center">
                             <FlagOutlined aria-hidden />
                             <Typography.Text>
-                              {task.sprint
-                                ? task.sprint.name
-                                : t('tasks.details.noSprint')}
+                              {task.sprint ? task.sprint.name : t('tasks.details.noSprint')}
                             </Typography.Text>
                           </Space>
                         </div>

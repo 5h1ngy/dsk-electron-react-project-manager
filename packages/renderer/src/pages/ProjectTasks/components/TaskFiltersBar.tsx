@@ -299,9 +299,7 @@ export const TaskFiltersBar = ({
               {t('tasks.actions.create')}
             </Button>
           ) : null}
-          {secondaryActions ? (
-            <div style={buttonFullWidthStyle}>{secondaryActions}</div>
-          ) : null}
+          {secondaryActions ? <div style={buttonFullWidthStyle}>{secondaryActions}</div> : null}
           {primaryActions.length
             ? primaryActions.map((action, index) => (
                 <div key={`primary-action-${index}`} style={buttonFullWidthStyle}>

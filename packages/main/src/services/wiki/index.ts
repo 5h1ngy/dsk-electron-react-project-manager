@@ -11,7 +11,11 @@ import {
   type CreateWikiPageInput,
   type UpdateWikiPageInput
 } from '@main/services/wiki/schemas'
-import { mapWikiPageDetails, mapWikiPageSummary, mapWikiRevision } from '@main/services/wiki/helpers'
+import {
+  mapWikiPageDetails,
+  mapWikiPageSummary,
+  mapWikiRevision
+} from '@main/services/wiki/helpers'
 import type {
   WikiPageDetailsDTO,
   WikiPageSummaryDTO,
@@ -38,7 +42,7 @@ const slugify = (value: string): string => {
 }
 
 export class WikiService {
-private readonly maxTransactionAttempts = 10
+  private readonly maxTransactionAttempts = 10
 
   constructor(
     private readonly sequelize: Sequelize,
@@ -71,7 +75,11 @@ private readonly maxTransactionAttempts = 10
     if (!error || typeof error !== 'object') {
       return false
     }
-    const candidate = error as { code?: string; message?: string; original?: { code?: string; message?: string } }
+    const candidate = error as {
+      code?: string
+      message?: string
+      original?: { code?: string; message?: string }
+    }
     if (candidate.code === 'SQLITE_BUSY' || candidate.original?.code === 'SQLITE_BUSY') {
       return true
     }

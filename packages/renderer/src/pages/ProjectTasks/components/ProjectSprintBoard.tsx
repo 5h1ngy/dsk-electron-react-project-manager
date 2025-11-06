@@ -298,14 +298,11 @@ export const ProjectSprintBoard = ({
         : startInput
       const clampedEnd = endInput.isAfter(timelineBounds.end) ? timelineBounds.end : endInput
 
-      const safeEnd = clampedEnd.isBefore(clampedStart)
-        ? clampedStart.add(6, 'hour')
-        : clampedEnd
+      const safeEnd = clampedEnd.isBefore(clampedStart) ? clampedStart.add(6, 'hour') : clampedEnd
 
       const leftPercent =
         (clampedStart.diff(timelineBounds.start, 'hour', true) / totalTimelineHours) * 100
-      const widthPercent =
-        (safeEnd.diff(clampedStart, 'hour', true) / totalTimelineHours) * 100
+      const widthPercent = (safeEnd.diff(clampedStart, 'hour', true) / totalTimelineHours) * 100
 
       return {
         left: `${Math.max(0, Math.min(leftPercent, 100))}%`,
@@ -348,12 +345,7 @@ export const ProjectSprintBoard = ({
       completed: token.colorSuccess,
       archived: token.colorTextQuaternary
     }),
-    [
-      token.colorPrimary,
-      token.colorSuccess,
-      token.colorTextQuaternary,
-      token.colorWarning
-    ]
+    [token.colorPrimary, token.colorSuccess, token.colorTextQuaternary, token.colorWarning]
   )
 
   const taskStatusColors = useMemo<Record<string, string>>(
@@ -500,7 +492,7 @@ export const ProjectSprintBoard = ({
         dataIndex: 'estimatedMinutes',
         key: 'estimatedMinutes',
         width: 160,
-        render: (value: number | null) => (value ?? 'N/A')
+        render: (value: number | null) => value ?? 'N/A'
       }
     ],
     [t, taskStatusColors, token.colorBorder, token.controlHeightSM]
@@ -559,9 +551,7 @@ export const ProjectSprintBoard = ({
 
   const handleToggleSprint = useCallback((sprintId: string) => {
     setExpandedSprintIds((current) =>
-      current.includes(sprintId)
-        ? current.filter((id) => id !== sprintId)
-        : [...current, sprintId]
+      current.includes(sprintId) ? current.filter((id) => id !== sprintId) : [...current, sprintId]
     )
   }, [])
 
@@ -589,9 +579,7 @@ export const ProjectSprintBoard = ({
   const handleDelete = useCallback(
     async (sprint: SprintDTO) => {
       if (!projectId) {
-        messageApi.error(
-          t('sprints.form.invalidProject', { defaultValue: 'Progetto non valido' })
-        )
+        messageApi.error(t('sprints.form.invalidProject', { defaultValue: 'Progetto non valido' }))
         return
       }
       try {
@@ -626,9 +614,7 @@ export const ProjectSprintBoard = ({
       }
 
       if (!projectId) {
-        throw new Error(
-          t('sprints.form.invalidProject', { defaultValue: 'Progetto non valido' })
-        )
+        throw new Error(t('sprints.form.invalidProject', { defaultValue: 'Progetto non valido' }))
       }
 
       if (editingSprint) {

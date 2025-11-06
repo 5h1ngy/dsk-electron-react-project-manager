@@ -146,10 +146,7 @@ const UserManagementPage = (): JSX.Element | null => {
   }, [userFilters.role, userFilters.search, userFilters.status, users])
 
   const selectedUsers = useMemo(
-    () =>
-      users.filter(
-        (user) => selectedUserIds.includes(user.id) && user.id !== currentUser?.id
-      ),
+    () => users.filter((user) => selectedUserIds.includes(user.id) && user.id !== currentUser?.id),
     [currentUser?.id, selectedUserIds, users]
   )
 
@@ -286,9 +283,7 @@ const UserManagementPage = (): JSX.Element | null => {
       return
     }
     const validIds = new Set(users.map((user) => user.id))
-    const cleaned = selectedUserIds.filter(
-      (id) => id !== currentUser?.id && validIds.has(id)
-    )
+    const cleaned = selectedUserIds.filter((id) => id !== currentUser?.id && validIds.has(id))
     if (cleaned.length !== selectedUserIds.length) {
       setSelectedUserIds(cleaned)
     }

@@ -90,6 +90,3 @@ export const buildBreadcrumbItems = ({
 
   return items
 }
-
-
-

@@ -209,12 +209,10 @@ export const ProjectList = ({
       onRow={(record) => ({
         onClick: () => onSelect(record.id),
         onMouseEnter: () => setHoveredRowId(record.id),
-        onMouseLeave: () =>
-          setHoveredRowId((current) => (current === record.id ? null : current)),
+        onMouseLeave: () => setHoveredRowId((current) => (current === record.id ? null : current)),
         style: {
           cursor: 'pointer',
-          background:
-            hoveredRowId === record.id ? token.colorFillTertiary : token.colorBgContainer,
+          background: hoveredRowId === record.id ? token.colorFillTertiary : token.colorBgContainer,
           transition: 'background-color 0.2s ease, box-shadow 0.2s ease',
           boxShadow: hoveredRowId === record.id ? token.boxShadowTertiary : 'none'
         }

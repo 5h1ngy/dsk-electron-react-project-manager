@@ -227,15 +227,7 @@ export const useUserManagement = (): UserManagementState => {
       }
       refreshUsers()
     }
-  }, [
-    deleteTargets,
-    deleteUser,
-    isAdmin,
-    messageApi,
-    normalizeMessage,
-    refreshUsers,
-    t
-  ])
+  }, [deleteTargets, deleteUser, isAdmin, messageApi, normalizeMessage, refreshUsers, t])
 
   const columns = useMemo<ColumnsType<UserDTO>>(
     () => [
