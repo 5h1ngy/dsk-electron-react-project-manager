@@ -1,6 +1,7 @@
 import { Button, Space, Table, Tag, Typography, theme } from 'antd'
 import type { TableProps } from 'antd'
 import type { ColumnsType, TablePaginationConfig } from 'antd/es/table'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { DeleteOutlined, EditOutlined, MessageOutlined } from '@ant-design/icons'
 
@@ -46,6 +47,7 @@ export const ProjectTasksTable = ({
   const showSkeleton = useDelayedLoading(loading)
   const badgeTokens = useSemanticBadges()
   const { token } = theme.useToken()
+  const [hoveredRowId, setHoveredRowId] = useState<string | null>(null)
 
   const columnConfig: Record<TaskTableColumn, ColumnsType<TaskDetails>[number]> = {
     key: {
@@ -204,7 +206,16 @@ export const ProjectTasksTable = ({
       size="middle"
       scroll={{ x: 'max-content' }}
       onRow={(record) => ({
-        onClick: () => onSelect(record)
+        onClick: () => onSelect(record),
+        onMouseEnter: () => setHoveredRowId(record.id),
+        onMouseLeave: () => setHoveredRowId((current) => (current === record.id ? null : current)),
+        style: {
+          cursor: 'pointer',
+          transition: 'background-color 0.2s ease, box-shadow 0.2s ease',
+          background:
+            hoveredRowId === record.id ? token.colorFillTertiary : token.colorBgContainer,
+          boxShadow: hoveredRowId === record.id ? token.boxShadowTertiary : undefined
+        }
       })}
       locale={{
         emptyText: (
