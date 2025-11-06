@@ -215,12 +215,6 @@ export const SprintLane = ({
               {t('sprints.totalTasks', { defaultValue: 'Task totali' })}:{' '}
               {sprint.metrics.totalTasks}
             </Typography.Text>
-            {typeof sprint.metrics.utilizationPercent === 'number' ? (
-              <Typography.Text style={{ color: token.colorWhite }}>
-                {t('sprints.utilization', { defaultValue: 'Utilizzo' })}:{' '}
-                {Math.round(sprint.metrics.utilizationPercent)}%
-              </Typography.Text>
-            ) : null}
           </div>
         </div>
       </div>
@@ -246,20 +240,6 @@ export const SprintLane = ({
                   {t('sprints.estimatedMinutes', { defaultValue: 'Stimati' })}
                 </Typography.Text>
                 <Typography.Text strong>{metrics.estimatedMinutes ?? 0}</Typography.Text>
-              </Space>
-              <Space direction="vertical" size={4}>
-                <Typography.Text type="secondary">
-                  {t('sprints.spentMinutes', { defaultValue: 'Registrati' })}
-                </Typography.Text>
-                <Typography.Text strong>{metrics.timeSpentMinutes}</Typography.Text>
-              </Space>
-              <Space direction="vertical" size={4}>
-                <Typography.Text type="secondary">
-                  {t('sprints.utilization', { defaultValue: 'Utilizzo' })}
-                </Typography.Text>
-                <Typography.Text strong>
-                  {metrics.utilizationPercent ? Math.round(metrics.utilizationPercent) : 0}%
-                </Typography.Text>
               </Space>
             </Flex>
             <div style={{ width: '100%', overflowX: 'auto' }}>

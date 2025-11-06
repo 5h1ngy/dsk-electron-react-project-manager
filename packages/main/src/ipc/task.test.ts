@@ -44,7 +44,6 @@ const createTaskDetails = (overrides: Partial<TaskDetailsDTO> = {}): TaskDetails
     sprintId: overrides.sprintId ?? null,
     sprint: overrides.sprint ?? null,
     estimatedMinutes: overrides.estimatedMinutes ?? null,
-    timeSpentMinutes: overrides.timeSpentMinutes ?? 0,
     createdAt: overrides.createdAt ?? new Date('2024-02-01T10:00:00.000Z'),
     updatedAt: overrides.updatedAt ?? new Date('2024-02-05T11:00:00.000Z'),
     linkedNotes: overrides.linkedNotes ?? [],

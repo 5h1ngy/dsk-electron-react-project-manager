@@ -128,7 +128,6 @@ const ProjectLayout = (): JSX.Element => {
       case 'tasks':
         return tasksStatus === 'loading'
       case 'sprints':
-      case 'timeTracking':
         return projectLoading
       case 'notes':
         return notesStatus === 'loading'
@@ -171,7 +170,6 @@ const ProjectLayout = (): JSX.Element => {
     }
     switch (activeKey) {
       case 'sprints':
-      case 'timeTracking':
         refresh()
         break
       case 'tasks':
@@ -249,9 +247,6 @@ const ProjectLayout = (): JSX.Element => {
         break
       case 'tasks':
         navigate(`${basePath}/tasks`)
-        break
-      case 'timeTracking':
-        navigate(`${basePath}/time-tracking`)
         break
       case 'notes':
         navigate(`${basePath}/notes`)

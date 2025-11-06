@@ -7,7 +7,6 @@ export type ProjectTabKey =
   | 'overview'
   | 'sprints'
   | 'tasks'
-  | 'timeTracking'
   | 'notes'
   | 'wiki'
 

@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useState, type JSX } from 'react'
 import {
   Avatar,
-  Button,
   Card,
   DatePicker,
   Empty,
@@ -19,14 +18,7 @@ import {
   theme
 } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
-import {
-  DeleteOutlined,
-  EditOutlined,
-  PlusOutlined,
-  UserOutlined,
-  ZoomInOutlined,
-  ZoomOutOutlined
-} from '@ant-design/icons'
+import { UserOutlined } from '@ant-design/icons'
 import dayjs from 'dayjs'
 import type { ManipulateType } from 'dayjs'
 import { useTranslation } from 'react-i18next'
@@ -57,7 +49,6 @@ import type {
   SprintDetailsSelectorResult,
   SprintStatusFilter,
   TaskTableColumns,
-  TaskTableRecord,
   TimelinePosition,
   UnassignedTaskRecord,
   ViewScale
@@ -223,25 +214,13 @@ export const ProjectSprintBoard = ({
         (acc, sprint) => {
           acc.tasks += sprint.metrics.totalTasks
           acc.estimated += sprint.metrics.estimatedMinutes ?? 0
-          acc.spent += sprint.metrics.timeSpentMinutes
-          if (typeof sprint.metrics.utilizationPercent === 'number') {
-            acc.utilizationValues.push(sprint.metrics.utilizationPercent)
-          }
           return acc
         },
         {
           tasks: 0,
-          estimated: 0,
-          spent: 0,
-          utilizationValues: [] as number[]
+          estimated: 0
         }
       )
-
-      const utilization =
-        totals.utilizationValues.length > 0
-          ? totals.utilizationValues.reduce((sum, value) => sum + value, 0) /
-            totals.utilizationValues.length
-          : null
 
       return {
         status,
@@ -249,9 +228,7 @@ export const ProjectSprintBoard = ({
         sprints: statusSprints,
         totals: {
           tasks: totals.tasks,
-          estimated: totals.estimated,
-          spent: totals.spent,
-          utilization
+          estimated: totals.estimated
         }
       }
     }).filter(Boolean) as GroupedSprints[]
@@ -611,8 +588,14 @@ export const ProjectSprintBoard = ({
 
   const handleDelete = useCallback(
     async (sprint: SprintDTO) => {
+      if (!projectId) {
+        messageApi.error(
+          t('sprints.form.invalidProject', { defaultValue: 'Progetto non valido' })
+        )
+        return
+      }
       try {
-        await dispatch(deleteSprint(sprint.id)).unwrap()
+        await dispatch(deleteSprint({ projectId, sprintId: sprint.id })).unwrap()
         messageApi.success(
           t('sprints.deleteSuccess', { defaultValue: 'Sprint eliminato correttamente' })
         )
@@ -625,7 +608,7 @@ export const ProjectSprintBoard = ({
         }
       }
     },
-    [dispatch, messageApi, t]
+    [dispatch, messageApi, projectId, t]
   )
 
   const handleFormSubmit = useCallback(async () => {
@@ -652,7 +635,7 @@ export const ProjectSprintBoard = ({
         await dispatch(
           updateSprint({
             sprintId: editingSprint.id,
-            data: payload
+            input: payload
           })
         ).unwrap()
         messageApi.success(

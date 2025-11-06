@@ -8,7 +8,6 @@ import { ProjectTag } from '../packages/main/src/models/ProjectTag'
 import { Task } from '../packages/main/src/models/Task'
 import { TaskStatus } from '../packages/main/src/models/TaskStatus'
 import { Sprint } from '../packages/main/src/models/Sprint'
-import { TimeEntry } from '../packages/main/src/models/TimeEntry'
 import { Note } from '../packages/main/src/models/Note'
 import { NoteTag } from '../packages/main/src/models/NoteTag'
 import { NoteTaskLink } from '../packages/main/src/models/NoteTaskLink'
@@ -22,7 +21,6 @@ import type {
   ProjectSeedDefinition,
   SprintSeedDefinition,
   TaskSeedDefinition,
-  TimeEntrySeedDefinition,
   WikiPageSeedDefinition
 } from './DevelopmentSeeder.types'
 
@@ -45,7 +43,6 @@ export class ProjectSeeder {
     noteCount: number
     wikiPageCount: number
     wikiRevisionCount: number
-    timeEntryCount: number
   }> {
     const existing = await Project.findOne({ where: { key: seed.key }, transaction })
 
@@ -94,27 +91,20 @@ export class ProjectSeeder {
     )
     const noteSync = await this.syncNotes(project, seed.notes, taskSync.orderedTasks, transaction)
     const wikiSync = await this.syncWiki(project, seed.wikiPages, transaction)
-    const timeTrackingSync = await this.syncTimeEntries(
-      project,
-      seed.timeEntries ?? [],
-      taskSync.orderedTasks,
-      transaction
-    )
 
     if (createdProject) {
       logger.debug(
-        `Seeded project ${project.key} with ${seed.members.length} members, ${seed.tags.length} tags, ${sprintSync.createdSprints} sprints, ${taskSync.createdTasks} tasks, ${taskSync.createdComments} comments, ${noteSync.createdNotes} notes, ${wikiSync.createdPages} wiki pages and ${timeTrackingSync.createdEntries} time entries`,
+        `Seeded project ${project.key} with ${seed.members.length} members, ${seed.tags.length} tags, ${sprintSync.createdSprints} sprints, ${taskSync.createdTasks} tasks, ${taskSync.createdComments} comments, ${noteSync.createdNotes} notes and ${wikiSync.createdPages} wiki pages`,
         'Seed'
       )
     } else if (
       sprintSync.createdSprints > 0 ||
       taskSync.createdTasks > 0 ||
       noteSync.createdNotes > 0 ||
-      wikiSync.createdPages > 0 ||
-      timeTrackingSync.createdEntries > 0
+      wikiSync.createdPages > 0
     ) {
       logger.debug(
-        `Topped up project ${project.key}: +${sprintSync.createdSprints} sprints, +${taskSync.createdTasks} tasks, +${taskSync.createdComments} comments, +${noteSync.createdNotes} notes, +${wikiSync.createdPages} wiki pages, +${timeTrackingSync.createdEntries} time entries`,
+        `Topped up project ${project.key}: +${sprintSync.createdSprints} sprints, +${taskSync.createdTasks} tasks, +${taskSync.createdComments} comments, +${noteSync.createdNotes} notes, +${wikiSync.createdPages} wiki pages`,
         'Seed'
       )
     } else {
@@ -128,8 +118,7 @@ export class ProjectSeeder {
       commentCount: taskSync.createdComments,
       noteCount: noteSync.createdNotes,
       wikiPageCount: wikiSync.createdPages,
-      wikiRevisionCount: wikiSync.createdRevisions,
-      timeEntryCount: timeTrackingSync.createdEntries
+      wikiRevisionCount: wikiSync.createdRevisions
     }
   }
 
@@ -388,60 +377,6 @@ export class ProjectSeeder {
     }
 
     return { createdTasks, createdComments, orderedTasks }
-  }
-
-  private async syncTimeEntries(
-    project: Project,
-    timeEntrySeeds: TimeEntrySeedDefinition[],
-    taskIndexMap: Task[],
-    transaction: Transaction
-  ): Promise<{ createdEntries: number }> {
-    if (timeEntrySeeds.length === 0 || taskIndexMap.length === 0) {
-      return { createdEntries: 0 }
-    }
-
-    const existingEntries = await TimeEntry.findAll({
-      where: { projectId: project.id },
-      attributes: ['taskId', 'userId', 'entryDate', 'durationMinutes'],
-      transaction
-    })
-
-    const existingKeys = new Set(
-      existingEntries.map(
-        (entry) => `${entry.taskId}:${entry.userId}:${entry.entryDate}:${entry.durationMinutes}`
-      )
-    )
-
-    let createdEntries = 0
-
-    for (const entrySeed of timeEntrySeeds) {
-      const task = taskIndexMap[entrySeed.taskIndex]
-      if (!task) {
-        continue
-      }
-
-      const key = `${task.id}:${entrySeed.userId}:${entrySeed.entryDate}:${entrySeed.durationMinutes}`
-      if (existingKeys.has(key)) {
-        continue
-      }
-
-      await TimeEntry.create(
-        {
-          id: randomUUID(),
-          projectId: project.id,
-          taskId: task.id,
-          userId: entrySeed.userId,
-          entryDate: entrySeed.entryDate,
-          durationMinutes: entrySeed.durationMinutes,
-          description: entrySeed.description ?? null
-        },
-        { transaction }
-      )
-      createdEntries += 1
-      existingKeys.add(key)
-    }
-
-    return { createdEntries }
   }
 
   private async syncNotes(

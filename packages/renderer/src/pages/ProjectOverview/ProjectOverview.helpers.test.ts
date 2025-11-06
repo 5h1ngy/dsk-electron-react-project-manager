@@ -26,7 +26,6 @@ const buildTask = (overrides: Partial<TaskDetails>): TaskDetails => {
     sprintId: null,
     sprint: null,
     estimatedMinutes: null,
-    timeSpentMinutes: 0,
     createdAt: new Date(),
     updatedAt: new Date(),
     linkedNotes: [],

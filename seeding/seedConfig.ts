@@ -51,7 +51,6 @@ export interface SeedConfig {
   }
   wiki: WikiSeedConfig
   sprints: SprintsSeedConfig
-  timeTracking: TimeTrackingSeedConfig
 }
 
 export interface WikiSeedConfig {
@@ -69,15 +68,6 @@ export interface SprintsSeedConfig {
   gapDays: { min: number; max: number }
   capacityMinutes: { min: number; max: number }
   assignmentProbability: number
-}
-
-export interface TimeTrackingSeedConfig {
-  entriesPerTask: { min: number; max: number }
-  includeProbability: number
-  durationMinutes: { min: number; max: number }
-  recentDays: number
-  descriptionProbability: number
-  descriptionTemplates: string[]
 }
 
 const DEFAULT_CONFIG: SeedConfig = {
@@ -166,21 +156,6 @@ const DEFAULT_CONFIG: SeedConfig = {
     gapDays: { min: 1, max: 6 },
     capacityMinutes: { min: 1200, max: 4800 },
     assignmentProbability: 0.65
-  },
-  timeTracking: {
-    entriesPerTask: { min: 0, max: 3 },
-    includeProbability: 0.65,
-    durationMinutes: { min: 15, max: 240 },
-    recentDays: 90,
-    descriptionProbability: 0.55,
-    descriptionTemplates: [
-      'Daily progress update',
-      'Pairing session with teammate',
-      'Investigated reported issue',
-      'Planning and coordination',
-      'Code review and QA support',
-      'Customer support follow-up'
-    ]
   }
 }
 
@@ -358,32 +333,6 @@ const mergeConfig = (defaults: SeedConfig, overrides: DeepPartial<SeedConfig>): 
       overrides.sprints?.assignmentProbability,
       defaults.sprints.assignmentProbability
     )
-  },
-  timeTracking: {
-    entriesPerTask: {
-      min: overrides.timeTracking?.entriesPerTask?.min ?? defaults.timeTracking.entriesPerTask.min,
-      max: overrides.timeTracking?.entriesPerTask?.max ?? defaults.timeTracking.entriesPerTask.max
-    },
-    includeProbability: clampRatio(
-      overrides.timeTracking?.includeProbability,
-      defaults.timeTracking.includeProbability
-    ),
-    durationMinutes: {
-      min:
-        overrides.timeTracking?.durationMinutes?.min ?? defaults.timeTracking.durationMinutes.min,
-      max:
-        overrides.timeTracking?.durationMinutes?.max ?? defaults.timeTracking.durationMinutes.max
-    },
-    recentDays: overrides.timeTracking?.recentDays ?? defaults.timeTracking.recentDays,
-    descriptionProbability: clampRatio(
-      overrides.timeTracking?.descriptionProbability,
-      defaults.timeTracking.descriptionProbability
-    ),
-    descriptionTemplates:
-      overrides.timeTracking?.descriptionTemplates &&
-      overrides.timeTracking.descriptionTemplates.length > 0
-        ? overrides.timeTracking.descriptionTemplates
-        : defaults.timeTracking.descriptionTemplates
   }
 })
 

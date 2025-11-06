@@ -28,8 +28,7 @@ describe('tasks slice', () => {
     commentCount: 0,
     sprintId: null,
     sprint: null,
-    estimatedMinutes: null,
-    timeSpentMinutes: 0
+    estimatedMinutes: null
   }
 
   it('handles fetchTasks.fulfilled', () => {

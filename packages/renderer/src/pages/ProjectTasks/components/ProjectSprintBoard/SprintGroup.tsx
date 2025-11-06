@@ -77,15 +77,6 @@ const SprintGroup = ({
           <Typography.Text type="secondary">
             {t('sprints.estimatedMinutes', { defaultValue: 'Stimati' })}: {group.totals.estimated}
           </Typography.Text>
-          <Typography.Text type="secondary">
-            {t('sprints.spentMinutes', { defaultValue: 'Registrati' })}: {group.totals.spent}
-          </Typography.Text>
-          {group.totals.utilization !== null ? (
-            <Typography.Text type="secondary">
-              {t('sprints.utilization', { defaultValue: 'Utilizzo' })}:{' '}
-              {Math.round(group.totals.utilization)}%
-            </Typography.Text>
-          ) : null}
         </Space>
       </div>
       {timelineSlots.map((slot, index) => {
