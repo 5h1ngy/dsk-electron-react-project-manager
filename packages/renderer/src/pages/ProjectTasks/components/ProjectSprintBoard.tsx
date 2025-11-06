@@ -114,7 +114,7 @@ export const ProjectSprintBoard = ({
   const { token } = theme.useToken()
 
   const [statusFilter, setStatusFilter] = useState<SprintStatusFilter>('all')
-  const [viewScale, setViewScale] = useState<ViewScale>('week')
+  const [viewScale, setViewScale] = useState<ViewScale>('year')
   const [selectedSprintId, setSelectedSprintId] = useState<string | null>(null)
   const [formVisible, setFormVisible] = useState(false)
   const [editingSprint, setEditingSprint] = useState<SprintDTO | null>(null)
