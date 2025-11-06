@@ -1,6 +1,7 @@
-import { useMemo, useState, type JSX, type ReactNode } from 'react'
+import { useCallback, useMemo, useState, type JSX, type ReactNode } from 'react'
 import {
   Button,
+  DatePicker,
   Drawer,
   Flex,
   Grid,
@@ -12,21 +13,34 @@ import {
   theme
 } from 'antd'
 import {
+  AppstoreAddOutlined,
   AppstoreOutlined,
   BarsOutlined,
   FilterOutlined,
+  ReloadOutlined,
   SearchOutlined,
   TableOutlined,
   UserSwitchOutlined
 } from '@ant-design/icons'
 import type { SegmentedValue } from 'antd/es/segmented'
 import { useTranslation } from 'react-i18next'
+import dayjs, { type Dayjs } from 'dayjs'
+
 import { BorderedPanel } from '@renderer/components/Surface/BorderedPanel'
+
+const { RangePicker } = DatePicker
+
 export interface UserFiltersValue {
   search: string
+  username: string
+  displayName: string
   role: string | 'all'
   status: 'all' | 'active' | 'inactive'
+  lastLoginRange: [string | null, string | null] | null
+  createdRange: [string | null, string | null] | null
+  updatedRange: [string | null, string | null] | null
 }
+
 export interface UserFiltersProps {
   value: UserFiltersValue
   roleOptions: string[]
@@ -36,7 +50,13 @@ export interface UserFiltersProps {
   viewMode: 'table' | 'list' | 'cards'
   onViewModeChange: (mode: 'table' | 'list' | 'cards') => void
   primaryActions?: ReactNode[]
+  onRefresh?: () => void
+  refreshing?: boolean
+  onOpenOptionalFields?: () => void
+  hasOptionalFields?: boolean
+  optionalFieldsDisabled?: boolean
 }
+
 export const UserFilters = ({
   value,
   roleOptions,
@@ -45,7 +65,12 @@ export const UserFilters = ({
   canCreate = true,
   viewMode,
   onViewModeChange,
-  primaryActions = []
+  primaryActions = [],
+  onRefresh,
+  refreshing = false,
+  onOpenOptionalFields,
+  hasOptionalFields = false,
+  optionalFieldsDisabled = false
 }: UserFiltersProps): JSX.Element => {
   const { t } = useTranslation('dashboard')
   const segmentedValue = useMemo<SegmentedValue>(() => value.status, [value.status])
@@ -53,6 +78,8 @@ export const UserFilters = ({
   const screens = Grid.useBreakpoint()
   const isCompact = !screens.md
   const { token } = theme.useToken()
+  const buttonFullWidthStyle = useMemo(() => (isCompact ? { width: '100%' } : undefined), [isCompact])
+
   const toolbarSegmentedStyle = useMemo(
     () => ({
       background: token.colorFillTertiary,
@@ -69,6 +96,39 @@ export const UserFilters = ({
       token.paddingXXS
     ]
   )
+
+  const toPickerValue = useCallback(
+    (range: UserFiltersValue['lastLoginRange']) =>
+      range
+        ? ([
+            range[0] ? dayjs(range[0]) : null,
+            range[1] ? dayjs(range[1]) : null
+          ] as [Dayjs | null, Dayjs | null])
+        : null,
+    []
+  )
+
+  const handleRangeChange = useCallback(
+    (key: 'lastLoginRange' | 'createdRange' | 'updatedRange', dates: [Dayjs | null, Dayjs | null] | null) => {
+      if (!dates) {
+        onChange({ [key]: null } as Partial<UserFiltersValue>)
+        return
+      }
+      const [start, end] = dates
+      onChange({
+        [key]: [
+          start ? start.startOf('day').toISOString() : null,
+          end ? end.endOf('day').toISOString() : null
+        ]
+      } as Partial<UserFiltersValue>)
+    },
+    [onChange]
+  )
+
+  const lastLoginValue = useMemo(() => toPickerValue(value.lastLoginRange), [toPickerValue, value.lastLoginRange])
+  const createdValue = useMemo(() => toPickerValue(value.createdRange), [toPickerValue, value.createdRange])
+  const updatedValue = useMemo(() => toPickerValue(value.updatedRange), [toPickerValue, value.updatedRange])
+
   const filtersContent = (
     <Flex vertical gap={16}>
       <Input
@@ -77,6 +137,24 @@ export const UserFilters = ({
         placeholder={t('filters.users.searchPlaceholder')}
         value={value.search}
         onChange={(event) => onChange({ search: event.target.value })}
+        style={{ width: '100%' }}
+        size="large"
+      />
+      <Input
+        allowClear
+        prefix={<SearchOutlined />}
+        placeholder={t('filters.users.usernamePlaceholder', { defaultValue: 'Filtra per username' })}
+        value={value.username}
+        onChange={(event) => onChange({ username: event.target.value })}
+        style={{ width: '100%' }}
+        size="large"
+      />
+      <Input
+        allowClear
+        prefix={<SearchOutlined />}
+        placeholder={t('filters.users.displayNamePlaceholder', { defaultValue: 'Filtra per nome' })}
+        value={value.displayName}
+        onChange={(event) => onChange({ displayName: event.target.value })}
         style={{ width: '100%' }}
         size="large"
       />
@@ -110,52 +188,85 @@ export const UserFilters = ({
           suffixIcon={<UserSwitchOutlined />}
         />
       </Flex>
+      <Flex vertical gap={12}>
+        <Space direction="vertical" size={4} style={{ width: '100%' }}>
+          <Typography.Text type="secondary">
+            {t('filters.users.lastLoginRangeLabel', { defaultValue: 'Ultimo accesso' })}
+          </Typography.Text>
+          <RangePicker
+            value={lastLoginValue}
+            onChange={(dates) => handleRangeChange('lastLoginRange', dates)}
+            style={{ width: '100%' }}
+            allowClear
+          />
+        </Space>
+        <Space direction="vertical" size={4} style={{ width: '100%' }}>
+          <Typography.Text type="secondary">
+            {t('filters.users.createdRangeLabel', { defaultValue: 'Creato il' })}
+          </Typography.Text>
+          <RangePicker
+            value={createdValue}
+            onChange={(dates) => handleRangeChange('createdRange', dates)}
+            style={{ width: '100%' }}
+            allowClear
+          />
+        </Space>
+        <Space direction="vertical" size={4} style={{ width: '100%' }}>
+          <Typography.Text type="secondary">
+            {t('filters.users.updatedRangeLabel', { defaultValue: 'Aggiornato il' })}
+          </Typography.Text>
+          <RangePicker
+            value={updatedValue}
+            onChange={(dates) => handleRangeChange('updatedRange', dates)}
+            style={{ width: '100%' }}
+            allowClear
+          />
+        </Space>
+      </Flex>
     </Flex>
   )
+
   const viewSegmentedOptions = useMemo(
-    () => [
-      {
+    () =>
+      (['table', 'list', 'cards'] as const).map((key) => ({
         label: (
           <Space size={6} style={{ color: 'inherit' }}>
-            <TableOutlined />
-            <span>{t('filters.users.view.table')}</span>
+            {key === 'table' ? <TableOutlined /> : key === 'list' ? <BarsOutlined /> : <AppstoreOutlined />}
+            {!isCompact ? <span>{t(`filters.users.view.${key}`)}</span> : null}
           </Space>
         ),
-        value: 'table'
-      },
-      {
-        label: (
-          <Space size={6} style={{ color: 'inherit' }}>
-            <BarsOutlined />
-            <span>{t('filters.users.view.list')}</span>
-          </Space>
-        ),
-        value: 'list'
-      },
-      {
-        label: (
-          <Space size={6} style={{ color: 'inherit' }}>
-            <AppstoreOutlined />
-            <span>{t('filters.users.view.cards')}</span>
-          </Space>
-        ),
-        value: 'cards'
-      }
-    ],
-    [t]
+        value: key
+      })),
+    [isCompact, t]
   )
+
   const actionsContent = (
     <Flex align="center" wrap gap={12} style={{ width: '100%' }}>
       <Space size="small" wrap style={{ flex: '1 1 auto' }}>
-        <Button type="primary" onClick={onCreate} disabled={!canCreate}>
+        {onRefresh ? (
+          <Button
+            icon={<ReloadOutlined />}
+            onClick={onRefresh}
+            loading={refreshing}
+            disabled={refreshing}
+            size="large"
+            style={buttonFullWidthStyle}
+          >
+            {t('dashboard:actionBar.refresh')}
+          </Button>
+        ) : null}
+        <Button
+          type="primary"
+          onClick={onCreate}
+          disabled={!canCreate}
+          size="large"
+          style={buttonFullWidthStyle}
+        >
           {t('dashboard:actionBar.create')}
         </Button>
         {primaryActions.length
           ? primaryActions.map((action, index) => (
-              <div
-                key={`primary-action-${index}`}
-                style={isCompact ? { width: '100%' } : undefined}
-              >
+              <div key={`primary-action-${index}`} style={buttonFullWidthStyle}>
                 {action}
               </div>
             ))
@@ -168,13 +279,31 @@ export const UserFilters = ({
           onChange={(next) => onViewModeChange(next as 'table' | 'list' | 'cards')}
           options={viewSegmentedOptions}
           style={toolbarSegmentedStyle}
+          block={isCompact}
         />
-        <Button icon={<FilterOutlined />} onClick={() => setFiltersOpen(true)}>
+        {hasOptionalFields ? (
+          <Button
+            icon={<AppstoreAddOutlined />}
+            size="large"
+            disabled={optionalFieldsDisabled}
+            onClick={onOpenOptionalFields}
+            style={buttonFullWidthStyle}
+          >
+            {t('dashboard:optionalColumns.button', { defaultValue: 'Campi opzionali' })}
+          </Button>
+        ) : null}
+        <Button
+          icon={<FilterOutlined />}
+          onClick={() => setFiltersOpen(true)}
+          size="large"
+          style={buttonFullWidthStyle}
+        >
           {t('filters.users.openButton')}
         </Button>
       </Flex>
     </Flex>
   )
+
   return (
     <>
       <BorderedPanel padding="lg" style={{ width: '100%' }}>
@@ -206,7 +335,16 @@ export const UserFilters = ({
           <Flex justify="space-between" align="center">
             <Button
               onClick={() => {
-                onChange({ search: '', status: 'all', role: 'all' })
+                onChange({
+                  search: '',
+                  username: '',
+                  displayName: '',
+                  status: 'all',
+                  role: 'all',
+                  lastLoginRange: null,
+                  createdRange: null,
+                  updatedRange: null
+                })
               }}
             >
               {t('filters.resetButton', { defaultValue: 'Reimposta filtri' })}
@@ -222,5 +360,8 @@ export const UserFilters = ({
     </>
   )
 }
+
 UserFilters.displayName = 'UserFilters'
+
 export default UserFilters
+

@@ -1,5 +1,5 @@
 import type { JSX } from 'react'
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import dayjs from 'dayjs'
@@ -22,17 +22,28 @@ import {
   selectRecentProjects
 } from '@renderer/pages/Dashboard/Dashboard.helpers'
 import { useSemanticBadges } from '@renderer/theme/hooks/useSemanticBadges'
-import { useAppSelector } from '@renderer/store/hooks'
+import { useAppDispatch, useAppSelector } from '@renderer/store/hooks'
 import { selectCurrentUser } from '@renderer/store/slices/auth/selectors'
-import { selectProjects, selectProjectsStatus } from '@renderer/store/slices/projects'
+import {
+  fetchProjects,
+  selectProjects,
+  selectProjectsStatus
+} from '@renderer/store/slices/projects'
 
 const Dashboard = (): JSX.Element | null => {
   const { t } = useTranslation('dashboard')
   const navigate = useNavigate()
+  const dispatch = useAppDispatch()
   const currentUser = useAppSelector(selectCurrentUser)
   const projects = useAppSelector(selectProjects)
   const projectsStatus = useAppSelector(selectProjectsStatus)
   const badgeTokens = useSemanticBadges()
+
+  useEffect(() => {
+    if (projectsStatus === 'idle') {
+      void dispatch(fetchProjects())
+    }
+  }, [dispatch, projectsStatus])
 
   const isLoadingProjects = projectsStatus === 'loading'
   const projectsSkeleton = useDelayedLoading(isLoadingProjects)

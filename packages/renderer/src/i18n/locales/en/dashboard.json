@@ -7,6 +7,8 @@
     "users": {
       "ariaLabel": "Filter users",
       "searchPlaceholder": "Search users...",
+      "usernamePlaceholder": "Filter by username",
+      "displayNamePlaceholder": "Filter by name",
       "openButton": "Filters",
       "status": {
         "all": "All",
@@ -23,17 +25,37 @@
       },
       "lastLogin": "Last login: {{date}}",
       "lastLoginNever": "Last login: never",
-      "statusLabel": "User status"
+      "statusLabel": "User status",
+      "lastLoginRangeLabel": "Last login",
+      "createdRangeLabel": "Created on",
+      "updatedRangeLabel": "Updated on"
     },
     "panelTitle": "Filters"
   },
   "table": {
+    "id": "User ID",
     "username": "Username",
     "displayName": "Name",
     "roles": "Roles",
     "status": "Status",
+    "lastLoginAt": "Last login",
+    "createdAt": "Created on",
+    "updatedAt": "Updated on",
+    "neverLoggedIn": "Never logged in",
     "actions": "Actions",
     "empty": "No users yet"
+  },
+  "optionalColumns": {
+    "button": "Optional fields",
+    "modalTitle": "Optional fields",
+    "description": "Choose the additional columns you want to display in the table view.",
+    "placeholder": "Select optional columns",
+    "columns": {
+      "id": "User ID",
+      "lastLoginAt": "Last login",
+      "createdAt": "Created on",
+      "updatedAt": "Updated on"
+    }
   },
   "status": {
     "active": "Active",

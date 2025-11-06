@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { Button, Space, Tag, message } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons'
+import dayjs from 'dayjs'
 
 import { useSemanticBadges, buildBadgeStyle } from '@renderer/theme/hooks/useSemanticBadges'
 
@@ -17,10 +18,13 @@ import type {
 } from '@renderer/pages/Dashboard/schemas/userSchemas'
 import { useUserForms } from '@renderer/pages/Dashboard/hooks/useUserForms'
 import { useUserData } from '@renderer/pages/Dashboard/hooks/useUserData'
+import type { OptionalUserColumn } from '@renderer/pages/Dashboard/components/UserColumnVisibilityControls'
 
 interface UserManagementState {
   users: UserDTO[]
-  columns: ColumnsType<UserDTO>
+  baseColumns: ColumnsType<UserDTO>
+  optionalColumns: Record<OptionalUserColumn, ColumnsType<UserDTO>[number]>
+  actionsColumn: ColumnsType<UserDTO>[number]
   error?: string
   loading: boolean
   hasLoaded: boolean
@@ -229,7 +233,7 @@ export const useUserManagement = (): UserManagementState => {
     }
   }, [deleteTargets, deleteUser, isAdmin, messageApi, normalizeMessage, refreshUsers, t])
 
-  const columns = useMemo<ColumnsType<UserDTO>>(
+  const baseColumns = useMemo<ColumnsType<UserDTO>>(
     () => [
       { title: t('dashboard:table.username'), dataIndex: 'username', key: 'username' },
       { title: t('dashboard:table.displayName'), dataIndex: 'displayName', key: 'displayName' },
@@ -262,45 +266,95 @@ export const useUserManagement = (): UserManagementState => {
             </Tag>
           )
         }
-      },
-      {
-        title: t('dashboard:table.actions'),
-        key: 'actions',
-        render: (_value: unknown, record: UserDTO) => (
-          <Space size={4}>
-            <Button
-              type="text"
-              icon={<EditOutlined />}
-              onClick={(event) => {
-                event.stopPropagation()
-                openEditModal(record)
-              }}
-            >
-              {t('dashboard:actions.edit')}
-            </Button>
-            <Button
-              type="text"
-              danger
-              icon={<DeleteOutlined />}
-              loading={isDeletingUser(record.id)}
-              disabled={deleteLoading && !isDeletingUser(record.id)}
-              onClick={(event) => {
-                event.stopPropagation()
-                openDeleteConfirm(record)
-              }}
-            >
-              {t('dashboard:actions.delete')}
-            </Button>
-          </Space>
-        )
       }
     ],
-    [badgeTokens, deleteLoading, isDeletingUser, openDeleteConfirm, openEditModal, t]
+    [badgeTokens, t]
+  )
+
+  const dateFormatter = useCallback(
+    (value: Date | string | null, formatKey: string) => {
+      if (!value) {
+        return t(formatKey, { defaultValue: '—' })
+      }
+      const parsed = dayjs(value)
+      if (!parsed.isValid()) {
+        return t(formatKey, { defaultValue: '—' })
+      }
+      return parsed.format('LLL')
+    },
+    [t]
+  )
+
+  const optionalColumns = useMemo<Record<OptionalUserColumn, ColumnsType<UserDTO>[number]>>(
+    () => ({
+      id: {
+        title: t('dashboard:table.id'),
+        dataIndex: 'id',
+        key: 'id'
+      },
+      lastLoginAt: {
+        title: t('dashboard:table.lastLoginAt'),
+        dataIndex: 'lastLoginAt',
+        key: 'lastLoginAt',
+        render: (value: UserDTO['lastLoginAt']) =>
+          dateFormatter(value, 'dashboard:table.neverLoggedIn')
+      },
+      createdAt: {
+        title: t('dashboard:table.createdAt'),
+        dataIndex: 'createdAt',
+        key: 'createdAt',
+        render: (value: UserDTO['createdAt']) => dateFormatter(value, 'dashboard:table.createdAt')
+      },
+      updatedAt: {
+        title: t('dashboard:table.updatedAt'),
+        dataIndex: 'updatedAt',
+        key: 'updatedAt',
+        render: (value: UserDTO['updatedAt']) => dateFormatter(value, 'dashboard:table.updatedAt')
+      }
+    }),
+    [dateFormatter, t]
+  )
+
+  const actionsColumn = useMemo<ColumnsType<UserDTO>[number]>(
+    () => ({
+      title: t('dashboard:table.actions'),
+      key: 'actions',
+      render: (_value: unknown, record: UserDTO) => (
+        <Space size={4}>
+          <Button
+            type="text"
+            icon={<EditOutlined />}
+            onClick={(event) => {
+              event.stopPropagation()
+              openEditModal(record)
+            }}
+          >
+            {t('dashboard:actions.edit')}
+          </Button>
+          <Button
+            type="text"
+            danger
+            icon={<DeleteOutlined />}
+            loading={isDeletingUser(record.id)}
+            disabled={deleteLoading && !isDeletingUser(record.id)}
+            onClick={(event) => {
+              event.stopPropagation()
+              openDeleteConfirm(record)
+            }}
+          >
+            {t('dashboard:actions.delete')}
+          </Button>
+        </Space>
+      )
+    }),
+    [deleteLoading, isDeletingUser, openDeleteConfirm, openEditModal, t]
   )
 
   return {
     users,
-    columns,
+    baseColumns,
+    optionalColumns,
+    actionsColumn,
     error,
     loading,
     hasLoaded,

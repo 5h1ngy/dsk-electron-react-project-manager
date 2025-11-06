@@ -2,9 +2,10 @@ import type { JSX } from 'react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Alert, Breadcrumb, Button, Modal, Space, Typography } from 'antd'
 import { ROLE_NAMES } from '@main/services/auth/constants'
-import { DeleteOutlined, ReloadOutlined } from '@ant-design/icons'
+import { DeleteOutlined } from '@ant-design/icons'
 import { Navigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import dayjs from 'dayjs'
 
 import { ShellHeaderPortal } from '@renderer/layout/Shell/ShellHeader.context'
 import { usePrimaryBreadcrumb } from '@renderer/layout/Shell/hooks/usePrimaryBreadcrumb'
@@ -19,6 +20,11 @@ import {
 import { UserListView } from '@renderer/pages/Dashboard/components/UserListView'
 import { UserTable } from '@renderer/pages/Dashboard/components/UserTable'
 import { useUserManagement } from '@renderer/pages/Dashboard/hooks/useUserManagement'
+import {
+  OPTIONAL_USER_COLUMNS,
+  OptionalUserColumn,
+  UserColumnVisibilityControls
+} from '@renderer/pages/Dashboard/components/UserColumnVisibilityControls'
 import { useAppDispatch, useAppSelector } from '@renderer/store/hooks'
 import { selectCurrentUser, selectToken } from '@renderer/store/slices/auth/selectors'
 import { forceLogout } from '@renderer/store/slices/auth'
@@ -41,14 +47,23 @@ const UserManagementPage = (): JSX.Element | null => {
   const [roleOptions, setRoleOptions] = useState<string[]>(ROLE_NAMES.slice())
   const [userFilters, setUserFilters] = useState<UserFiltersValue>({
     search: '',
+    username: '',
+    displayName: '',
     role: 'all',
-    status: 'all'
+    status: 'all',
+    lastLoginRange: null,
+    createdRange: null,
+    updatedRange: null
   })
   const [userViewMode, setUserViewMode] = useState<'table' | 'list' | 'cards'>('table')
   const [userTablePage, setUserTablePage] = useState(1)
   const [userTablePageSize, setUserTablePageSize] = useState(10)
   const [userCardPage, setUserCardPage] = useState(1)
   const [userListPage, setUserListPage] = useState(1)
+  const [visibleUserColumns, setVisibleUserColumns] = useState<OptionalUserColumn[]>(() => [
+    ...OPTIONAL_USER_COLUMNS
+  ])
+  const [optionalFieldsOpen, setOptionalFieldsOpen] = useState(false)
 
   const {
     users,
@@ -56,7 +71,9 @@ const UserManagementPage = (): JSX.Element | null => {
     loading,
     hasLoaded,
     messageContext,
-    columns,
+    baseColumns,
+    optionalColumns,
+    actionsColumn,
     isCreateOpen,
     editingUser,
     openCreateModal,
@@ -118,15 +135,65 @@ const UserManagementPage = (): JSX.Element | null => {
   }, [dispatch, isAdmin, token])
 
   const filteredUsers = useMemo(() => {
-    const needle = userFilters.search.trim().toLowerCase()
-    return users.filter((user) => {
-      const matchesSearch =
-        needle.length === 0 ||
-        [user.username, user.displayName]
-          .filter(Boolean)
-          .some((value) => value.toLowerCase().includes(needle))
+    const searchNeedle = userFilters.search.trim().toLowerCase()
+    const usernameNeedle = userFilters.username.trim().toLowerCase()
+    const displayNameNeedle = userFilters.displayName.trim().toLowerCase()
 
-      if (!matchesSearch) {
+    const normalizeRange = (
+      range: UserFiltersValue['lastLoginRange']
+    ): { start: dayjs.Dayjs | null; end: dayjs.Dayjs | null } | null => {
+      if (!range) {
+        return null
+      }
+      const [start, end] = range
+      return {
+        start: start ? dayjs(start) : null,
+        end: end ? dayjs(end) : null
+      }
+    }
+
+    const lastLoginRange = normalizeRange(userFilters.lastLoginRange)
+    const createdRange = normalizeRange(userFilters.createdRange)
+    const updatedRange = normalizeRange(userFilters.updatedRange)
+
+    const matchesRange = (
+      value: Date | string | null,
+      range: { start: dayjs.Dayjs | null; end: dayjs.Dayjs | null } | null,
+      allowEmptyValue = false
+    ): boolean => {
+      if (!range) {
+        return true
+      }
+      if (!value) {
+        return allowEmptyValue && !range.start && !range.end
+      }
+      const parsed = dayjs(value)
+      if (!parsed.isValid()) {
+        return false
+      }
+      if (range.start && parsed.isBefore(range.start)) {
+        return false
+      }
+      if (range.end && parsed.isAfter(range.end)) {
+        return false
+      }
+      return true
+    }
+
+    return users.filter((user) => {
+      const baseValues = [user.username, user.displayName, user.id].filter(Boolean).map((value) => value.toLowerCase())
+      if (searchNeedle.length > 0 && !baseValues.some((value) => value.includes(searchNeedle))) {
+        return false
+      }
+
+      if (usernameNeedle.length > 0 && !user.username.toLowerCase().includes(usernameNeedle)) {
+        return false
+      }
+
+      if (
+        displayNameNeedle.length > 0 &&
+        !(user.displayName ?? '').toLowerCase().includes(displayNameNeedle)
+      ) {
         return false
       }
 
@@ -141,13 +208,49 @@ const UserManagementPage = (): JSX.Element | null => {
         }
       }
 
+      if (!matchesRange(user.lastLoginAt, lastLoginRange, false)) {
+        return false
+      }
+
+      if (!matchesRange(user.createdAt, createdRange, true)) {
+        return false
+      }
+
+      if (!matchesRange(user.updatedAt, updatedRange, true)) {
+        return false
+      }
+
       return true
     })
-  }, [userFilters.role, userFilters.search, userFilters.status, users])
+  }, [
+    userFilters.createdRange,
+    userFilters.displayName,
+    userFilters.lastLoginRange,
+    userFilters.role,
+    userFilters.search,
+    userFilters.status,
+    userFilters.updatedRange,
+    userFilters.username,
+    users
+  ])
 
   const selectedUsers = useMemo(
     () => users.filter((user) => selectedUserIds.includes(user.id) && user.id !== currentUser?.id),
     [currentUser?.id, selectedUserIds, users]
+  )
+
+  const userTableColumns = useMemo(
+    () => [
+      ...baseColumns,
+      ...visibleUserColumns
+        .map((key) => optionalColumns[key])
+        .filter(
+          (column): column is (typeof baseColumns)[number] =>
+            Boolean(column)
+        ),
+      actionsColumn
+    ],
+    [actionsColumn, baseColumns, optionalColumns, visibleUserColumns]
   )
 
   const deleteModalTitle = useMemo(() => {
@@ -252,6 +355,12 @@ const UserManagementPage = (): JSX.Element | null => {
   }, [userViewMode])
 
   useEffect(() => {
+    if (userViewMode !== 'table') {
+      setOptionalFieldsOpen(false)
+    }
+  }, [userViewMode])
+
+  useEffect(() => {
     const maxPage = Math.max(1, Math.ceil(filteredUsers.length / userTablePageSize))
     if (userTablePage > maxPage) {
       setUserTablePage(maxPage)
@@ -311,14 +420,6 @@ const UserManagementPage = (): JSX.Element | null => {
           }}
         >
           <Breadcrumb items={breadcrumbItems} style={breadcrumbStyle} />
-          <Button
-            icon={<ReloadOutlined />}
-            onClick={refreshUsers}
-            loading={loading}
-            disabled={loading}
-          >
-            {t('dashboard:actionBar.refresh')}
-          </Button>
         </Space>
       </ShellHeaderPortal>
       <Space direction="vertical" size="large" style={{ width: '100%' }}>
@@ -335,6 +436,11 @@ const UserManagementPage = (): JSX.Element | null => {
             setUserViewMode(mode)
           }}
           primaryActions={bulkDeleteButton ? [bulkDeleteButton] : []}
+          onRefresh={refreshUsers}
+          refreshing={loading}
+          onOpenOptionalFields={() => setOptionalFieldsOpen(true)}
+          hasOptionalFields={OPTIONAL_USER_COLUMNS.length > 0}
+          optionalFieldsDisabled={userViewMode !== 'table'}
         />
         {error ? (
           <Alert
@@ -348,7 +454,7 @@ const UserManagementPage = (): JSX.Element | null => {
         {userViewMode === 'table' ? (
           <Space direction="vertical" size="small" style={{ width: '100%' }}>
             <UserTable
-              columns={columns}
+              columns={userTableColumns}
               users={filteredUsers}
               loading={loading}
               hasLoaded={hasLoaded}
@@ -401,6 +507,22 @@ const UserManagementPage = (): JSX.Element | null => {
             deleteDisabled={deleteLoading}
           />
         ) : null}
+        <Modal
+          open={optionalFieldsOpen}
+          title={t('dashboard:optionalColumns.modalTitle', { defaultValue: 'Campi opzionali' })}
+          onCancel={() => setOptionalFieldsOpen(false)}
+          footer={null}
+          centered
+          destroyOnClose={false}
+        >
+          <Space direction="vertical" size="middle" style={{ width: '100%' }}>
+            <UserColumnVisibilityControls
+              columns={OPTIONAL_USER_COLUMNS}
+              selectedColumns={visibleUserColumns}
+              onChange={(next) => setVisibleUserColumns(next.length ? next : [])}
+            />
+          </Space>
+        </Modal>
         <Modal
           open={Boolean(deleteConfirmUsers && deleteConfirmUsers.length > 0)}
           title={deleteModalTitle}

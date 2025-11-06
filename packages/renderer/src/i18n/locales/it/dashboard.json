@@ -7,6 +7,8 @@
     "users": {
       "ariaLabel": "Filtra utenti",
       "searchPlaceholder": "Cerca utenti...",
+      "usernamePlaceholder": "Filtra per username",
+      "displayNamePlaceholder": "Filtra per nome",
       "openButton": "Filtri",
       "status": {
         "all": "Tutti",
@@ -23,17 +25,37 @@
       },
       "lastLogin": "Ultimo accesso: {{date}}",
       "lastLoginNever": "Ultimo accesso: mai",
-      "statusLabel": "Stato utenti"
+      "statusLabel": "Stato utenti",
+      "lastLoginRangeLabel": "Ultimo accesso",
+      "createdRangeLabel": "Creato il",
+      "updatedRangeLabel": "Aggiornato il"
     },
     "panelTitle": "Filtri"
   },
   "table": {
+    "id": "ID utente",
     "username": "Username",
     "displayName": "Nome",
     "roles": "Ruoli",
     "status": "Stato",
+    "lastLoginAt": "Ultimo accesso",
+    "createdAt": "Creato il",
+    "updatedAt": "Aggiornato il",
+    "neverLoggedIn": "Mai registrato",
     "actions": "Azioni",
     "empty": "Nessun utente"
+  },
+  "optionalColumns": {
+    "button": "Campi opzionali",
+    "modalTitle": "Campi opzionali",
+    "description": "Seleziona le colonne aggiuntive da mostrare nella tabella utenti.",
+    "placeholder": "Seleziona le colonne opzionali",
+    "columns": {
+      "id": "ID utente",
+      "lastLoginAt": "Ultimo accesso",
+      "createdAt": "Creato il",
+      "updatedAt": "Aggiornato il"
+    }
   },
   "status": {
     "active": "Attivo",
