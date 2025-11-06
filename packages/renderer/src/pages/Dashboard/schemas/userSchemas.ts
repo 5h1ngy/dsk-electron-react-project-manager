@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-import { PASSWORD_POLICY, USERNAME_REGEX } from '@main/services/auth/constants'
+import { PASSWORD_POLICY, USERNAME_REGEX } from '@services/services/auth/constants'
 
 const trimInput = <T extends z.ZodTypeAny>(schema: T): z.ZodEffects<T> =>
   z.preprocess((value) => (typeof value === 'string' ? value.trim() : value), schema)

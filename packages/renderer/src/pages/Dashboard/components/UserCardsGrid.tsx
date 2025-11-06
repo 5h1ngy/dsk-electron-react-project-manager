@@ -12,7 +12,7 @@ import { useTranslation } from 'react-i18next'
 
 import { EmptyState, LoadingSkeleton } from '@renderer/components/DataStates'
 import { useDelayedLoading } from '@renderer/hooks/useDelayedLoading'
-import type { UserDTO } from '@main/services/auth'
+import type { UserDTO } from '@services/services/auth'
 
 const GRID_STYLE = {
   display: 'grid',

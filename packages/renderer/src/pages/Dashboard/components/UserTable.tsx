@@ -6,7 +6,7 @@ import type { TableProps } from 'antd'
 
 import { EmptyState, LoadingSkeleton } from '@renderer/components/DataStates'
 import { useDelayedLoading } from '@renderer/hooks/useDelayedLoading'
-import type { UserDTO } from '@main/services/auth'
+import type { UserDTO } from '@services/services/auth'
 
 interface UserTableRowSelectionConfig {
   selectedRowKeys: string[]

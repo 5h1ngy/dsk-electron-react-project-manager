@@ -1,11 +1,11 @@
-import type { TaskStatusDTO } from '@main/services/taskStatus/types'
+import type { TaskStatusDTO } from '@services/services/taskStatus/types'
 import type {
   ListTaskStatusesInput,
   CreateTaskStatusInput,
   UpdateTaskStatusInput,
   ReorderTaskStatusesInput,
   DeleteTaskStatusInput
-} from '@main/services/taskStatus/schemas'
+} from '@services/services/taskStatus/schemas'
 import { invokeIpc } from '@preload/api/shared'
 
 const CHANNELS = {

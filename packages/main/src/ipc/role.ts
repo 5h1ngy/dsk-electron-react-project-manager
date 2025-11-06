@@ -1,5 +1,5 @@
-import type { AuthService } from '@main/services/auth'
-import type { RoleService } from '@main/services/roles'
+﻿import type { AuthService } from '@services/services/auth'
+import type { RoleService } from '@services/services/roles'
 import { IpcChannelRegistrar } from '@main/ipc/utils'
 
 export interface RoleIpcDependencies {
@@ -59,3 +59,4 @@ export class RoleIpcRegistrar {
     return await this.authService.resolveActor(token, { touch: true })
   }
 }
+

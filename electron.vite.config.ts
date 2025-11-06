@@ -7,7 +7,8 @@ export default defineConfig({
     resolve: {
       alias: {
         '@main': resolve(__dirname, 'packages/main/src'),
-        '@preload': resolve(__dirname, 'packages/preload/src')
+        '@preload': resolve(__dirname, 'packages/preload/src'),
+        '@services': resolve(__dirname, 'packages/services/src')
       }
     },
     build: {
@@ -21,7 +22,8 @@ export default defineConfig({
     resolve: {
       alias: {
         '@preload': resolve(__dirname, 'packages/preload/src'),
-        '@main': resolve(__dirname, 'packages/main/src')
+        '@main': resolve(__dirname, 'packages/main/src'),
+        '@services': resolve(__dirname, 'packages/services/src')
       }
     },
     build: {
@@ -39,7 +41,8 @@ export default defineConfig({
       alias: {
         '@renderer': resolve(__dirname, 'packages/renderer/src'),
         '@preload': resolve(__dirname, 'packages/preload/src'),
-        '@main': resolve(__dirname, 'packages/main/src')
+        '@main': resolve(__dirname, 'packages/main/src'),
+        '@services': resolve(__dirname, 'packages/services/src')
       }
     },
     plugins: [react()],

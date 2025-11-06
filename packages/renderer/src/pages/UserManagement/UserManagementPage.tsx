@@ -1,7 +1,7 @@
 import type { JSX } from 'react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Alert, Breadcrumb, Button, Flex, Modal, Space, Typography, theme } from 'antd'
-import { ROLE_NAMES } from '@main/services/auth/constants'
+import { ROLE_NAMES } from '@services/services/auth/constants'
 import { DeleteOutlined, ReloadOutlined } from '@ant-design/icons'
 import { Navigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
@@ -29,7 +29,7 @@ import { useAppDispatch, useAppSelector } from '@renderer/store/hooks'
 import { selectCurrentUser, selectToken } from '@renderer/store/slices/auth/selectors'
 import { forceLogout } from '@renderer/store/slices/auth'
 import { handleResponse, isSessionExpiredError } from '@renderer/store/slices/auth/helpers'
-import type { UserDTO } from '@main/services/auth'
+import type { UserDTO } from '@services/services/auth'
 
 const DEFAULT_CARD_PAGE_SIZE = 8
 const CARD_PAGE_SIZE_OPTIONS = [8, 12, 16, 24]

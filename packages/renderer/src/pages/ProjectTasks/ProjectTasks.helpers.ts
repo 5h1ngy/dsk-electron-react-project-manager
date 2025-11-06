@@ -2,7 +2,7 @@ import type { TaskDetails } from '@renderer/store/slices/tasks/types'
 import type { TaskStatusItem } from '@renderer/store/slices/taskStatuses'
 import type { SelectOption, TaskFilters } from '@renderer/pages/ProjectTasks/ProjectTasks.types'
 import type { TFunction } from 'i18next'
-import type { SprintDTO } from '@main/services/sprint/types'
+import type { SprintDTO } from '@services/services/sprint/types'
 
 export const buildStatusOptions = (
   t: TFunction<'projects'>,

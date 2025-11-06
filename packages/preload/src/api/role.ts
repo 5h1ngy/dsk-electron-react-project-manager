@@ -1,6 +1,6 @@
-import type { RoleSummary } from '@main/services/roles'
-import type { CreateRoleInput, UpdateRoleInput } from '@main/services/roles/schemas'
-import type { RolePermissionDefinition } from '@main/services/roles/constants'
+﻿import type { RoleSummary } from '@services/services/roles'
+import type { CreateRoleInput, UpdateRoleInput } from '@services/services/roles/schemas'
+import type { RolePermissionDefinition } from '@services/services/roles/constants'
 import { invokeIpc } from '@preload/api/shared'
 
 const CHANNELS = {
@@ -25,3 +25,4 @@ export const roleApi = {
   syncDefaults: async (token: string) =>
     await invokeIpc<RoleSummary[]>(CHANNELS.syncDefaults, token)
 }
+

@@ -1,12 +1,12 @@
 import { createAsyncThunk } from '@reduxjs/toolkit'
 
-import type { SessionPayload, UserDTO } from '@main/services/auth'
+import type { SessionPayload, UserDTO } from '@services/services/auth'
 import type {
   CreateUserInput,
   UpdateUserInput,
   LoginInput,
   RegisterUserInput
-} from '@main/services/auth/schemas'
+} from '@services/services/auth/schemas'
 
 import type { AppThunk, RootState } from '@renderer/store/types'
 import {

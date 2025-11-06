@@ -1,4 +1,4 @@
-import type { SavedViewDTO } from '@main/services/view/types'
+import type { SavedViewDTO } from '@services/services/view/types'
 import type { LoadStatus } from '@renderer/store/slices/tasks/types'
 
 export type SavedView = SavedViewDTO

@@ -1,8 +1,8 @@
-import type { ProjectMembershipRole } from '../packages/main/src/models/ProjectMember'
-import type { TaskPriority, TaskStatus } from '../packages/main/src/models/Task'
-import type { SprintStatus } from '../packages/main/src/models/Sprint'
-import type { User } from '../packages/main/src/models/User'
-import type { RoleName } from '../packages/main/src/services/auth/constants'
+import type { ProjectMembershipRole } from '@services/models/ProjectMember'
+import type { TaskPriority, TaskStatus } from '@services/models/Task'
+import type { SprintStatus } from '@services/models/Sprint'
+import type { User } from '@services/models/User'
+import type { RoleName } from '@services/services/auth/constants'
 
 export interface DevelopmentSeederOptions {
   fakerSeed?: number

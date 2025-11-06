@@ -3,6 +3,8 @@ import type { Config } from 'jest'
 const sharedModuleNameMapper = {
   '^@main/(.*)$': '<rootDir>/packages/main/src/$1',
   '^@preload/(.*)$': '<rootDir>/packages/preload/src/$1',
+  '^@services/(.*)$': '<rootDir>/packages/services/src/$1',
+  '^@api/(.*)$': '<rootDir>/packages/api/src/$1',
   '^@renderer/(.*)$': '<rootDir>/packages/renderer/src/$1',
   '\\.(css|less|sass|scss)$': '<rootDir>/test/__mocks__/styleMock.ts',
   '\\.(png|jpg|jpeg|gif|svg)$': '<rootDir>/test/__mocks__/fileMock.ts'

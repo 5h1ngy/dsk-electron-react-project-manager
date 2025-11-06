@@ -1,7 +1,7 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import type { AuthService } from '@main/services/auth'
-import type { ProjectService } from '@main/services/project'
-import type { ProjectDetailsDTO, ProjectSummaryDTO } from '@main/services/project/types'
+﻿/* eslint-disable @typescript-eslint/no-explicit-any */
+import type { AuthService } from '@services/services/auth'
+import type { ProjectService } from '@services/services/project'
+import type { ProjectDetailsDTO, ProjectSummaryDTO } from '@services/services/project/types'
 import { ProjectIpcRegistrar } from '@main/ipc/project'
 import { IpcChannelRegistrar } from '@main/ipc/utils'
 
@@ -120,3 +120,4 @@ describe('ProjectIpcRegistrar', () => {
     expect(response).toEqual({ ok: false, code: 'ERR_INTERNAL', message: 'boom' })
   })
 })
+

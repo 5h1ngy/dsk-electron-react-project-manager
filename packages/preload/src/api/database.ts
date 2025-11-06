@@ -4,7 +4,7 @@ import type {
   DatabaseImportResult,
   DatabaseProgressUpdate,
   DatabaseRestartResult
-} from '@main/services/databaseMaintenance/types'
+} from '@services/services/databaseMaintenance/types'
 import { invokeIpc } from '@preload/api/shared'
 
 const CHANNELS = {

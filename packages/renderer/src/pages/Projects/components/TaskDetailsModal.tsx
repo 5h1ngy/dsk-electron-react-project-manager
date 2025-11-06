@@ -43,7 +43,7 @@ import {
   selectTaskMutationStatus,
   updateTask
 } from '@renderer/store/slices/tasks'
-import type { CommentDTO } from '@main/services/task/types'
+import type { CommentDTO } from '@services/services/task/types'
 import { taskFormSchema, type TaskFormValues } from '@renderer/pages/Projects/schemas/taskSchemas'
 import MarkdownEditor from '@renderer/components/Markdown/MarkdownEditor'
 import MarkdownViewer from '@renderer/components/Markdown/MarkdownViewer'

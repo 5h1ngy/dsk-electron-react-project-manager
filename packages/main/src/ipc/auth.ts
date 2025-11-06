@@ -1,4 +1,4 @@
-import type { AuthService } from '@main/services/auth'
+﻿import type { AuthService } from '@services/services/auth'
 import { IpcChannelRegistrar } from '@main/ipc/utils'
 
 export interface AuthIpcDependencies {
@@ -54,3 +54,4 @@ export class AuthIpcRegistrar {
     })
   }
 }
+

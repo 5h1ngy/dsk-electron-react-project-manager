@@ -47,7 +47,7 @@ import type { LoadStatus } from '@renderer/store/slices/tasks/types'
 import { deleteTask, type TaskDetails } from '@renderer/store/slices/tasks'
 import { selectCurrentUser } from '@renderer/store/slices/auth/selectors'
 import { extractErrorMessage } from '@renderer/store/slices/auth/helpers'
-import { VIEW_COLUMN_VALUES } from '@main/services/view/schemas'
+import { VIEW_COLUMN_VALUES } from '@services/services/view/schemas'
 
 const TABLE_PAGE_SIZE = 10
 const CARD_PAGE_SIZE = 8

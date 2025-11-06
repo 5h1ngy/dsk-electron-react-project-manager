@@ -1,9 +1,9 @@
-import type {
+﻿import type {
   WikiPageDetailsDTO,
   WikiPageSummaryDTO,
   WikiRevisionDTO
-} from '@main/services/wiki/types'
-import type { CreateWikiPageInput, UpdateWikiPageInput } from '@main/services/wiki/schemas'
+} from '@services/services/wiki/types'
+import type { CreateWikiPageInput, UpdateWikiPageInput } from '@services/services/wiki/schemas'
 import { invokeIpc } from '@preload/api/shared'
 
 const CHANNELS = {
@@ -32,3 +32,4 @@ export const wikiApi = {
   restore: async (token: string, projectId: string, pageId: string, revisionId: string) =>
     await invokeIpc<WikiPageDetailsDTO>(CHANNELS.restore, token, projectId, pageId, revisionId)
 }
+

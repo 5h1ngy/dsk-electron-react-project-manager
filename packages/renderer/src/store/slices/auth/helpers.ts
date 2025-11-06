@@ -1,4 +1,4 @@
-import type { SessionPayload } from '@main/services/auth'
+import type { SessionPayload } from '@services/services/auth'
 import type { IpcResponse } from '@renderer/types'
 
 import { TOKEN_STORAGE_KEY } from '@renderer/store/slices/auth/constants'

@@ -1,8 +1,8 @@
 import type { Sequelize } from 'sequelize-typescript'
 
-import { DatabaseManager } from '../packages/main/src/config/database'
-import { logger } from '../packages/main/src/config/logger'
-import { resolveAppStoragePath } from '../packages/main/src/config/storagePath'
+import { DatabaseManager } from '@services/config/database'
+import { logger } from '@services/config/logger'
+import { resolveAppStoragePath } from '@services/config/storagePath'
 import { DevelopmentSeeder } from './DevelopmentSeeder'
 import type { DevelopmentSeederOptions } from './DevelopmentSeeder.types'
 

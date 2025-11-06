@@ -1,7 +1,7 @@
 import { Space, Typography } from 'antd'
 import type dayjs from 'dayjs'
 import type { TFunction } from 'i18next'
-import type { SprintDTO } from '@main/services/sprint/types'
+import type { SprintDTO } from '@services/services/sprint/types'
 import type { GlobalToken } from 'antd/es/theme/interface'
 import type { JSX } from 'react'
 

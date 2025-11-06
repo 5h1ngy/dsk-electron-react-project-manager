@@ -34,6 +34,7 @@
 - Hardened Electron main process with single instance lock, security hooks, and structured logging.
 - Domain-driven services for auth, projects, tasks, notes, and auditing backed by Sequelize.
 - Strongly typed preload bridge exposing the `window.api` contract with runtime validation.
+- Shared services package consumed by both Electron and a decorator-based REST API layer.
 - Rich React 19 renderer using Ant Design 5, Redux Toolkit, i18next, and dynamic accent theming.
 - Comprehensive testing setup spanning Jest, Testing Library, and ts-jest across processes.
 - Faker-powered seeders that bootstrap realistic demo data for local development.
@@ -77,10 +78,11 @@ See `docs/architecture-overview.md` for a deeper walkthrough of the Electron lif
 ## Quick Start
 
 1. Install dependencies: `npm install`
-2. Launch the app in development: `npm run dev`
-3. Run the renderer preview in a browser-only context: `npm start`
-4. Build production assets: `npm run build`
-5. Package the desktop app: `npm run build:win`
+2. Desktop (offline) mode: `npm run dev:electron`
+3. Backend API mode: `npm run dev:api` (exposes REST services on port `3333`)
+4. Browser UI mode: `VITE_API_BASE_URL=http://localhost:3333 npm run dev:frontend`
+5. Build production bundles: `npm run build:electron`, `npm run build:api`, `npm run build:frontend`
+6. Package the Windows desktop app: `npm run build:win`
 
 All commands assume a recent Node 22 environment. The Electron app automatically seeds sane defaults on first launch.
 
@@ -94,7 +96,20 @@ All commands assume a recent Node 22 environment. The Electron app automatically
 | `npm run lint`                   | ESLint with caching                                       |
 | `npm run typecheck`              | Aggregated TypeScript checks for Node and web             |
 | `npm test`, `npm run test:watch` | Jest multi-project test runner                            |
+| `npm run dev:electron`           | Electron main + renderer in desktop offline mode          |
+| `npm run dev:api`                | Start the REST backend with live TypeScript transpilation |
+| `npm run dev:frontend`           | Serve the React SPA against `VITE_API_BASE_URL`           |
+| `npm run build:electron`         | Production bundle for the Electron desktop app            |
+| `npm run build:api`              | Transpile shared services + API to `out/api`              |
+| `npm run build:frontend`         | Vite build of the browser renderer to `out/renderer-web`  |
+| `npm run start:api`              | Run the compiled API (`npm run build:api` first)          |
 | `npm run db:seed`                | Execute `DevelopmentSeeder` via ts-node with path aliases |
+
+### Docker Compose
+
+- Build and run both backend and web UI: `docker-compose up --build`
+- Override ports with `API_PORT` (default `3333`) and `FRONTEND_PORT` (default `8080`)
+- Persisted SQLite data is stored in the named volume `api-data`
 
 ### Versioning & Releases
 

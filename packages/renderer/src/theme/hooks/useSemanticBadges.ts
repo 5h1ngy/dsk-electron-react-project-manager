@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { theme } from 'antd'
 
-import type { RoleName } from '@main/services/auth/constants'
+import type { RoleName } from '@services/services/auth/constants'
 import type { ProjectSummary } from '@renderer/store/slices/projects/types'
 import type { TaskDetails } from '@renderer/store/slices/tasks'
 

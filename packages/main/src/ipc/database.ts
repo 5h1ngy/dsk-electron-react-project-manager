@@ -1,16 +1,16 @@
-import { randomUUID } from 'node:crypto'
+﻿import { randomUUID } from 'node:crypto'
 import { BrowserWindow, dialog } from 'electron'
 import type { OpenDialogOptions, SaveDialogOptions } from 'electron'
 
-import type { DatabaseMaintenanceService } from '@main/services/databaseMaintenance'
+import type { DatabaseMaintenanceService } from '@services/services/databaseMaintenance'
 import type { IpcChannelRegistrar } from '@main/ipc/utils'
 import type {
   DatabaseExportResult,
   DatabaseImportResult,
   DatabaseProgressUpdate,
   DatabaseRestartResult
-} from '@main/services/databaseMaintenance/types'
-import { AppError } from '@main/config/appError'
+} from '@services/services/databaseMaintenance/types'
+import { AppError } from '@services/config/appError'
 
 const EXPORT_FILTERS = [
   {
@@ -161,3 +161,4 @@ export class DatabaseIpcRegistrar {
     )
   }
 }
+

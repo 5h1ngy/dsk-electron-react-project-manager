@@ -35,9 +35,9 @@ import {
 import { Navigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 
-import type { RoleSummary } from '@main/services/roles'
-import type { RolePermissionDefinition } from '@main/services/roles/constants'
-import type { RoleName } from '@main/services/auth/constants'
+import type { RoleSummary } from '@services/services/roles'
+import type { RolePermissionDefinition } from '@services/services/roles/constants'
+import type { RoleName } from '@services/services/auth/constants'
 
 import { ShellHeaderPortal } from '@renderer/layout/Shell/ShellHeader.context'
 import { BorderedPanel } from '@renderer/components/Surface/BorderedPanel'

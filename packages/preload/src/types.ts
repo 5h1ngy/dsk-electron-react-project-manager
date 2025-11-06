@@ -1,60 +1,60 @@
-import type { HealthResponse } from '@main/ipc/health'
-import type { SessionPayload, UserDTO } from '@main/services/auth'
+﻿import type { HealthResponse } from '@main/ipc/health'
+import type { SessionPayload, UserDTO } from '@services/services/auth'
 import type {
   CreateUserInput,
   UpdateUserInput,
   LoginInput,
   RegisterUserInput
-} from '@main/services/auth/schemas'
+} from '@services/services/auth/schemas'
 import type {
   CreateProjectInput,
   UpdateProjectInput,
   ProjectMemberRoleInput
-} from '@main/services/project/schemas'
-import type { ProjectDetailsDTO, ProjectSummaryDTO } from '@main/services/project/types'
+} from '@services/services/project/schemas'
+import type { ProjectDetailsDTO, ProjectSummaryDTO } from '@services/services/project/types'
 import type {
   CreateTaskInput,
   UpdateTaskInput,
   MoveTaskInput,
   CreateCommentInput,
   SearchTasksInput
-} from '@main/services/task/schemas'
-import type { TaskDetailsDTO, CommentDTO } from '@main/services/task/types'
-import type { TaskStatusDTO } from '@main/services/taskStatus/types'
+} from '@services/services/task/schemas'
+import type { TaskDetailsDTO, CommentDTO } from '@services/services/task/types'
+import type { TaskStatusDTO } from '@services/services/taskStatus/types'
 import type {
   ListTaskStatusesInput,
   CreateTaskStatusInput,
   UpdateTaskStatusInput,
   ReorderTaskStatusesInput,
   DeleteTaskStatusInput
-} from '@main/services/taskStatus/schemas'
+} from '@services/services/taskStatus/schemas'
 import type {
   CreateNoteInput,
   UpdateNoteInput,
   ListNotesInput,
   SearchNotesInput
-} from '@main/services/note/schemas'
-import type { CreateWikiPageInput, UpdateWikiPageInput } from '@main/services/wiki/schemas'
-import type { NoteDetailsDTO, NoteSummaryDTO, NoteSearchResultDTO } from '@main/services/note/types'
+} from '@services/services/note/schemas'
+import type { CreateWikiPageInput, UpdateWikiPageInput } from '@services/services/wiki/schemas'
+import type { NoteDetailsDTO, NoteSummaryDTO, NoteSearchResultDTO } from '@services/services/note/types'
 import type {
   WikiPageDetailsDTO,
   WikiPageSummaryDTO,
   WikiRevisionDTO
-} from '@main/services/wiki/types'
-import type { SavedViewDTO } from '@main/services/view/types'
-import type { CreateViewInput, UpdateViewInput, ListViewsInput } from '@main/services/view/schemas'
-import type { RoleSummary } from '@main/services/roles'
-import type { RolePermissionDefinition } from '@main/services/roles/constants'
-import type { CreateRoleInput, UpdateRoleInput } from '@main/services/roles/schemas'
-import type { SprintDTO, SprintDetailsDTO } from '@main/services/sprint/types'
-import type { CreateSprintInput, UpdateSprintInput } from '@main/services/sprint/schemas'
+} from '@services/services/wiki/types'
+import type { SavedViewDTO } from '@services/services/view/types'
+import type { CreateViewInput, UpdateViewInput, ListViewsInput } from '@services/services/view/schemas'
+import type { RoleSummary } from '@services/services/roles'
+import type { RolePermissionDefinition } from '@services/services/roles/constants'
+import type { CreateRoleInput, UpdateRoleInput } from '@services/services/roles/schemas'
+import type { SprintDTO, SprintDetailsDTO } from '@services/services/sprint/types'
+import type { CreateSprintInput, UpdateSprintInput } from '@services/services/sprint/schemas'
 import type {
   DatabaseExportResult,
   DatabaseImportResult,
   DatabaseProgressUpdate,
   DatabaseRestartResult
-} from '@main/services/databaseMaintenance/types'
-export type { DatabaseProgressUpdate } from '@main/services/databaseMaintenance/types'
+} from '@services/services/databaseMaintenance/types'
+export type { DatabaseProgressUpdate } from '@services/services/databaseMaintenance/types'
 
 export interface IpcSuccess<T> {
   ok: true
@@ -259,3 +259,4 @@ export interface PreloadApi {
   database: DatabaseApi
   sprint: SprintApi
 }
+

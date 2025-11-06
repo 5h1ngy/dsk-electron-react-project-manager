@@ -1,5 +1,5 @@
-import type { AuthService } from '@main/services/auth'
-import type { WikiService } from '@main/services/wiki'
+﻿import type { AuthService } from '@services/services/auth'
+import type { WikiService } from '@services/services/wiki'
 import { IpcChannelRegistrar } from '@main/ipc/utils'
 
 export interface WikiIpcDependencies {
@@ -79,3 +79,4 @@ export class WikiIpcRegistrar {
     return await this.authService.resolveActor(token, { touch: true })
   }
 }
+

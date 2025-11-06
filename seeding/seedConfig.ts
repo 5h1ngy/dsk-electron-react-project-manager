@@ -1,8 +1,8 @@
 import { existsSync, readFileSync } from 'node:fs'
 import { join, resolve } from 'node:path'
 
-import type { RoleName } from '../packages/main/src/services/auth/constants'
-import type { TaskStatus } from '../packages/main/src/models/Task'
+import type { RoleName } from '@services/services/auth/constants'
+import type { TaskStatus } from '@services/models/Task'
 
 const CONFIG_FILENAME = 'seed-config.json'
 

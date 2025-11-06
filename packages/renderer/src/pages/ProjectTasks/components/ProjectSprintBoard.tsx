@@ -38,7 +38,7 @@ import {
 } from '@renderer/store/slices/sprints'
 import { selectProjectTasks } from '@renderer/store/slices/tasks/selectors'
 import type { TaskDetails } from '@renderer/store/slices/tasks'
-import type { SprintDTO } from '@main/services/sprint/types'
+import type { SprintDTO } from '@services/services/sprint/types'
 
 import SprintBoardToolbar from './ProjectSprintBoard/SprintBoardToolbar'
 import SprintGroup from './ProjectSprintBoard/SprintGroup'

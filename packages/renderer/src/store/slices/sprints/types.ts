@@ -1,4 +1,4 @@
-import type { SprintDTO, SprintDetailsDTO } from '@main/services/sprint/types'
+import type { SprintDTO, SprintDetailsDTO } from '@services/services/sprint/types'
 import type { LoadStatus } from '@renderer/store/slices/tasks/types'
 
 export interface SprintListState {

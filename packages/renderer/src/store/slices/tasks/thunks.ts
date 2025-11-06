@@ -5,8 +5,8 @@ import type {
   MoveTaskInput,
   CreateCommentInput,
   SearchTasksInput
-} from '@main/services/task/schemas'
-import type { CommentDTO, TaskDetailsDTO } from '@main/services/task/types'
+} from '@services/services/task/schemas'
+import type { CommentDTO, TaskDetailsDTO } from '@services/services/task/types'
 
 import {
   extractErrorMessage,

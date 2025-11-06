@@ -1,7 +1,7 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import type { AuthService } from '@main/services/auth'
-import type { NoteService } from '@main/services/note'
-import type { NoteDetailsDTO, NoteSearchResultDTO, NoteSummaryDTO } from '@main/services/note/types'
+﻿/* eslint-disable @typescript-eslint/no-explicit-any */
+import type { AuthService } from '@services/services/auth'
+import type { NoteService } from '@services/services/note'
+import type { NoteDetailsDTO, NoteSearchResultDTO, NoteSummaryDTO } from '@services/services/note/types'
 import { NoteIpcRegistrar } from '@main/ipc/note'
 import { IpcChannelRegistrar } from '@main/ipc/utils'
 
@@ -102,3 +102,4 @@ describe('NoteIpcRegistrar', () => {
     expect(response).toEqual({ ok: false, code: 'ERR_INTERNAL', message: 'boom' })
   })
 })
+

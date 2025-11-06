@@ -10,7 +10,7 @@ import { useSemanticBadges, buildBadgeStyle } from '@renderer/theme/hooks/useSem
 import { EmptyState, LoadingSkeleton } from '@renderer/components/DataStates'
 import { useDelayedLoading } from '@renderer/hooks/useDelayedLoading'
 import type { TaskDetails } from '@renderer/store/slices/tasks'
-import { VIEW_COLUMN_VALUES } from '@main/services/view/schemas'
+import { VIEW_COLUMN_VALUES } from '@services/services/view/schemas'
 
 type TaskTableColumn = (typeof VIEW_COLUMN_VALUES)[number]
 

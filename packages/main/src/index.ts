@@ -1,14 +1,14 @@
-import 'reflect-metadata'
+﻿import 'reflect-metadata'
 import type { Sequelize } from 'sequelize-typescript'
 import { app, BrowserWindow } from 'electron'
 
-import { registerSecurityHooks } from '@main/services/security'
-import { initializeDatabase } from '@main/config/database'
-import { resolveAppStoragePath } from '@main/config/storagePath'
-import { env } from '@main/config/env'
-import { logger } from '@main/config/logger'
-import { SystemSetting } from '@main/models/SystemSetting'
-import { SESSION_TIMEOUT_MINUTES } from '@main/services/auth/constants'
+import { registerSecurityHooks } from '@main/security'
+import { initializeDatabase } from '@services/config/database'
+import { resolveAppStoragePath } from '@services/config/storagePath'
+import { env } from '@services/config/env'
+import { logger } from '@services/config/logger'
+import { SystemSetting } from '@services/models/SystemSetting'
+import { SESSION_TIMEOUT_MINUTES } from '@services/services/auth/constants'
 import { appContext, mainWindowManager, MainWindowManager } from '@main/appContext'
 import { AuthIpcRegistrar } from '@main/ipc/auth'
 import { ProjectIpcRegistrar } from '@main/ipc/project'
@@ -20,7 +20,7 @@ import { RoleIpcRegistrar } from '@main/ipc/role'
 import { WikiIpcRegistrar } from '@main/ipc/wiki'
 import { SprintIpcRegistrar } from '@main/ipc/sprint'
 import { HealthIpcRegistrar } from '@main/ipc/health'
-import { DatabaseMaintenanceService } from '@main/services/databaseMaintenance'
+import { DatabaseMaintenanceService } from '@services/services/databaseMaintenance'
 import { DatabaseIpcRegistrar } from '@main/ipc/database'
 import { IpcChannelRegistrar, ipcChannelRegistrar } from '@main/ipc/utils'
 
@@ -296,7 +296,10 @@ class MainProcessApplication {
     const databaseService = new DatabaseMaintenanceService({
       authService: this.deps.context.authService,
       auditService: this.deps.context.auditService,
-      app: this.deps.app,
+      lifecycle: {
+        relaunch: () => this.deps.app.relaunch(),
+        exit: (code?: number) => this.deps.app.exit(code ?? 0)
+      },
       storage: {
         getDatabasePath: () => this.deps.context.getDatabasePath(),
         teardownDatabase: () => this.deps.context.teardownDatabase()
@@ -341,3 +344,5 @@ const application = new MainProcessApplication({
 })
 
 application.bootstrap()
+
+
