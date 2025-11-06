@@ -63,7 +63,17 @@ export const ProjectBoard = ({
           minHeight={420}
         />
       ) : hasTasks ? (
-        <div style={{ width: '100%', overflowX: 'auto' }}>
+        <div
+          style={{
+            width: '100%',
+            overflowX: 'auto',
+            background: token.colorFillSecondary,
+            border: `${token.lineWidth}px solid ${token.colorBorderSecondary}`,
+            borderRadius: token.borderRadiusLG,
+            padding: token.paddingMD,
+            boxShadow: token.boxShadowSecondary
+          }}
+        >
           <div
             style={{
               display: 'grid',
