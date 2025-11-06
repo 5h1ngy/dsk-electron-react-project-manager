@@ -1,6 +1,6 @@
 import { useMemo, type JSX } from 'react'
-import { Checkbox, Flex, Typography } from 'antd'
-import type { CheckboxOptionType } from 'antd/es/checkbox'
+import { Flex, Select, Typography } from 'antd'
+import type { SelectProps } from 'antd'
 import { useTranslation } from 'react-i18next'
 
 export const OPTIONAL_USER_COLUMNS = ['id', 'lastLoginAt', 'createdAt', 'updatedAt'] as const
@@ -29,7 +29,7 @@ export const UserColumnVisibilityControls = ({
 }: UserColumnVisibilityControlsProps): JSX.Element => {
   const { t } = useTranslation()
 
-  const checkboxOptions = useMemo<CheckboxOptionType[]>(() => {
+  const options = useMemo<SelectProps<string>['options']>(() => {
     const disabled = new Set(disabledOptions)
     return columns.map((column) => ({
       label: t(OPTION_LABEL_KEYS[column]),
@@ -46,15 +46,23 @@ export const UserColumnVisibilityControls = ({
             'Scegli le colonne aggiuntive da visualizzare nella tabella degli utenti.'
         })}
       </Typography.Text>
-      <Checkbox.Group
-        options={checkboxOptions}
-        value={selectedColumns as OptionalUserColumn[]}
-        onChange={(values) => onChange((values as OptionalUserColumn[]) ?? [])}
-        style={{ display: 'flex', flexDirection: 'column', gap: 8 }}
+      <Select
+        mode="multiple"
+        allowClear={false}
+        options={options}
+        value={selectedColumns as unknown as string[]}
+        onChange={(values) => {
+          const normalized = Array.isArray(values) ? (values as string[]) : []
+          onChange(Array.from(new Set(normalized)) as OptionalUserColumn[])
+        }}
+        style={{ width: '100%' }}
+        size="large"
+        placeholder={t('dashboard:optionalColumns.placeholder', {
+          defaultValue: 'Seleziona le colonne opzionali'
+        })}
       />
     </Flex>
   )
 }
 
 UserColumnVisibilityControls.displayName = 'UserColumnVisibilityControls'
-

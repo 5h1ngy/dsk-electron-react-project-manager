@@ -4,7 +4,8 @@
     "refresh": "Aktualisieren",
     "edit": "Bearbeiten",
     "delete": "Loeschen",
-    "deleteSelected": "Auswahl loeschen ({{count}})"
+    "deleteSelected": "Auswahl loeschen ({{count}})",
+    "syncDefaults": "Rollen aktualisieren"
   },
   "table": {
     "name": "Name",
@@ -34,7 +35,8 @@
     "updateSuccess": "Rolle erfolgreich aktualisiert",
     "deleteSuccess": "Rolle \"{{name}}\" geloescht",
     "deleteBulkSuccess": "{{count}} Rollen geloescht",
-    "deletePartialWarning": "{{count}} ausgewaehlte Rollen koennen nicht geloescht werden, weil sie geschuetzt oder noch zugewiesen sind."
+    "deletePartialWarning": "{{count}} ausgewaehlte Rollen koennen nicht geloescht werden, weil sie geschuetzt oder noch zugewiesen sind.",
+    "syncSuccess": "Systemrollen erfolgreich aktualisiert"
   },
   "errors": {
     "title": "Rollen konnten nicht geladen werden",

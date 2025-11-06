@@ -287,6 +287,16 @@ export class RoleService {
     }
   }
 
+  async syncDefaults(actor: ServiceActor): Promise<RoleSummary[]> {
+    requireAdmin(actor)
+    try {
+      await this.ensureDefaults()
+      return await this.listRoles(actor)
+    } catch (error) {
+      throw wrapError(error)
+    }
+  }
+
   async ensureDefaults(transaction?: Transaction): Promise<void> {
     const roles = await Role.findAll({ transaction })
     for (const role of roles) {

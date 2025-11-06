@@ -223,6 +223,7 @@ export interface RoleApi {
     payload: UpdateRoleInput
   ) => Promise<IpcResponse<RoleSummary>>
   remove: (token: string, roleId: string) => Promise<IpcResponse<{ success: boolean }>>
+  syncDefaults: (token: string) => Promise<IpcResponse<RoleSummary[]>>
 }
 
 export interface DatabaseApi {

@@ -4,7 +4,8 @@
     "refresh": "Aggiorna",
     "edit": "Modifica",
     "delete": "Elimina",
-    "deleteSelected": "Elimina selezionati ({{count}})"
+    "deleteSelected": "Elimina selezionati ({{count}})",
+    "syncDefaults": "Aggiorna ruoli"
   },
   "table": {
     "name": "Nome",
@@ -34,7 +35,8 @@
     "updateSuccess": "Ruolo aggiornato con successo",
     "deleteSuccess": "Ruolo \"{{name}}\" eliminato",
     "deleteBulkSuccess": "Eliminati {{count}} ruoli",
-    "deletePartialWarning": "Impossibile eliminare {{count}} ruoli selezionati perche sono protetti o ancora assegnati."
+    "deletePartialWarning": "Impossibile eliminare {{count}} ruoli selezionati perche sono protetti o ancora assegnati.",
+    "syncSuccess": "Ruoli di sistema aggiornati correttamente"
   },
   "errors": {
     "title": "Impossibile caricare i ruoli",

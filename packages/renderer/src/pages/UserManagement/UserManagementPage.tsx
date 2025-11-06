@@ -1,8 +1,8 @@
 import type { JSX } from 'react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Alert, Breadcrumb, Button, Modal, Space, Typography } from 'antd'
+import { Alert, Breadcrumb, Button, Flex, Modal, Space, Typography } from 'antd'
 import { ROLE_NAMES } from '@main/services/auth/constants'
-import { DeleteOutlined } from '@ant-design/icons'
+import { DeleteOutlined, ReloadOutlined } from '@ant-design/icons'
 import { Navigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import dayjs from 'dayjs'
@@ -31,7 +31,8 @@ import { forceLogout } from '@renderer/store/slices/auth'
 import { handleResponse, isSessionExpiredError } from '@renderer/store/slices/auth/helpers'
 import type { UserDTO } from '@main/services/auth'
 
-const USER_CARD_PAGE_SIZE = 8
+const DEFAULT_CARD_PAGE_SIZE = 8
+const CARD_PAGE_SIZE_OPTIONS = [8, 12, 16, 24]
 const USER_LIST_PAGE_SIZE = 12
 
 const UserManagementPage = (): JSX.Element | null => {
@@ -60,6 +61,7 @@ const UserManagementPage = (): JSX.Element | null => {
   const [userTablePageSize, setUserTablePageSize] = useState(10)
   const [userCardPage, setUserCardPage] = useState(1)
   const [userListPage, setUserListPage] = useState(1)
+  const [userCardPageSize, setUserCardPageSize] = useState(DEFAULT_CARD_PAGE_SIZE)
   const [visibleUserColumns, setVisibleUserColumns] = useState<OptionalUserColumn[]>(() => [
     ...OPTIONAL_USER_COLUMNS
   ])
@@ -368,11 +370,11 @@ const UserManagementPage = (): JSX.Element | null => {
   }, [filteredUsers.length, userTablePage, userTablePageSize])
 
   useEffect(() => {
-    const maxPage = Math.max(1, Math.ceil(filteredUsers.length / USER_CARD_PAGE_SIZE))
+    const maxPage = Math.max(1, Math.ceil(filteredUsers.length / userCardPageSize))
     if (userCardPage > maxPage) {
       setUserCardPage(maxPage)
     }
-  }, [filteredUsers.length, userCardPage])
+  }, [filteredUsers.length, userCardPage, userCardPageSize])
 
   useEffect(() => {
     const maxPage = Math.max(1, Math.ceil(filteredUsers.length / USER_LIST_PAGE_SIZE))
@@ -409,18 +411,22 @@ const UserManagementPage = (): JSX.Element | null => {
   return (
     <>
       <ShellHeaderPortal>
-        <Space
-          size={12}
+        <Flex
+          align="center"
+          gap={12}
           wrap
-          style={{
-            width: '100%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'flex-start'
-          }}
+          style={{ width: '100%', display: 'flex', justifyContent: 'flex-start' }}
         >
+          <Button
+            icon={<ReloadOutlined />}
+            onClick={refreshUsers}
+            loading={loading}
+            disabled={loading}
+          >
+            {t('dashboard:actionBar.refresh')}
+          </Button>
           <Breadcrumb items={breadcrumbItems} style={breadcrumbStyle} />
-        </Space>
+        </Flex>
       </ShellHeaderPortal>
       <Space direction="vertical" size="large" style={{ width: '100%' }}>
         {messageContext}
@@ -499,8 +505,13 @@ const UserManagementPage = (): JSX.Element | null => {
             loading={loading}
             hasLoaded={hasLoaded}
             page={userCardPage}
-            pageSize={USER_CARD_PAGE_SIZE}
-            onPageChange={setUserCardPage}
+            pageSize={userCardPageSize}
+            onPageChange={(page) => setUserCardPage(page)}
+            onPageSizeChange={(page, size) => {
+              setUserCardPage(page)
+              setUserCardPageSize(size)
+            }}
+            pageSizeOptions={CARD_PAGE_SIZE_OPTIONS}
             onEdit={openEditModal}
             onDelete={handleDeleteUser}
             isDeleting={isDeletingUser}

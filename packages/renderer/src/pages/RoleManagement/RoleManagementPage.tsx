@@ -28,6 +28,7 @@ import {
   DeleteOutlined,
   PlusOutlined,
   ReloadOutlined,
+  SyncOutlined,
   TableOutlined,
   UnorderedListOutlined
 } from '@ant-design/icons'
@@ -36,6 +37,7 @@ import { useTranslation } from 'react-i18next'
 
 import type { RoleSummary } from '@main/services/roles'
 import type { RolePermissionDefinition } from '@main/services/roles/constants'
+import type { RoleName } from '@main/services/auth/constants'
 
 import { ShellHeaderPortal } from '@renderer/layout/Shell/ShellHeader.context'
 import { BorderedPanel } from '@renderer/components/Surface/BorderedPanel'
@@ -48,6 +50,7 @@ import {
   handleResponse,
   isSessionExpiredError
 } from '@renderer/store/slices/auth/helpers'
+import { useSemanticBadges, buildBadgeStyle } from '@renderer/theme/hooks/useSemanticBadges'
 
 interface RoleFormValues {
   name: string
@@ -66,6 +69,7 @@ const RoleManagementPage = (): JSX.Element => {
   const token = useAppSelector(selectToken)
   const { token: themeToken } = theme.useToken()
   const screens = Grid.useBreakpoint()
+  const badgeTokens = useSemanticBadges()
 
   const isAdmin = (currentUser?.roles ?? []).includes('Admin')
 
@@ -87,6 +91,7 @@ const RoleManagementPage = (): JSX.Element => {
   const [deleteLoading, setDeleteLoading] = useState(false)
   const [viewMode, setViewMode] = useState<'table' | 'list' | 'cards'>('table')
   const [hoveredRoleId, setHoveredRoleId] = useState<string | null>(null)
+  const [syncLoading, setSyncLoading] = useState(false)
 
   const permissionMetadata = useMemo(() => {
     const map = new Map<string, { label: string; description: string }>()
@@ -102,6 +107,14 @@ const RoleManagementPage = (): JSX.Element => {
     }
     return map
   }, [permissions, t])
+
+  const getRoleBadgeStyle = useCallback(
+    (roleName: string) => {
+      const spec = badgeTokens.userRole[roleName as RoleName] ?? badgeTokens.userRole.Viewer
+      return buildBadgeStyle(spec)
+    },
+    [badgeTokens.userRole]
+  )
 
   const refreshData = useCallback(async () => {
     if (!token) {
@@ -430,6 +443,37 @@ const RoleManagementPage = (): JSX.Element => {
     setDeleteTargets(null)
   }, [deleteTargets, dispatch, messageApi, refreshData, setSelectedRoleIds, t, token])
 
+  const handleSyncDefaults = useCallback(async () => {
+    if (!token) {
+      setError(t('roles:errors.sessionExpired'))
+      return
+    }
+    setSyncLoading(true)
+    try {
+      const updatedRoles = await handleResponse(window.api.role.syncDefaults(token))
+      setRoles(updatedRoles)
+      setHasLoaded(true)
+      setError(undefined)
+      setSelectedRoleIds([])
+      messageApi.success(
+        t('roles:messages.syncSuccess', {
+          defaultValue: 'System roles updated successfully'
+        })
+      )
+    } catch (err) {
+      if (isSessionExpiredError(err)) {
+        dispatch(forceLogout())
+        setError(t('roles:errors.sessionExpired'))
+      } else {
+        const reason = extractErrorMessage(err)
+        setError(reason)
+        messageApi.error(reason)
+      }
+    } finally {
+      setSyncLoading(false)
+    }
+  }, [dispatch, messageApi, setSelectedRoleIds, t, token])
+
   const columns = useMemo<ColumnsType<RoleSummary>>(
     () => [
       {
@@ -452,18 +496,21 @@ const RoleManagementPage = (): JSX.Element => {
         title: t('roles:table.permissions'),
         dataIndex: 'permissions',
         key: 'permissions',
-        render: (value: string[]) => (
-          <Space size={4} wrap>
-            {(value ?? []).map((permission) => {
-              const meta = permissionMetadata.get(permission)
-              return (
-                <Tag key={permission} bordered={false}>
-                  {meta?.label ?? permission}
-                </Tag>
-              )
-            })}
-          </Space>
-        )
+        render: (value: string[], record: RoleSummary) => {
+          const badgeStyle = getRoleBadgeStyle(record.name)
+          return (
+            <Space size={4} wrap>
+              {(value ?? []).map((permission) => {
+                const meta = permissionMetadata.get(permission)
+                return (
+                  <Tag key={permission} bordered={false} style={badgeStyle}>
+                    {meta?.label ?? permission}
+                  </Tag>
+                )
+              })}
+            </Space>
+          )
+        }
       },
       {
         title: t('roles:table.userCount'),
@@ -508,7 +555,7 @@ const RoleManagementPage = (): JSX.Element => {
         )
       }
     ],
-    [deleteLoading, openDeleteConfirm, openEditModal, permissionMetadata, t]
+    [deleteLoading, getRoleBadgeStyle, openDeleteConfirm, openEditModal, permissionMetadata, t]
   )
 
   const deleteModalTitle = useMemo(() => {
@@ -561,17 +608,9 @@ const RoleManagementPage = (): JSX.Element => {
           size={12}
           align="center"
           wrap
-          style={{ width: '100%', display: 'flex', justifyContent: 'space-between' }}
+          style={{ width: '100%', display: 'flex', justifyContent: 'flex-start' }}
         >
           <Breadcrumb items={breadcrumbItems} style={breadcrumbStyle} />
-          <Button
-            icon={<ReloadOutlined />}
-            onClick={() => void refreshData()}
-            disabled={loading}
-            loading={loading}
-          >
-            {t('roles:actions.refresh')}
-          </Button>
         </Space>
       </ShellHeaderPortal>
       <Space direction="vertical" size="large" style={{ width: '100%' }}>
@@ -591,10 +630,28 @@ const RoleManagementPage = (): JSX.Element => {
               style={{ width: isCompact ? '100%' : 'auto' }}
             >
               <Button
+                icon={<ReloadOutlined />}
+                onClick={() => void refreshData()}
+                disabled={loading || syncLoading}
+                loading={loading}
+                style={actionButtonStyle}
+              >
+                {t('roles:actions.refresh')}
+              </Button>
+              <Button
+                icon={<SyncOutlined />}
+                onClick={() => void handleSyncDefaults()}
+                disabled={loading || syncLoading}
+                loading={syncLoading}
+                style={actionButtonStyle}
+              >
+                {t('roles:actions.syncDefaults', { defaultValue: 'Aggiorna ruoli' })}
+              </Button>
+              <Button
                 type="primary"
                 icon={<PlusOutlined />}
                 onClick={openCreateModal}
-                disabled={loading}
+                disabled={loading || syncLoading}
                 style={actionButtonStyle}
               >
                 {t('roles:actions.create')}
@@ -603,7 +660,7 @@ const RoleManagementPage = (): JSX.Element => {
                 icon={<DeleteOutlined />}
                 danger
                 onClick={() => openDeleteConfirm(selectedRoles)}
-                disabled={selectedRoles.length === 0 || deleteLoading}
+                disabled={selectedRoles.length === 0 || deleteLoading || syncLoading || loading}
                 loading={deleteLoading}
                 style={actionButtonStyle}
               >
@@ -665,6 +722,7 @@ const RoleManagementPage = (): JSX.Element => {
               const permissions = Array.isArray(role.permissions) ? role.permissions : []
               const visiblePermissions = permissions.slice(0, 6)
               const remainingPermissions = permissions.length - visiblePermissions.length
+              const badgeStyle = getRoleBadgeStyle(role.name)
 
               const itemActions: JSX.Element[] = [
                 <Button
@@ -739,13 +797,15 @@ const RoleManagementPage = (): JSX.Element => {
                           {visiblePermissions.map((permission) => {
                             const meta = permissionMetadata.get(permission)
                             return (
-                              <Tag key={permission} bordered={false}>
+                              <Tag key={permission} bordered={false} style={badgeStyle}>
                                 {meta?.label ?? permission}
                               </Tag>
                             )
                           })}
                           {remainingPermissions > 0 ? (
-                            <Tag bordered={false}>+{remainingPermissions}</Tag>
+                            <Tag bordered={false} style={badgeStyle}>
+                              +{remainingPermissions}
+                            </Tag>
                           ) : null}
                         </Space>
                       </Space>
@@ -773,6 +833,7 @@ const RoleManagementPage = (): JSX.Element => {
                 const permissions = Array.isArray(role.permissions) ? role.permissions : []
                 const visiblePermissions = permissions.slice(0, 6)
                 const remainingPermissions = permissions.length - visiblePermissions.length
+                const badgeStyle = getRoleBadgeStyle(role.name)
                 return (
                   <Card
                     key={role.id}
@@ -820,13 +881,15 @@ const RoleManagementPage = (): JSX.Element => {
                       {visiblePermissions.map((permission) => {
                         const meta = permissionMetadata.get(permission)
                         return (
-                          <Tag key={permission} bordered={false}>
+                          <Tag key={permission} bordered={false} style={badgeStyle}>
                             {meta?.label ?? permission}
                           </Tag>
                         )
                       })}
                       {remainingPermissions > 0 ? (
-                        <Tag bordered={false}>+{remainingPermissions}</Tag>
+                        <Tag bordered={false} style={badgeStyle}>
+                          +{remainingPermissions}
+                        </Tag>
                       ) : null}
                     </Space>
                     <Space size={8} wrap>

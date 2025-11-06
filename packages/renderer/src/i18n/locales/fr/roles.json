@@ -4,7 +4,8 @@
     "refresh": "Actualiser",
     "edit": "Modifier",
     "delete": "Supprimer",
-    "deleteSelected": "Supprimer la selection ({{count}})"
+    "deleteSelected": "Supprimer la selection ({{count}})",
+    "syncDefaults": "Mettre a jour les roles"
   },
   "table": {
     "name": "Nom",
@@ -34,7 +35,8 @@
     "updateSuccess": "Role mis a jour avec succes",
     "deleteSuccess": "Role \"{{name}}\" supprime",
     "deleteBulkSuccess": "{{count}} roles supprimes",
-    "deletePartialWarning": "{{count}} roles selectionnes ne peuvent pas etre supprimes car ils sont proteges ou encore assignes."
+    "deletePartialWarning": "{{count}} roles selectionnes ne peuvent pas etre supprimes car ils sont proteges ou encore assignes.",
+    "syncSuccess": "Roles systeme mis a jour avec succes"
   },
   "errors": {
     "title": "Impossible de charger les roles",

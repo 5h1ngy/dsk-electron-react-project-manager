@@ -8,7 +8,8 @@ const CHANNELS = {
   permissions: 'role:permissions',
   create: 'role:create',
   update: 'role:update',
-  remove: 'role:delete'
+  remove: 'role:delete',
+  syncDefaults: 'role:sync-defaults'
 } as const
 
 export const roleApi = {
@@ -20,5 +21,7 @@ export const roleApi = {
   update: async (token: string, roleId: string, payload: UpdateRoleInput) =>
     await invokeIpc<RoleSummary>(CHANNELS.update, token, roleId, payload),
   remove: async (token: string, roleId: string) =>
-    await invokeIpc<{ success: boolean }>(CHANNELS.remove, token, roleId)
+    await invokeIpc<{ success: boolean }>(CHANNELS.remove, token, roleId),
+  syncDefaults: async (token: string) =>
+    await invokeIpc<RoleSummary[]>(CHANNELS.syncDefaults, token)
 }

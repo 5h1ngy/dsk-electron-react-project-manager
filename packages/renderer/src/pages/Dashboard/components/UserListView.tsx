@@ -1,6 +1,6 @@
 import { Button, List, Space, Tag, Typography, theme } from 'antd'
 import { ClockCircleOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons'
-import { useMemo, type JSX } from 'react'
+import { useMemo, useState, type JSX } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { EmptyState, LoadingSkeleton } from '@renderer/components/DataStates'
@@ -37,6 +37,7 @@ export const UserListView = ({
   const { token } = theme.useToken()
   const badgeTokens = useSemanticBadges()
   const showSkeleton = useDelayedLoading(loading && !hasLoaded)
+  const [hoveredId, setHoveredId] = useState<string | null>(null)
 
   const pagedUsers = useMemo(() => {
     const start = (page - 1) * pageSize
@@ -77,7 +78,16 @@ export const UserListView = ({
         return (
           <List.Item
             key={user.id}
-            style={{ paddingInline: token.paddingLG }}
+            style={{
+              paddingInline: token.paddingLG,
+              borderRadius: token.borderRadiusLG,
+              transition: 'background-color 0.2s ease, box-shadow 0.2s ease',
+              background:
+                hoveredId === user.id ? token.colorFillTertiary : token.colorBgContainer,
+              boxShadow: hoveredId === user.id ? token.boxShadowTertiary : 'none'
+            }}
+            onMouseEnter={() => setHoveredId(user.id)}
+            onMouseLeave={() => setHoveredId((current) => (current === user.id ? null : current))}
             actions={[
               <Button key="edit" type="text" icon={<EditOutlined />} onClick={() => onEdit(user)}>
                 {t('actions.edit')}

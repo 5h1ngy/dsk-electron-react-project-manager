@@ -4,11 +4,11 @@ This document describes how the DSK Project Manager models workspace roles, whic
 
 ## Concepts
 
-- **Role** – Global workspace role assigned to a user (e.g. `Admin`). Stored in the `roles` table with a normalized description and a JSON list of permission keys.
-- **Permission** – A symbolic capability (e.g. `manageProjects`). The allowed keys are enumerated in code and sanitised before persistence.
-- **UserRole** – Join table (`user_roles`) linking users to one or more roles.
-- **Project membership role** – Separate from global roles; governs per-project actions (`view`, `edit`, `admin`). These appear in the `project_members` table and are combined with global roles when authorising project services.
-- **Service actor** – In-process representation of the authenticated user (`ServiceActor`) that carries `userId` and the list of role names.
+- **Role** - Global workspace role assigned to a user (e.g. `Admin`). Stored in the `roles` table with a normalized description and a JSON list of permission keys.
+- **Permission** - A symbolic capability (e.g. `manageProjects`). The allowed keys are enumerated in code and sanitised before persistence.
+- **UserRole** - Join table (`user_roles`) linking users to one or more roles.
+- **Project membership role** - Separate from global roles; governs per-project actions (`view`, `edit`, `admin`). These appear in the `project_members` table and are combined with global roles when authorising project services.
+- **Service actor** - In-process representation of the authenticated user (`ServiceActor`) that carries `userId` and the list of role names.
 
 ## Permission Catalogue
 
