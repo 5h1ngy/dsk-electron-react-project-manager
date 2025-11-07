@@ -5,6 +5,7 @@ import { resolve } from 'path'
 const API_PROXY_TARGET = process.env.API_PROXY_TARGET ?? 'http://localhost:3333'
 
 export default defineConfig({
+  base: './',
   root: resolve(__dirname),
   plugins: [react()],
   resolve: {

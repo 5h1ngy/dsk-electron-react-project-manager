@@ -1,7 +1,10 @@
-const getInitialCharacter = (segment: string): string =>
-  segment.trim().charAt(0)?.toUpperCase() ?? ''
+const getInitialCharacter = (segment?: string | null): string =>
+  segment?.trim().charAt(0)?.toUpperCase() ?? ''
 
-export const getInitials = (name: string): string => {
+export const getInitials = (name?: string | null): string => {
+  if (!name) {
+    return ''
+  }
   const parts = name.trim().split(/\s+/).filter(Boolean)
   if (parts.length === 0) {
     return ''
