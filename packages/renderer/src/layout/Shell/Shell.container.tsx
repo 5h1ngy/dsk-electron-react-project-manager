@@ -25,10 +25,15 @@ const ShellContainer = ({ currentUser, onLogout, children }: ShellProps): JSX.El
     handleCloseMobileMenu
   } = useShellLayout(currentUser)
 
+  const safeDisplayName =
+    currentUser.displayName && currentUser.displayName.trim().length > 0
+      ? currentUser.displayName
+      : currentUser.username
+
   const styles = useShellStyles({
     menuTheme,
     collapsed,
-    displayName: currentUser.displayName,
+    displayName: safeDisplayName,
     isMobile
   })
   const { accountButtonStyle, accountAvatarStyle, accountAvatarSizes, dropdownWidth, token } =
@@ -56,7 +61,7 @@ const ShellContainer = ({ currentUser, onLogout, children }: ShellProps): JSX.El
   const accountMenu = useMemo(
     () => (
       <AccountMenu
-        displayName={currentUser.displayName}
+        displayName={safeDisplayName}
         username={currentUser.username}
         onLogout={onLogout}
         labels={labels}
@@ -74,12 +79,12 @@ const ShellContainer = ({ currentUser, onLogout, children }: ShellProps): JSX.El
             style={accountAvatarStyle}
             size={collapsed ? accountAvatarSizes.collapsed : accountAvatarSizes.expanded}
           >
-            {getInitials(currentUser.displayName)}
+            {getInitials(safeDisplayName)}
           </Avatar>
           {!collapsed && (
             <Flex vertical gap={0} style={{ textAlign: 'left' }}>
               <Typography.Text strong style={{ fontSize: token.fontSizeSM }}>
-                {currentUser.displayName}
+                {safeDisplayName}
               </Typography.Text>
               <Typography.Text type="secondary" style={{ fontSize: token.fontSizeSM }}>
                 {currentUser.username}

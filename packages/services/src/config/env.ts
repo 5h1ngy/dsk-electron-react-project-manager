@@ -4,6 +4,10 @@ import dotenv from 'dotenv'
 
 import type { Env, LogLevelSetting } from '@services/config/env.types'
 
+type ProcessWithResourcesPath = NodeJS.Process & {
+  resourcesPath?: string
+}
+
 /**
  * Encapsulates access to environment configuration, ensuring we only expose
  * sanitized values to the rest of the application.
@@ -70,12 +74,14 @@ export class EnvConfig {
     }
 
     const fallback =
-      EnvConfig.tryGetVersionFromElectron() ?? EnvConfig.tryGetVersionFromPackageFiles()
+      EnvConfig.tryGetVersionFromElectron() ??
+      EnvConfig.tryGetVersionFromPackageFiles() ??
+      EnvConfig.normalizeVersion(process.env.npm_package_version)
     if (fallback) {
       return fallback
     }
 
-    throw new Error('APP_VERSION is required in the environment')
+    return '0.0.0-dev'
   }
 
   private static normalizeVersion(value?: string): string | undefined {
@@ -111,7 +117,7 @@ export class EnvConfig {
   private static versionFileCandidates(): string[] {
     const candidates = [join(process.cwd(), 'package.json')]
 
-    const resourcesPath = process.resourcesPath
+    const resourcesPath = (process as ProcessWithResourcesPath).resourcesPath
     if (resourcesPath) {
       candidates.push(
         join(resourcesPath, 'app.asar', 'package.json'),

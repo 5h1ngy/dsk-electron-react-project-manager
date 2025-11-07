@@ -1,13 +1,14 @@
 FROM node:22-alpine AS builder
 
-ARG VITE_API_BASE_URL=http://localhost:3333
+ARG VITE_API_BASE_URL=/api
 ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
 
 WORKDIR /app
 
-COPY package.json package-lock.json ./
-RUN npm ci
+COPY docker/node/frontend.package.json ./package.json
+RUN npm install
 
+COPY package.json package-lock.json ./
 COPY tsconfig*.json ./
 COPY electron.vite.config.ts ./
 COPY packages ./packages

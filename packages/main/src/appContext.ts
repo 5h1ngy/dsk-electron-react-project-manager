@@ -22,6 +22,18 @@ import {
   type DomainContext
 } from '@services/runtime/domainContext'
 
+const resolvePreloadScript = (): string => {
+  const candidates = ['index.cjs', 'index.js', 'index.mjs']
+  for (const candidate of candidates) {
+    const resolved = join(__dirname, '../preload', candidate)
+    if (existsSync(resolved)) {
+      return resolved
+    }
+  }
+  logger.warn('Preload bundle non trovato; fallback a index.js', 'Window')
+  return join(__dirname, '../preload/index.js')
+}
+
 export const MAIN_WINDOW_OPTIONS: Electron.BrowserWindowConstructorOptions = {
   width: 1280,
   height: 800,
@@ -29,7 +41,7 @@ export const MAIN_WINDOW_OPTIONS: Electron.BrowserWindowConstructorOptions = {
   autoHideMenuBar: true,
   title: 'DSK Project Manager',
   webPreferences: {
-    preload: join(__dirname, '../preload/index.js'),
+    preload: resolvePreloadScript(),
     sandbox: true,
     contextIsolation: true,
     nodeIntegration: false,
