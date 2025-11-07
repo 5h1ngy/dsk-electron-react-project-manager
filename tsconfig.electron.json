@@ -1,0 +1,13 @@
+{
+  "extends": "./tsconfig.node.json",
+  "include": [
+    "electron.vite.config.ts",
+    "packages/main/src/**/*",
+    "packages/preload/src/**/*"
+  ],
+  "compilerOptions": {
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "noEmit": false
+  }
+}

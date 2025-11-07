@@ -3,6 +3,8 @@ import { defineConfig, externalizeDepsPlugin } from 'electron-vite'
 import react from '@vitejs/plugin-react'
 
 const API_PROXY_TARGET = process.env.API_PROXY_TARGET ?? 'http://localhost:3333'
+process.env.TS_NODE_PROJECT =
+  process.env.TS_NODE_PROJECT ?? resolve(__dirname, 'tsconfig.electron.json')
 
 export default defineConfig({
   main: {
