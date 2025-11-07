@@ -1,0 +1,20 @@
+{
+  "extends": "../electron/tsconfig.node.json",
+  "include": ["../shared/src/**/*", "./src/**/*", "../seeding/src/**/*"],
+  "compilerOptions": {
+    "outDir": "../../out/api",
+    "rootDir": "../..",
+    "composite": false,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "baseUrl": "../..",
+    "paths": {
+      "@main/*": ["packages/electron/src/main/*"],
+      "@preload/*": ["packages/electron/src/preload/src/*"],
+      "@renderer/*": ["packages/electron/src/renderer/src/*"],
+      "@services/*": ["packages/shared/src/*"],
+      "@api/*": ["packages/api/src/*"],
+      "@seeding/*": ["packages/seeding/src/*"]
+    }
+  }
+}

@@ -57,14 +57,14 @@
 ```text
 dsk-electron-react-project-manager
 |- packages
-|  |- main        # Electron main process, IPC registrars, services, Sequelize models
-|  |- preload     # Typed context bridge defining window.api
-|  \- renderer    # React/Redux UI, routes, layout, theme system, i18n
-|- seeding        # Seeder entry points and dataset builders
-|- resources      # Icons and extra assets for packaging
-|- test           # Jest configuration, mocks, and helpers
-|- assets         # Static resources (preview, logos, etc.)
-\- build/out/dist # Generated artifacts
+|  |- electron   # Electron app sources (src/main, src/preload, src/renderer)
+|  |- api        # Decorator-based REST API (routing-controllers + typedi)
+|  |- shared     # Domain models, Sequelize setup, services shared by all runtimes
+|  \- seeding    # Seeder entry points and dataset builders
+|- resources     # Icons and extra assets for packaging
+|- test          # Jest configuration, mocks, and helpers
+|- assets        # Static resources (preview, logos, etc.)
+\- build/out     # Generated artifacts
 ```
 
 ---
@@ -93,10 +93,13 @@ All commands assume a recent Node 22 environment. The Electron app automatically
 
 | Command                          | Purpose                                                   |
 | -------------------------------- | --------------------------------------------------------- |
-| `npm run format`                 | Prettier formatting across the repo                       |
-| `npm run lint`                   | ESLint with caching                                       |
+| `npm run format`                 | Runs Prettier across every workspace (`format:*` helpers) |
+| `npm run format:<target>`        | Format a single surface (`electron`, `frontend`, `api`, `shared`, `seeding`) |
+| `npm run lint`                   | Lint Electron, frontend, API, shared, and seeding sequentially |
+| `npm run lint:<target>`          | Lint a single surface (same targets as above)             |
 | `npm run typecheck`              | Aggregated TypeScript checks for Node and web             |
-| `npm test`, `npm run test:watch` | Jest multi-project test runner                            |
+| `npm run test` / `npm run test:<target>` | Jest suites for all surfaces or a single target        |
+| `npm run test:watch`             | Jest watch mode for the Electron stack                    |
 | `npm run dev:electron`           | Electron main + renderer in desktop offline mode          |
 | `npm run dev:api`                | Start the REST backend with live TypeScript transpilation |
 | `npm run dev:frontend`           | Serve the React SPA (Vite proxy forwards `/api` calls)    |
@@ -146,7 +149,7 @@ The CLI also honors `SEED_API_PORT` / `SEED_API_HOST` env variables. All modes l
 
 ## window.api Contract
 
-The preload script exposes a single `window.api` namespace typed in `packages/preload/src/types.ts`. Every action resolves to an `IpcResponse<T>` discriminated union. Available modules include:
+The preload script exposes a single `window.api` namespace typed in `packages/electron/src/preload/src/types.ts`. Every action resolves to an `IpcResponse<T>` discriminated union. Available modules include:
 
 - `health.check()`
 - `auth.login`, `auth.logout`, `auth.session`, `auth.listUsers`, `auth.createUser`, `auth.updateUser`
@@ -165,7 +168,7 @@ Utility helpers unwrap the union inside the renderer and trigger session recover
 | `LOG_LEVEL`               | `info`                | Adjusts the structured logger verbosity                                      |
 | `SESSION_TIMEOUT_MINUTES` | `60`                  | Overrides the default auth session TTL (also persisted in `system_settings`) |
 | `DB_STORAGE_PATH`         | Electron app data dir | Custom database location for runtime and seeding                             |
-| `ELECTRON_START_URL`      | auto                  | Dev server URL, injected by electron-vite during `npm run dev`               |
+| `ELECTRON_START_URL`      | auto                  | Dev server URL, injected by electron-vite during `npm run dev:electron`      |
 | `ENABLE_DEVTOOLS`         | auto                  | `true` forces DevTools on, `false` blocks them regardless of environment     |
 
 Use `.env` or per-machine environment variables to customize settings; see `.env.example` for guidance.
@@ -186,7 +189,7 @@ Use `.env` or per-machine environment variables to customize settings; see `.env
 
 - **Missing `@main/*` imports in scripts**: Always execute CLIs via `npm run` so `tsconfig-paths/register` is loaded.
 - **SQLite build issues on Windows**: Install Visual Studio Build Tools with the "Desktop development with C++" workload.
-- **Renderer fails to load in dev**: Restart `npm run dev` to refresh the electron-vite dev server and ports.
+- **Renderer fails to load in dev**: Restart `npm run dev:electron` to refresh the electron-vite dev server and ports.
 - **React Router warnings in tests**: Future-facing flags are enabled; re-run tests after clearing Jest cache if warnings persist.
 
 ---
@@ -197,7 +200,7 @@ Use `.env` or per-machine environment variables to customize settings; see `.env
 2. Branch off `main` before starting work.
 3. Keep imports aligned with the configured path aliases (`@main/*`, `@preload/*`, `@renderer/*`).
 4. Add or update tests alongside code changes.
-5. Validate with `npm run lint && npm run typecheck && npm test`.
+5. Validate with `npm run lint && npm run typecheck && npm run test`.
 
 No explicit OSS license is bundled; coordinate internally before distributing binaries.
 

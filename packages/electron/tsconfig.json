@@ -1,0 +1,15 @@
+{
+  "files": [],
+  "compilerOptions": {
+    "baseUrl": "../..",
+    "paths": {
+      "@main/*": ["packages/electron/src/main/*"],
+      "@preload/*": ["packages/electron/src/preload/src/*"],
+      "@renderer/*": ["packages/electron/src/renderer/src/*"],
+      "@services/*": ["packages/shared/src/*"],
+      "@api/*": ["packages/api/src/*"],
+      "@seeding/*": ["packages/seeding/src/*"]
+    }
+  },
+  "references": [{ "path": "./tsconfig.node.json" }, { "path": "./tsconfig.web.json" }]
+}

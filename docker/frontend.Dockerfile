@@ -9,8 +9,6 @@ COPY docker/node/frontend.package.json ./package.json
 RUN npm install
 
 COPY package.json package-lock.json ./
-COPY tsconfig*.json ./
-COPY electron.vite.config.ts ./
 COPY packages ./packages
 
 RUN npm run build:frontend

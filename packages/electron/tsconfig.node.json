@@ -1,0 +1,27 @@
+{
+  "extends": "@electron-toolkit/tsconfig/tsconfig.node.json",
+  "include": [
+    "electron.vite.config.*",
+    "src/main/**/*",
+    "src/preload/**/*",
+    "../shared/src/**/*",
+    "../api/src/**/*",
+    "../seeding/src/**/*"
+  ],
+  "compilerOptions": {
+    "composite": true,
+    "types": ["electron-vite/node", "jest"],
+    "strict": true,
+    "baseUrl": "../..",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "paths": {
+      "@main/*": ["packages/electron/src/main/*"],
+      "@preload/*": ["packages/electron/src/preload/src/*"],
+      "@renderer/*": ["packages/electron/src/renderer/src/*"],
+      "@services/*": ["packages/shared/src/*"],
+      "@api/*": ["packages/api/src/*"],
+      "@seeding/*": ["packages/seeding/src/*"]
+    }
+  }
+}
