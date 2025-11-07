@@ -42,7 +42,7 @@
     "build:electron": "npm run typecheck && electron-vite build",
     "build:frontend": "vite build --config packages/renderer/vite.config.ts",
     "build:api": "tsc --project tsconfig.api.json",
-    "start:api": "cross-env TS_NODE_PROJECT=tsconfig.node.json node --experimental-default-type=commonjs -r tsconfig-paths/register out/api/packages/api/src/server.js",
+    "start:api": "cross-env TS_NODE_PROJECT=tsconfig.node.json TS_NODE_BASEURL=out/api node --experimental-default-type=commonjs -r tsconfig-paths/register out/api/packages/api/src/server.js",
     "postinstall": "node scripts/postinstall.mjs",
     "version:bump": "node scripts/version/apply-version-bump.mjs",
     "build:unpack": "npm run build && electron-builder --dir",

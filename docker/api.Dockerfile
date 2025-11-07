@@ -19,6 +19,7 @@ FROM node:22-alpine
 
 ENV NODE_ENV=production
 ENV TS_NODE_PROJECT=tsconfig.node.json
+ENV TS_NODE_BASEURL=out/api
 WORKDIR /app
 
 # install slim runtime dependencies for the API service
