@@ -74,12 +74,14 @@ export class EnvConfig {
     }
 
     const fallback =
-      EnvConfig.tryGetVersionFromElectron() ?? EnvConfig.tryGetVersionFromPackageFiles()
+      EnvConfig.tryGetVersionFromElectron() ??
+      EnvConfig.tryGetVersionFromPackageFiles() ??
+      EnvConfig.normalizeVersion(process.env.npm_package_version)
     if (fallback) {
       return fallback
     }
 
-    throw new Error('APP_VERSION is required in the environment')
+    return '0.0.0-dev'
   }
 
   private static normalizeVersion(value?: string): string | undefined {
