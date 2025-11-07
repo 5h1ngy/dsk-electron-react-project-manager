@@ -29,7 +29,7 @@
     "typecheck:node": "tsc --noEmit -p tsconfig.node.json --composite false",
     "typecheck:web": "tsc --noEmit -p tsconfig.web.json --composite false",
     "typecheck": "npm run typecheck:node && npm run typecheck:web",
-    "db:seed": "node --max-old-space-size=32768 ./node_modules/ts-node/dist/bin.js --project tsconfig.tools.json -r tsconfig-paths/register seeding/run.ts",
+    "db:seed": "cross-env TS_NODE_PROJECT=tsconfig.tools.json TS_NODE_BASEURL=. node --max-old-space-size=32768 -r ts-node/register/transpile-only -r tsconfig-paths/register seeding/run-cli.cjs",
     "db:seed:api": "npm run db:seed -- --port 3333",
     "test": "jest",
     "test:watch": "jest --watch",
