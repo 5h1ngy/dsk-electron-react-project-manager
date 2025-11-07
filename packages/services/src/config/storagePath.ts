@@ -1,15 +1,12 @@
 import { join } from 'node:path'
 import { homedir } from 'node:os'
 
-import packageJson from '../../../../package.json'
 import { logger } from '@services/config/logger'
 
 import type { StoragePathOptions, StoragePathResolverOptions } from '@services/config/storagePath.types'
 
-interface PackageMetadata {
-  name?: string
-  productName?: string
-}
+const DEFAULT_APP_IDENTIFIER =
+  process.env.APP_IDENTIFIER ?? process.env.APP_PRODUCT_NAME ?? 'DSK Project Manager'
 
 /**
  * Determines the correct storage destination for the SQLite database, mirroring
@@ -22,8 +19,7 @@ export class StoragePathResolver {
   private readonly homeDirectoryProvider: () => string
 
   constructor(options: StoragePathResolverOptions = {}) {
-    this.appIdentifier =
-      options.appIdentifier ?? StoragePathResolver.resolveDefaultIdentifier(packageJson)
+    this.appIdentifier = options.appIdentifier ?? DEFAULT_APP_IDENTIFIER
     this.platform = options.platform ?? process.platform
     this.environment = options.environment ?? process.env
     this.homeDirectoryProvider = options.homeDirectoryProvider ?? homedir
@@ -62,9 +58,6 @@ export class StoragePathResolver {
     }
   }
 
-  private static resolveDefaultIdentifier(metadata: PackageMetadata): string {
-    return String(metadata.productName ?? metadata.name ?? 'electron-app')
-  }
 }
 
 const defaultResolver = new StoragePathResolver()

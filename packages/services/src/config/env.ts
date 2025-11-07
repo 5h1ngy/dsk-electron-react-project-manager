@@ -4,6 +4,10 @@ import dotenv from 'dotenv'
 
 import type { Env, LogLevelSetting } from '@services/config/env.types'
 
+type ProcessWithResourcesPath = NodeJS.Process & {
+  resourcesPath?: string
+}
+
 /**
  * Encapsulates access to environment configuration, ensuring we only expose
  * sanitized values to the rest of the application.
@@ -111,7 +115,7 @@ export class EnvConfig {
   private static versionFileCandidates(): string[] {
     const candidates = [join(process.cwd(), 'package.json')]
 
-    const resourcesPath = process.resourcesPath
+    const resourcesPath = (process as ProcessWithResourcesPath).resourcesPath
     if (resourcesPath) {
       candidates.push(
         join(resourcesPath, 'app.asar', 'package.json'),

@@ -1,6 +1,6 @@
 import 'reflect-metadata'
 
-import express from 'express'
+import type { Server } from 'node:http'
 import {
   createExpressServer,
   getMetadataArgsStorage,
@@ -10,7 +10,6 @@ import { Container } from 'typedi'
 import { routingControllersToSpec } from 'routing-controllers-openapi'
 import swaggerUi from 'swagger-ui-express'
 import { OpenApiGeneratorV3 } from '@asteasolutions/zod-to-openapi'
-import type { ComponentsObject } from 'openapi3-ts'
 
 import {
   AuthController,
@@ -32,6 +31,12 @@ import { logger } from '@services/config/logger'
 import { env } from '@services/config/env'
 import { apiRegistry } from '@api/openapi/schemas'
 
+type ComponentsObject = {
+  schemas?: Record<string, unknown>
+  securitySchemes?: Record<string, unknown>
+  [key: string]: unknown
+}
+
 const DEFAULT_PORT = 3333
 
 const resolvePort = (): number => {
@@ -40,7 +45,7 @@ const resolvePort = (): number => {
 }
 
 const registerShutdownHooks = (
-  server: ReturnType<typeof express['listen']>,
+  server: Server,
   teardown: () => Promise<void>
 ): void => {
   const shutdown = async (signal: string) => {
@@ -129,7 +134,10 @@ const main = async () => {
   )
   const generator = new OpenApiGeneratorV3(apiRegistry.definitions)
   const generated = generator.generateComponents()
-  openApiSpec.components = mergeComponents(openApiSpec.components, generated.components)
+  openApiSpec.components = mergeComponents(
+    openApiSpec.components as ComponentsObject | undefined,
+    generated.components as ComponentsObject | undefined
+  ) as typeof openApiSpec.components
 
   app.use('/docs', swaggerUi.serve, swaggerUi.setup(openApiSpec))
   app.get('/docs.json', (_req, res) => {
@@ -139,7 +147,7 @@ const main = async () => {
   const port = resolvePort()
   const server = app.listen(port, () => {
     logger.info(`API server listening on port ${port}`, 'API')
-  })
+  }) as Server
 
   registerShutdownHooks(server, runtime.shutdown)
 }

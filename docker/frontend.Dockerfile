@@ -5,9 +5,10 @@ ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
 
 WORKDIR /app
 
-COPY package.json package-lock.json ./
-RUN npm ci
+COPY docker/node/frontend.package.json ./package.json
+RUN npm install
 
+COPY package.json package-lock.json ./
 COPY tsconfig*.json ./
 COPY electron.vite.config.ts ./
 COPY packages ./packages
