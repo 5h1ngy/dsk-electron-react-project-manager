@@ -451,10 +451,7 @@ export class AuthService {
           { createdBy: replacementUserId },
           { where: { createdBy: user.id }, transaction }
         )
-        await AuditLog.update(
-          { userId: null },
-          { where: { userId: user.id }, transaction }
-        )
+        await AuditLog.update({ userId: null }, { where: { userId: user.id }, transaction })
 
         await UserRole.destroy({ where: { userId: user.id }, transaction })
         await user.destroy({ transaction })

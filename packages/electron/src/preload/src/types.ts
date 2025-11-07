@@ -35,14 +35,22 @@ import type {
   SearchNotesInput
 } from '@services/services/note/schemas'
 import type { CreateWikiPageInput, UpdateWikiPageInput } from '@services/services/wiki/schemas'
-import type { NoteDetailsDTO, NoteSummaryDTO, NoteSearchResultDTO } from '@services/services/note/types'
+import type {
+  NoteDetailsDTO,
+  NoteSummaryDTO,
+  NoteSearchResultDTO
+} from '@services/services/note/types'
 import type {
   WikiPageDetailsDTO,
   WikiPageSummaryDTO,
   WikiRevisionDTO
 } from '@services/services/wiki/types'
 import type { SavedViewDTO } from '@services/services/view/types'
-import type { CreateViewInput, UpdateViewInput, ListViewsInput } from '@services/services/view/schemas'
+import type {
+  CreateViewInput,
+  UpdateViewInput,
+  ListViewsInput
+} from '@services/services/view/schemas'
 import type { RoleSummary } from '@services/services/roles'
 import type { RolePermissionDefinition } from '@services/services/roles/constants'
 import type { CreateRoleInput, UpdateRoleInput } from '@services/services/roles/schemas'
@@ -259,4 +267,3 @@ export interface PreloadApi {
   database: DatabaseApi
   sprint: SprintApi
 }
-

@@ -1,4 +1,8 @@
-import type { NoteDetailsDTO, NoteSummaryDTO, NoteSearchResultDTO } from '@services/services/note/types'
+import type {
+  NoteDetailsDTO,
+  NoteSummaryDTO,
+  NoteSearchResultDTO
+} from '@services/services/note/types'
 
 export type NoteSummary = NoteSummaryDTO
 export type NoteDetails = NoteDetailsDTO

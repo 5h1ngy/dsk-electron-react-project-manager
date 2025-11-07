@@ -34,9 +34,7 @@ export interface DomainContext {
   sprintService: SprintService
 }
 
-export const createDomainContext = (
-  options: DomainContextOptions
-): DomainContext => {
+export const createDomainContext = (options: DomainContextOptions): DomainContext => {
   const auditService = options.auditService ?? new AuditService()
   const sessionManager = options.sessionManager ?? new SessionManager()
   const authService = options.authService ?? new AuthService(sessionManager, auditService)
@@ -65,8 +63,6 @@ export const createDomainContext = (
   }
 }
 
-export const teardownDomainContext = async (
-  context: DomainContext
-): Promise<void> => {
+export const teardownDomainContext = async (context: DomainContext): Promise<void> => {
   await context.sequelize.close()
 }

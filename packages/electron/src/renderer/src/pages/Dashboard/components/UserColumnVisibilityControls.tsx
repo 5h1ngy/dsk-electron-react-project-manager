@@ -10,9 +10,6 @@ import {
 } from './UserColumnVisibilityControls.constants'
 import { useSemanticBadges } from '@renderer/theme/hooks/useSemanticBadges'
 
-export { OPTIONAL_USER_COLUMNS } from './UserColumnVisibilityControls.constants'
-export type { OptionalUserColumn } from './UserColumnVisibilityControls.constants'
-
 type ExtendedCustomTagProps = CustomTagProps & {
   className?: string
   closeIcon?: ReactNode

@@ -316,7 +316,16 @@ const ProjectWikiPage = (): JSX.Element => {
         </Space>
       </Flex>
     )
-  }, [canEdit, handleOpenRevisions, handleUpdatePage, selectedPage, isEditing, project?.name, t])
+  }, [
+    canEdit,
+    handleDeletePage,
+    handleOpenRevisions,
+    handleUpdatePage,
+    isEditing,
+    project?.name,
+    selectedPage,
+    t
+  ])
 
   return (
     <Space direction="vertical" size={16} style={{ width: '100%' }}>

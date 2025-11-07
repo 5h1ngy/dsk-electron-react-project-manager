@@ -339,7 +339,7 @@ const UserManagementPage = (): JSX.Element | null => {
         })}
       </Button>
     )
-  }, [deleteLoading, handleBulkDelete, isAdmin, selectedUsers.length, t])
+  }, [deleteLoading, handleBulkDelete, isAdmin, selectedUsers.length, t, themeToken.controlHeightLG])
 
   const handleUserFiltersChange = (patch: Partial<UserFiltersValue>) => {
     setUserFilters((prev) => ({

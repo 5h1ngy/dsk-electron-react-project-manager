@@ -1,4 +1,8 @@
-import type { NoteDetailsDTO, NoteSummaryDTO, NoteSearchResultDTO } from '@services/services/note/types'
+import type {
+  NoteDetailsDTO,
+  NoteSummaryDTO,
+  NoteSearchResultDTO
+} from '@services/services/note/types'
 import type {
   CreateNoteInput,
   UpdateNoteInput,

@@ -4,11 +4,7 @@ import { jsonContent, schemaRef } from '@api/openapi/schemas'
 
 type HttpStatus = `${number}`
 
-const ensureResponses = (
-  schemaName: string,
-  description: string,
-  status: HttpStatus = '200'
-) => ({
+const ensureResponses = (schemaName: string, description: string, status: HttpStatus = '200') => ({
   [status]: {
     description,
     content: jsonContent(schemaName)
@@ -20,24 +16,21 @@ export const ApiResponse = (
   description = 'Success',
   status: HttpStatus = '200'
 ): MethodDecorator =>
-  (OpenAPI({
+  OpenAPI({
     responses: ensureResponses(schemaName, description, status)
-  }) as MethodDecorator)
+  }) as MethodDecorator
 
-export const ApiRequestBody = (
-  schemaName: string,
-  required = true
-): MethodDecorator =>
-  (OpenAPI({
+export const ApiRequestBody = (schemaName: string, required = true): MethodDecorator =>
+  OpenAPI({
     requestBody: {
       required,
       content: jsonContent(schemaName)
     }
-  }) as MethodDecorator)
+  }) as MethodDecorator
 
 export const ApiBearerAuth = (): ClassDecorator & MethodDecorator =>
-  (OpenAPI({
+  OpenAPI({
     security: [{ bearerAuth: [] }]
-  }) as ClassDecorator & MethodDecorator)
+  }) as ClassDecorator & MethodDecorator
 
 export const schemaReference = schemaRef

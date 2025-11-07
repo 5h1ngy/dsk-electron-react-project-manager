@@ -1,8 +1,12 @@
-import { resolve } from 'path'
+import { readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
+
 import { defineConfig, externalizeDepsPlugin } from 'electron-vite'
 import react from '@vitejs/plugin-react'
 
 const API_PROXY_TARGET = process.env.API_PROXY_TARGET ?? 'http://localhost:3333'
+const LOCAL_TSCONFIG_PATH = resolve(__dirname, 'tsconfig.json')
+const tsconfigRaw = JSON.parse(readFileSync(LOCAL_TSCONFIG_PATH, 'utf-8'))
 process.env.TS_NODE_PROJECT =
   process.env.TS_NODE_PROJECT ?? resolve(__dirname, 'tsconfig.electron.json')
 
@@ -17,6 +21,9 @@ export default defineConfig({
         '@renderer': resolve(__dirname, 'src/renderer/src'),
         '@seeding': resolve(__dirname, '../seeding/src')
       }
+    },
+    esbuild: {
+      tsconfigRaw
     },
     build: {
       rollupOptions: {
@@ -35,6 +42,9 @@ export default defineConfig({
         '@renderer': resolve(__dirname, 'src/renderer/src'),
         '@seeding': resolve(__dirname, '../seeding/src')
       }
+    },
+    esbuild: {
+      tsconfigRaw
     },
     build: {
       rollupOptions: {
@@ -60,6 +70,9 @@ export default defineConfig({
         '@api': resolve(__dirname, '../api/src'),
         '@seeding': resolve(__dirname, '../seeding/src')
       }
+    },
+    esbuild: {
+      tsconfigRaw
     },
     plugins: [react()],
     server: {

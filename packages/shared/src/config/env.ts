@@ -94,7 +94,7 @@ export class EnvConfig {
 
   private static tryGetVersionFromElectron(): string | undefined {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires, global-require
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       const { app } = require('electron') as typeof import('electron')
       const version = EnvConfig.normalizeVersion(app?.getVersion?.())
       return version ?? undefined

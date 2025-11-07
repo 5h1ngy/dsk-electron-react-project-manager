@@ -115,7 +115,7 @@ const Sider = ({
     }
 
     return decorate(items)
-  }, [collapsed, effectiveCollapsed, items, menuItemStyle, token.marginSM])
+  }, [effectiveCollapsed, items, menuItemStyle, token.marginSM])
 
   const content = (
     <Flex vertical gap={sectionGap} style={{ height: '100%' }}>

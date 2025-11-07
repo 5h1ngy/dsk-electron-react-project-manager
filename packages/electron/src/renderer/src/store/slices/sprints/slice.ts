@@ -88,7 +88,8 @@ const sprintsSlice = createSlice({
         if (!projectState.entities[sprint.id]) {
           projectState.ids.push(sprint.id)
         }
-        const { tasks, ...summary } = sprint as typeof sprint & { tasks?: unknown }
+        const { tasks: _unusedTasks, ...summary } = sprint as typeof sprint & { tasks?: unknown }
+        void _unusedTasks
         projectState.entities[sprint.id] = {
           ...projectState.entities[sprint.id],
           ...(summary as SprintDTO)

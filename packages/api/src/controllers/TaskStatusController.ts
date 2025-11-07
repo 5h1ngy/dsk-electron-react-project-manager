@@ -1,14 +1,5 @@
 import type { Request } from 'express'
-import {
-  Body,
-  Delete,
-  Get,
-  JsonController,
-  Param,
-  Post,
-  Put,
-  Req
-} from 'routing-controllers'
+import { Body, Delete, Get, JsonController, Param, Post, Put, Req } from 'routing-controllers'
 import { Service } from 'typedi'
 
 import { BaseController } from '@api/controllers/BaseController'
@@ -24,10 +15,7 @@ export class TaskStatusController extends BaseController {
 
   @Get('/projects/:projectId/statuses')
   @ApiResponse('TaskStatusList')
-  async listStatuses(
-    @Req() request: Request,
-    @Param('projectId') projectId: string
-  ) {
+  async listStatuses(@Req() request: Request, @Param('projectId') projectId: string) {
     const { actor } = await this.requireActor(request)
     return await this.statusService.listStatuses(actor, projectId)
   }

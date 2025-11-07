@@ -78,11 +78,7 @@ const isoDate = () =>
     .regex(/^\d{4}-\d{2}-\d{2}$/)
     .openapi({ format: 'date', example: '2024-01-01' })
 
-const idSchema = () =>
-  z
-    .string()
-    .min(1)
-    .max(64)
+const idSchema = () => z.string().min(1).max(64)
 
 const nullableString = () => z.string().nullable()
 

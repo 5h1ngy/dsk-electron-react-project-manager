@@ -25,7 +25,10 @@ import { DEFAULT_TASK_STATUSES } from '@services/services/taskStatus/defaults'
 import type { DatabaseInitializationOptions } from '@services/config/database.types'
 import { logger } from '@services/config/logger'
 import { ROLE_NAMES } from '@services/services/auth/constants'
-import { DEFAULT_ROLE_DESCRIPTIONS, DEFAULT_ROLE_PERMISSIONS } from '@services/services/roles/constants'
+import {
+  DEFAULT_ROLE_DESCRIPTIONS,
+  DEFAULT_ROLE_PERMISSIONS
+} from '@services/services/roles/constants'
 import { hashPassword } from '@services/services/auth/password'
 import { RoleService } from '@services/services/roles'
 import { AuditService } from '@services/services/audit'

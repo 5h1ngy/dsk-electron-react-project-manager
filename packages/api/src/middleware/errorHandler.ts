@@ -1,16 +1,8 @@
 import type { NextFunction, Request, Response } from 'express'
-import {
-  ExpressErrorMiddlewareInterface,
-  HttpError,
-  Middleware
-} from 'routing-controllers'
+import { ExpressErrorMiddlewareInterface, HttpError, Middleware } from 'routing-controllers'
 import { Service } from 'typedi'
 
-import {
-  AppError,
-  isAppError,
-  wrapError
-} from '@services/config/appError'
+import { AppError, isAppError, wrapError } from '@services/config/appError'
 import { logger } from '@services/config/logger'
 
 const mapAppErrorToStatus = (error: AppError): number => {
@@ -31,12 +23,7 @@ const mapAppErrorToStatus = (error: AppError): number => {
 @Service()
 @Middleware({ type: 'after' })
 export class AppErrorHandler implements ExpressErrorMiddlewareInterface {
-  error(
-    error: unknown,
-    _request: Request,
-    response: Response,
-    next: NextFunction
-  ): void {
+  error(error: unknown, _request: Request, response: Response, next: NextFunction): void {
     if (response.headersSent) {
       next(error)
       return

@@ -1,13 +1,4 @@
-import {
-  Body,
-  Delete,
-  Get,
-  JsonController,
-  Param,
-  Post,
-  Put,
-  Req
-} from 'routing-controllers'
+import { Body, Delete, Get, JsonController, Param, Post, Put, Req } from 'routing-controllers'
 import type { Request } from 'express'
 import { Service } from 'typedi'
 
@@ -24,10 +15,7 @@ export class WikiController extends BaseController {
 
   @Get()
   @ApiResponse('WikiPageSummaryList')
-  async listPages(
-    @Req() request: Request,
-    @Param('projectId') projectId: string
-  ) {
+  async listPages(@Req() request: Request, @Param('projectId') projectId: string) {
     const { actor } = await this.requireActor(request)
     return await this.wikiService.listPages(actor, projectId)
   }

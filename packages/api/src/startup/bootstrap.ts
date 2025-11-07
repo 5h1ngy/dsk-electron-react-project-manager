@@ -23,9 +23,7 @@ export interface ApiRuntime {
   shutdown(): Promise<void>
 }
 
-export const bootstrapDomain = async (
-  options: ApiBootstrapOptions = {}
-): Promise<ApiRuntime> => {
+export const bootstrapDomain = async (options: ApiBootstrapOptions = {}): Promise<ApiRuntime> => {
   const storagePath =
     options.storagePath ??
     resolveAppStoragePath({

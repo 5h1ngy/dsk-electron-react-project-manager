@@ -9,7 +9,10 @@
       "@services/*": ["packages/shared/src/*"],
       "@api/*": ["packages/api/src/*"],
       "@seeding/*": ["packages/seeding/src/*"]
-    }
+    },
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "useDefineForClassFields": false
   },
   "references": [{ "path": "./tsconfig.node.json" }, { "path": "./tsconfig.web.json" }]
 }

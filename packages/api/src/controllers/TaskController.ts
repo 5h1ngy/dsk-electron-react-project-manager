@@ -26,10 +26,7 @@ export class TaskController extends BaseController {
 
   @Get('/projects/:projectId/tasks')
   @ApiResponse('TaskDetailsList')
-  async listByProject(
-    @Req() request: Request,
-    @Param('projectId') projectId: string
-  ) {
+  async listByProject(@Req() request: Request, @Param('projectId') projectId: string) {
     const { actor } = await this.requireActor(request)
     return await this.taskService.listByProject(actor, projectId)
   }
@@ -83,10 +80,7 @@ export class TaskController extends BaseController {
 
   @Get('/tasks/:taskId/comments')
   @ApiResponse('CommentList')
-  async listComments(
-    @Req() request: Request,
-    @Param('taskId') taskId: string
-  ) {
+  async listComments(@Req() request: Request, @Param('taskId') taskId: string) {
     const { actor } = await this.requireActor(request)
     return await this.taskService.listComments(actor, taskId)
   }
@@ -126,10 +120,7 @@ export class TaskController extends BaseController {
   @Post('/tasks/search')
   @ApiRequestBody('SearchTasksRequest')
   @ApiResponse('TaskDetailsList')
-  async searchTasksAdvanced(
-    @Req() request: Request,
-    @Body() payload: unknown
-  ) {
+  async searchTasksAdvanced(@Req() request: Request, @Body() payload: unknown) {
     const { actor } = await this.requireActor(request)
     return await this.taskService.search(actor, payload)
   }

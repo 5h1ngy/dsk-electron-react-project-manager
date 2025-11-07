@@ -1,14 +1,5 @@
 import type { Request } from 'express'
-import {
-  Body,
-  Delete,
-  Get,
-  JsonController,
-  Param,
-  Post,
-  Put,
-  Req
-} from 'routing-controllers'
+import { Body, Delete, Get, JsonController, Param, Post, Put, Req } from 'routing-controllers'
 import { Service } from 'typedi'
 
 import { BaseController } from '@api/controllers/BaseController'
@@ -31,10 +22,7 @@ export class ProjectController extends BaseController {
 
   @Get('/:projectId')
   @ApiResponse('ProjectDetailsDTO')
-  async getProject(
-    @Req() request: Request,
-    @Param('projectId') projectId: string
-  ) {
+  async getProject(@Req() request: Request, @Param('projectId') projectId: string) {
     const { actor } = await this.requireActor(request)
     return await this.projectService.getProject(actor, projectId)
   }
@@ -61,10 +49,7 @@ export class ProjectController extends BaseController {
 
   @Delete('/:projectId')
   @ApiResponse('OperationResult')
-  async deleteProject(
-    @Req() request: Request,
-    @Param('projectId') projectId: string
-  ) {
+  async deleteProject(@Req() request: Request, @Param('projectId') projectId: string) {
     const { actor } = await this.requireActor(request)
     await this.projectService.deleteProject(actor, projectId)
     return { success: true }

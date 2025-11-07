@@ -77,18 +77,15 @@ const httpRequest = async <T>(
   options: RequestOptions = {}
 ): Promise<IpcResponse<T>> => {
   try {
-    const response = await fetch(
-      buildUrl(path, options.query),
-      {
-        method,
-        headers: {
-          ...(options.body ? { 'Content-Type': 'application/json' } : {}),
-          ...(options.token ? { Authorization: `Bearer ${options.token}` } : {})
-        },
-        body: options.body ? JSON.stringify(options.body) : undefined,
-        credentials: 'include'
-      }
-    )
+    const response = await fetch(buildUrl(path, options.query), {
+      method,
+      headers: {
+        ...(options.body ? { 'Content-Type': 'application/json' } : {}),
+        ...(options.token ? { Authorization: `Bearer ${options.token}` } : {})
+      },
+      body: options.body ? JSON.stringify(options.body) : undefined,
+      credentials: 'include'
+    })
 
     const isJson = response.headers.get('content-type')?.includes('application/json')
     const payload = isJson ? await response.json() : await response.text()
@@ -138,8 +135,7 @@ const buildHttpBridge = (): PreloadApi => ({
   },
   project: {
     list: async (token) => await httpRequest('GET', '/projects', { token }),
-    get: async (token, projectId) =>
-      await httpRequest('GET', `/projects/${projectId}`, { token }),
+    get: async (token, projectId) => await httpRequest('GET', `/projects/${projectId}`, { token }),
     create: async (token, payload) =>
       await httpRequest('POST', '/projects', { token, body: payload }),
     update: async (token, projectId, payload) =>
@@ -155,14 +151,12 @@ const buildHttpBridge = (): PreloadApi => ({
     list: async (token, projectId) =>
       await httpRequest('GET', `/projects/${projectId}/tasks`, { token }),
     get: async (token, taskId) => await httpRequest('GET', `/tasks/${taskId}`, { token }),
-    create: async (token, payload) =>
-      await httpRequest('POST', '/tasks', { token, body: payload }),
+    create: async (token, payload) => await httpRequest('POST', '/tasks', { token, body: payload }),
     update: async (token, taskId, payload) =>
       await httpRequest('PUT', `/tasks/${taskId}`, { token, body: payload }),
     move: async (token, taskId, payload) =>
       await httpRequest('POST', `/tasks/${taskId}/move`, { token, body: payload }),
-    remove: async (token, taskId) =>
-      await httpRequest('DELETE', `/tasks/${taskId}`, { token }),
+    remove: async (token, taskId) => await httpRequest('DELETE', `/tasks/${taskId}`, { token }),
     listComments: async (token, taskId) =>
       await httpRequest('GET', `/tasks/${taskId}/comments`, { token }),
     addComment: async (token, payload) => {
@@ -200,12 +194,10 @@ const buildHttpBridge = (): PreloadApi => ({
     list: async (token, payload) =>
       await httpRequest('POST', '/notes/query', { token, body: payload }),
     get: async (token, noteId) => await httpRequest('GET', `/notes/${noteId}`, { token }),
-    create: async (token, payload) =>
-      await httpRequest('POST', '/notes', { token, body: payload }),
+    create: async (token, payload) => await httpRequest('POST', '/notes', { token, body: payload }),
     update: async (token, noteId, payload) =>
       await httpRequest('PUT', `/notes/${noteId}`, { token, body: payload }),
-    remove: async (token, noteId) =>
-      await httpRequest('DELETE', `/notes/${noteId}`, { token }),
+    remove: async (token, noteId) => await httpRequest('DELETE', `/notes/${noteId}`, { token }),
     search: async (token, payload) =>
       await httpRequest('POST', '/notes/search', { token, body: payload })
   },
@@ -244,20 +236,16 @@ const buildHttpBridge = (): PreloadApi => ({
       }),
     update: async (token, viewId, payload) =>
       await httpRequest('PUT', `/views/${viewId}`, { token, body: payload }),
-    remove: async (token, viewId) =>
-      await httpRequest('DELETE', `/views/${viewId}`, { token })
+    remove: async (token, viewId) => await httpRequest('DELETE', `/views/${viewId}`, { token })
   },
   role: {
     list: async (token) => await httpRequest('GET', '/roles', { token }),
     permissions: async (token) => await httpRequest('GET', '/roles/permissions', { token }),
-    create: async (token, payload) =>
-      await httpRequest('POST', '/roles', { token, body: payload }),
+    create: async (token, payload) => await httpRequest('POST', '/roles', { token, body: payload }),
     update: async (token, roleId, payload) =>
       await httpRequest('PUT', `/roles/${roleId}`, { token, body: payload }),
-    remove: async (token, roleId) =>
-      await httpRequest('DELETE', `/roles/${roleId}`, { token }),
-    syncDefaults: async (token) =>
-      await httpRequest('POST', '/roles/sync-defaults', { token })
+    remove: async (token, roleId) => await httpRequest('DELETE', `/roles/${roleId}`, { token }),
+    syncDefaults: async (token) => await httpRequest('POST', '/roles/sync-defaults', { token })
   },
   database: {
     export: async () => unsupported(),
@@ -269,8 +257,7 @@ const buildHttpBridge = (): PreloadApi => ({
   sprint: {
     list: async (token, projectId) =>
       await httpRequest('GET', `/projects/${projectId}/sprints`, { token }),
-    get: async (token, sprintId) =>
-      await httpRequest('GET', `/sprints/${sprintId}`, { token }),
+    get: async (token, sprintId) => await httpRequest('GET', `/sprints/${sprintId}`, { token }),
     create: async (token, payload) =>
       await httpRequest('POST', `/projects/${payload.projectId}/sprints`, {
         token,

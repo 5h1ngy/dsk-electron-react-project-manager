@@ -173,8 +173,7 @@ export class WikiService {
     let candidate = base
     let counter = 2
 
-    // eslint-disable-next-line no-constant-condition
-    while (true) {
+    for (;;) {
       const where: Record<string, unknown> = { projectId, slug: candidate }
       if (excludePageId) {
         where.id = { [Op.ne]: excludePageId }

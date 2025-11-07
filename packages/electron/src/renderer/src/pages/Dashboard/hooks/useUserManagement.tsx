@@ -18,7 +18,7 @@ import type {
 } from '@renderer/pages/Dashboard/schemas/userSchemas'
 import { useUserForms } from '@renderer/pages/Dashboard/hooks/useUserForms'
 import { useUserData } from '@renderer/pages/Dashboard/hooks/useUserData'
-import type { OptionalUserColumn } from '@renderer/pages/Dashboard/components/UserColumnVisibilityControls'
+import type { OptionalUserColumn } from '@renderer/pages/Dashboard/components/UserColumnVisibilityControls.constants'
 
 interface UserManagementState {
   users: UserDTO[]

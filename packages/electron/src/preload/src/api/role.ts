@@ -25,4 +25,3 @@ export const roleApi = {
   syncDefaults: async (token: string) =>
     await invokeIpc<RoleSummary[]>(CHANNELS.syncDefaults, token)
 }
-

@@ -1,14 +1,5 @@
 import type { Request } from 'express'
-import {
-  Body,
-  Delete,
-  Get,
-  JsonController,
-  Param,
-  Post,
-  Put,
-  Req
-} from 'routing-controllers'
+import { Body, Delete, Get, JsonController, Param, Post, Put, Req } from 'routing-controllers'
 import { Service } from 'typedi'
 
 import { BaseController } from '@api/controllers/BaseController'

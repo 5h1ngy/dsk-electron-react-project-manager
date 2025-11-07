@@ -1,0 +1,70 @@
+import type { AuthService } from '@services/services/auth'
+import type { ProjectService } from '@services/services/project'
+
+import { IpcChannelRegistrar } from '@main/ipc/utils'
+
+export interface ProjectIpcDependencies {
+  authService: AuthService
+  projectService: ProjectService
+  registrar: IpcChannelRegistrar
+}
+
+export class ProjectIpcRegistrar {
+  private readonly authService: AuthService
+  private readonly projectService: ProjectService
+  private readonly registrar: IpcChannelRegistrar
+
+  constructor(dependencies: ProjectIpcDependencies) {
+    this.authService = dependencies.authService
+    this.projectService = dependencies.projectService
+    this.registrar = dependencies.registrar
+  }
+
+  register(): void {
+    this.registrar.register('project:list', async (token: string) => {
+      const actor = await this.resolveActor(token)
+      return await this.projectService.listProjects(actor)
+    })
+
+    this.registrar.register('project:get', async (token: string, projectId: string) => {
+      const actor = await this.resolveActor(token)
+      return await this.projectService.getProject(actor, projectId)
+    })
+
+    this.registrar.register('project:create', async (token: string, payload: unknown) => {
+      const actor = await this.resolveActor(token)
+      return await this.projectService.createProject(actor, payload)
+    })
+
+    this.registrar.register(
+      'project:update',
+      async (token: string, projectId: string, payload: unknown) => {
+        const actor = await this.resolveActor(token)
+        return await this.projectService.updateProject(actor, projectId, payload)
+      }
+    )
+
+    this.registrar.register('project:delete', async (token: string, projectId: string) => {
+      const actor = await this.resolveActor(token)
+      await this.projectService.deleteProject(actor, projectId)
+      return { success: true }
+    })
+
+    this.registrar.register('project:members', async (token: string, projectId: string) => {
+      const actor = await this.resolveActor(token)
+      return await this.projectService.listMembers(actor, projectId)
+    })
+
+    this.registrar.register(
+      'project:update-membership',
+      async (token: string, projectId: string, payload: unknown) => {
+        const actor = await this.resolveActor(token)
+        return await this.projectService.updateMembership(actor, projectId, payload)
+      }
+    )
+  }
+
+  private async resolveActor(token: string) {
+    return await this.authService.resolveActor(token, { touch: true })
+  }
+}

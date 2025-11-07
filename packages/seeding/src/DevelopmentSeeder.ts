@@ -11,12 +11,12 @@ import type {
   DevelopmentSeederOptions,
   ProjectSeedDefinition,
   SeederState
-} from '../DevelopmentSeeder.types'
-import { ProjectSeeder } from '../ProjectSeeder'
-import { ProjectSeedFactory } from '../ProjectSeedFactory'
-import { UserSeedFactory } from '../UserSeedFactory'
-import { UserSeeder } from '../UserSeeder'
-import { loadSeedConfig, type SeedConfig } from '../seedConfig'
+} from './DevelopmentSeeder.types'
+import { ProjectSeeder } from './ProjectSeeder'
+import { ProjectSeedFactory } from './ProjectSeedFactory'
+import { UserSeedFactory } from './UserSeedFactory'
+import { UserSeeder } from './UserSeeder'
+import { loadSeedConfig, type SeedConfig } from './seedConfig'
 
 const DEFAULT_PASSWORD_SEED = 'changeme!'
 

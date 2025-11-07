@@ -32,4 +32,3 @@ export const wikiApi = {
   restore: async (token: string, projectId: string, pageId: string, revisionId: string) =>
     await invokeIpc<WikiPageDetailsDTO>(CHANNELS.restore, token, projectId, pageId, revisionId)
 }
-

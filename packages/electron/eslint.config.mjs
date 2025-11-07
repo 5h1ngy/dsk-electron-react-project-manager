@@ -18,13 +18,14 @@ const sharedSettings = {
   react: {
     version: 'detect'
   },
-  'import/resolver': {
+  'import-x/resolver': {
     typescript: {
       project: tsconfigProjects,
+      tsconfigRootDir: workspaceRoot,
       alwaysTryTypes: true
     }
   },
-  'import/parsers': {
+  'import-x/parsers': {
     '@typescript-eslint/parser': ['.ts', '.tsx']
   }
 }
@@ -44,22 +45,7 @@ const importRules = {
       ]
     }
   ],
-  'import-x/order': [
-    'warn',
-    {
-      alphabetize: { order: 'asc', caseInsensitive: true },
-      'newlines-between': 'always',
-      groups: ['builtin', 'external', 'internal', ['parent', 'sibling', 'index']],
-      pathGroups: [
-        {
-          pattern: '@{main,preload,renderer,services,api,seeding}/**',
-          group: 'internal',
-          position: 'after'
-        }
-      ],
-      pathGroupsExcludedImportTypes: ['builtin']
-    }
-  ]
+  'import-x/order': 'off'
 }
 
 export default defineConfig(

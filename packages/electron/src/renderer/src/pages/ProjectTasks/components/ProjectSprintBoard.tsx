@@ -411,7 +411,7 @@ export const ProjectSprintBoard = ({
           value ? dayjs(value).format('DD MMM YYYY') : t('tasks.details.noDueDate')
       }
     ],
-    [t, taskStatusColors, token.colorBorder, token.controlHeightSM]
+    [t, taskStatusColors, token.colorBorder]
   )
 
   const unscheduledTasks = useMemo(
@@ -495,7 +495,7 @@ export const ProjectSprintBoard = ({
         render: (value: number | null) => value ?? 'N/A'
       }
     ],
-    [t, taskStatusColors, token.colorBorder, token.controlHeightSM]
+    [t, taskStatusColors, token.colorBorder]
   )
 
   const unscheduledDescription = useMemo(() => {

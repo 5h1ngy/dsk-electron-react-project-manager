@@ -15,7 +15,11 @@ import {
   type UpdateNoteInput
 } from '@services/services/note/schemas'
 import { mapNoteDetails, mapNoteSummary } from '@services/services/note/helpers'
-import type { NoteDetailsDTO, NoteSearchResultDTO, NoteSummaryDTO } from '@services/services/note/types'
+import type {
+  NoteDetailsDTO,
+  NoteSearchResultDTO,
+  NoteSummaryDTO
+} from '@services/services/note/types'
 import type { ServiceActor } from '@services/services/types'
 import { Note } from '@services/models/Note'
 import { NoteTag } from '@services/models/NoteTag'

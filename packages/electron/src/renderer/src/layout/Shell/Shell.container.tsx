@@ -68,7 +68,7 @@ const ShellContainer = ({ currentUser, onLogout, children }: ShellProps): JSX.El
         width={dropdownWidth}
       />
     ),
-    [currentUser.displayName, currentUser.username, labels, onLogout, dropdownWidth]
+    [currentUser.username, dropdownWidth, labels, onLogout, safeDisplayName]
   )
 
   const accountButton = useMemo(
@@ -101,9 +101,9 @@ const ShellContainer = ({ currentUser, onLogout, children }: ShellProps): JSX.El
       accountButtonStyle,
       accountMenu,
       collapsed,
-      currentUser.displayName,
       currentUser.username,
       labels.logout,
+      safeDisplayName,
       token.fontSizeSM
     ]
   )

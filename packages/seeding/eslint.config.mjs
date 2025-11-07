@@ -1,9 +1,6 @@
 import { defineConfig } from 'eslint/config'
 import tseslint from '@electron-toolkit/eslint-config-ts'
 import eslintConfigPrettier from '@electron-toolkit/eslint-config-prettier'
-import eslintPluginReact from 'eslint-plugin-react'
-import eslintPluginReactHooks from 'eslint-plugin-react-hooks'
-import eslintPluginReactRefresh from 'eslint-plugin-react-refresh'
 import eslintPluginImport from 'eslint-plugin-import-x'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -15,16 +12,14 @@ const tsconfigProjects = [
 ]
 
 const sharedSettings = {
-  react: {
-    version: 'detect'
-  },
-  'import/resolver': {
+  'import-x/resolver': {
     typescript: {
       project: tsconfigProjects,
+      tsconfigRootDir: workspaceRoot,
       alwaysTryTypes: true
     }
   },
-  'import/parsers': {
+  'import-x/parsers': {
     '@typescript-eslint/parser': ['.ts', '.tsx']
   }
 }
@@ -44,32 +39,15 @@ const importRules = {
       ]
     }
   ],
-  'import-x/order': [
-    'warn',
-    {
-      alphabetize: { order: 'asc', caseInsensitive: true },
-      'newlines-between': 'always',
-      groups: ['builtin', 'external', 'internal', ['parent', 'sibling', 'index']],
-      pathGroups: [
-        {
-          pattern: '@{main,preload,renderer,services,api,seeding}/**',
-          group: 'internal',
-          position: 'after'
-        }
-      ],
-      pathGroupsExcludedImportTypes: ['builtin']
-    }
-  ]
+  'import-x/order': 'off'
 }
 
 export default defineConfig(
   { ignores: ['**/node_modules', '**/dist', '**/out'] },
   tseslint.configs.recommended,
-  eslintPluginReact.configs.flat.recommended,
-  eslintPluginReact.configs.flat['jsx-runtime'],
   { settings: sharedSettings },
   {
-    files: ['**/*.{ts,tsx}'],
+    files: ['**/*.ts'],
     languageOptions: {
       parserOptions: {
         project: tsconfigProjects,
@@ -77,13 +55,9 @@ export default defineConfig(
       }
     },
     plugins: {
-      'import-x': eslintPluginImport,
-      'react-hooks': eslintPluginReactHooks,
-      'react-refresh': eslintPluginReactRefresh
+      'import-x': eslintPluginImport
     },
     rules: {
-      ...eslintPluginReactHooks.configs.recommended.rules,
-      ...eslintPluginReactRefresh.configs.vite.rules,
       '@typescript-eslint/explicit-function-return-type': 'off',
       ...importRules
     }

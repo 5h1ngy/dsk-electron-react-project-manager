@@ -1,14 +1,5 @@
 import type { Request } from 'express'
-import {
-  Body,
-  Delete,
-  Get,
-  JsonController,
-  Param,
-  Post,
-  Put,
-  Req
-} from 'routing-controllers'
+import { Body, Delete, Get, JsonController, Param, Post, Put, Req } from 'routing-controllers'
 import { Service } from 'typedi'
 
 import { BaseController } from '@api/controllers/BaseController'
@@ -24,20 +15,14 @@ export class SprintController extends BaseController {
 
   @Get('/projects/:projectId/sprints')
   @ApiResponse('SprintList')
-  async listSprints(
-    @Req() request: Request,
-    @Param('projectId') projectId: string
-  ) {
+  async listSprints(@Req() request: Request, @Param('projectId') projectId: string) {
     const { actor } = await this.requireActor(request)
     return await this.sprintService.listByProject(actor, projectId)
   }
 
   @Get('/sprints/:sprintId')
   @ApiResponse('SprintDetailsDTO')
-  async getSprint(
-    @Req() request: Request,
-    @Param('sprintId') sprintId: string
-  ) {
+  async getSprint(@Req() request: Request, @Param('sprintId') sprintId: string) {
     const { actor } = await this.requireActor(request)
     return await this.sprintService.getSprint(actor, sprintId)
   }
@@ -71,10 +56,7 @@ export class SprintController extends BaseController {
 
   @Delete('/sprints/:sprintId')
   @ApiResponse('OperationResult')
-  async deleteSprint(
-    @Req() request: Request,
-    @Param('sprintId') sprintId: string
-  ) {
+  async deleteSprint(@Req() request: Request, @Param('sprintId') sprintId: string) {
     const { actor } = await this.requireActor(request)
     await this.sprintService.deleteSprint(actor, sprintId)
     return { success: true }

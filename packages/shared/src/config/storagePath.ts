@@ -3,7 +3,10 @@ import { homedir } from 'node:os'
 
 import { logger } from '@services/config/logger'
 
-import type { StoragePathOptions, StoragePathResolverOptions } from '@services/config/storagePath.types'
+import type {
+  StoragePathOptions,
+  StoragePathResolverOptions
+} from '@services/config/storagePath.types'
 
 const DEFAULT_APP_IDENTIFIER =
   process.env.APP_IDENTIFIER ?? process.env.APP_PRODUCT_NAME ?? 'DSK Project Manager'
@@ -57,7 +60,6 @@ export class StoragePathResolver {
         return join(this.environment.XDG_CONFIG_HOME ?? join(home, '.config'), this.appIdentifier)
     }
   }
-
 }
 
 const defaultResolver = new StoragePathResolver()

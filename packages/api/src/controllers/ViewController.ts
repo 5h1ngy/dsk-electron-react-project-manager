@@ -1,14 +1,5 @@
 import type { Request } from 'express'
-import {
-  Body,
-  Delete,
-  Get,
-  JsonController,
-  Param,
-  Post,
-  Put,
-  Req
-} from 'routing-controllers'
+import { Body, Delete, Get, JsonController, Param, Post, Put, Req } from 'routing-controllers'
 import { Service } from 'typedi'
 
 import { BaseController } from '@api/controllers/BaseController'
@@ -24,10 +15,7 @@ export class ViewController extends BaseController {
 
   @Get('/projects/:projectId/views')
   @ApiResponse('SavedViewList')
-  async listViews(
-    @Req() request: Request,
-    @Param('projectId') projectId: string
-  ) {
+  async listViews(@Req() request: Request, @Param('projectId') projectId: string) {
     const { actor } = await this.requireActor(request)
     return await this.viewService.listViews(actor, { projectId })
   }

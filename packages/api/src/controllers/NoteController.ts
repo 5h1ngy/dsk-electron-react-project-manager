@@ -94,10 +94,7 @@ export class NoteController extends BaseController {
   @Post('/notes/search')
   @ApiRequestBody('SearchNotesRequest')
   @ApiResponse('NoteSearchResultList')
-  async searchNotesAdvanced(
-    @Req() request: Request,
-    @Body() payload: unknown
-  ) {
+  async searchNotesAdvanced(@Req() request: Request, @Body() payload: unknown) {
     const { actor } = await this.requireActor(request)
     return await this.noteService.search(actor, payload)
   }
@@ -105,10 +102,7 @@ export class NoteController extends BaseController {
   @Post('/notes/query')
   @ApiRequestBody('ListNotesRequest')
   @ApiResponse('NoteSummaryList')
-  async listNotesAdvanced(
-    @Req() request: Request,
-    @Body() payload: unknown
-  ) {
+  async listNotesAdvanced(@Req() request: Request, @Body() payload: unknown) {
     const { actor } = await this.requireActor(request)
     return await this.noteService.listNotes(actor, payload)
   }

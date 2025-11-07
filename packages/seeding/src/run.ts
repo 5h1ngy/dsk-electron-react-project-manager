@@ -110,10 +110,7 @@ const triggerRemoteSeed = async (
   seedLogger: SeedLogger
 ): Promise<void> => {
   const endpoint = new URL('/seed', `http://${target.host}:${target.port}`)
-  seedLogger.info(
-    `Triggering remote seeding on ${endpoint.toString()}`,
-    SEED_LOG_CONTEXT
-  )
+  seedLogger.info(`Triggering remote seeding on ${endpoint.toString()}`, SEED_LOG_CONTEXT)
 
   const response = await fetch(endpoint, { method: 'POST' })
   if (!response.ok) {

@@ -67,7 +67,8 @@ export const UserListView = ({
   }
 
   const getUserInitials = (user: UserDTO) => {
-    const source = user.displayName && user.displayName.trim().length > 0 ? user.displayName : user.username
+    const source =
+      user.displayName && user.displayName.trim().length > 0 ? user.displayName : user.username
     const [first = '', second = ''] = source.trim().split(' ')
     const initials = `${first.charAt(0)}${second.charAt(0)}`.toUpperCase()
     if (initials.trim().length === 0 && user.username) {
@@ -106,7 +107,9 @@ export const UserListView = ({
       split={false}
       itemLayout="vertical"
       renderItem={(user) => {
-        const statusSpec = user.isActive ? badgeTokens.userStatus.active : badgeTokens.userStatus.inactive
+        const statusSpec = user.isActive
+          ? badgeTokens.userStatus.active
+          : badgeTokens.userStatus.inactive
         const isHovered = hoveredId === user.id
 
         return (
@@ -179,7 +182,10 @@ export const UserListView = ({
                       </Typography.Text>
                     }
                   />
-                  <Typography.Text type="secondary" style={{ display: 'flex', gap: token.marginXS }}>
+                  <Typography.Text
+                    type="secondary"
+                    style={{ display: 'flex', gap: token.marginXS }}
+                  >
                     <ClockCircleOutlined />
                     {formatLastLogin(user.lastLoginAt ?? null)}
                   </Typography.Text>

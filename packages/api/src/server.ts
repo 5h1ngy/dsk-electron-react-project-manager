@@ -2,11 +2,7 @@ import 'reflect-metadata'
 // ts-node CLI already registers tsconfig-paths in dev; no runtime import needed.
 
 import type { Server } from 'node:http'
-import {
-  createExpressServer,
-  getMetadataArgsStorage,
-  useContainer
-} from 'routing-controllers'
+import { createExpressServer, getMetadataArgsStorage, useContainer } from 'routing-controllers'
 import { Container } from 'typedi'
 import { routingControllersToSpec } from 'routing-controllers-openapi'
 import swaggerUi from 'swagger-ui-express'
@@ -45,10 +41,7 @@ const resolvePort = (): number => {
   return Number.isFinite(parsed) && parsed > 0 ? parsed : DEFAULT_PORT
 }
 
-const registerShutdownHooks = (
-  server: Server,
-  teardown: () => Promise<void>
-): void => {
+const registerShutdownHooks = (server: Server, teardown: () => Promise<void>): void => {
   const shutdown = async (signal: string) => {
     logger.warn(`Received ${signal}, shutting down API`, 'API')
     await new Promise<void>((resolve) => server.close(() => resolve()))

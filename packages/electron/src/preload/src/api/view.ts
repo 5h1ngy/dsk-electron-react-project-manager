@@ -1,5 +1,9 @@
 import type { SavedViewDTO } from '@services/services/view/types'
-import type { CreateViewInput, ListViewsInput, UpdateViewInput } from '@services/services/view/schemas'
+import type {
+  CreateViewInput,
+  ListViewsInput,
+  UpdateViewInput
+} from '@services/services/view/schemas'
 import { invokeIpc } from '@preload/api/shared'
 
 const CHANNELS = {

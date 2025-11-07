@@ -1,6 +1,10 @@
 import { createAsyncThunk } from '@reduxjs/toolkit'
 
-import type { CreateViewInput, UpdateViewInput, ListViewsInput } from '@services/services/view/schemas'
+import type {
+  CreateViewInput,
+  UpdateViewInput,
+  ListViewsInput
+} from '@services/services/view/schemas'
 import type { SavedViewDTO } from '@services/services/view/types'
 import {
   extractErrorMessage,
