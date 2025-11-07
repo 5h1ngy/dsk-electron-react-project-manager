@@ -19,11 +19,9 @@ services:
       context: .
       dockerfile: docker/frontend.Dockerfile
       args:
-        VITE_API_BASE_URL: ${API_BASE_URL:-http://localhost:3333}
+        VITE_API_BASE_URL: ${API_BASE_URL:-/api}
     depends_on:
       - api
-    environment:
-      - API_BASE_URL=${API_BASE_URL:-http://api:3333}
     ports:
       - "${FRONTEND_PORT:-8080}:80"
 
