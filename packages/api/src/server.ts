@@ -1,4 +1,5 @@
 import 'reflect-metadata'
+// ts-node CLI already registers tsconfig-paths in dev; no runtime import needed.
 
 import type { Server } from 'node:http'
 import {
