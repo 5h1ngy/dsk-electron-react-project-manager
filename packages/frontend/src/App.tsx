@@ -164,17 +164,15 @@ const App = () => {
     if (!head) {
       return
     }
-    let favicon = head.querySelector<HTMLLinkElement>("link[rel~='icon']")
+    let favicon = head.querySelector<HTMLLinkElement>("link[rel='icon']")
     if (!favicon) {
       favicon = document.createElement('link')
       favicon.rel = 'icon'
       head.appendChild(favicon)
     }
-    const prevHref = favicon.href
-    favicon.href = faviconHref
-    return () => {
-      favicon.href = prevHref
-    }
+    favicon.type = 'image/x-icon'
+    const absoluteHref = new URL(faviconHref, window.location.href).toString()
+    favicon.href = absoluteHref
   }, [faviconHref])
 
   return (
