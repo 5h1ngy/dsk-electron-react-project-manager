@@ -38,7 +38,6 @@ type WindowLogger = Pick<
 export interface MainWindowManagerOptions {
   browserWindowCtor?: typeof BrowserWindow
   logger?: WindowLogger
-  isDev?: () => boolean
   env?: NodeJS.ProcessEnv
   shouldSuppress?: typeof shouldSuppressDevtoolsMessage
 }
@@ -46,15 +45,13 @@ export interface MainWindowManagerOptions {
 export class MainWindowManager {
   private readonly BrowserWindowCtor: typeof BrowserWindow
   private readonly logger: WindowLogger
-  private readonly isDev: () => boolean
   private readonly env: NodeJS.ProcessEnv
   private readonly shouldSuppress: typeof shouldSuppressDevtoolsMessage
-  private readonly devtoolsToggle: boolean | null
+  private readonly devtoolsToggle: boolean
 
   constructor(options: MainWindowManagerOptions = {}) {
     this.BrowserWindowCtor = options.browserWindowCtor ?? BrowserWindow
     this.logger = options.logger ?? logger
-    this.isDev = options.isDev ?? (() => process.env.NODE_ENV !== 'production')
     this.env = options.env ?? process.env
     this.shouldSuppress = options.shouldSuppress ?? shouldSuppressDevtoolsMessage
     this.devtoolsToggle = this.parseDevtoolsToggle(this.env.ENABLE_DEVTOOLS)
@@ -146,21 +143,13 @@ export class MainWindowManager {
   }
 
   private loadWindowContent(window: BrowserWindow): void {
-    const devUrl = this.env.ELECTRON_RENDERER_URL
-
-    if (this.isDev() && devUrl) {
-      this.logger.debug('Loading renderer from dev server URL', 'Window')
-      void window.loadURL(devUrl)
-      return
-    }
-
     this.logger.debug('Loading renderer from bundled HTML', 'Window')
     void window.loadFile(join(__dirname, '../renderer/index.html'))
   }
 
-  private parseDevtoolsToggle(value: string | undefined): boolean | null {
+  private parseDevtoolsToggle(value: string | undefined): boolean {
     if (!value) {
-      return null
+      return false
     }
     const normalized = value.trim().toLowerCase()
     if (['1', 'true', 'yes', 'on'].includes(normalized)) {
@@ -173,21 +162,21 @@ export class MainWindowManager {
       `Invalid ENABLE_DEVTOOLS value "${value}". Falling back to environment defaults.`,
       'Window'
     )
-    return null
+    return false
   }
 
   private shouldAllowDevtools(): boolean {
     if (this.devtoolsToggle !== null) {
       return this.devtoolsToggle
     }
-    return this.isDev()
+    return this.devtoolsToggle
   }
 
   private shouldAutoOpenDevtools(): boolean {
     if (this.devtoolsToggle === true) {
       return true
     }
-    return this.devtoolsToggle === null && this.isDev()
+    return this.devtoolsToggle === null && this.devtoolsToggle
   }
 }
 

@@ -10,7 +10,13 @@
       "windows": {
         "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron-vite.cmd"
       },
-      "runtimeArgs": ["--sourcemap"],
+      "runtimeArgs": [
+        "dev",
+        "--sourcemap",
+        "--config",
+        "packages/electron/electron.vite.config.ts"
+      ],
+      "envFile": "${workspaceFolder}/env/.env.desktop.dev",
       "env": {
         "REMOTE_DEBUGGING_PORT": "9222"
       }
@@ -20,7 +26,7 @@
       "port": 9222,
       "request": "attach",
       "type": "chrome",
-      "webRoot": "${workspaceFolder}/src/renderer",
+      "webRoot": "${workspaceFolder}/packages/electron/src/renderer",
       "timeout": 60000,
       "presentation": {
         "hidden": true

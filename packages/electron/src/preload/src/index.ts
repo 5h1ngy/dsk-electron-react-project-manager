@@ -12,9 +12,9 @@ import { databaseApi } from '@preload/api/database'
 import { sprintApi } from '@preload/api/sprint'
 import type { PreloadApi } from '@preload/types'
 
-const parseDevtoolsToggle = (value: string | undefined): boolean | null => {
+const parseDevtoolsToggle = (value: string | undefined): boolean => {
   if (!value) {
-    return null
+    return false
   }
 
   const normalized = value.trim().toLowerCase()
@@ -26,15 +26,11 @@ const parseDevtoolsToggle = (value: string | undefined): boolean | null => {
     return false
   }
 
-  return null
+  return false
 }
 
 const shouldEnableDevtools = (): boolean => {
-  const toggle = parseDevtoolsToggle(process.env.ENABLE_DEVTOOLS)
-  if (toggle !== null) {
-    return toggle
-  }
-  return process.env.NODE_ENV !== 'production'
+  return parseDevtoolsToggle(process.env.ENABLE_DEVTOOLS)
 }
 
 const api: PreloadApi = Object.freeze({

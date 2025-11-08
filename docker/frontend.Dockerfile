@@ -7,13 +7,11 @@ ENV VITE_PUBLIC_BASE=$VITE_PUBLIC_BASE
 
 WORKDIR /app
 
+COPY packages ./packages
 COPY docker/frontend.dev.package.json ./package.json
 COPY package-lock.json ./
+
 RUN npm install
-
-COPY package.json package-lock.json ./
-COPY packages ./packages
-
 RUN npm run build:frontend
 
 FROM nginx:1.27-alpine

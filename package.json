@@ -114,6 +114,7 @@
     "sqlite3": "^5.1.7",
     "swagger-ui-express": "^5.0.1",
     "tsconfig-paths": "^4.2.0",
+    "electron": "^38.3.0",
     "typedi": "^0.10.0",
     "zod": "^3.25.76"
   },
@@ -135,7 +136,6 @@
     "@vitejs/plugin-react": "^5.0.4",
     "cross-env": "^7.0.3",
     "dotenv-cli": "^11.0.0",
-    "electron": "^38.3.0",
     "electron-builder": "^26.0.12",
     "electron-devtools-installer": "^4.0.0",
     "electron-vite": "^4.0.1",
