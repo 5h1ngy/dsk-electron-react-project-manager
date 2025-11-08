@@ -2,6 +2,7 @@ import { Card, Flex, Typography, theme } from 'antd'
 import { useState, type ReactElement } from 'react'
 
 import type { HeroStat } from '../types/content'
+import { darken, lighten } from '../theme/utils'
 
 interface HeroStatsGridProps {
   accent: string
@@ -11,11 +12,16 @@ interface HeroStatsGridProps {
 export const HeroStatsGrid = ({ accent, stats }: HeroStatsGridProps): ReactElement => {
   const { token } = theme.useToken()
   const [activeCard, setActiveCard] = useState<string | null>(null)
+  const surfaceTextInverse = token.colorTextLightSolid ?? '#ffffff'
+  const flexBasis = `${token.sizeUnit * 55}px`
+  const hoverOffset = token.marginXS
 
   return (
     <Flex wrap gap={token.margin} style={{ width: '100%' }}>
       {stats.map((stat) => {
         const active = activeCard === stat.label
+        const gradientStart = lighten(accent, 0.2)
+        const gradientEnd = darken(accent, 0.1)
         return (
           <Card
             key={stat.label}
@@ -24,16 +30,14 @@ export const HeroStatsGrid = ({ accent, stats }: HeroStatsGridProps): ReactEleme
             onMouseEnter={() => setActiveCard(stat.label)}
             onMouseLeave={() => setActiveCard(null)}
             style={{
-              flex: '1 1 220px',
+              flex: `1 1 ${flexBasis}`,
               borderRadius: token.borderRadiusLG,
               background: active
-                ? `linear-gradient(135deg, ${accent}cc, ${accent}7d)`
+                ? `linear-gradient(135deg, ${gradientStart}, ${gradientEnd})`
                 : token.colorBgElevated,
-              border: active ? `1px solid ${accent}` : `1px solid ${token.colorBorderSecondary}`,
-              boxShadow: active
-                ? `0 20px 50px ${accent}4d`
-                : '0 20px 40px rgba(0,0,0,0.15)',
-              transform: active ? 'translateY(-6px) scale(1.02)' : 'translateY(0)',
+              border: `1px solid ${active ? accent : token.colorBorderSecondary}`,
+              boxShadow: active ? token.boxShadowSecondary : token.boxShadow,
+              transform: active ? `translateY(-${hoverOffset}px) scale(1.02)` : 'translateY(0)',
               transition:
                 'transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s ease, background 0.3s ease'
             }}
@@ -42,16 +46,16 @@ export const HeroStatsGrid = ({ accent, stats }: HeroStatsGridProps): ReactEleme
             <Typography.Text
               style={{
                 textTransform: 'uppercase',
-                letterSpacing: 1.2,
-                fontSize: 12,
-                color: active ? '#fff' : token.colorTextSecondary
+                letterSpacing: token.sizeUnit * 0.3,
+                fontSize: token.fontSizeSM,
+                color: active ? surfaceTextInverse : token.colorTextSecondary
               }}
             >
               {stat.label}
             </Typography.Text>
             <Typography.Title
               level={4}
-              style={{ marginBottom: 0, color: active ? '#fff' : token.colorTextBase }}
+              style={{ marginBottom: 0, color: active ? surfaceTextInverse : token.colorTextBase }}
             >
               {stat.value}
             </Typography.Title>

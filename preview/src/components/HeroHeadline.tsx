@@ -17,15 +17,21 @@ export const HeroHeadline = ({ accent, content }: HeroHeadlineProps): ReactEleme
   const titleRef = useRef<HTMLHeadingElement | null>(null)
   const descriptionRef = useRef<HTMLParagraphElement | null>(null)
   useHeroIntroMotion(titleRef, descriptionRef)
+  const stackSpacing = token.marginXXL
+  const eyebrowPadding = `${token.paddingXS}px ${token.paddingLG}px`
+  const displaySize = token.fontSizeHeading1 * 2.25
+  const paragraphSize = token.fontSizeHeading4
+  const actionsGap = token.marginLG
+  const descriptionWidth = token.sizeUnit * 130
 
   return (
-    <Space direction="vertical" size="large" style={{ width: '100%' }}>
+    <Space direction="vertical" size={stackSpacing} style={{ width: '100%' }}>
       <Tag
         style={{
-          borderRadius: 999,
-          padding: '6px 18px',
+          borderRadius: token.borderRadiusOuter,
+          padding: eyebrowPadding,
           fontWeight: 600,
-          letterSpacing: 1,
+          letterSpacing: token.sizeUnit / 2,
           borderColor: accent,
           color: accent
         }}
@@ -37,9 +43,9 @@ export const HeroHeadline = ({ accent, content }: HeroHeadlineProps): ReactEleme
         ref={titleRef}
         style={{
           color: token.colorTextBase,
-          fontSize: 72,
+          fontSize: displaySize,
           marginBottom: 0,
-          lineHeight: 1
+          lineHeight: token.lineHeightHeading1 * 1.2
         }}
       >
         {content.title}
@@ -48,19 +54,19 @@ export const HeroHeadline = ({ accent, content }: HeroHeadlineProps): ReactEleme
         ref={descriptionRef}
         style={{
           color: token.colorTextSecondary,
-          fontSize: 18,
-          maxWidth: 520,
+          fontSize: paragraphSize,
+          maxWidth: descriptionWidth,
           marginBottom: token.marginSM
         }}
       >
         {content.description}
       </Typography.Paragraph>
-      <Space size="large" wrap>
+      <Space size={actionsGap} wrap>
         <Button
           type="primary"
           size="large"
           icon={<DownloadOutlined />}
-          style={{ minWidth: 180 }}
+          style={{ minWidth: token.paddingXL * 9 }}
           href={content.primaryCta.href}
           target="_blank"
           rel="noreferrer"

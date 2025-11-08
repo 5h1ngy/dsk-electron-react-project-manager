@@ -24,3 +24,8 @@ const mixColor = (color: string, amount: number, target: string): string => {
 
 export const lighten = (color: string, amount: number) => mixColor(color, amount, '#ffffff')
 export const darken = (color: string, amount: number) => mixColor(color, amount, '#000000')
+export const transparentize = (color: string, alpha: number) => {
+  const normalizedAlpha = Math.min(1, Math.max(0, alpha))
+  const [r, g, b] = toRgb(color)
+  return `rgba(${r}, ${g}, ${b}, ${normalizedAlpha})`
+}

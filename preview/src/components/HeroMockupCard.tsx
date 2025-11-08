@@ -1,8 +1,9 @@
-import { Card, theme } from 'antd'
+import { Card, Flex, theme } from 'antd'
 import { useState, type ReactElement } from 'react'
 
 import type { GalleryContent } from '../types/content'
 import type { ThemeMode } from '../theme/foundations/palette'
+import { darken, lighten } from '../theme/utils'
 
 import { HeroGallery } from './HeroGallery'
 
@@ -17,22 +18,27 @@ export const HeroMockupCard = ({ accent, mode, gallery }: HeroMockupCardProps): 
   const [hovered, setHovered] = useState(false)
   const background =
     mode === 'dark'
-      ? 'linear-gradient(145deg, rgba(15,23,42,0.95), rgba(5,6,17,0.95))'
-      : 'linear-gradient(145deg, rgba(255,255,255,0.9), rgba(241,245,255,0.9))'
+      ? darken(token.colorBgElevated, 0.08)
+      : lighten(token.colorBgElevated, 0.06)
+  const galleryOverflowOffset = token.marginXXXL + token.marginXL
+  const cardMaxWidth = token.sizeUnit * 240
+  const hoverLift = token.padding
 
   return (
     <Card
       bordered
       style={{
         width: '100%',
-        maxWidth: 960,
+        maxWidth: cardMaxWidth,
         marginLeft: 'auto',
-        borderRadius: token.borderRadiusXXL,
+        borderRadius: token.borderRadiusOuter,
         background,
         borderColor: accent,
         boxShadow:
-          mode === 'dark' ? '0 30px 80px rgba(0,0,0,0.5)' : '0 30px 60px rgba(15,23,42,0.2)',
-        transform: hovered ? 'translateY(-12px) rotateX(2deg) rotateY(-2deg)' : 'translateY(0)',
+          mode === 'dark' ? token.boxShadowSecondary : token.boxShadow,
+        transform: hovered
+          ? `translateY(-${hoverLift}px) rotateX(2deg) rotateY(-2deg)`
+          : 'translateY(0)',
         transition: 'transform 0.5s cubic-bezier(0.22, 1, 0.36, 1)',
         overflow: 'visible'
       }}
@@ -40,15 +46,15 @@ export const HeroMockupCard = ({ accent, mode, gallery }: HeroMockupCardProps): 
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      <div
+      <Flex
         style={{
           position: 'relative',
-          right: '-50px',
-          width: 'calc(100% + 50px)'
+          right: `-${galleryOverflowOffset}px`,
+          width: `calc(100% + ${galleryOverflowOffset}px)`
         }}
       >
         <HeroGallery content={gallery} />
-      </div>
+      </Flex>
     </Card>
   )
 }

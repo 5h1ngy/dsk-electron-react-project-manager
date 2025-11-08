@@ -14,17 +14,22 @@ const resolveStaticSrc = (raw: string): string => {
   if (/^https?:\/\//i.test(raw)) {
     return raw
   }
-  const trimmed = raw.replace(/^\.?\/+/, '')
-  const prefixed = trimmed.startsWith('gallery/') ? trimmed : `gallery/${trimmed.replace(/^gallery\/+/, '')}`
+  const trimmed = raw.replace(/^\.?[\\/]+/, '')
+  const normalizedPath = trimmed.startsWith('gallery/')
+    ? trimmed
+    : `gallery/${trimmed.replace(/^gallery[\\/]+/, '')}`
   const base = import.meta.env.BASE_URL ?? '/'
   const normalizedBase = base.endsWith('/') ? base : `${base}/`
 
   if (typeof window !== 'undefined') {
-    const absoluteBase = new URL(normalizedBase, window.location.origin).href
-    return new URL(prefixed, absoluteBase).href
+    try {
+      return new URL(normalizedPath, window.location.href).href
+    } catch {
+      return `${normalizedBase}${normalizedPath}`
+    }
   }
 
-  return `${normalizedBase}${prefixed}`
+  return `${normalizedBase}${normalizedPath}`
 }
 
 export const HeroGallery = ({ content }: HeroGalleryProps): ReactElement => {
@@ -61,17 +66,17 @@ export const HeroGallery = ({ content }: HeroGalleryProps): ReactElement => {
               style={{
                 width: '100%',
                 borderRadius: token.borderRadiusLG,
-                boxShadow: '0 25px 60px rgba(0,0,0,0.35)'
+                boxShadow: token.boxShadowSecondary
               }}
             />
           ))}
         </Carousel>
         <Space
+          size={token.marginXS}
           style={{
             position: 'absolute',
             bottom: token.margin,
-            right: token.margin,
-            gap: token.marginXS
+            right: token.margin
           }}
         >
           <Button

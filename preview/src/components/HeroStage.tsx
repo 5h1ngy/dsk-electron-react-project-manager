@@ -6,6 +6,7 @@ import { FALLBACK_LANGUAGE_LABELS, SUPPORTED_LANGUAGES, isSupportedLanguage } fr
 import type { SupportedLanguage } from '../i18n/language'
 import type { ControlCopy, GalleryContent, HeroContent, LanguageOption } from '../types/content'
 import type { ThemeMode } from '../theme/foundations/palette'
+import { darken, lighten, transparentize } from '../theme/utils'
 
 import { HeroControls } from './HeroControls'
 import { HeroHeadline } from './HeroHeadline'
@@ -65,19 +66,38 @@ export const HeroStage = ({
     return normalized.length ? normalized : fallbackLanguageOptions
   }, [rawLanguageOptions, fallbackLanguageOptions])
 
-  const layeredBackground = useMemo(
-    () =>
-      mode === 'light'
-        ? `radial-gradient(circle at 15% 25%, ${accent}24, transparent 45%),
-           radial-gradient(circle at 90% 0%, ${accent}20, transparent 55%),
-           repeating-linear-gradient(120deg, rgba(15,23,42,0.05), rgba(15,23,42,0.05) 2px, transparent 2px, transparent 16px),
-           linear-gradient(135deg, #eef2ff 0%, #ffffff 55%, #e9ecff 100%)`
-        : `radial-gradient(circle at 20% 20%, ${accent}33, transparent 52%),
-           radial-gradient(circle at 80% 0%, ${accent}29, transparent 48%),
-           repeating-linear-gradient(125deg, rgba(148,163,184,0.12), rgba(148,163,184,0.12) 2px, transparent 2px, transparent 18px),
-           linear-gradient(130deg, #040814 0%, #050b1b 50%, #020307 100%)`,
-    [accent, mode]
-  )
+  const layeredBackground = useMemo(() => {
+    const base = mode === 'dark' ? token.colorBgBase : token.colorBgContainer
+    const overlay =
+      mode === 'dark' ? darken(token.colorBgElevated, 0.12) : lighten(token.colorBgElevated, 0.12)
+    const accentGlow = mode === 'dark' ? darken(accent, 0.12) : lighten(accent, 0.3)
+    const accentMist = mode === 'dark' ? darken(accent, 0.2) : lighten(accent, 0.45)
+    const gridColor =
+      mode === 'dark'
+        ? transparentize(token.colorTextLightSolid ?? '#ffffff', 0.08)
+        : transparentize(token.colorTextBase, 0.04)
+    const gridAngle = mode === 'dark' ? 125 : 120
+    const gridEnd = mode === 'dark' ? 18 : 16
+    const gridTint = `repeating-linear-gradient(${gridAngle}deg, ${gridColor}, ${gridColor} 2px, transparent 2px, transparent ${gridEnd}px)`
+    return `
+      radial-gradient(circle at 18% 28%, ${accentGlow}, transparent 55%),
+      radial-gradient(circle at 82% 8%, ${accentMist}, transparent 50%),
+      ${gridTint},
+      linear-gradient(135deg, ${base} 0%, ${overlay} 100%)`
+  }, [
+    accent,
+    mode,
+    token.colorBgBase,
+    token.colorBgContainer,
+    token.colorBgElevated,
+    token.colorTextBase,
+    token.colorTextLightSolid
+  ])
+
+  const gridGutter: [number, number] = [
+    token.marginXXXL + token.margin,
+    token.marginXXXL + token.margin
+  ]
 
   return (
     <Card
@@ -93,15 +113,15 @@ export const HeroStage = ({
         backgroundSize: 'cover',
         backgroundRepeat: 'no-repeat',
         backgroundPosition: 'center',
-        boxShadow: mode === 'dark' ? '0 0 140px rgba(0,0,0,0.4)' : '0 0 80px rgba(15,23,42,0.15)'
+        boxShadow: mode === 'dark' ? token.boxShadowSecondary : token.boxShadow
       }}
       bodyStyle={{ padding: `${token.paddingXL * 2}px ${token.paddingXL * 2.5}px` }}
     >
-      <div
+      <Flex
         style={{
           position: 'absolute',
-          top: token.marginXL * 0.5,
-          right: token.marginXL * 0.5,
+          top: token.marginXL,
+          right: token.marginXL,
           zIndex: 2
         }}
       >
@@ -111,14 +131,14 @@ export const HeroStage = ({
           label={controlsCopy.languageLabel}
           onChange={onLanguageChange}
         />
-      </div>
+      </Flex>
       <Flex
         vertical
         gap={token.marginXL}
         justify="space-between"
         style={{ width: '100%', minHeight: '100%' }}
       >
-        <Row align="middle" gutter={[48, 48]} style={{ minHeight: '100%', width: '100%' }}>
+        <Row align="middle" gutter={gridGutter} style={{ minHeight: '100%', width: '100%' }}>
           <Col xs={24} lg={9}>
             <HeroHeadline accent={accent} content={heroContent} />
           </Col>
@@ -127,17 +147,19 @@ export const HeroStage = ({
           </Col>
         </Row>
         <Flex justify="flex-end" style={{ width: '100%' }}>
-          <div
+          <Flex
             style={{
-              background: mode === 'dark' ? 'rgba(4,6,18,0.85)' : 'rgba(255,255,255,0.9)',
-              borderRadius: 999,
-              padding: '12px 20px',
-              border: `1px solid ${mode === 'dark' ? 'rgba(255,255,255,0.12)' : 'rgba(15,23,42,0.12)'}`,
-              backdropFilter: 'blur(12px)',
-              boxShadow:
+              background:
                 mode === 'dark'
-                  ? '0 25px 60px rgba(0,0,0,0.35)'
-                  : '0 15px 40px rgba(15,23,42,0.2)'
+                  ? darken(token.colorBgElevated, 0.15)
+                  : lighten(token.colorBgElevated, 0.05),
+              borderRadius: token.borderRadiusOuter * 2,
+              padding: `${token.padding}px ${token.paddingXL}px`,
+              border: `1px solid ${
+                mode === 'dark' ? token.colorBorder : token.colorBorderSecondary
+              }`,
+              backdropFilter: 'blur(12px)',
+              boxShadow: mode === 'dark' ? token.boxShadowSecondary : token.boxShadow
             }}
           >
             <HeroControls
@@ -147,7 +169,7 @@ export const HeroStage = ({
               toggleMode={toggleMode}
               controlsCopy={controlsCopy}
             />
-          </div>
+          </Flex>
         </Flex>
       </Flex>
     </Card>

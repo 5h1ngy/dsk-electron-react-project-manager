@@ -5,6 +5,7 @@ import type { ReactElement } from 'react'
 import { ACCENT_OPTIONS } from '../theme'
 import type { ControlCopy } from '../types/content'
 import type { ThemeMode } from '../theme/foundations/palette'
+import { darken, lighten } from '../theme/utils'
 
 interface HeroControlsProps {
   accent: string
@@ -22,13 +23,24 @@ export const HeroControls = ({
   controlsCopy
 }: HeroControlsProps): ReactElement => {
   const { token } = theme.useToken()
+  const controlHeight = token.controlHeightLG
+  const controlPaddingY = token.paddingXXS
+  const controlPaddingX = token.paddingSM
+  const pillBackground =
+    mode === 'dark'
+      ? darken(token.colorBgElevated, 0.05)
+      : lighten(token.colorBgElevated, 0.06)
+  const pillBorder = mode === 'dark' ? token.colorBorder : token.colorBorderSecondary
+  const pillShadow = mode === 'dark' ? token.boxShadowSecondary : token.boxShadow
+  const swatchSize = token.controlHeightSM - token.padding
+  const iconSize = token.fontSizeHeading4
 
   const pillStyle = {
-    borderRadius: 999,
-    padding: '4px 6px',
-    background: mode === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(15,23,42,0.08)',
-    border: `1px solid ${mode === 'dark' ? 'rgba(255,255,255,0.18)' : 'rgba(15,23,42,0.18)'}`,
-    boxShadow: mode === 'dark' ? '0 12px 32px rgba(0,0,0,0.35)' : '0 12px 32px rgba(15,23,42,0.2)'
+    borderRadius: token.borderRadiusOuter * 2,
+    padding: `${controlPaddingY}px ${controlPaddingX}px`,
+    background: pillBackground,
+    border: `1px solid ${pillBorder}`,
+    boxShadow: pillShadow
   }
 
   return (
@@ -37,10 +49,10 @@ export const HeroControls = ({
         value={mode}
         size="large"
         aria-label={controlsCopy.displayLabel}
-        style={{ ...pillStyle, height: 48, display: 'flex', alignItems: 'center' }}
+        style={{ ...pillStyle, height: controlHeight, display: 'flex', alignItems: 'center' }}
         options={[
-          { value: 'light', label: <BulbOutlined style={{ fontSize: 18 }} /> },
-          { value: 'dark', label: <MoonOutlined style={{ fontSize: 18 }} /> }
+          { value: 'light', label: <BulbOutlined style={{ fontSize: iconSize }} /> },
+          { value: 'dark', label: <MoonOutlined style={{ fontSize: iconSize }} /> }
         ]}
         onChange={(value) => {
           if (value !== mode) {
@@ -51,15 +63,15 @@ export const HeroControls = ({
       <Segmented
         value={accent}
         aria-label={controlsCopy.accentLabel}
-        style={{ ...pillStyle, height: 48, display: 'flex', alignItems: 'center' }}
+        style={{ ...pillStyle, height: controlHeight, display: 'flex', alignItems: 'center' }}
         options={ACCENT_OPTIONS.map((value) => ({
           value,
           label: (
             <Avatar
-              size={22}
+              size={swatchSize}
               style={{
                 background: value,
-                border: `1px solid ${mode === 'dark' ? 'rgba(255,255,255,0.4)' : 'rgba(15,23,42,0.2)'}`
+                border: `1px solid ${mode === 'dark' ? token.colorBorder : token.colorBorderSecondary}`
               }}
             />
           )

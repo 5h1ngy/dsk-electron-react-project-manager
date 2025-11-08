@@ -27,6 +27,9 @@ export const LanguageSwitcher = ({
   const { token } = theme.useToken()
   const [open, setOpen] = useState(false)
   const [hovered, setHovered] = useState(false)
+  const controlSize = token.controlHeightLG
+  const indicatorFontSize = token.fontSizeHeading3
+  const optionFontSize = token.fontSize
 
   const menuItems: MenuProps['items'] = useMemo(
     () =>
@@ -34,12 +37,16 @@ export const LanguageSwitcher = ({
         key: option.value,
         label: (
           <Flex align="center" gap={token.marginXS}>
-            <ReactCountryFlag svg countryCode={FLAG_CODE[option.value]} style={{ fontSize: 20 }} />
-            <Typography.Text style={{ fontSize: 14 }}>{option.label}</Typography.Text>
+            <ReactCountryFlag
+              svg
+              countryCode={FLAG_CODE[option.value]}
+              style={{ fontSize: indicatorFontSize }}
+            />
+            <Typography.Text style={{ fontSize: optionFontSize }}>{option.label}</Typography.Text>
           </Flex>
         )
       })),
-    [options, token.marginXS]
+    [options, indicatorFontSize, optionFontSize, token.marginXS]
   )
 
   const highlight = open || hovered
@@ -63,12 +70,10 @@ export const LanguageSwitcher = ({
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
         style={{
-          width: 48,
-          height: 48,
-          borderRadius: 999,
-          border: highlight
-            ? `1px solid ${token.colorPrimaryBorder}`
-            : '1px solid transparent',
+          width: controlSize,
+          height: controlSize,
+          borderRadius: token.borderRadiusOuter * 2,
+          border: `1px solid ${highlight ? token.colorPrimaryBorder : 'transparent'}`,
           background: highlight ? token.colorBgElevated : 'transparent',
           display: 'flex',
           alignItems: 'center',
@@ -78,7 +83,11 @@ export const LanguageSwitcher = ({
           boxShadow: highlight ? token.boxShadow : 'none'
         }}
       >
-        <ReactCountryFlag svg countryCode={FLAG_CODE[language]} style={{ fontSize: 22 }} />
+        <ReactCountryFlag
+          svg
+          countryCode={FLAG_CODE[language]}
+          style={{ fontSize: indicatorFontSize }}
+        />
       </Button>
     </Dropdown>
   )
