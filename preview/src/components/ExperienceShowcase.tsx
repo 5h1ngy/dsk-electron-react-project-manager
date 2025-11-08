@@ -1,6 +1,7 @@
 import { Card, Col, Image, Row, Space, Tag, Typography, theme } from 'antd'
 import type { FC } from 'react'
 import { useRef } from 'react'
+import gsap from 'gsap'
 import { experienceDeck } from '../data/site'
 import { useBlurOnScroll } from '../hooks/useBlurOnScroll'
 
@@ -13,6 +14,18 @@ export const ExperienceShowcase: FC<ExperienceShowcaseProps> = ({ accent }) => {
   const headingRef = useRef<HTMLHeadingElement>(null)
   useBlurOnScroll(headingRef)
   const isDark = token.colorBgBase === '#040614'
+  const imageRefs = useRef<Record<string, HTMLDivElement | null>>({})
+
+  const animateImage = (key: string, enter: boolean) => {
+    const node = imageRefs.current[key]
+    if (!node) return
+    gsap.to(node, {
+      y: enter ? -12 : 0,
+      rotateX: enter ? 2 : 0,
+      duration: enter ? 0.5 : 0.4,
+      ease: enter ? 'elastic.out(1, 0.5)' : 'power3.inOut'
+    })
+  }
 
   return (
     <Card
@@ -38,18 +51,26 @@ export const ExperienceShowcase: FC<ExperienceShowcaseProps> = ({ accent }) => {
         <Space direction="vertical" size={token.marginXL} style={{ width: '100%' }}>
           {experienceDeck.map((experience, index) => {
             const isEven = index % 2 === 0
-            const imageShift = isEven ? '10%' : '-10%'
+            const imageShift = isEven ? '12%' : '-12%'
+            const textAlign = isEven ? 'left' : 'right'
+            const alignItems = isEven ? 'flex-start' : 'flex-end'
+            const alignSelfValue = isEven ? 'flex-start' : 'flex-end'
 
             return (
-              <div
+              <Card
                 key={experience.title}
+                bordered={false}
                 style={{
                   borderRadius: token.borderRadiusXXL * 2,
                   border: `1px solid ${accent}33`,
-                  background: isDark ? 'rgba(6,9,20,0.72)' : 'rgba(255,255,255,0.9)',
+                  background: isDark
+                    ? `linear-gradient(140deg, rgba(6,9,20,0.95), rgba(3,4,12,0.9))`
+                    : `linear-gradient(140deg, rgba(255,255,255,0.95), rgba(235,240,255,0.92))`,
                   boxShadow: `0 40px 90px rgba(15,23,42,0.35)`,
+                  overflow: 'visible'
+                }}
+                bodyStyle={{
                   padding: `${token.paddingLG}px ${token.paddingXL}px`,
-                  backdropFilter: 'blur(20px)',
                   overflow: 'visible'
                 }}
               >
@@ -60,17 +81,18 @@ export const ExperienceShowcase: FC<ExperienceShowcaseProps> = ({ accent }) => {
                     alignItems: 'center',
                     flexDirection: isEven ? 'row' : 'row-reverse',
                     gap: token.marginXL,
-                    minHeight: 280
+                    minHeight: 260
                   }}
                 >
                   <div
                     style={{
                       flex: '1 1 320px',
-                      padding: `${token.paddingSM}px ${token.paddingLG}px`,
+                      padding: `${token.paddingSM}px ${token.paddingXL}px`,
                       display: 'flex',
                       flexDirection: 'column',
                       gap: token.marginSM,
-                      alignItems: 'flex-start'
+                      alignItems,
+                      textAlign
                     }}
                   >
                     <Tag
@@ -78,18 +100,29 @@ export const ExperienceShowcase: FC<ExperienceShowcaseProps> = ({ accent }) => {
                       style={{
                         borderColor: accent,
                         color: accent,
-                        background: `${accent}20`
+                        background: `${accent}20`,
+                        alignSelf: alignSelfValue
                       }}
                     >
                       {experience.badge}
                     </Tag>
-                    <Typography.Title level={3} style={{ marginBottom: 0, color: accent }}>
+                    <Typography.Title level={3} style={{ marginBottom: 0, color: accent, width: '100%' }}>
                       {experience.title}
                     </Typography.Title>
-                    <Typography.Paragraph style={{ color: token.colorTextSecondary, marginBottom: 0 }}>
+                    <Typography.Paragraph
+                      style={{ color: token.colorTextSecondary, marginBottom: 0, width: '100%' }}
+                    >
                       {experience.summary}
                     </Typography.Paragraph>
-                    <Space wrap>
+                    <div
+                      style={{
+                        width: '100%',
+                        display: 'flex',
+                        flexWrap: 'wrap',
+                        gap: token.marginXS,
+                        justifyContent: isEven ? 'flex-start' : 'flex-end'
+                      }}
+                    >
                       {experience.highlights.map((highlight) => (
                         <Tag
                           key={highlight}
@@ -104,15 +137,23 @@ export const ExperienceShowcase: FC<ExperienceShowcaseProps> = ({ accent }) => {
                           {highlight}
                         </Tag>
                       ))}
-                    </Space>
+                    </div>
                   </div>
-                  <div style={{ flex: '1 1 360px', display: 'flex', justifyContent: 'center' }}>
+                  <div
+                    style={{
+                      flex: '1 1 360px',
+                      display: 'flex',
+                      justifyContent: 'center',
+                      position: 'relative'
+                    }}
+                  >
                     <Card
                       bordered={false}
                       style={{
-                        borderRadius: token.borderRadiusXXL,
+                        borderRadius: token.borderRadiusXXL * 1.2,
                         background: 'transparent',
-                        boxShadow: modeAwareShadow(token.colorBgBase)
+                        boxShadow: modeAwareShadow(token.colorBgBase),
+                        overflow: 'visible'
                       }}
                       bodyStyle={{
                         padding: token.padding,
@@ -120,6 +161,13 @@ export const ExperienceShowcase: FC<ExperienceShowcaseProps> = ({ accent }) => {
                         justifyContent: 'center',
                         overflow: 'visible'
                       }}
+                      ref={(node) => {
+                        if (node) {
+                          imageRefs.current[experience.title] = node
+                        }
+                      }}
+                      onMouseEnter={() => animateImage(experience.title, true)}
+                      onMouseLeave={() => animateImage(experience.title, false)}
                     >
                       <Image
                         src={experience.image}
@@ -127,7 +175,7 @@ export const ExperienceShowcase: FC<ExperienceShowcaseProps> = ({ accent }) => {
                         preview={false}
                         style={{
                           borderRadius: token.borderRadiusLG,
-                          width: '120%',
+                          width: '130%',
                           maxWidth: 'none',
                           transform: `translateX(${imageShift})`,
                           boxShadow: '0 25px 60px rgba(0,0,0,0.35)'
@@ -136,7 +184,7 @@ export const ExperienceShowcase: FC<ExperienceShowcaseProps> = ({ accent }) => {
                     </Card>
                   </div>
                 </div>
-              </div>
+              </Card>
             )
           })}
         </Space>

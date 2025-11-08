@@ -17,7 +17,6 @@ import { HeroStage } from './components/HeroStage'
 import { FeatureOrbit } from './components/FeatureOrbit'
 import { ExperienceShowcase } from './components/ExperienceShowcase'
 import { ScreensGallery } from './components/ScreensGallery'
-import { ArchitectureGraph } from './components/ArchitectureGraph'
 import { ACCENT_OPTIONS, createThemeConfig } from './theme'
 import type { ThemeMode } from './theme/foundations/palette'
 import { useGlobalAnimations } from './hooks/useGlobalAnimations'
@@ -48,6 +47,7 @@ const AppShell = ({ mode, toggleMode, accent, setAccent }: AppShellProps) => {
            radial-gradient(circle at 85% 10%, ${accent}1f, transparent 45%),
            linear-gradient(135deg, #f0f4ff, #ffffff 55%, #eef1ff)`
     document.body.style.color = mode === 'dark' ? '#f8fafc' : '#0f172a'
+    document.body.style.backgroundAttachment = 'fixed'
     document.body.style.fontFamily =
       token.fontFamily ?? 'Inter, "SF Pro Display", "Segoe UI", system-ui, sans-serif'
   }, [token.fontFamily, mode, accent])
@@ -55,7 +55,7 @@ const AppShell = ({ mode, toggleMode, accent, setAccent }: AppShellProps) => {
   useLayoutEffect(() => {
     if (!contentRef.current) return
     const ctx = gsap.context(() => {
-      const ids = ['hero', 'features', 'showcase', 'gallery', 'architecture']
+      const ids = ['hero', 'features', 'showcase', 'gallery']
       ids.forEach((id, idx) => {
         gsap.from(`[data-motion="${id}"]`, {
           opacity: 0,
@@ -133,7 +133,6 @@ const AppShell = ({ mode, toggleMode, accent, setAccent }: AppShellProps) => {
               <FeatureOrbit accent={accent} />
               <ExperienceShowcase accent={accent} />
               <ScreensGallery accent={accent} />
-              <ArchitectureGraph accent={accent} />
             </Space>
           </div>
         </div>
