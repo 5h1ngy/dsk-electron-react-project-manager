@@ -1,7 +1,7 @@
 {
   "name": "dsk-frontend-docker-deps",
   "private": true,
-  "license": "UNLICENSED",
+  "license": "MIT",
   "dependencies": {
     "@ant-design/icons": "^5.6.1",
     "@ant-design/plots": "^2.1.9",

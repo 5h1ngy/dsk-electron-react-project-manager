@@ -1,7 +1,7 @@
 {
   "name": "dsk-backend-prod-deps",
   "private": true,
-  "license": "UNLICENSED",
+  "license": "MIT",
   "_moduleAliases": {
     "@backend": "packages/backend/src",
     "@services": "packages/shared/src",

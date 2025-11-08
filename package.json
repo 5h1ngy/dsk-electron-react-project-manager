@@ -5,7 +5,7 @@
   "description": "Secure offline project manager built with Electron, React, Ant Design, and SQLite",
   "main": "./out/main/index.js",
   "author": "DSK Team",
-  "license": "UNLICENSED",
+  "license": "MIT",
   "homepage": "https://github.com/dsk-labs/dsk-electron-react-project-manager",
   "repository": {
     "type": "git",
@@ -63,7 +63,7 @@
     "db:seed:backend": "dotenv -e env/.env.backend -- node -r module-alias/register -r tsconfig-paths/register -r ts-node/register/transpile-only packages/seeding/src/run.ts -- --port 3333",
     "postinstall": "node scripts/postinstall.mjs",
     "reset:build": "rimraf dist out",
-    "version:bump": "node scripts/version/apply-version-bump.mjs",
+    "version:bump": "node scripts/versioning.mjs",
     "prepare": "husky"
   },
   "dependencies": {
