@@ -1,18 +1,33 @@
-import { Button, Card, Col, Row, Space, Tag, Typography, theme } from 'antd'
-import { ArrowRightOutlined, DownloadOutlined } from '@ant-design/icons'
+import {
+  Avatar,
+  Button,
+  Card,
+  Col,
+  Row,
+  Segmented,
+  Space,
+  Switch,
+  Tag,
+  Typography,
+  theme
+} from 'antd'
+import { ArrowRightOutlined, DownloadOutlined, BulbOutlined, MoonOutlined } from '@ant-design/icons'
 import gsap from 'gsap'
 import type { FC } from 'react'
 import { useLayoutEffect, useRef, useState } from 'react'
 import { heroContent } from '../data/site'
 import { HeroGallery } from './HeroGallery'
 import type { ThemeMode } from '../theme/foundations/palette'
+import { ACCENT_OPTIONS } from '../theme'
 
 interface HeroStageProps {
   accent: string
   mode: ThemeMode
+  toggleMode: () => void
+  setAccent: (value: string) => void
 }
 
-export const HeroStage: FC<HeroStageProps> = ({ accent, mode }) => {
+export const HeroStage: FC<HeroStageProps> = ({ accent, mode, toggleMode, setAccent }) => {
   const { token } = theme.useToken()
   const isLight = mode === 'light'
   const [highlightedTile, setHighlightedTile] = useState<string | null>(null)
@@ -80,7 +95,7 @@ export const HeroStage: FC<HeroStageProps> = ({ accent, mode }) => {
       data-motion="hero"
       bordered={false}
       style={{
-        minHeight: '100vh',
+        minHeight: '100%',
         borderRadius: token.borderRadiusXL,
         padding: 0,
         overflow: 'hidden',
@@ -108,10 +123,44 @@ export const HeroStage: FC<HeroStageProps> = ({ accent, mode }) => {
           pointerEvents: 'none'
         }}
       />
+      <Space
+        align="center"
+        size="middle"
+        style={{
+          width: '100%',
+          justifyContent: 'flex-end',
+          marginBottom: token.marginXL,
+          gap: token.margin
+        }}
+      >
+        <Typography.Text style={{ color: token.colorTextSecondary, fontWeight: 600 }}>
+          Display
+        </Typography.Text>
+        <Switch
+          checkedChildren={<MoonOutlined />}
+          unCheckedChildren={<BulbOutlined />}
+          checked={mode === 'dark'}
+          onChange={() => toggleMode()}
+        />
+        <Segmented
+          value={accent}
+          onChange={(value) => setAccent(value as string)}
+          options={ACCENT_OPTIONS.map((value) => ({
+            value,
+            label: (
+              <Avatar
+                shape="circle"
+                size={18}
+                style={{ background: value, border: '1px solid rgba(15,23,42,0.15)' }}
+              />
+            )
+          }))}
+        />
+      </Space>
       <Row
         align="middle"
         gutter={[48, 48]}
-        style={{ minHeight: 'calc(100vh - 96px)', position: 'relative', zIndex: 1 }}
+        style={{ minHeight: '100%', position: 'relative', zIndex: 1 }}
       >
         <Col xs={24} lg={9}>
           <Space direction="vertical" size="large">

@@ -1,27 +1,13 @@
-import {
-  Avatar,
-  Card,
-  ConfigProvider,
-  FloatButton,
-  Layout,
-  Segmented,
-  Space,
-  Switch,
-  Typography,
-  theme as antdTheme
-} from 'antd'
-import { BulbOutlined, MoonOutlined } from '@ant-design/icons'
+import { Card, ConfigProvider, Layout, theme as antdTheme } from 'antd'
 import gsap from 'gsap'
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { HeroStage } from './components/HeroStage'
-import { FeatureOrbit } from './components/FeatureOrbit'
-import { ExperienceShowcase } from './components/ExperienceShowcase'
 import { ACCENT_OPTIONS, createThemeConfig } from './theme'
 import type { ThemeMode } from './theme/foundations/palette'
 import { useGlobalAnimations } from './hooks/useGlobalAnimations'
 import { useLenisScroll } from './hooks/useLenisScroll'
 
-const { Content, Footer } = Layout
+const { Content } = Layout
 const DEFAULT_ACCENT = ACCENT_OPTIONS[0]
 
 interface AppShellProps {
@@ -54,7 +40,7 @@ const AppShell = ({ mode, toggleMode, accent, setAccent }: AppShellProps) => {
   useLayoutEffect(() => {
     if (!contentRef.current) return
     const ctx = gsap.context(() => {
-      const ids = ['hero', 'features', 'showcase', 'gallery']
+      const ids = ['hero']
       ids.forEach((id, idx) => {
         gsap.from(`[data-motion="${id}"]`, {
           opacity: 0,
@@ -70,95 +56,21 @@ const AppShell = ({ mode, toggleMode, accent, setAccent }: AppShellProps) => {
 
   return (
     <Layout style={{ minHeight: '100vh', background: 'transparent' }}>
-      <Card
-        style={{
-          position: 'fixed',
-          top: 24,
-          right: 24,
-          zIndex: 10,
-          borderRadius: 32,
-          padding: 12,
-          backdropFilter: 'blur(20px)',
-          background: mode === 'dark' ? 'rgba(15,23,42,0.7)' : 'rgba(255,255,255,0.9)'
-        }}
-        bodyStyle={{ padding: 0 }}
-      >
-        <Space direction="vertical" size="small">
-          <Space size="middle" align="center">
-            <Typography.Text style={{ fontWeight: 600 }}>Display</Typography.Text>
-            <Switch
-              checkedChildren={<MoonOutlined />}
-              unCheckedChildren={<BulbOutlined />}
-              checked={mode === 'dark'}
-              onChange={() => toggleMode()}
-            />
-          </Space>
-          <Segmented
-            value={accent}
-            onChange={(value) => setAccent(value as string)}
-            options={ACCENT_OPTIONS.map((value) => ({
-              value,
-              label: (
-                <Space align="center">
-                  <Avatar
-                    shape="circle"
-                    size={18}
-                    style={{ background: value, border: '1px solid rgba(15,23,42,0.15)' }}
-                  />
-                </Space>
-              )
-            }))}
-          />
-        </Space>
-      </Card>
-      <Content style={{ width: '100%', padding: 0 }}>
-        <div ref={contentRef}>
-          <div style={{ width: '100%', padding: '32px 24px 0' }}>
-            <HeroStage mode={mode} accent={accent} />
-          </div>
-          <div
-            style={{
-              maxWidth: 1280,
-              width: '100%',
-              margin: '0 auto',
-              padding: '32px 24px 96px'
-            }}
-          >
-            <Space
-              direction="vertical"
-              size={token.marginXXL * 1.5}
-              style={{ width: '100%' }}
-            >
-              <FeatureOrbit accent={accent} />
-              <ExperienceShowcase accent={accent} />
-            </Space>
-          </div>
+      <Content style={{ width: '100%', padding: 0, overflow: 'hidden' }}>
+        <div
+          ref={contentRef}
+          style={{
+            minHeight: '100vh',
+            padding: '32px 24px',
+            boxSizing: 'border-box',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}
+        >
+          <HeroStage mode={mode} accent={accent} toggleMode={toggleMode} setAccent={setAccent} />
         </div>
       </Content>
-      <Footer
-        style={{
-          textAlign: 'center',
-          background:
-            mode === 'dark'
-              ? 'linear-gradient(180deg, rgba(4,6,14,0), rgba(4,6,14,0.85) 45%, #010310)'
-              : 'linear-gradient(180deg, rgba(240,244,255,0), rgba(240,244,255,0.9) 45%, #fefefe)',
-          color: token.colorTextSecondary,
-          padding: '48px 24px',
-          borderTop: `1px solid ${token.colorBorder}`,
-          marginTop: token.marginXXL
-        }}
-      >
-        <Space direction="vertical" size="small" style={{ width: '100%' }}>
-          <Typography.Text style={{ color: token.colorTextBase, fontWeight: 600 }}>
-            DSK Project Manager
-          </Typography.Text>
-          <Typography.Text>Offline-first delivery suite · Electron · React · API</Typography.Text>
-          <Typography.Text type="secondary">
-            © {new Date().getFullYear()} DSK Labs. Crafted with Ant Design tokens & GSAP.
-          </Typography.Text>
-        </Space>
-      </Footer>
-      <FloatButton.BackTop />
     </Layout>
   )
 }
