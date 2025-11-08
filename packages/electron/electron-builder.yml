@@ -1,7 +1,7 @@
 appId: com.electron.app
 productName: DSK Project Manager
 directories:
-  buildResources: build
+  buildResources: packages/electron/build
 files:
   - '!**/.vscode/*'
   - '!src/*'
@@ -12,11 +12,11 @@ files:
 asarUnpack:
   - resources/**
 win:
+  icon: packages/electron/build/icon.ico
   target:
     - target: portable
       arch:
         - x64
-  icon: build/icon.ico
   executableName: dsk-project-manager
   artifactName: ${name}-${version}-portable-win.${ext}
 portable:

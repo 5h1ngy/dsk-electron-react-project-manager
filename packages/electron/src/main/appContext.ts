@@ -78,7 +78,7 @@ export class MainWindowManager {
     if (app.isPackaged) {
       return join(process.resourcesPath, 'icon.png')
     }
-    return join(__dirname, '../../resources/icon.png')
+    return join(__dirname, '../../packages/electron/resources/icon.png')
   }
 
   private registerReadyHandler(window: BrowserWindow): void {
