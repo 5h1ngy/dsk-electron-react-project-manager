@@ -112,22 +112,30 @@ const AppShell = ({ mode, toggleMode, accent, setAccent }: AppShellProps) => {
           />
         </Space>
       </Card>
-      <Content
-        style={{
-          maxWidth: 1280,
-          width: '100%',
-          margin: '0 auto',
-          padding: '32px 24px 96px'
-        }}
-      >
+      <Content style={{ width: '100%', padding: 0 }}>
         <div ref={contentRef}>
-          <Space direction="vertical" size="large" style={{ width: '100%' }}>
+          <div style={{ width: '100%', padding: '32px 24px 0' }}>
             <HeroStage mode={mode} accent={accent} />
-            <FeatureOrbit />
-            <ExperienceShowcase />
-            <ScreensGallery />
-            <ArchitectureGraph />
-          </Space>
+          </div>
+          <div
+            style={{
+              maxWidth: 1280,
+              width: '100%',
+              margin: '0 auto',
+              padding: '32px 24px 96px'
+            }}
+          >
+            <Space
+              direction="vertical"
+              size={token.marginXXL * 1.5}
+              style={{ width: '100%' }}
+            >
+              <FeatureOrbit accent={accent} />
+              <ExperienceShowcase accent={accent} />
+              <ScreensGallery accent={accent} />
+              <ArchitectureGraph accent={accent} />
+            </Space>
+          </div>
         </div>
       </Content>
       <Footer style={{ textAlign: 'center', background: 'transparent', color: token.colorTextBase }}>

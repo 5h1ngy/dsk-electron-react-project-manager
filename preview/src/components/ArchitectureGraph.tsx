@@ -1,25 +1,45 @@
 import { Card, Col, Divider, List, Row, Space, Tag, Typography, theme } from 'antd'
 import type { FC } from 'react'
+import { useRef } from 'react'
 import { architectureGraph } from '../data/site'
+import { useBlurOnScroll } from '../hooks/useBlurOnScroll'
 
-export const ArchitectureGraph: FC = () => {
+interface ArchitectureGraphProps {
+  accent: string
+}
+
+export const ArchitectureGraph: FC<ArchitectureGraphProps> = ({ accent }) => {
   const { token } = theme.useToken()
+  const headingRef = useRef<HTMLHeadingElement>(null)
+  const descriptionRef = useRef<HTMLParagraphElement>(null)
+  useBlurOnScroll(headingRef)
+  useBlurOnScroll(descriptionRef)
 
   return (
     <Card
       data-motion="architecture"
       bordered={false}
-      style={{ background: 'transparent', marginTop: token.marginXXL }}
+      style={{ background: 'transparent', marginTop: token.marginXXL * 2 }}
       bodyStyle={{ padding: 0 }}
     >
       <Space direction="vertical" size="large" style={{ width: '100%' }}>
         <Typography.Title
+          ref={headingRef}
           level={2}
-          style={{ color: token.colorTextBase, textAlign: 'center', marginBottom: token.margin }}
+          style={{
+            color: accent,
+            textAlign: 'center',
+            marginBottom: token.margin,
+            fontSize: 56,
+            letterSpacing: 1.3
+          }}
         >
           Architecture graph
         </Typography.Title>
-        <Typography.Paragraph style={{ color: token.colorTextSecondary, textAlign: 'center' }}>
+        <Typography.Paragraph
+          ref={descriptionRef}
+          style={{ color: `${accent}cc`, textAlign: 'center', fontSize: 16 }}
+        >
           Every workspace surface sits on a shared domain layer; this graph highlights the primary
           nodes that collaborate through IPC, REST, and shared DTOs.
         </Typography.Paragraph>

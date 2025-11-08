@@ -4,12 +4,19 @@ import type { CarouselRef } from 'antd/es/carousel'
 import type { FC } from 'react'
 import { useRef, useState } from 'react'
 import { galleryShots } from '../data/site'
+import { useBlurOnScroll } from '../hooks/useBlurOnScroll'
 
-export const ScreensGallery: FC = () => {
+interface ScreensGalleryProps {
+  accent: string
+}
+
+export const ScreensGallery: FC<ScreensGalleryProps> = ({ accent }) => {
   const { token } = theme.useToken()
   const carouselRef = useRef<CarouselRef>(null)
   const [activeIndex, setActiveIndex] = useState(0)
   const [modalVisible, setModalVisible] = useState(false)
+  const headingRef = useRef<HTMLHeadingElement>(null)
+  useBlurOnScroll(headingRef)
 
   const currentShot = galleryShots[activeIndex]
 
@@ -17,13 +24,20 @@ export const ScreensGallery: FC = () => {
     <Card
       data-motion="gallery"
       bordered={false}
-      style={{ background: 'transparent', marginTop: token.marginXXL }}
+      style={{ background: 'transparent', marginTop: token.marginXXL * 2 }}
       bodyStyle={{ padding: 0 }}
     >
       <Space direction="vertical" size="large" style={{ width: '100%' }}>
         <Typography.Title
+          ref={headingRef}
           level={2}
-          style={{ color: token.colorTextBase, marginBottom: token.margin, textAlign: 'center' }}
+          style={{
+            color: accent,
+            marginBottom: token.margin,
+            textAlign: 'center',
+            fontSize: 56,
+            letterSpacing: 1.3
+          }}
         >
           Screens gallery
         </Typography.Title>
