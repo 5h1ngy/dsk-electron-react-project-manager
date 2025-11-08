@@ -9,7 +9,7 @@ import { mkdir, readFile, rename, rm, stat, writeFile } from 'node:fs/promises'
 import { dirname } from 'node:path'
 import { promisify } from 'node:util'
 import { gzip as gzipCallback, gunzip as gunzipCallback } from 'zlib'
-import sqlite3 from 'sqlite3'
+import sqlite3 from '@journeyapps/sqlcipher'
 import type { BinaryLike, ScryptOptions } from 'node:crypto'
 
 import type { AuthService } from '@services/services/auth'

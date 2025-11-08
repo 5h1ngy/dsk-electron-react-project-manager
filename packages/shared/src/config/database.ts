@@ -3,6 +3,7 @@ import { mkdirSync } from 'node:fs'
 import { dirname } from 'node:path'
 import { fn, col, DataTypes } from 'sequelize'
 import { Sequelize } from 'sequelize-typescript'
+import sqlite3 from '@journeyapps/sqlcipher'
 import { SystemSetting } from '@services/models/SystemSetting'
 import { Role } from '@services/models/Role'
 import { User } from '@services/models/User'
@@ -55,6 +56,7 @@ export class DatabaseManager {
 
     return new Sequelize({
       dialect: 'sqlite',
+      dialectModule: sqlite3,
       storage: storagePath,
       models: DatabaseManager.models,
       logging: this.options.logging ?? false
