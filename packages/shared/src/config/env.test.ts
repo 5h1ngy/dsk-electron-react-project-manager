@@ -16,26 +16,33 @@ describe('EnvConfig', () => {
   const originalLogLevel = process.env.LOG_LEVEL
   const originalAppVersion = process.env.APP_VERSION
   const originalRuntime = process.env.APP_RUNTIME
+  const originalLogStoragePath = process.env.LOG_STORAGE_PATH
 
   afterEach(() => {
     resetVariable('LOG_LEVEL', originalLogLevel)
     resetVariable('APP_VERSION', originalAppVersion)
     resetVariable('APP_RUNTIME', originalRuntime)
+    resetVariable('LOG_STORAGE_PATH', originalLogStoragePath)
   })
 
   it('reads values from a custom env file', () => {
     const directory = mkdtempSync(join(tmpdir(), 'env-config-'))
     const path = join(directory, '.env')
-    writeFileSync(path, 'LOG_LEVEL=warn\nAPP_VERSION=9.9.9\nAPP_RUNTIME=desktop')
+    writeFileSync(
+      path,
+      'LOG_LEVEL=warn\nAPP_VERSION=9.9.9\nAPP_RUNTIME=desktop\nLOG_STORAGE_PATH=logs/api.log'
+    )
     resetVariable('LOG_LEVEL', undefined)
     resetVariable('APP_VERSION', undefined)
     resetVariable('APP_RUNTIME', undefined)
+    resetVariable('LOG_STORAGE_PATH', undefined)
 
     try {
       const config = EnvConfig.load(path)
       expect(config.logLevel).toBe('warn')
       expect(config.appVersion).toBe('9.9.9')
       expect(config.runtimeTarget).toBe('desktop')
+      expect(config.logStoragePath?.endsWith('logs/api.log')).toBe(true)
     } finally {
       rmSync(directory, { recursive: true, force: true })
     }
@@ -63,5 +70,11 @@ describe('EnvConfig', () => {
     resetVariable('APP_RUNTIME', 'webapp')
     const config = EnvConfig.load(join(tmpdir(), 'missing.env'))
     expect(config.runtimeTarget).toBe('webapp')
+  })
+
+  it('returns null logStoragePath when variable is missing', () => {
+    resetVariable('LOG_STORAGE_PATH', undefined)
+    const config = EnvConfig.load(join(tmpdir(), 'missing.env'))
+    expect(config.logStoragePath).toBeNull()
   })
 })

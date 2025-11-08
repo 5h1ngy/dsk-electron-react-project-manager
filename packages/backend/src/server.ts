@@ -22,6 +22,7 @@ import {
   SeedController
 } from '@backend/controllers'
 import { AppErrorHandler } from '@backend/middleware/errorHandler'
+import { RequestLoggingMiddleware } from '@backend/middleware/requestLogger'
 import { bootstrapDomain } from '@backend/startup/bootstrap'
 import { ApiContextToken } from '@backend/startup/context'
 import { logger } from '@services/config/logger'
@@ -99,7 +100,7 @@ const main = async () => {
   Container.set(ApiContextToken, { domain: runtime.domain })
 
   const app = createExpressServer({
-    middlewares: [AppErrorHandler],
+    middlewares: [RequestLoggingMiddleware, AppErrorHandler],
     controllers,
     defaultErrorHandler: false,
     cors: true,

@@ -5,4 +5,5 @@ export interface Env {
   logLevel: LogLevelSetting
   appVersion: string
   runtimeTarget: RuntimeTarget
+  logStoragePath: string | null
 }

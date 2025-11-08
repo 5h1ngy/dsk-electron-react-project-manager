@@ -1,5 +1,5 @@
 import { existsSync, readFileSync } from 'node:fs'
-import { join } from 'node:path'
+import { join, resolve as resolvePath, isAbsolute as pathIsAbsolute } from 'node:path'
 import dotenv from 'dotenv'
 
 import type { Env, LogLevelSetting, RuntimeTarget } from '@services/config/env.types'
@@ -31,7 +31,8 @@ export class EnvConfig {
     return new EnvConfig({
       logLevel: EnvConfig.parseLogLevel(process.env.LOG_LEVEL),
       appVersion: EnvConfig.resolveAppVersion(process.env.APP_VERSION),
-      runtimeTarget: EnvConfig.parseRuntimeTarget(process.env.APP_RUNTIME)
+      runtimeTarget: EnvConfig.parseRuntimeTarget(process.env.APP_RUNTIME),
+      logStoragePath: EnvConfig.parseLogStoragePath(process.env.LOG_STORAGE_PATH)
     })
   }
 
@@ -52,6 +53,10 @@ export class EnvConfig {
 
   get runtimeTarget(): RuntimeTarget {
     return this.config.runtimeTarget
+  }
+
+  get logStoragePath(): string | null {
+    return this.config.logStoragePath
   }
 
   /**
@@ -155,6 +160,15 @@ export class EnvConfig {
       return undefined
     }
     return undefined
+  }
+
+  private static parseLogStoragePath(value?: string): string | null {
+    const normalized = value?.trim()
+    if (!normalized) {
+      return null
+    }
+    const resolved = pathIsAbsolute(normalized) ? normalized : resolvePath(process.cwd(), normalized)
+    return resolved
   }
 }
 

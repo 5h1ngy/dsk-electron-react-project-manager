@@ -1,3 +1,6 @@
+import { createWriteStream, mkdirSync } from 'node:fs'
+import { dirname } from 'node:path'
+
 import { env } from '@services/config/env'
 import type { LogLevelSetting } from '@services/config/env.types'
 import type { LogLevel, LoggerOptions } from '@services/config/logger.types'
@@ -46,7 +49,7 @@ export class AppLogger {
 
   constructor(options: LoggerOptions = {}) {
     this.level = options.level ?? env.logLevel
-    this.writer = options.writer ?? ((line) => process.stdout.write(`${line}\n`))
+    this.writer = options.writer ?? this.createWriter()
     this.clock = options.clock ?? (() => new Date())
   }
 
@@ -121,6 +124,36 @@ export class AppLogger {
 
   private write(line: string): void {
     this.writer(line)
+  }
+
+  private createWriter(): (line: string) => void {
+    const writers: Array<(line: string) => void> = [
+      (line: string) => process.stdout.write(`${line}\n`)
+    ]
+
+    const target = env.logStoragePath
+    if (target) {
+      try {
+        mkdirSync(dirname(target), { recursive: true })
+        const stream = createWriteStream(target, { flags: 'a', encoding: 'utf8' })
+        writers.push((line: string) => {
+          stream.write(`${line}\n`)
+        })
+      } catch (error) {
+        const reason = error instanceof Error ? error.message : String(error)
+        process.stderr.write(`[logger] Failed to initialize log file (${target}): ${reason}\n`)
+      }
+    }
+
+    return (line: string) => {
+      for (const write of writers) {
+        try {
+          write(line)
+        } catch {
+          // ignore writer errors to avoid crashing the app
+        }
+      }
+    }
   }
 
   private levelColor(level: LogLevel): string {

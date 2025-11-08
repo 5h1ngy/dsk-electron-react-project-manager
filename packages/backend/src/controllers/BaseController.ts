@@ -5,6 +5,7 @@ import { Inject, Service } from 'typedi'
 import type { ServiceActor } from '@services/services/types'
 import type { AuthService } from '@services/services/auth'
 import { ApiContextToken, type ApiContext } from '@backend/startup/context'
+import { attachRequestActor } from '@backend/middleware/requestLogger'
 
 interface ActorResolutionOptions {
   touch?: boolean
@@ -41,6 +42,7 @@ export abstract class BaseController {
     const actor = await this.authService.resolveActor(token, {
       touch: options.touch ?? true
     })
+    attachRequestActor(request, { userId: actor.userId, roles: actor.roles })
     return { actor, token }
   }
 
