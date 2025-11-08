@@ -66,3 +66,32 @@ export const workflowTimeline = [
       'Faker seeding, Docker builds, and structured logging make it trivial to demo, deploy, and monitor.'
   }
 ]
+
+export const experienceScenes = [
+  {
+    title: 'Incident-proof delivery',
+    context: 'Electron shell + SQLite domain keep ops offline',
+    badge: 'Resilience'
+  },
+  {
+    title: 'Intelligent wiki surfaces',
+    context: 'Markdown with realtime audit + FTS enrichment',
+    badge: 'Knowledge'
+  },
+  {
+    title: 'Program-level dashboards',
+    context: 'Saved views, sprint boards, anomaly flags',
+    badge: 'Insights'
+  }
+]
+
+export const momentumTags = [
+  'Offline-first',
+  'Typed IPC',
+  'Sequelize Domain',
+  'Secure Preload',
+  'Docker Ready',
+  'Seed Factories',
+  'Ant Design 5',
+  'React 19'
+]

@@ -19,9 +19,12 @@ import { Architecture } from './components/Architecture'
 import { Showcase } from './components/Showcase'
 import { TokenPlayground } from './components/TokenPlayground'
 import { CallToAction } from './components/CallToAction'
+import { ExperienceShowcase } from './components/ExperienceShowcase'
+import { MomentumTicker } from './components/MomentumTicker'
 import { createThemeConfig } from './theme'
 import type { ThemeMode } from './theme/foundations/palette'
 import { useGlobalAnimations } from './hooks/useGlobalAnimations'
+import { useLenisScroll } from './hooks/useLenisScroll'
 
 const { Header, Content, Footer } = Layout
 
@@ -89,6 +92,8 @@ const AppShell = ({
       gsap.from('[data-motion="architecture"]', { opacity: 0, y: 45, duration: 0.9, delay: 0.45, ease: baseEase })
       gsap.from('[data-motion="showcase"]', { opacity: 0, y: 55, duration: 0.9, delay: 0.55, ease: baseEase })
       gsap.from('[data-motion="cta"]', { opacity: 0, y: 50, duration: 0.9, delay: 0.65, ease: baseEase })
+      gsap.from('[data-motion="experience"]', { opacity: 0, y: 40, duration: 0.9, delay: 0.35, ease: baseEase })
+      gsap.from('[data-motion="ticker"]', { opacity: 0, y: 35, duration: 0.8, delay: 0.4, ease: baseEase })
 
       gsap.utils.toArray<HTMLElement>('[data-hover-tilt]').forEach((element) => {
         const enter = () => {
@@ -161,6 +166,7 @@ const AppShell = ({
       >
         <div ref={contentRef}>
           <Hero />
+          <MomentumTicker />
           <Space
             direction="vertical"
             size="large"
@@ -203,6 +209,7 @@ const AppShell = ({
           </Space>
           <TokenPlayground mode={mode} onModeChange={setMode} accent={accent} onAccentChange={setAccent} />
           <FeatureGrid />
+          <ExperienceShowcase />
           <Architecture />
           <Showcase />
           <CallToAction />
@@ -227,6 +234,7 @@ const App = () => {
   const [mode, setMode] = useState<ThemeMode>('dark')
   const [accent, setAccent] = useState(DEFAULT_ACCENT)
   const themeConfig = useMemo(() => createThemeConfig(mode, accent), [mode, accent])
+  useLenisScroll()
 
   return (
     <ConfigProvider theme={themeConfig}>
