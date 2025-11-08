@@ -5,7 +5,7 @@ WORKDIR /app
 # bring in the real project files for compilation
 COPY packages ./packages
 # install only the dependencies required to build the backend (no electron postinstall)
-COPY docker/backend.dev.package.json ./package.json
+COPY docker/backend.package.dev.json ./package.json
 COPY package-lock.json ./
 RUN npm install
 
@@ -18,7 +18,7 @@ ARG API_PORT=0000
 WORKDIR /app
 
 # install slim runtime dependencies for the backend service
-COPY docker/backend.prod.package.json ./package.json
+COPY docker/backend.package.prod.json ./package.json
 COPY package-lock.json ./
 RUN npm install --omit=dev
 

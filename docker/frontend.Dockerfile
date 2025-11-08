@@ -8,7 +8,7 @@ ENV VITE_PUBLIC_BASE=$VITE_PUBLIC_BASE
 WORKDIR /app
 
 COPY packages ./packages
-COPY docker/frontend.dev.package.json ./package.json
+COPY docker/frontend.package.dev.json ./package.json
 COPY package-lock.json ./
 RUN npm install
 
