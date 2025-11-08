@@ -25,9 +25,9 @@ export default defineConfig({
       '@renderer': resolve(__dirname, 'src'),
       '@preload': resolve(__dirname, '../electron/src/preload/src'),
       '@main': resolve(__dirname, '../electron/src/main'),
-      '@services': resolve(__dirname, '../../shared/src'),
-      '@backend': resolve(__dirname, '../../backend/src'),
-      '@seeding': resolve(__dirname, '../../seeding/src')
+      '@services': resolve(__dirname, '../shared/src'),
+      '@backend': resolve(__dirname, '../backend/src'),
+      '@seeding': resolve(__dirname, '../seeding/src')
     }
   },
   server: {
