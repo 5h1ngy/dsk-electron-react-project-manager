@@ -96,25 +96,32 @@ export const HeroStage = ({
       }}
       bodyStyle={{ padding: `${token.paddingXL * 2}px ${token.paddingXL * 2.5}px` }}
     >
-      <Flex vertical gap={token.marginXL} style={{ width: '100%' }}>
-        <HeroControls
-          accent={accent}
-          setAccent={setAccent}
-          mode={mode}
-          toggleMode={toggleMode}
-          controlsCopy={controlsCopy}
-          language={language}
-          languageOptions={languageOptions}
-          onLanguageChange={onLanguageChange}
-        />
-        <Row align="middle" gutter={[48, 48]} style={{ minHeight: '100%' }}>
+      <Flex
+        vertical
+        gap={token.marginXL}
+        justify="space-between"
+        style={{ width: '100%', minHeight: '100%' }}
+      >
+        <Row align="middle" gutter={[48, 48]} style={{ minHeight: '100%', width: '100%' }}>
           <Col xs={24} lg={9}>
             <HeroHeadline accent={accent} content={heroContent} />
           </Col>
-          <Col xs={24} lg={15}>
+          <Col xs={24} lg={15} style={{ overflow: 'visible' }}>
             <HeroMockupCard accent={accent} mode={mode} gallery={galleryContent} />
           </Col>
         </Row>
+        <Flex justify="flex-end" style={{ width: '100%' }}>
+          <HeroControls
+            accent={accent}
+            setAccent={setAccent}
+            mode={mode}
+            toggleMode={toggleMode}
+            controlsCopy={controlsCopy}
+            language={language}
+            languageOptions={languageOptions}
+            onLanguageChange={onLanguageChange}
+          />
+        </Flex>
       </Flex>
     </Card>
   )

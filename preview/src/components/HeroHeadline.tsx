@@ -1,9 +1,9 @@
-import { ArrowRightOutlined, DownloadOutlined } from '@ant-design/icons'
+import { DownloadOutlined, GithubOutlined } from '@ant-design/icons'
 import { Button, Space, Tag, Typography, theme } from 'antd'
 import { useRef, type ReactElement } from 'react'
 
-import type { HeroContent } from '../types/content'
 import { useHeroIntroMotion } from '../hooks/useHeroIntroMotion'
+import type { HeroContent } from '../types/content'
 
 import { HeroStatsGrid } from './HeroStatsGrid'
 
@@ -69,8 +69,7 @@ export const HeroHeadline = ({ accent, content }: HeroHeadlineProps): ReactEleme
         </Button>
         <Button
           size="large"
-          icon={<ArrowRightOutlined />}
-          ghost
+          icon={<GithubOutlined />}
           href={content.secondaryCta.href}
           target="_blank"
           rel="noreferrer"

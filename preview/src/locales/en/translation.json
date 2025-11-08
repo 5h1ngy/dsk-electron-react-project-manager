@@ -5,12 +5,12 @@
     "description": "One workspace that blends Electron, React, and a typed REST API so distributed teams can run projects, wikis, and automations even when the connection drops.",
     "heroShot": "/Screenshot 2025-11-08 115411.png",
     "primaryCta": {
-      "label": "Download desktop",
+      "label": "Download",
       "href": "https://github.com/5h1ngy/dsk-electron-react-project-manager/releases"
     },
     "secondaryCta": {
-      "label": "Explore docs",
-      "href": "https://github.com/5h1ngy/dsk-electron-react-project-manager/tree/main/docs"
+      "label": "View on GitHub",
+      "href": "https://github.com/5h1ngy/dsk-electron-react-project-manager"
     },
     "stats": [
       { "label": "Surfaces", "value": "Electron / Web / API" },
@@ -29,10 +29,14 @@
   ],
   "gallery": {
     "shots": [
-      "/Screenshot 2025-11-08 115625.png",
-      "/Screenshot 2025-11-08 115609.png",
-      "/Screenshot 2025-11-08 115638.png",
-      "/Screenshot 2025-11-08 115529.png"
+      "/gallery/projects-view-list.png",
+      "/gallery/task-sprint-details.png",
+      "/gallery/tasks-filters.png",
+      "/gallery/tasks-notes-card-view.png",
+      "/gallery/tasks-overview.png",
+      "/gallery/tasks-srpint.png",
+      "/gallery/tasks-view-kanban.png",
+      "/gallery/tasks-wiki.png"
     ],
     "alt": "Product preview",
     "modalAlt": "Fullscreen preview",

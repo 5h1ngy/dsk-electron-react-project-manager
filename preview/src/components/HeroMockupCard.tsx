@@ -1,8 +1,8 @@
 import { Card, theme } from 'antd'
 import { useState, type ReactElement } from 'react'
 
-import type { ThemeMode } from '../theme/foundations/palette'
 import type { GalleryContent } from '../types/content'
+import type { ThemeMode } from '../theme/foundations/palette'
 
 import { HeroGallery } from './HeroGallery'
 
@@ -33,13 +33,22 @@ export const HeroMockupCard = ({ accent, mode, gallery }: HeroMockupCardProps): 
         boxShadow:
           mode === 'dark' ? '0 30px 80px rgba(0,0,0,0.5)' : '0 30px 60px rgba(15,23,42,0.2)',
         transform: hovered ? 'translateY(-12px) rotateX(2deg) rotateY(-2deg)' : 'translateY(0)',
-        transition: 'transform 0.5s cubic-bezier(0.22, 1, 0.36, 1)'
+        transition: 'transform 0.5s cubic-bezier(0.22, 1, 0.36, 1)',
+        overflow: 'visible'
       }}
-      bodyStyle={{ padding: token.padding, overflow: 'hidden' }}
+      bodyStyle={{ padding: token.padding, overflow: 'visible' }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      <HeroGallery content={gallery} />
+      <div
+        style={{
+          position: 'relative',
+          right: '-50px',
+          width: 'calc(100% + 50px)'
+        }}
+      >
+        <HeroGallery content={gallery} />
+      </div>
     </Card>
   )
 }

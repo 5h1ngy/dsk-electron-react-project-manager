@@ -1,7 +1,7 @@
 import { ExpandOutlined, LeftOutlined, RightOutlined } from '@ant-design/icons'
 import { Button, Carousel, Flex, Image, Modal, Space, theme } from 'antd'
 import type { CarouselRef } from 'antd/es/carousel'
-import { useRef, useState, type ReactElement } from 'react'
+import { useMemo, useRef, useState, type ReactElement } from 'react'
 
 import type { GalleryContent } from '../types/content'
 
@@ -14,8 +14,16 @@ export const HeroGallery = ({ content }: HeroGalleryProps): ReactElement => {
   const carouselRef = useRef<CarouselRef>(null)
   const [modalOpen, setModalOpen] = useState(false)
   const [activeIndex, setActiveIndex] = useState(0)
-  const shots = content.shots ?? []
-  const currentShot = shots[activeIndex] ?? shots[0]
+  const resolvedShots = useMemo(() => {
+    const base = import.meta.env.BASE_URL ?? '/'
+    const normalizedBase = base.endsWith('/') ? base : `${base}/`
+    const rawShots = content.shots ?? []
+    return rawShots.map((shot) => ({
+      key: shot,
+      src: `${normalizedBase}${shot.replace(/^\/+/, '')}`
+    }))
+  }, [content.shots])
+  const currentShot = resolvedShots[activeIndex]?.src ?? resolvedShots[0]?.src ?? ''
 
   return (
     <>
@@ -28,10 +36,10 @@ export const HeroGallery = ({ content }: HeroGalleryProps): ReactElement => {
           style={{ width: '100%', borderRadius: token.borderRadiusLG }}
           afterChange={(index) => setActiveIndex(index)}
         >
-          {shots.map((shot) => (
+          {resolvedShots.map(({ key, src }) => (
             <Image
-              key={shot}
-              src={shot}
+              key={key}
+              src={src}
               alt={content.alt}
               preview={false}
               style={{
