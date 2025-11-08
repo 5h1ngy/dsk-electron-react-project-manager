@@ -24,6 +24,9 @@ portable:
   requestExecutionLevel: user
 npmRebuild: false
 beforePack: ./packages/electron/scripts/prune-dev-deps.cjs
+extraResources:
+  - from: packages/electron/resources
+    to: .
 publish:
   provider: generic
   url: https://example.com/auto-updates

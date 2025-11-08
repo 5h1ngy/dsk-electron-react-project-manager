@@ -1,4 +1,4 @@
-import { BrowserWindow } from 'electron'
+import { app, BrowserWindow } from 'electron'
 import { join } from 'node:path'
 import type { Sequelize } from 'sequelize-typescript'
 
@@ -61,7 +61,10 @@ export class MainWindowManager {
   }
 
   async createMainWindow(): Promise<BrowserWindow> {
-    const window = new this.BrowserWindowCtor(MAIN_WINDOW_OPTIONS)
+    const window = new this.BrowserWindowCtor({
+      ...MAIN_WINDOW_OPTIONS,
+      icon: this.resolveIconPath()
+    })
     this.logger.info('Main window instantiated', 'Window')
     this.registerReadyHandler(window)
     this.registerDevtoolsHooks(window)
@@ -69,6 +72,13 @@ export class MainWindowManager {
     this.registerLifecycleHooks(window)
     this.loadWindowContent(window)
     return window
+  }
+
+  private resolveIconPath(): string {
+    if (app.isPackaged) {
+      return join(process.resourcesPath, 'icon.png')
+    }
+    return join(__dirname, '../../resources/icon.png')
   }
 
   private registerReadyHandler(window: BrowserWindow): void {
