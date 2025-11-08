@@ -10,6 +10,7 @@ import type { ThemeMode } from '../theme/foundations/palette'
 import { HeroControls } from './HeroControls'
 import { HeroHeadline } from './HeroHeadline'
 import { HeroMockupCard } from './HeroMockupCard'
+import { LanguageSwitcher } from './LanguageSwitcher'
 
 interface HeroStageProps {
   accent: string
@@ -96,6 +97,21 @@ export const HeroStage = ({
       }}
       bodyStyle={{ padding: `${token.paddingXL * 2}px ${token.paddingXL * 2.5}px` }}
     >
+      <div
+        style={{
+          position: 'absolute',
+          top: token.marginXL * 0.5,
+          right: token.marginXL * 0.5,
+          zIndex: 2
+        }}
+      >
+        <LanguageSwitcher
+          language={language}
+          options={languageOptions}
+          label={controlsCopy.languageLabel}
+          onChange={onLanguageChange}
+        />
+      </div>
       <Flex
         vertical
         gap={token.marginXL}
@@ -111,16 +127,27 @@ export const HeroStage = ({
           </Col>
         </Row>
         <Flex justify="flex-end" style={{ width: '100%' }}>
-          <HeroControls
-            accent={accent}
-            setAccent={setAccent}
-            mode={mode}
-            toggleMode={toggleMode}
-            controlsCopy={controlsCopy}
-            language={language}
-            languageOptions={languageOptions}
-            onLanguageChange={onLanguageChange}
-          />
+          <div
+            style={{
+              background: mode === 'dark' ? 'rgba(4,6,18,0.85)' : 'rgba(255,255,255,0.9)',
+              borderRadius: 999,
+              padding: '12px 20px',
+              border: `1px solid ${mode === 'dark' ? 'rgba(255,255,255,0.12)' : 'rgba(15,23,42,0.12)'}`,
+              backdropFilter: 'blur(12px)',
+              boxShadow:
+                mode === 'dark'
+                  ? '0 25px 60px rgba(0,0,0,0.35)'
+                  : '0 15px 40px rgba(15,23,42,0.2)'
+            }}
+          >
+            <HeroControls
+              accent={accent}
+              setAccent={setAccent}
+              mode={mode}
+              toggleMode={toggleMode}
+              controlsCopy={controlsCopy}
+            />
+          </div>
         </Flex>
       </Flex>
     </Card>
