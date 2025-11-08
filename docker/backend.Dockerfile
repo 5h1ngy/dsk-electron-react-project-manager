@@ -24,6 +24,7 @@ COPY docker/backend.prod.package.json ./package.json
 COPY package-lock.json ./
 RUN npm install --omit=dev
 
+COPY --from=builder /app/out/backend/packages ./packages
 COPY packages/backend/tsconfig.backend.json ./packages/backend/tsconfig.backend.json
 COPY --from=builder /app/out/backend ./out/backend
 
