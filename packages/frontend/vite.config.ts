@@ -16,9 +16,33 @@ process.env.APP_RUNTIME = process.env.APP_RUNTIME ?? runtimeTarget
 
 const API_PROXY_TARGET = process.env.API_PROXY_TARGET ?? 'http://localhost:3333'
 
+const normalizeBasePath = (value?: string, fallback?: string): string => {
+  if (!value || value.trim().length === 0) {
+    return fallback ?? '/'
+  }
+  const normalized = value.trim()
+  if (normalized === '.' || normalized === './') {
+    return './'
+  }
+  if (normalized === '/') {
+    return '/'
+  }
+  return normalized.endsWith('/') ? normalized : `${normalized}/`
+}
+
+const DEFAULT_BASE = runtimeTarget === 'desktop' ? './' : '/'
+const PUBLIC_BASE = normalizeBasePath(
+  process.env.VITE_PUBLIC_BASE ?? process.env.PUBLIC_BASE,
+  DEFAULT_BASE
+)
+
+process.env.VITE_PUBLIC_BASE = PUBLIC_BASE
+process.env.PUBLIC_BASE = process.env.PUBLIC_BASE ?? PUBLIC_BASE
+
 export default defineConfig({
-  base: './',
+  base: PUBLIC_BASE,
   root: resolve(__dirname),
+  publicDir: resolve(__dirname, '../../public'),
   plugins: [react()],
   resolve: {
     alias: {

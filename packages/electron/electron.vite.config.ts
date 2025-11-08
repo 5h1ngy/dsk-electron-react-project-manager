@@ -17,6 +17,27 @@ process.env.APP_RUNTIME = runtimeTarget
 process.env.VITE_APP_RUNTIME = process.env.VITE_APP_RUNTIME ?? runtimeTarget
 
 const API_PROXY_TARGET = process.env.API_PROXY_TARGET ?? 'http://localhost:3333'
+const normalizeBasePath = (value?: string, fallback: string = './'): string => {
+  if (!value || value.trim().length === 0) {
+    return fallback
+  }
+  const normalized = value.trim()
+  if (normalized === '.' || normalized === './') {
+    return './'
+  }
+  if (normalized === '/') {
+    return '/'
+  }
+  return normalized.endsWith('/') ? normalized : `${normalized}/`
+}
+
+const RENDERER_BASE = normalizeBasePath(
+  process.env.VITE_PUBLIC_BASE ?? process.env.PUBLIC_BASE,
+  './'
+)
+
+process.env.VITE_PUBLIC_BASE = RENDERER_BASE
+process.env.PUBLIC_BASE = process.env.PUBLIC_BASE ?? RENDERER_BASE
 const LOCAL_TSCONFIG_PATH = resolve(__dirname, 'tsconfig.json')
 const tsconfigRaw = JSON.parse(readFileSync(LOCAL_TSCONFIG_PATH, 'utf-8'))
 process.env.TS_NODE_PROJECT =
@@ -72,6 +93,8 @@ export default defineConfig({
     plugins: [externalizeDepsPlugin()]
   },
   renderer: {
+    base: RENDERER_BASE,
+    publicDir: resolve(__dirname, '../../public'),
     root: resolve(__dirname, '../frontend'),
     resolve: {
       alias: {

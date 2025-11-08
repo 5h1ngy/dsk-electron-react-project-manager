@@ -1,6 +1,7 @@
 import { useEffect, useMemo } from 'react'
 import { HashRouter } from 'react-router-dom'
 import { App as AntdApp, ConfigProvider, theme } from 'antd'
+import { Helmet, HelmetProvider } from 'react-helmet-async'
 
 import { ErrorBoundary } from '@renderer/components/ErrorBoundary'
 import { AppRoutes } from '@renderer/pages/routes'
@@ -153,24 +154,32 @@ const App = () => {
 
   const themeConfig = useMemo(() => createThemeConfig(mode, accentColor), [mode, accentColor])
 
+  const faviconHref = `${import.meta.env.BASE_URL ?? '/'}favicon.ico`
+
   return (
-    <ErrorBoundary>
-      <ConfigProvider theme={themeConfig}>
-        <HashRouter
-          future={{
-            v7_startTransition: true,
-            v7_relativeSplatPath: true
-          }}
-        >
-          <AntdApp>
-            <BodyStyleSynchronizer />
-            <ScrollbarStyleSynchronizer />
-            <NavigationStyleSynchronizer />
-            <AppRoutes />
-          </AntdApp>
-        </HashRouter>
-      </ConfigProvider>
-    </ErrorBoundary>
+    <HelmetProvider>
+      <Helmet>
+        <title>DSK Project Manager</title>
+        <link rel="icon" href={faviconHref} />
+      </Helmet>
+      <ErrorBoundary>
+        <ConfigProvider theme={themeConfig}>
+          <HashRouter
+            future={{
+              v7_startTransition: true,
+              v7_relativeSplatPath: true
+            }}
+          >
+            <AntdApp>
+              <BodyStyleSynchronizer />
+              <ScrollbarStyleSynchronizer />
+              <NavigationStyleSynchronizer />
+              <AppRoutes />
+            </AntdApp>
+          </HashRouter>
+        </ConfigProvider>
+      </ErrorBoundary>
+    </HelmetProvider>
   )
 }
 
