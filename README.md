@@ -8,7 +8,7 @@
 [![React][react-badge]][react-link]
 [![SQLite][sqlite-badge]][sqlite-link]
 
-Offline‑friendly project management suite that bundles an Electron desktop shell, a standalone web SPA, and a typed REST API powered by SQLite.
+Suite di project management offline-friendly che combina una shell Electron, una SPA React/Vite e un'API REST tipizzata su SQLite.
 
 ![Application preview](.assets/preview.png)
 
@@ -16,228 +16,381 @@ Offline‑friendly project management suite that bundles an Electron desktop she
 
 ---
 
-## 📚 Table of Contents
+## Indice
 
-1. [About the Product](#-about-the-product)
-2. [Architecture at a Glance](#-architecture-at-a-glance)
-3. [Workspace Breakdown](#-workspace-breakdown)
-4. [Feature Highlights](#-feature-highlights)
-5. [Developer Experience](#-developer-experience)
-6. [Getting Started](#-getting-started)
-7. [Scripts & Automation](#-scripts--automation)
-8. [Configuration & Environment](#-configuration--environment)
-9. [Data & Seeding](#-data--seeding)
-10. [Testing & Quality](#-testing--quality)
-11. [Docker Workflow](#-docker-workflow)
-12. [Logging & Monitoring](#-logging--monitoring)
-13. [Versioning & Releases](#-versioning--releases)
-14. [License](#-license)
-
----
-
-## 🧭 About the Product
-
-DSK Project Manager centralizes day‑to‑day delivery activities (projects, tasks, wikis, notes, sprints, and role management) in a single workspace that can run completely offline.  
-Key capabilities:
-
-- **Secure desktop client** with Electron 38, single instance lock, hardened preload, and sandboxed renderer.
-- **Web SPA** powered by React 19 + Ant Design 5 for teams that prefer running in the browser.
-- **REST API** built with routing-controllers/Typedi, backed by SQLite and Sequelize with audit trails.
-- **Shared domain layer** so business rules, DTOs, and services stay consistent across surfaces.
-- **Seed & maintenance tools** that bootstrap demo data and run integrity checks in one command.
+1. [Perche DSK Project Manager](#perche-dsk-project-manager)
+2. [Stack tecnologico](#stack-tecnologico)
+3. [Repository cheat-sheet](#repository-cheat-sheet)
+4. [Architettura](#architettura)
+5. [Feature map](#feature-map)
+6. [Pacchetti e moduli](#pacchetti-e-moduli)
+7. [Modello dati](#modello-dati)
+8. [Configurazione & ambienti](#configurazione--ambienti)
+9. [Setup rapido](#setup-rapido)
+10. [Testing & qualita](#testing--qualita)
+11. [Database, seeding & manutenzione](#database-seeding--manutenzione)
+12. [Desktop runtime (Electron)](#desktop-runtime-electron)
+13. [Web SPA (React)](#web-spa-react)
+14. [Backend API](#backend-api)
+15. [Docker & distribuzione](#docker--distribuzione)
+16. [Script & automazione](#script--automazione)
+17. [Documentazione & risorse](#documentazione--risorse)
+18. [Contributi & CI](#contributi--ci)
+19. [Licenza](#licenza)
 
 ---
 
-## 🏗 Architecture at a Glance
+## Perche DSK Project Manager
+
+- **Un'unica fonte di verita**: il dominio condiviso (`packages/shared/src`) contiene modelli Sequelize, servizi (project, task, wiki, note, roles, sprint, view) e infrastruttura (logger, env, storage) riutilizzati da Electron, dall'API e dallo strato di seeding.
+- **Esperienza completamente offline**: l'app desktop (`packages/electron/src/main/index.ts`) gestisce storage SQLite locale, backup crittografati e ripristino senza dipendenze esterne.
+- **Modalita web**: la SPA (`packages/frontend/src`) puo funzionare standalone contro l'API (`packages/backend/src/server.ts`) grazie al bridge HTTP (`packages/frontend/src/platform/httpBridge.ts`).
+- **Sicurezza by design**: controllo ruoli/permessi (`packages/shared/src/services/roles/constants.ts` + `docs/roles.md`), sessioni in memoria (`packages/shared/src/services/auth/sessionManager.ts`), guardie IPC, CSP e network blocker (`packages/electron/src/main/services/security/index.ts`).
+- **Osservabilita e auditing**: `packages/backend/src/middleware/requestLogger.ts` e `packages/shared/src/services/audit/index.ts` registrano chi fa cosa, mentre `packages/shared/src/config/logger.ts` gestisce output su stdout/file.
+- **Documentazione interna**: l'albero completo del repo e' rigenerabile con `scripts/repotree.mjs`, producendo `docs/repo-tree.md`, `docs/big-files.txt` e `docs/notes-todos.txt` per avere sempre visibilita dei file dichiarati.
+
+---
+
+## Stack tecnologico
+
+| Livello | Tecnologie | File chiave |
+| --- | --- | --- |
+| Desktop | Electron 38, electron-vite, electron-builder, Node 22 | `packages/electron/electron.vite.config.ts`, `packages/electron/src/main/index.ts`, `packages/electron/electron-builder.yml` |
+| Renderer | React 19, Vite 7, Ant Design 5, Redux Toolkit, React Hook Form, i18next | `packages/frontend/vite.config.ts`, `packages/frontend/src/App.tsx`, `packages/frontend/src/store` |
+| Backend | Node 22, routing-controllers, Typedi, Sequelize + SQLite, Swagger/OpenAPI | `packages/backend/src/server.ts`, `packages/backend/src/controllers`, `packages/backend/src/openapi/schemas.ts` |
+| Dominio condiviso | Sequelize models, services (project/task/note/wiki/view/roles), logger, env, AES-GCM backup | `packages/shared/src/models`, `packages/shared/src/services`, `packages/shared/src/config` |
+| Tooling | Jest multi-project, ESLint 9 (flat), Prettier 3, Faker seeding, docker-compose | `jest.config.ts`, `eslint.config.mjs`, `packages/seeding/src`, `docker/` |
+
+---
+
+## Repository cheat-sheet
+
+- `docs/repo-tree.md` (generato da `node scripts/repotree.mjs`, invocabile anche via `npm run autodocs`) elenca **ogni** file della repo: consultalo quando servono percorsi completi.
+- `docs/big-files.txt` e `docs/notes-todos.txt` vengono prodotti dallo stesso script per monitorare file pesanti e TODO/FIXME sparsi.
+
+### Directory principali
+
+| Path | Contenuti | Dettagli |
+| --- | --- | --- |
+| `.assets/` | Immagini e icone per README/app | `preview.png` viene referenziato nel banner iniziale. |
+| `.extensions/` | Risorse extra (es. Redux DevTools CRX) | Caricate dal preload quando necessario. |
+| `.github/` | Workflow CI (`branch-policy.yml`, `release.yml`) | Controllano naming branches e build/release Windows. |
+| `.husky/` | Hook Git (commit-msg) | Esegue `commitlint` per enforcement convenzioni. |
+| `.vscode/` | Settings & snippets locali | Non obbligatori ma utili per uniformare editor. |
+| `dist/` | Output electron-builder (`win-unpacked`, portable `.exe`) | Generato da `npm run build:win`. |
+| `docker/` | Dockerfile multi-stage + manifest package ridotti | `backend.package.*.json` e `frontend.package.*.json` minimizzano dipendenze. |
+| `docs/` | `repo-tree.md`, `roles.md` | Documentazione funzionamento ruoli e mappa repo. |
+| `env/` | `.env.*` per desktop, webapp, backend, esempio | Copiare/derivare da `.env.example`. |
+| `out/` | Build intermedie (backend/main/preload/renderer) | Popolato da electron-vite / tsc. |
+| `packages/backend/` | API REST (controllers, middleware, startup) | Compilata via `ts-node`/`tsc`. |
+| `packages/electron/` | Main process, preload bridge, builder config | Contiene `src/main`, `src/preload`, `resources`, `build`. |
+| `packages/frontend/` | SPA React + store, layout, pagine | Includono route protette e pagina di manutenzione DB. |
+| `packages/seeding/` | Seeder Faker, CLI (`run.ts`), factory e config | Usato sia localmente sia via endpoint `/seed`. |
+| `packages/shared/` | Modelli Sequelize, servizi dominio, logger/env/storage | Cuore logico riutilizzato ovunque. |
+| `preview/` | Mini-sito Vite per marketing/demo UI | Script `npm run dev/build/preview` dedicati. |
+| `public/` | Asset statici Vite (`favicon.ico`) | Serviti dalla SPA. |
+| `scripts/` | `repotree.mjs`, `versioning.mjs`, `postinstall.mjs` | Automazioni documentate piu avanti. |
+| `temp_featureOrbit.txt` | Note temporanee del team | Lasciare intatto finche non viene integrato nel flusso ufficiale. |
+
+---
+
+## Architettura
 
 ```
-┌──────────────────────────┐
-|  Electron Shell (Node)   |
-|  packages/electron       |
-|  • main process          |
-|  • preload bridge        |
-└────────────┬─────────────┘
-             │ IPC / window.api
-┌────────────▼─────────────┐
-|  React Renderer          |
-|  packages/frontend       |
-|  • Ant Design UI         |
-|  • Redux Toolkit store   |
-└────────────┬─────────────┘
-             │ HTTP / REST
-┌────────────▼─────────────┐
-|  Backend API (Node 22)   |
-|  packages/backend        |
-|  • routing-controllers   |
-|  • Typedi DI             |
-└────────────┬─────────────┘
-             │ ORM
-┌────────────▼─────────────┐
-|  Shared Domain Layer     |
-|  packages/shared         |
-|  • Sequelize models      |
-|  • Auth, audit, wiki     |
-└────────────┬─────────────┘
-             │ SQLite
-       ┌─────▼─────┐
-       | Storage   |
-       | app.sqlite|
-       └───────────┘
++-----------------------------+
+| Electron Shell              |
+| packages/electron           |
+|  - main process + IPC       |
+|  - preload sandboxed API    |
++--------------+--------------+
+               | window.api / IPC
++--------------v--------------+
+| React Renderer (desktop/web)|
+| packages/frontend           |
+|  - Ant Design + Redux       |
+|  - Routing / i18n           |
++--------------+--------------+
+               | REST / IPC bridge
++--------------v--------------+
+| Backend API (Node 22)       |
+| packages/backend            |
+|  - routing-controllers      |
+|  - Typedi DI                |
++--------------+--------------+
+               | Sequelize models
++--------------v--------------+
+| Shared Domain + SQLite      |
+| packages/shared             |
+|  - models/services/logger   |
+|  - AES-GCM backup + seeding |
++-----------------------------+
 ```
 
-Additional packages:
-
-| Package          | Role |
-| ---------------- | ---- |
-| `packages/seeding` | Faker-based seed orchestration and database maintenance utilities. |
-| `scripts/*` | Support scripts (`versioning.mjs`, postinstall tasks, etc.). |
-| `.assets/` | Static imagery for documentation and product previews. |
+- La sessione utente vive in `SessionManager` (`packages/shared/src/services/auth/sessionManager.ts`) e viene propagata ai servizi via IPC/REST.
+- Le API espongono documentazione OpenAPI (`/docs`, generata in `packages/backend/src/server.ts`).
+- La pagina **Database** del renderer parla con `DatabaseMaintenanceService` (`packages/shared/src/services/databaseMaintenance/index.ts`) tramite canale IPC dedicato (`packages/electron/src/main/ipc/database`).
 
 ---
 
-## ✨ Feature Highlights
+## Feature map
 
-- **Authentication & Role Management** – Admin-maintained roles (Admin, Maintainer, Contributor, Viewer) with audit trails.
-- **Projects & Tasks** – Backlog, sprints, kanban lanes, saved views, and status automation.
-- **Notes & Wikis** – Markdown editing with preview, search via FTS, and revision history.
-- **Dashboards** – Cross-project overview, user analytics, filters, and saved board configurations.
-- **Seed & Demo Data** – Deterministic Faker-based seeding for fast onboarding.
-- **REST Documentation** – Automatic OpenAPI spec + Swagger UI at `/docs`.
-- **Configurable Runtime** – Desktop, webapp, and backend each read dedicated env manifests from `env/`.
-
----
-
-## 🛠 Developer Experience
-
-- **Monorepo with shared tooling** – Single ESLint/Prettier/Jest configs at repo root plus TS project references.
-- **electron-vite** – Unified build pipeline for Electron main, preload, and renderer processes.
-- **Typed IPC bridge** – `window.api` surface validated in preload with runtime-safe contracts.
-- **Structured logging** – Colorized console output plus optional file sink when `LOG_STORAGE_PATH` is provided.
-- **Dockerized pipelines** – Separate builder/runtime stages for backend & frontend with curated dependency manifests.
-- **Scripts for everything** – Formatting, linting, seeding, type checks, packaging, and clean-up (`npm run reset:build`).
+- **Autenticazione e ruoli**: login/register/logout, gestione utenti e ruoli (controller `packages/backend/src/controllers/AuthController.ts` + `RoleController.ts`, servizio `packages/shared/src/services/auth/index.ts`). Permessi e ruoli di default documentati in `docs/roles.md`.
+- **Gestione progetti**: CRUD progetti, membership, tag (`packages/shared/src/services/project`). Task board con stati ordinabili (`packages/shared/src/services/task.ts`, `packages/shared/src/services/taskStatus`). Sprints e backlog (`packages/shared/src/services/sprint`).
+- **Note & Wiki**: note Markdown con FTS (`packages/shared/src/services/note`) e wiki con revisioni (`packages/shared/src/services/wiki`). UI dedicate sotto `packages/frontend/src/pages/ProjectNotes` e `ProjectWiki`.
+- **Views & dashboard**: salvataggio viste filtrate (`packages/shared/src/services/view`) + pagina dashboard (`packages/frontend/src/pages/Dashboard`).
+- **Database maintenance**: export/import cifrati (AES-256-GCM + scrypt + gzip) e riavvio controllato (`packages/shared/src/services/databaseMaintenance/index.ts` + UI `packages/frontend/src/pages/Database/DatabasePage.tsx`).
+- **Audit trail**: `packages/shared/src/services/audit/index.ts` registra ogni mutazione, mentre i servizi dominio invocano direttamente `AuditService`.
+- **Internationalization**: localizzazioni `en`, `it`, `fr`, `de` (`packages/frontend/src/i18n/locales`), rilevate all'avvio e commutabili da UI.
 
 ---
 
-## 🚀 Getting Started
+## Pacchetti e moduli
 
-1. **Install dependencies**
+### `packages/electron`
+
+- `src/main/index.ts`: orchestration principale (single-instance lock, hook app, session lifecycle, boot DB via `initializeDatabase`).
+- `src/main/appContext.ts`: factory per servizi dominio (Project/Task/...).
+- `src/main/services/security/index.ts`: CSP, blocco navigazione, disabilitazione DevTools quando `ENABLE_DEVTOOLS=false`.
+- `src/main/ipc/*`: registrar per auth, project, task, status, note, view, role, sprint, wiki, database.
+- `src/preload/src/index.ts`: espone `window.api` e `window.devtoolsConfig`, incapsulando tutte le API tipizzate definite in `src/preload/src/types.ts`.
+- `src/preload/src/api/*.ts`: wrapper IPC lato renderer.
+- `electron.vite.config.ts`, `tsconfig.*`, `electron-builder.yml`: toolchain build e packaging.
+
+### `packages/frontend`
+
+- `src/App.tsx`: bootstrap Ant Design, router, sincronizzatori di tema/scrollbar, restore session.
+- `src/pages/*`: dashboard, login/register, projects overview/tasks/details, sprints, wiki, notes, role management, user management, settings, database maintenance.
+- `src/pages/routes.tsx` + `ProtectedRoute.tsx`/`PublicRoute.tsx`: gating basato su auth.
+- `src/store`: Redux Toolkit store + slice per `auth`, `projects`, `tasks`, `taskStatuses`, `notes`, `views`, `sprints`, `wiki`, `locale`, `theme`.
+- `src/platform/httpBridge.ts`: fallback HTTP per runtime web (`runtime.isWebapp`).
+- `src/layout/Shell`: container comune.
+- `src/theme`: generatori token Ant Design e accent chooser.
+- `test/`: setup Testing Library (`packages/frontend/test/setupRendererTests.ts`).
+
+### `packages/backend`
+
+- `src/server.ts`: crea Express server via routing-controllers, monta swagger (`/docs`), registra middleware custom (request logger + error handler).
+- Controllers: `AuthController`, `ProjectController`, `TaskController`, `TaskStatusController`, `NoteController`, `ViewController`, `RoleController`, `SprintController`, `WikiController`, `SeedController`, `HealthController`.
+- Middleware: `packages/backend/src/middleware/requestLogger.ts`, `AppErrorHandler` (`packages/backend/src/middleware/errorHandler.ts`).
+- `openapi/`: helper per decoratori + definizioni Zod (`apiRegistry`).
+- `startup/bootstrap.ts` + `startup/context.ts`: inizializzazione DomainContext (Typedi) e shutdown hook.
+
+### `packages/shared`
+
+- `config/`: env loader (`env.ts`), logger (`logger.ts`), database bootstrap (`database.ts`), storage path resolver (`storagePath.ts`), error helper (`appError.ts`).
+- `models/`: tutte le entita Sequelize (tabella completa nella sezione [Modello dati](#modello-dati)).
+- `services/`: moduli per audit, auth, project, task, taskStatus, note, view, wiki, roles, sprint, databaseMaintenance.
+- `runtime/domainContext.ts`: container unico per servizi condivisi.
+
+### `packages/seeding`
+
+- `run.ts`: CLI entrypoint (`SeedCommand`, supporto a `--host/--port` per trigger remoto).
+- `DevelopmentSeeder.ts`: orchestrazione Faker (seed configurabile, upsert utenti/progetti/notes/wiki/sprints).
+- `ProjectSeedFactory.ts`, `UserSeedFactory.ts`, `ProjectSeeder.ts`, `UserSeeder.ts`: logica di generazione e persistenza.
+- `seedConfig.ts` + `seed-config.json`: parametri (tassi di generazione per commenti, note, wiki, sprints).
+
+### Altre cartelle rilevanti
+
+- `preview/`: micro-sito React/GSAP per presentazioni (non incluso nel build principale).
+- `scripts/`: `repotree.mjs` (autodoc repo), `versioning.mjs` (bump semver + commit), `postinstall.mjs` (wrappa `electron-builder install-app-deps` evitando recursion).
+- `.extensions/redux-devtools`: CRX utilizzata per sviluppi offline.
+- `.husky/commit-msg`: richiama `npx commitlint --edit`.
+- `.github/workflows`: branch policy (prefissi `release/*`, `hotfix/*`, `feature/*`, `bugfix/*`, `fix/*`) e pipeline release Windows.
+- `temp_featureOrbit.txt`: brainstorming/notes, non eliminare senza allinearsi col team.
+
+---
+
+## Modello dati
+
+| Modello | File | Descrizione |
+| --- | --- | --- |
+| `SystemSetting` | `packages/shared/src/models/SystemSetting.ts` | Chiave/valore configurabili (es. timeout sessione) letti dal main process. |
+| `Role` | `packages/shared/src/models/Role.ts` | Ruoli globali con JSON di permessi normalizzati. |
+| `User` | `packages/shared/src/models/User.ts` | Utenti, password Argon2 (`packages/shared/src/services/auth/password.ts`), stato attivo, metadata login. |
+| `UserRole` | `packages/shared/src/models/UserRole.ts` | Tabella ponte utenti-ruoli. |
+| `AuditLog` | `packages/shared/src/models/AuditLog.ts` | Storico operazioni con payload diff JSON. |
+| `Project` | `packages/shared/src/models/Project.ts` | Progetti, owner, tag, impostazioni flusso. |
+| `ProjectMember` | `packages/shared/src/models/ProjectMember.ts` | Ruolo per progetto (`view/edit/admin`). |
+| `ProjectTag` | `packages/shared/src/models/ProjectTag.ts` | Tag classificazione progetti. |
+| `Sprint` | `packages/shared/src/models/Sprint.ts` | Iterazioni con data inizio/fine, stato. |
+| `TaskStatus` | `packages/shared/src/models/TaskStatus.ts` | Colonne kanban (default `todo/in_progress/blocked/done`). |
+| `Task` | `packages/shared/src/models/Task.ts` | Task con owner/assignee, sprint, FTS (`tasks_fts`) e storia commenti. |
+| `Comment` | `packages/shared/src/models/Comment.ts` | Commenti task, autore, timestamps. |
+| `Note` | `packages/shared/src/models/Note.ts` | Note Markdown, relazioni tag/task, FTS `notes_fts`. |
+| `NoteTag` | `packages/shared/src/models/NoteTag.ts` | Tagging note. |
+| `NoteTaskLink` | `packages/shared/src/models/NoteTaskLink.ts` | Link note-task. |
+| `View` | `packages/shared/src/models/View.ts` | Salvataggio filtri/visti e sharing flag. |
+| `WikiPage` | `packages/shared/src/models/WikiPage.ts` | Pagine wiki per progetto. |
+| `WikiRevision` | `packages/shared/src/models/WikiRevision.ts` | Versioni storiche wiki restore-able. |
+
+`packages/shared/src/config/database.ts` sincronizza gli schemi, abilita WAL, FK, crea ruoli e admin di default e garantisce infrastruttura FTS per task/notes.
+
+---
+
+## Configurazione & ambienti
+
+- **Env files** (`env/.env.*`):
+  - `.env.desktop.dev|prod`: toggles per Electron (`LOG_LEVEL`, `LOG_STORAGE_PATH`, `ENABLE_DEVTOOLS`, `APP_RUNTIME=desktop`).
+  - `.env.webapp.dev|prod`: Vite (`VITE_APP_RUNTIME`, `VITE_API_BASE_URL`, `API_PROXY_TARGET`, `ENABLE_DEVTOOLS`).
+  - `.env.backend.dev|prod`: API (`API_PORT`, `SEED_BACKEND_PORT`, `DB_STORAGE_PATH`, `APP_RUNTIME=webapp`).
+  - `.env.example`: reference generale, include `HOST_API_PORT`/`API_PORT` per docker compose.
+- **Variabili chiave**:
+  - `LOG_LEVEL`, `LOG_STORAGE_PATH`: gestiscono logger (`packages/shared/src/config/logger.ts`).
+  - `APP_RUNTIME` / `VITE_APP_RUNTIME`: distinguono desktop/webapp (`packages/frontend/src/config/runtime.ts`).
+  - `ENABLE_DEVTOOLS`: abilita scorciatoie DevTools in preload/renderer (`packages/electron/src/preload/src/index.ts`, `MainWindowManager`).
+  - `API_PROXY_TARGET`, `VITE_API_BASE_URL`, `PUBLIC_BASE`: configurano host SPA e proxy.
+  - `API_PORT` / `HOST_API_PORT`: espongono backend in locale/Docker.
+  - `DB_STORAGE_PATH`: override percorso SQLite (altrimenti calcolato da `StoragePathResolver`, `packages/shared/src/config/storagePath.ts`).
+  - `SEED_BACKEND_PORT`, `SEED_BACKEND_HOST`: necessari per `npm run db:seed:backend` o `SeedCommand` remoto.
+- **Module alias** (`package.json::_moduleAliases`): `@backend`, `@services`, `@main`, `@preload`, `@renderer`, `@seeding`.
+- **Logging**: definire `LOG_STORAGE_PATH` per scrivere su file (es. `out/logs/backend-dev.log`).
+
+---
+
+## Setup rapido
+
+1. **Prerequisiti**: Node 22.x, npm 10+, SQLite installato (solo per CLI). Windows/macOS/Linux supportati (Electron builder gia configurato per win).
+2. **Installazione**:
    ```bash
    npm install
+   cp env/.env.example env/.env.desktop.dev   # adatta ai vari target
    ```
-2. **Launch the desktop app**
-   ```bash
-   npm run dev:electron
-   ```
-3. **Run backend API only**
-   ```bash
-   npm run dev:backend
-   ```
-4. **Run web SPA**
-   ```bash
-   npm run dev:frontend
-   ```
-5. **Build artifacts**
-   ```bash
-    # Electron portable build (goes to dist/)
-    npm run build:electron
-
-    # Backend transpiled output (out/backend)
-    npm run build:backend
-
-    # SPA static bundle (out/renderer-web)
-    npm run build:frontend
-   ```
-6. **Package Windows installer/portable**
-   ```bash
-   npm run build:win
-   ```
-
-> ℹ️ ENV files live under `env/`. Copy/adjust the appropriate `.env.*` file (`desktop`, `webapp`, `backend`) before running each surface to override ports, base paths, or logging destinations.
+3. **Dev servers**:
+   - Desktop: `npm run dev:electron` (usa `.env.desktop.dev`, avvia electron-vite con main/preload/renderer).
+   - Backend: `npm run dev:backend` (ts-node, alias registrati, porta definita da `API_PORT`).
+   - Web SPA: `npm run dev:frontend` (Vite + proxy API).
+4. **Seed dati**:
+   - Locale/offline (stesso DB usato da Electron): `npm run db:seed` (usa `.env.desktop` e `packages/seeding/src/run.ts`).
+   - Backend remoto (API REST in esecuzione): `npm run db:seed:backend -- --port 4000`.
+5. **Build**:
+   - `npm run build:frontend` / `npm run build:backend`.
+   - `npm run build:win` (typecheck + electron-vite build + electron-builder).
+6. **Utility**:
+   - `npm run reset:build` per pulire `dist` e `out`.
 
 ---
 
-## 🤖 Scripts & Automation
+## Testing & qualita
 
-| Command | Purpose |
-| ------ | ------- |
-| `npm run format` / `format:*` | Prettier formatting per workspace. |
-| `npm run lint` / `lint:*` | ESLint across electron, frontend, backend, shared, seeding. |
-| `npm run test:*` | Jest projects per workspace (JS DOM env where needed). |
-| `npm run typecheck` | Validates Electron TS configs (node + web). |
-| `npm run reset:build` | Removes `dist/` and `out/` via `rimraf`. |
-| `npm run build:*` | Builds each surface (electron, backend, frontend). |
-| `npm run dev:*` | Development watchers for each runtime. |
-| `npm run db:seed` / `db:seed:backend` | Runs seeding pipeline via shared services. |
-| `npm run version:bump` | Interactive semver bump via `scripts/versioning.mjs` (includes env/version badge updates). |
-
----
-
-## ⚙ Configuration & Environment
-
-- All runtime configs live in `env/` (dev/prod variants for desktop, webapp, backend).  
-- Shared keys:
-  - `LOG_LEVEL`, `LOG_STORAGE_PATH`
-  - `APP_VERSION`, `APP_RUNTIME`, `VITE_APP_RUNTIME`
-  - Backend-specific: `API_PORT`, `DB_STORAGE_PATH`, `SEED_BACKEND_PORT`
-  - Web-specific: `VITE_API_BASE_URL`, `PUBLIC_BASE`, `VITE_PUBLIC_BASE`
-- `LOG_STORAGE_PATH` enables file-based logging; directories are auto-created.
-- `.env.example` documents every supported variable for quick reference.
+- **Jest multi-project** (`jest.config.ts`):
+  - `frontend` (jsdom, Testing Library), `backend`, `shared`, `seeding`, `electron`.
+  - Coverage target globale per electron `statements>=80%`, `branches>=70%`, `functions>=80%`, `lines>=80%`.
+- **Comandi**:
+  - `npm run test` (tutti i progetti) o `npm run test -- --selectProjects frontend`.
+  - `npm run lint` / `npm run lint:fix`.
+  - `npm run format` (Prettier su electron/frontend/backend/shared/seeding).
+  - `npm run typecheck`, `npm run typecheck:node`, `npm run typecheck:web`.
+- **Dev workflow**:
+  - Husky (`.husky/commit-msg`) forza `commitlint`.
+  - Branch policy enforced da `.github/workflows/branch-policy.yml` (prefissi obbligatori).
+  - Prima di aprire una PR: lint + test + typecheck devono passare e, per feature visibili, rigenerare `docs/repo-tree.md` con `node scripts/repotree.mjs`.
 
 ---
 
-## 🗄 Data & Seeding
+## Database, seeding & manutenzione
 
-- SQLite lives at `out/storage/backend/app.sqlite` by default (or `/data/app.sqlite` in Docker).  
-- Seeding commands:
-  ```bash
-  npm run db:seed            # desktop/web combined context
-  npm run db:seed:backend    # uses backend env + port overrides
-  ```
-- `packages/seeding` contains Faker-driven factories plus database maintenance utilities that ensure schema upgrades (FTS indexes, missing columns, etc.).
-
----
-
-## 🧪 Testing & Quality
-
-- **Jest multi-project config** (`jest.config.ts`) with dedicated projects for electron, frontend, backend, shared, and seeding.
-- **Testing Library + React Testing Library** for renderer surfaces.
-- **ts-jest** enables type-aware backend/electron tests.
-- **ESLint 9 flat config** + Prettier 3 for consistent code style.
-- `npm run lint`, `npm run test`, and `npm run typecheck` should pass before opening a PR.
+- **Inizializzazione**: `DatabaseManager` (`packages/shared/src/config/database.ts`) crea cartella storage, abilita WAL, FK, semina ruoli default e admin `admin/changeme!`, garantisce colonne/indici mancanti (es. `sprintId` su tasks).
+- **Seed**:
+  - `DevelopmentSeeder` (`packages/seeding/src/DevelopmentSeeder.ts`): Faker con seed deterministico, upsert utenti (via `UserSeeder`) e progetti completi (task, commenti, note, wiki, sprint). Configurazioni in `seed-config.json`.
+  - Endpoint `/seed` (`packages/backend/src/controllers/SeedController.ts`) richiama lo stesso seeder dentro l'API (utile per ambienti remoti).
+- **Backup & ripristino**:
+  - `DatabaseMaintenanceService` (`packages/shared/src/services/databaseMaintenance/index.ts`) esporta snapshot in JSON compresso + cifrato (AES-256-GCM, chiave derivata via scrypt).
+  - UI in `packages/frontend/src/pages/Database/DatabasePage.tsx`: form per export/import password-protected e richiesta riavvio controllata (solo Admin).
+  - Restart orchestrato via `DatabaseIpcRegistrar`/`MainProcessApplication`.
+- **Session timeout dinamico**: `SessionLifecycleManager` (`packages/electron/src/main/index.ts`) legge `SystemSetting` `auth.sessionTimeoutMinutes` (o `SESSION_TIMEOUT_MINUTES` env) e pulisce sessioni ogni 5 minuti.
 
 ---
 
-## 🐳 Docker Workflow
+## Desktop runtime (Electron)
 
-- `docker/frontend.Dockerfile` – multi-stage build (Node builder ➜ nginx runtime).  
-  Uses `docker/frontend.dev.package.json` for lean dependency installs.
-- `docker/backend.Dockerfile` – builder (installs dev deps, compiles TS) ➜ runtime (installs prod deps, runs API).  
-  Reads `LOG_STORAGE_PATH`, `API_PORT`, etc. from mounted env files.
-- `docker-compose.yml` orchestrates `frontend` + `backend` services with shared volume `backend-data` for SQLite persistence.  
-- Copy env files into the `env/` folder (already part of the repo); adjust `HOST_API_PORT`/`API_PORT`/`PUBLIC_BASE` to host the SPA under sub-paths.
-
----
-
-## 📜 Logging & Monitoring
-
-- Central logger lives in `packages/shared/src/config/logger.ts`.
-- By default logs go to stdout with colored context tags.  
-- If `LOG_STORAGE_PATH` is set (e.g., `out/logs/backend-dev.log` or `/data/logs/backend.log`), logs are additionally persisted to disk.
-- Request middleware (`packages/backend/src/middleware/requestLogger.ts`) records method, path, auth snapshot, query/body payload (with sensitive keys redacted), latency, and user roles for every HTTP call.
+- `MainProcessApplication` (`packages/electron/src/main/index.ts`) gestisce lifecycle app, handshake DB, registrazione IPC e avvio finestra (con opzioni in `MAIN_WINDOW_OPTIONS`).
+- `MainWindowManager` (`packages/electron/src/main/appContext.ts`) controlla preload, showing, forwarding console, auto-hide DevTools, icone (da `resources/icon.png`).
+- Sicurezza: `registerSecurityHooks` applica CSP, blocca navigation/will-navigate, nega window.open, filtra richieste di rete non locali quando packaged.
+- IPC: registrars in `packages/electron/src/main/ipc/*` eseguono autorizzazione (AuthService) e inoltrano alle service class condivise.
+- Preload API: `packages/electron/src/preload/src/index.ts` + `types.ts` definiscono contratti e gestiscono flag `devtoolsConfig`.
+- Logging: `shouldSuppressDevtoolsMessage` filtra rumore `Autofill` per mantenere console pulita.
 
 ---
 
-## 🪄 Versioning & Releases
+## Web SPA (React)
 
-- `scripts/versioning.mjs` enforces semver bumps, updates `package.json`, `package-lock.json`, README badges, and every `.env*` file’s `APP_VERSION`, then stages + commits with `chore: bump version to x.y.z`.
-- Electron packaging uses `packages/electron/electron-builder.yml`, outputting to `dist/`.
-- Portable artifacts carry custom icons from `.assets` / `packages/electron/build`.
+- Router hash-based (`HashRouter`) per compatibilita con electron e hosting statico (`packages/frontend/src/App.tsx`).
+- Stato globale: Redux Toolkit store (`packages/frontend/src/store/setupStore.ts`) con slice verticali e thunk che chiamano `window.api` o `httpBridge`.
+- UI:
+  - Layout shell (`packages/frontend/src/layout`) con header, breadcrumb e portal per azioni contestuali.
+  - Themes dinamici + accent color (`packages/frontend/src/theme`).
+  - Componenti modulare (es. `ShellHeaderPortal`, `hooks/useBreadcrumbStyle`).
+- Feature pages:
+  - `Pages/Projects`, `ProjectTasks`, `TaskDetails`, `ProjectSprints`, `ProjectNotes`, `ProjectWiki`, `RoleManagement`, `UserManagement`, `Settings`, `Database`.
+  - `ProtectedRoute`/`PublicRoute` gestiscono accesso in base a login e session token.
+- Internazionalizzazione: `packages/frontend/src/i18n/config.ts` + `locales/{en,it,fr,de}`.
 
 ---
 
-## 📝 License
+## Backend API
 
-This project is licensed under the [MIT License](LICENSE).
+- Routing basato su decoratori (`routing-controllers`):
+  - `AuthController`: login/logout/register, CRUD utenti, session introspection.
+  - `ProjectController`: CRUD progetti/membri.
+  - `TaskController` + `TaskStatusController`: gestione tasks, commenti, move, reorder lanes.
+  - `NoteController`, `WikiController`, `ViewController`.
+  - `RoleController`: CRUD ruoli + sync default.
+  - `SprintController`, `SeedController`, `HealthController`.
+- `RequestLoggingMiddleware` (`packages/backend/src/middleware/requestLogger.ts`): log JSON con role snapshot e latenza.
+- `AppErrorHandler` (`packages/backend/src/middleware/errorHandler.ts`): mapping errori `AppError` -> HTTP status, stack sanitizzato.
+- OpenAPI: `routingControllersToSpec` + `OpenApiGeneratorV3` (`packages/backend/src/server.ts`) arricchiscono lo spec con schemi Zod (`packages/backend/src/openapi/schemas.ts`), disponibile su `/docs` (UI) e `/docs.json`.
+- Dependency injection: `Typedi` + `ApiContextToken` condividono `DomainContext` e servizi.
+
+---
+
+## Docker & distribuzione
+
+- `docker/backend.Dockerfile`: multi-stage (builder + runtime). Usa `docker/backend.package.dev|prod.json` per installare solo dipendenze richieste, legge `.env.backend.prod`, espone `API_PORT`.
+- `docker/frontend.Dockerfile`: build Vite con env `VITE_API_BASE_URL`/`VITE_PUBLIC_BASE`, serve via nginx (`docker/frontend.nginx.conf`) con proxy `/api/` verso backend.
+- `docker-compose.yml`: due servizi (`backend`, `frontend`), porta 3000->backend, 8080->frontend, volume `backend-data` per SQLite persistente (`/data/app.sqlite`).
+- Artefatti desktop:
+  - `out/` contiene bundle TS transpilati (backend/main/preload/renderer/renderer-web).
+  - `dist/` contiene packaging electron-builder (portable `.exe`, `win-unpacked`, `builder-debug.yml`).
+- Preview site (`preview/`): utile per landing statiche, non incluso in build principale (comando `npm run --prefix preview dev`).
+
+---
+
+## Script & automazione
+
+| Script | Descrizione |
+| --- | --- |
+| `npm run autodocs` (`node scripts/repotree.mjs`) | Rigenera `docs/repo-tree.md`, `docs/big-files.txt`, `docs/notes-todos.txt` ignorando `node_modules/dist`. |
+| `npm run version:bump` (`scripts/versioning.mjs`) | Ensures working tree pulito, chiede nuova versione semver, aggiorna `package.json`, `package-lock.json`, `.env*`, badge README, crea commit `chore: bump version`. |
+| `npm run postinstall` (`scripts/postinstall.mjs`) | Wrappa `electron-builder install-app-deps`, evita recursion durante packaging e permette opt-out via `SKIP_ELECTRON_BUILDER_POSTINSTALL`. |
+| `npm run reset:build` | Cancella `dist/` e `out/`. |
+| `npm run prepare` | Abilita husky hook dopo install. |
+
+---
+
+## Documentazione & risorse
+
+- **Albero completo**: `docs/repo-tree.md` (aggiornato almeno ad ogni PR rilevante).
+- **Ruoli & permessi**: `docs/roles.md` e' la fonte ufficiale per capire `ROLE_PERMISSION_DEFINITIONS` e guardie (`RoleService`, `ProjectService`).
+- **Issue tracker**: `package.json::bugs.url` punta a GitHub Issues (`https://github.com/dsk-labs/dsk-electron-react-project-manager/issues`).
+- **Preview assets**: `.assets/` e `preview/` contengono materiale marketing/prodotti.
+- **Note temporanee**: `temp_featureOrbit.txt` custodisce brainstorming in corso.
+
+---
+
+## Contributi & CI
+
+- **Linee guida branch**: workflow `branch-policy.yml` impedisce merge in `main` da branch non `release/*` o `hotfix/*`, e in `develop` da branch senza prefisso `feature/*`, `feat/*`, `bugfix/*`, `bug/*`, `fix/*`.
+- **Pipeline release**: `.github/workflows/release.yml`:
+  - Job `prepare` genera numero di versione/notes (`node scripts/release/generate-release-info.mjs`).
+  - Job `build` (Windows) esegue `npm ci`, `npm run build:win`, pubblica artefatti portable.
+  - Job `release` tagga `vX.Y.Z`, allega binari all'uscita GitHub.
+- **Contributi**: aprire issue/PR con descrizione dettagliata, allegando estratti `docs/repo-tree.md` aggiornati e risultati `npm run lint && npm run test && npm run typecheck`.
+
+---
+
+## Licenza
+
+Distribuito con licenza [MIT](LICENSE).
 
 ---
 
