@@ -14,16 +14,17 @@ const resolveStaticSrc = (raw: string): string => {
   if (/^https?:\/\//i.test(raw)) {
     return raw
   }
-  const trimmed = raw.replace(/^\/+/, '')
+  const trimmed = raw.replace(/^\.?\/+/, '')
+  const prefixed = trimmed.startsWith('gallery/') ? trimmed : `gallery/${trimmed.replace(/^gallery\/+/, '')}`
   const base = import.meta.env.BASE_URL ?? '/'
-  if (base === '/' || base === '') {
-    return trimmed ? `/${trimmed}` : ''
+  const normalizedBase = base.endsWith('/') ? base : `${base}/`
+
+  if (typeof window !== 'undefined') {
+    const absoluteBase = new URL(normalizedBase, window.location.origin).href
+    return new URL(prefixed, absoluteBase).href
   }
-  if (base === './') {
-    return `./${trimmed}`
-  }
-  const normalized = base.endsWith('/') ? base : `${base}/`
-  return `${normalized}${trimmed}`
+
+  return `${normalizedBase}${prefixed}`
 }
 
 export const HeroGallery = ({ content }: HeroGalleryProps): ReactElement => {
