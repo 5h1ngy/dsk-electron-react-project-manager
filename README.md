@@ -1,236 +1,255 @@
-# DSK Electron React Project Manager
+<div align="center">
 
-[![Version Shield][version-shield]][version-link]
-[![Electron Shield][electron-shield]][electron-link]
-[![React Shield][react-shield]][react-link]
-[![SQLite Shield][sqlite-shield]][sqlite-link]
-[![TypeScript Shield][typescript-shield]][typescript-link]
-[![Jest Shield][jest-shield]][jest-link]
+# DSK Project Manager
+
+[![License][license-badge]][license-link]
+[![Node][node-badge]][node-link]
+[![Electron][electron-badge]][electron-link]
+[![React][react-badge]][react-link]
+[![SQLite][sqlite-badge]][sqlite-link]
+
+Offline‑friendly project management suite that bundles an Electron desktop shell, a standalone web SPA, and a typed REST API powered by SQLite.
 
 ![Application preview](.assets/preview.png)
 
----
-
-## Table of Contents
-
-- [Feature Highlights](#feature-highlights)
-- [Tech Stack](#tech-stack)
-- [Project Structure](#project-structure)
-- [Architecture Overview](#architecture-overview)
-- [Quick Start](#quick-start)
-- [Scripts & Tooling](#scripts--tooling)
-- [Database & Seeding](#database--seeding)
-- [Testing Strategy](#testing-strategy)
-- [window.api Contract](#windowapi-contract)
-- [Configuration](#configuration)
-- [Security](#security)
-- [Troubleshooting](#troubleshooting)
-- [Contributing](#contributing)
+</div>
 
 ---
 
-## Feature Highlights
+## 📚 Table of Contents
 
-- Hardened Electron main process with single instance lock, security hooks, and structured logging.
-- Domain-driven services for auth, projects, tasks, notes, and auditing backed by Sequelize.
-- Strongly typed preload bridge exposing the `window.api` contract with runtime validation.
-- Shared services package consumed by both Electron and a decorator-based REST API layer.
-- Rich React 19 renderer using Ant Design 5, Redux Toolkit, i18next, and dynamic accent theming.
-- Comprehensive testing setup spanning Jest, Testing Library, and ts-jest across processes.
-- Faker-powered seeders that bootstrap realistic demo data for local development.
-
----
-
-## Tech Stack
-
-| Layer    | Highlights                                                                                                     |
-| -------- | -------------------------------------------------------------------------------------------------------------- |
-| Runtime  | Electron 38, Node 22                                                                                           |
-| Renderer | React 19, React Router 6, Ant Design 5, Redux Toolkit, React Hook Form, i18next                                |
-| Domain   | SQLite, Sequelize (TypeScript), Zod, @node-rs/argon2                                                           |
-| Tooling  | electron-vite, ts-node + tsconfig-paths, Jest + ts-jest, Testing Library, ESLint 9, Prettier 3, TypeScript 5.7 |
+1. [About the Product](#-about-the-product)
+2. [Architecture at a Glance](#-architecture-at-a-glance)
+3. [Workspace Breakdown](#-workspace-breakdown)
+4. [Feature Highlights](#-feature-highlights)
+5. [Developer Experience](#-developer-experience)
+6. [Getting Started](#-getting-started)
+7. [Scripts & Automation](#-scripts--automation)
+8. [Configuration & Environment](#-configuration--environment)
+9. [Data & Seeding](#-data--seeding)
+10. [Testing & Quality](#-testing--quality)
+11. [Docker Workflow](#-docker-workflow)
+12. [Logging & Monitoring](#-logging--monitoring)
+13. [Versioning & Releases](#-versioning--releases)
+14. [License](#-license)
 
 ---
 
-## Project Structure
+## 🧭 About the Product
 
-```text
-dsk-electron-react-project-manager
-|- packages
-|  |- electron   # Electron runtime sources (src/main, src/preload) + electron-vite config
-|  |- frontend   # React renderer (shared between Electron and standalone browser builds)
-|  |- backend    # Decorator-based REST API (routing-controllers + typedi)
-|  |- shared     # Domain models, Sequelize setup, services shared by all runtimes
-|  \- seeding    # Seeder entry points and dataset builders
-|- resources     # Icons and extra assets for packaging
-|- test          # Jest configuration, mocks, and helpers
-|- .assets       # Static resources (preview, logos, etc.)
-\- build/out     # Generated artifacts
+DSK Project Manager centralizes day‑to‑day delivery activities (projects, tasks, wikis, notes, sprints, and role management) in a single workspace that can run completely offline.  
+Key capabilities:
+
+- **Secure desktop client** with Electron 38, single instance lock, hardened preload, and sandboxed renderer.
+- **Web SPA** powered by React 19 + Ant Design 5 for teams that prefer running in the browser.
+- **REST API** built with routing-controllers/Typedi, backed by SQLite and Sequelize with audit trails.
+- **Shared domain layer** so business rules, DTOs, and services stay consistent across surfaces.
+- **Seed & maintenance tools** that bootstrap demo data and run integrity checks in one command.
+
+---
+
+## 🏗 Architecture at a Glance
+
+```
+┌──────────────────────────┐
+|  Electron Shell (Node)   |
+|  packages/electron       |
+|  • main process          |
+|  • preload bridge        |
+└────────────┬─────────────┘
+             │ IPC / window.api
+┌────────────▼─────────────┐
+|  React Renderer          |
+|  packages/frontend       |
+|  • Ant Design UI         |
+|  • Redux Toolkit store   |
+└────────────┬─────────────┘
+             │ HTTP / REST
+┌────────────▼─────────────┐
+|  Backend API (Node 22)   |
+|  packages/backend        |
+|  • routing-controllers   |
+|  • Typedi DI             |
+└────────────┬─────────────┘
+             │ ORM
+┌────────────▼─────────────┐
+|  Shared Domain Layer     |
+|  packages/shared         |
+|  • Sequelize models      |
+|  • Auth, audit, wiki     |
+└────────────┬─────────────┘
+             │ SQLite
+       ┌─────▼─────┐
+       | Storage   |
+       | app.sqlite|
+       └───────────┘
 ```
 
----
+Additional packages:
 
-## Architecture Overview
-
-See `docs/architecture-overview.md` for a deeper walkthrough of the Electron lifecycle, IPC surface, renderer composition, and data flow between layers. The document is kept alongside this README so the implementation notes evolve with the codebase.
-
----
-
-## Quick Start
-
-1. Install dependencies: `npm install`
-2. Desktop (offline) mode: `npm run dev:electron`
-3. Backend API mode: `npm run dev:backend` (exposes REST services on port `3333`)
-4. Browser UI mode: `npm run dev:frontend` (proxy `/api` -> `http://localhost:3333` by default)
-5. Build production bundles: `npm run build:electron`, `npm run build:backend`, `npm run build:frontend`
-6. Package the Windows desktop app: `npm run build:win`
-7. Esplora la documentazione REST generata automaticamente: `http://localhost:3333/docs` (spec JSON su `/docs.json`)
-
-> Tip: copy `env/.env.desktop` before running Electron-focused commands, `env/.env.webapp` before `dev:frontend`, and `env/.env.backend` before `dev:backend` / backend builds so each stack picks up the right defaults automatically.
-
-All commands assume a recent Node 22 environment. The Electron app automatically seeds sane defaults on first launch.
+| Package          | Role |
+| ---------------- | ---- |
+| `packages/seeding` | Faker-based seed orchestration and database maintenance utilities. |
+| `scripts/*` | Support scripts (`versioning.mjs`, postinstall tasks, etc.). |
+| `.assets/` | Static imagery for documentation and product previews. |
 
 ---
 
-## Scripts & Tooling
+## ✨ Feature Highlights
 
-| Command                          | Purpose                                                   |
-| -------------------------------- | --------------------------------------------------------- |
-| `npm run format`                 | Runs Prettier across every workspace (`format:*` helpers) |
-| `npm run format:<target>`        | Format a single surface (`electron`, `frontend`, `backend`, `shared`, `seeding`) |
-| `npm run lint`                   | Lint Electron, frontend, backend, shared, and seeding sequentially |
-| `npm run lint:<target>`          | Lint a single surface (same targets as above)             |
-| `npm run typecheck`              | Aggregated TypeScript checks for Node and web             |
-| `npm run test` / `npm run test:<target>` | Jest suites for all surfaces or a single target        |
-| `npm run test:watch`             | Jest watch mode for the Electron stack                    |
-| `npm run dev:electron`           | Electron main + renderer in desktop offline mode          |
-| `npm run dev:backend`            | Start the REST backend with live TypeScript transpilation |
-| `npm run dev:frontend`           | Serve the React SPA (Vite proxy forwards `/api` calls)    |
-| `npm run build:electron`         | Production bundle for the Electron desktop app            |
-| `npm run build:backend`          | Transpile shared services + backend to `out/backend`      |
-| `npm run build:frontend`         | Vite build of the browser renderer to `out/renderer-web`  |
-| `npm run start:backend`          | Run the compiled backend (`npm run build:backend` first)  |
-| `npm run db:seed`                | Execute `DevelopmentSeeder` via ts-node with path aliases |
-
-### Docker Compose
-
-- Build and run both backend and web UI: `docker-compose up --build`
-- Override ports with `HOST_API_PORT` (host mapping, default `3333`), `API_PORT` (container listen port, default `3333`) and `FRONTEND_PORT` (default `8080`)
-- Persisted SQLite data is stored in the named volume `backend-data`
-- For local browser-only dev, the Vite server proxies every `/api/*` request to `API_PROXY_TARGET` (default `http://localhost:3333`). Set `API_PROXY_TARGET` if your backend runs elsewhere.
-
-### Versioning & Releases
-
-- Esegui `npm run version:bump` per impostare manualmente la nuova versione: lo script aggiorna `env/.env`, `package.json`, `package-lock.json`, il badge `version-` nel README e crea automaticamente il commit `chore: bump version to X.Y.Z`.
-- La versione applicativa è dichiarata in `env/.env` (`APP_VERSION`) e deve rimanere allineata con `package.json`; il comando precedente garantisce l'aggiornamento coerente dei file.
-- Su `develop` sono ammessi solo branch `feature/`, `feat/`, `bugfix/`, `bug/`, `fix/`; su `main` soltanto `release/` e `hotfix/`. I merge non conformi vengono bloccati sia in locale sia in CI.
-- La pipeline `Release` su GitHub genera esclusivamente il pacchetto Windows portable e pubblica tag+release partendo dalla versione presente nel repository.
-- Gli hook Git sono gestiti da Husky: `npm install` esegue automaticamente `prepare` per configurare i controlli pre-commit (`npm run lint`) e commitlint (Conventional Commits) sul messaggio.
+- **Authentication & Role Management** – Admin-maintained roles (Admin, Maintainer, Contributor, Viewer) with audit trails.
+- **Projects & Tasks** – Backlog, sprints, kanban lanes, saved views, and status automation.
+- **Notes & Wikis** – Markdown editing with preview, search via FTS, and revision history.
+- **Dashboards** – Cross-project overview, user analytics, filters, and saved board configurations.
+- **Seed & Demo Data** – Deterministic Faker-based seeding for fast onboarding.
+- **REST Documentation** – Automatic OpenAPI spec + Swagger UI at `/docs`.
+- **Configurable Runtime** – Desktop, webapp, and backend each read dedicated env manifests from `env/`.
 
 ---
 
-## Database & Seeding
+## 🛠 Developer Experience
 
-Set `DB_STORAGE_PATH` to override the default SQLite location (Electron `app.getPath('userData')`). Run `npm run db:seed` to populate the database with roles, users, projects, Kanban boards, notes, comments, and audit logs. To seed a running API instead of touching the SQLite file directly:
-
-- `npm run db:seed:backend` &rarr; posts to `http://localhost:3333/seed`
-- `npm run db:seed -- --port 5555` &rarr; targets `http://localhost:5555/seed`
-- `npm run db:seed -- --host 10.0.0.42 --port 8080` &rarr; remote host/port
-
-The CLI also honors `SEED_BACKEND_PORT` / `SEED_BACKEND_HOST` (falling back to the legacy `SEED_API_*` variables). All modes log progress so large batches remain traceable.
-
----
-
-## Testing Strategy
-
-- Jest multi-project setup covers both Node (main/preload) and jsdom (renderer) environments.
-- Testing Library exercises UI components, hooks, and flows relevant to routing and theming.
-- ts-jest respects the repo's TypeScript configuration, enabling decorators and module aliases without extra setup.
-- Coverage targets `packages/**/*.{ts,tsx}` and seeding modules while excluding generated code and declaration files.
+- **Monorepo with shared tooling** – Single ESLint/Prettier/Jest configs at repo root plus TS project references.
+- **electron-vite** – Unified build pipeline for Electron main, preload, and renderer processes.
+- **Typed IPC bridge** – `window.api` surface validated in preload with runtime-safe contracts.
+- **Structured logging** – Colorized console output plus optional file sink when `LOG_STORAGE_PATH` is provided.
+- **Dockerized pipelines** – Separate builder/runtime stages for backend & frontend with curated dependency manifests.
+- **Scripts for everything** – Formatting, linting, seeding, type checks, packaging, and clean-up (`npm run reset:build`).
 
 ---
 
-## window.api Contract
+## 🚀 Getting Started
 
-The preload script exposes a single `window.api` namespace typed in `packages/electron/src/preload/src/types.ts`. Every action resolves to an `IpcResponse<T>` discriminated union. Available modules include:
+1. **Install dependencies**
+   ```bash
+   npm install
+   ```
+2. **Launch the desktop app**
+   ```bash
+   npm run dev:electron
+   ```
+3. **Run backend API only**
+   ```bash
+   npm run dev:backend
+   ```
+4. **Run web SPA**
+   ```bash
+   npm run dev:frontend
+   ```
+5. **Build artifacts**
+   ```bash
+    # Electron portable build (goes to dist/)
+    npm run build:electron
 
-- `health.check()`
-- `auth.login`, `auth.logout`, `auth.session`, `auth.listUsers`, `auth.createUser`, `auth.updateUser`
-- `project.list`, `project.get`, `project.create`, `project.update`, `project.remove`, `project.addMember`, `project.removeMember`
-- `task.list`, `task.get`, `task.create`, `task.update`, `task.move`, `task.remove`, `task.listComments`, `task.addComment`, `task.search`
-- `note.list`, `note.get`, `note.create`, `note.update`, `note.remove`, `note.attachTask`, `note.detachTask`
+    # Backend transpiled output (out/backend)
+    npm run build:backend
 
-Utility helpers unwrap the union inside the renderer and trigger session recovery or logout flows on failure.
+    # SPA static bundle (out/renderer-web)
+    npm run build:frontend
+   ```
+6. **Package Windows installer/portable**
+   ```bash
+   npm run build:win
+   ```
 
----
-
-## Configuration
-
-Two ready-to-use presets live at the repo root:
-
-- `env/.env.desktop` → offline Electron runtime (IPC bridge + DevTools).
-- `env/.env.webapp` → standalone browser UI + REST backend (HTTP calls).
-- `env/.env.backend` → dedicated settings for the REST backend service and seeding CLI.
-
-Copy the one you need to `env/.env` (or export the same variables) before running commands. The `APP_RUNTIME` / `VITE_APP_RUNTIME` pair toggles the renderer transport so Electron sticks to IPC while the webapp automatically enables the HTTP bridge and proxy.
-
-| Variable                            | Default               | Description                                                                  |
-| ----------------------------------- | --------------------- | ---------------------------------------------------------------------------- |
-| `APP_RUNTIME` / `VITE_APP_RUNTIME`  | `desktop`             | `desktop` keeps IPC wiring; `webapp` enables the HTTP bridge + `/api` proxy  |
-| `LOG_LEVEL`                         | `info`                | Adjusts the structured logger verbosity                                      |
-| `SESSION_TIMEOUT_MINUTES`           | `60`                  | Overrides the default auth session TTL (also persisted in `system_settings`) |
-| `DB_STORAGE_PATH`                   | Electron app data dir | Custom database location for runtime and seeding                             |
-| `ELECTRON_START_URL`                | auto                  | Dev server URL, injected by electron-vite during `npm run dev:electron`      |
-| `ENABLE_DEVTOOLS`                   | auto                  | `true` forces DevTools on, `false` blocks them regardless of environment     |
-| `API_PROXY_TARGET` (dev servers)    | `http://localhost:3333` | Target for Vite’s `/api` proxy when running as a webapp                    |
-| `VITE_API_BASE_URL` (SPA builds)    | `/api`                | Base URL baked into the standalone frontend for direct HTTP calls            |
-| `API_PORT` / `SEED_BACKEND_PORT`    | `3333`                | Backend REST port plus the seed CLI’s default remote target                  |
-
-Use `env/.env`, `env/.env.desktop`, `env/.env.webapp`, or per-machine environment variables to customize settings; see `env/.env.example` for guidance.
+> ℹ️ ENV files live under `env/`. Copy/adjust the appropriate `.env.*` file (`desktop`, `webapp`, `backend`) before running each surface to override ports, base paths, or logging destinations.
 
 ---
 
-## Security
+## 🤖 Scripts & Automation
 
-- BrowserWindow instances disable `nodeIntegration`, enforce `contextIsolation`, and apply a strict content security policy.
-- Navigation and new window requests are denied unless explicitly whitelisted.
-- Network access defaults to offline-only with optional localhost allowances in development.
-- Session lifecycle management prunes expired tokens on an interval to reduce attack surface.
-- Console noise is filtered and re-routed through the structured logger for easier diagnostics.
-
----
-
-## Troubleshooting
-
-- **Missing `@main/*` imports in scripts**: Always execute CLIs via `npm run` so `tsconfig-paths/register` is loaded.
-- **SQLite build issues on Windows**: Install Visual Studio Build Tools with the "Desktop development with C++" workload.
-- **Renderer fails to load in dev**: Restart `npm run dev:electron` to refresh the electron-vite dev server and ports.
-- **React Router warnings in tests**: Future-facing flags are enabled; re-run tests after clearing Jest cache if warnings persist.
+| Command | Purpose |
+| ------ | ------- |
+| `npm run format` / `format:*` | Prettier formatting per workspace. |
+| `npm run lint` / `lint:*` | ESLint across electron, frontend, backend, shared, seeding. |
+| `npm run test:*` | Jest projects per workspace (JS DOM env where needed). |
+| `npm run typecheck` | Validates Electron TS configs (node + web). |
+| `npm run reset:build` | Removes `dist/` and `out/` via `rimraf`. |
+| `npm run build:*` | Builds each surface (electron, backend, frontend). |
+| `npm run dev:*` | Development watchers for each runtime. |
+| `npm run db:seed` / `db:seed:backend` | Runs seeding pipeline via shared services. |
+| `npm run version:bump` | Interactive semver bump via `scripts/versioning.mjs` (includes env/version badge updates). |
 
 ---
 
-## Contributing
+## ⚙ Configuration & Environment
 
-1. Clone the repository and install dependencies.
-2. Branch off `main` before starting work.
-3. Keep imports aligned with the configured path aliases (`@main/*`, `@preload/*`, `@renderer/*`).
-4. Add or update tests alongside code changes.
-5. Validate with `npm run lint && npm run typecheck && npm run test`.
-
-No explicit OSS license is bundled; coordinate internally before distributing binaries.
+- All runtime configs live in `env/` (dev/prod variants for desktop, webapp, backend).  
+- Shared keys:
+  - `LOG_LEVEL`, `LOG_STORAGE_PATH`
+  - `APP_VERSION`, `APP_RUNTIME`, `VITE_APP_RUNTIME`
+  - Backend-specific: `API_PORT`, `DB_STORAGE_PATH`, `SEED_BACKEND_PORT`
+  - Web-specific: `VITE_API_BASE_URL`, `PUBLIC_BASE`, `VITE_PUBLIC_BASE`
+- `LOG_STORAGE_PATH` enables file-based logging; directories are auto-created.
+- `.env.example` documents every supported variable for quick reference.
 
 ---
 
-[version-shield]: https://img.shields.io/badge/version-0.60.17-blue?style=flat
-[version-link]: https://github.com/dsk-labs/dsk-electron-react-project-manager/releases
-[electron-shield]: https://img.shields.io/badge/electron-38.3-47848f?logo=electron&logoColor=white
+## 🗄 Data & Seeding
+
+- SQLite lives at `out/storage/backend/app.sqlite` by default (or `/data/app.sqlite` in Docker).  
+- Seeding commands:
+  ```bash
+  npm run db:seed            # desktop/web combined context
+  npm run db:seed:backend    # uses backend env + port overrides
+  ```
+- `packages/seeding` contains Faker-driven factories plus database maintenance utilities that ensure schema upgrades (FTS indexes, missing columns, etc.).
+
+---
+
+## 🧪 Testing & Quality
+
+- **Jest multi-project config** (`jest.config.ts`) with dedicated projects for electron, frontend, backend, shared, and seeding.
+- **Testing Library + React Testing Library** for renderer surfaces.
+- **ts-jest** enables type-aware backend/electron tests.
+- **ESLint 9 flat config** + Prettier 3 for consistent code style.
+- `npm run lint`, `npm run test`, and `npm run typecheck` should pass before opening a PR.
+
+---
+
+## 🐳 Docker Workflow
+
+- `docker/frontend.Dockerfile` – multi-stage build (Node builder ➜ nginx runtime).  
+  Uses `docker/frontend.dev.package.json` for lean dependency installs.
+- `docker/backend.Dockerfile` – builder (installs dev deps, compiles TS) ➜ runtime (installs prod deps, runs API).  
+  Reads `LOG_STORAGE_PATH`, `API_PORT`, etc. from mounted env files.
+- `docker-compose.yml` orchestrates `frontend` + `backend` services with shared volume `backend-data` for SQLite persistence.  
+- Copy env files into the `env/` folder (already part of the repo); adjust `HOST_API_PORT`/`API_PORT`/`PUBLIC_BASE` to host the SPA under sub-paths.
+
+---
+
+## 📜 Logging & Monitoring
+
+- Central logger lives in `packages/shared/src/config/logger.ts`.
+- By default logs go to stdout with colored context tags.  
+- If `LOG_STORAGE_PATH` is set (e.g., `out/logs/backend-dev.log` or `/data/logs/backend.log`), logs are additionally persisted to disk.
+- Request middleware (`packages/backend/src/middleware/requestLogger.ts`) records method, path, auth snapshot, query/body payload (with sensitive keys redacted), latency, and user roles for every HTTP call.
+
+---
+
+## 🪄 Versioning & Releases
+
+- `scripts/versioning.mjs` enforces semver bumps, updates `package.json`, `package-lock.json`, README badges, and every `.env*` file’s `APP_VERSION`, then stages + commits with `chore: bump version to x.y.z`.
+- Electron packaging uses `packages/electron/electron-builder.yml`, outputting to `dist/`.
+- Portable artifacts carry custom icons from `.assets` / `packages/electron/build`.
+
+---
+
+## 📝 License
+
+This project is licensed under the [MIT License](LICENSE).
+
+---
+
+### Reference Links
+
+[license-badge]: https://img.shields.io/badge/License-MIT-2ea44f.svg
+[license-link]: LICENSE
+[node-badge]: https://img.shields.io/badge/Node-22.x-43853d?logo=node.js&logoColor=white
+[node-link]: https://nodejs.org/
+[electron-badge]: https://img.shields.io/badge/Electron-38-47848f?logo=electron&logoColor=white
 [electron-link]: https://www.electronjs.org/
-[react-shield]: https://img.shields.io/badge/react-19-61dafb?logo=react&logoColor=white
+[react-badge]: https://img.shields.io/badge/React-19-61dafb?logo=react&logoColor=black
 [react-link]: https://react.dev/
-[sqlite-shield]: https://img.shields.io/badge/sqlite-3-blue?logo=sqlite&logoColor=white
+[sqlite-badge]: https://img.shields.io/badge/SQLite-3-003b57?logo=sqlite&logoColor=white
 [sqlite-link]: https://www.sqlite.org/
-[typescript-shield]: https://img.shields.io/badge/typescript-5.7-3178c6?logo=typescript&logoColor=white
-[typescript-link]: https://www.typescriptlang.org/
-[jest-shield]: https://img.shields.io/badge/tests-jest%2029-99425b?logo=jest&logoColor=white
-[jest-link]: https://jestjs.io/
-
