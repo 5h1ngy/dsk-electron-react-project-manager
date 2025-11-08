@@ -7,7 +7,7 @@
 [![TypeScript Shield][typescript-shield]][typescript-link]
 [![Jest Shield][jest-shield]][jest-link]
 
-![Application preview](assets/preview.png)
+![Application preview](.assets/preview.png)
 
 ---
 
@@ -64,7 +64,7 @@ dsk-electron-react-project-manager
 |  \- seeding    # Seeder entry points and dataset builders
 |- resources     # Icons and extra assets for packaging
 |- test          # Jest configuration, mocks, and helpers
-|- assets        # Static resources (preview, logos, etc.)
+|- .assets       # Static resources (preview, logos, etc.)
 \- build/out     # Generated artifacts
 ```
 

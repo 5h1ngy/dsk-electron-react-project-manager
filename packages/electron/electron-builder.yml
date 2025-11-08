@@ -16,6 +16,7 @@ win:
     - target: portable
       arch:
         - x64
+  icon: build/icon.ico
   executableName: dsk-project-manager
   artifactName: ${name}-${version}-portable-win.${ext}
 portable:
