@@ -115,7 +115,7 @@ All commands assume a recent Node 22 environment. The Electron app automatically
 ### Docker Compose
 
 - Build and run both backend and web UI: `docker-compose up --build`
-- Override ports with `API_PORT` (default `3333`) and `FRONTEND_PORT` (default `8080`)
+- Override ports with `HOST_API_PORT` (host mapping, default `3333`), `API_PORT` (container listen port, default `3333`) and `FRONTEND_PORT` (default `8080`)
 - Persisted SQLite data is stored in the named volume `backend-data`
 - For local browser-only dev, the Vite server proxies every `/api/*` request to `API_PROXY_TARGET` (default `http://localhost:3333`). Set `API_PROXY_TARGET` if your backend runs elsewhere.
 
