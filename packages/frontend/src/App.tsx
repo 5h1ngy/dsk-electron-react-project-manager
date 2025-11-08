@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from 'react'
 import { HashRouter } from 'react-router-dom'
 import { App as AntdApp, ConfigProvider, theme } from 'antd'
-import { Helmet, HelmetProvider } from 'react-helmet-async'
+import { Helmet } from 'react-helmet'
 
 import { ErrorBoundary } from '@renderer/components/ErrorBoundary'
 import { AppRoutes } from '@renderer/pages/routes'
@@ -157,7 +157,7 @@ const App = () => {
   const faviconHref = `${import.meta.env.BASE_URL ?? '/'}favicon.ico`
 
   return (
-    <HelmetProvider>
+    <>
       <Helmet>
         <title>DSK Project Manager</title>
         <link rel="icon" href={faviconHref} />
@@ -179,7 +179,7 @@ const App = () => {
           </HashRouter>
         </ConfigProvider>
       </ErrorBoundary>
-    </HelmetProvider>
+    </>
   )
 }
 

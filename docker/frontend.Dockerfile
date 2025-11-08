@@ -8,7 +8,8 @@ ENV VITE_PUBLIC_BASE=$VITE_PUBLIC_BASE
 WORKDIR /app
 
 COPY docker/frontend.dev.package.json ./package.json
-RUN npm install --legacy-peer-deps
+COPY package-lock.json ./
+RUN npm install
 
 COPY package.json package-lock.json ./
 COPY packages ./packages

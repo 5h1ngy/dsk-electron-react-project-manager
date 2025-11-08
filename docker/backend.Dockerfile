@@ -21,7 +21,8 @@ WORKDIR /app
 
 # install slim runtime dependencies for the backend service
 COPY docker/backend.prod.package.json ./package.json
-RUN npm install --omit=dev --legacy-peer-deps
+COPY package-lock.json ./
+RUN npm install --omit=dev
 
 COPY packages/backend/tsconfig.backend.json ./packages/backend/tsconfig.backend.json
 COPY --from=builder /app/out/backend ./out/backend
