@@ -37,94 +37,105 @@ export const ExperienceShowcase: FC<ExperienceShowcaseProps> = ({ accent }) => {
         </Typography.Title>
         <Space direction="vertical" size={token.marginXL} style={{ width: '100%' }}>
           {experienceDeck.map((experience, index) => {
-            const content = (
-              <Space direction="vertical" size="middle" style={{ width: '100%' }}>
-                <Tag
-                  bordered={false}
-                  style={{
-                    borderColor: accent,
-                    color: accent,
-                    background: `${accent}20`,
-                    alignSelf: 'flex-start'
-                  }}
-                >
-                  {experience.badge}
-                </Tag>
-                <Typography.Title level={3} style={{ marginBottom: 0, color: accent }}>
-                  {experience.title}
-                </Typography.Title>
-                <Typography.Paragraph style={{ color: token.colorTextSecondary, marginBottom: 0 }}>
-                  {experience.summary}
-                </Typography.Paragraph>
-                <Space wrap>
-                  {experience.highlights.map((highlight) => (
-                    <Tag
-                      key={highlight}
-                      bordered={false}
-                      style={{
-                        background: token.colorBgElevated,
-                        color: token.colorTextBase,
-                        borderRadius: 999,
-                        padding: '4px 12px'
-                      }}
-                    >
-                      {highlight}
-                    </Tag>
-                  ))}
-                </Space>
-              </Space>
-            )
-
-            const mockup = (
-              <Card
-                bordered={false}
-                style={{
-                  borderRadius: token.borderRadiusXXL,
-                  background: 'transparent',
-                  boxShadow: modeAwareShadow(token.colorBgBase)
-                }}
-                bodyStyle={{ padding: token.padding, display: 'flex', justifyContent: 'center' }}
-              >
-                <Image
-                  src={experience.image}
-                  alt={experience.title}
-                  preview={false}
-                  style={{
-                    borderRadius: token.borderRadiusLG,
-                    width: '120%',
-                    maxWidth: '120%',
-                    marginLeft: '-10%'
-                  }}
-                />
-              </Card>
-            )
-
-            const columns = [
-              <Col xs={24} lg={12} key="content">
-                {content}
-              </Col>,
-              <Col xs={24} lg={12} key="mockup">
-                {mockup}
-              </Col>
-            ]
-
-            const ordered = index % 2 === 0 ? columns : columns.reverse()
+            const isEven = index % 2 === 0
+            const imageShift = isEven ? '10%' : '-10%'
 
             return (
               <div
                 key={experience.title}
                 style={{
-                  borderRadius: token.borderRadiusXXL,
+                  borderRadius: token.borderRadiusXXL * 2,
                   border: `1px solid ${accent}33`,
-                  background: isDark ? 'rgba(6,9,20,0.75)' : 'rgba(255,255,255,0.8)',
-                  boxShadow: `0 35px 80px rgba(15,23,42,0.4)`,
-                  padding: token.paddingXL,
-                  backdropFilter: 'blur(18px)'
+                  background: isDark ? 'rgba(6,9,20,0.72)' : 'rgba(255,255,255,0.9)',
+                  boxShadow: `0 40px 90px rgba(15,23,42,0.35)`,
+                  padding: `${token.paddingLG}px ${token.paddingXL}px`,
+                  backdropFilter: 'blur(20px)',
+                  overflow: 'visible'
                 }}
               >
-                <Row gutter={[32, 32]} align="middle" style={{ minHeight: 460 }}>
-                  {ordered}
-                </Row>
+                <div
+                  style={{
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    alignItems: 'center',
+                    flexDirection: isEven ? 'row' : 'row-reverse',
+                    gap: token.marginXL,
+                    minHeight: 280
+                  }}
+                >
+                  <div
+                    style={{
+                      flex: '1 1 320px',
+                      padding: `${token.paddingSM}px ${token.paddingLG}px`,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: token.marginSM,
+                      alignItems: 'flex-start'
+                    }}
+                  >
+                    <Tag
+                      bordered={false}
+                      style={{
+                        borderColor: accent,
+                        color: accent,
+                        background: `${accent}20`
+                      }}
+                    >
+                      {experience.badge}
+                    </Tag>
+                    <Typography.Title level={3} style={{ marginBottom: 0, color: accent }}>
+                      {experience.title}
+                    </Typography.Title>
+                    <Typography.Paragraph style={{ color: token.colorTextSecondary, marginBottom: 0 }}>
+                      {experience.summary}
+                    </Typography.Paragraph>
+                    <Space wrap>
+                      {experience.highlights.map((highlight) => (
+                        <Tag
+                          key={highlight}
+                          bordered={false}
+                          style={{
+                            background: token.colorBgElevated,
+                            color: token.colorTextBase,
+                            borderRadius: 999,
+                            padding: '4px 12px'
+                          }}
+                        >
+                          {highlight}
+                        </Tag>
+                      ))}
+                    </Space>
+                  </div>
+                  <div style={{ flex: '1 1 360px', display: 'flex', justifyContent: 'center' }}>
+                    <Card
+                      bordered={false}
+                      style={{
+                        borderRadius: token.borderRadiusXXL,
+                        background: 'transparent',
+                        boxShadow: modeAwareShadow(token.colorBgBase)
+                      }}
+                      bodyStyle={{
+                        padding: token.padding,
+                        display: 'flex',
+                        justifyContent: 'center',
+                        overflow: 'visible'
+                      }}
+                    >
+                      <Image
+                        src={experience.image}
+                        alt={experience.title}
+                        preview={false}
+                        style={{
+                          borderRadius: token.borderRadiusLG,
+                          width: '120%',
+                          maxWidth: 'none',
+                          transform: `translateX(${imageShift})`,
+                          boxShadow: '0 25px 60px rgba(0,0,0,0.35)'
+                        }}
+                      />
+                    </Card>
+                  </div>
+                </div>
               </div>
             )
           })}
