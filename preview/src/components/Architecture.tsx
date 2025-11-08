@@ -6,7 +6,7 @@ export const Architecture: FC = () => {
   const { token } = theme.useToken()
 
   return (
-    <section className="section architecture">
+    <section style={{ marginTop: token.marginXL * 2.5 }}>
       <Typography.Title level={2}>Architecture in four movements</Typography.Title>
       <Typography.Paragraph type="secondary">
         Desktop, backend, renderer, and tooling share the same schema, tokens, and logging strategy.
@@ -21,7 +21,8 @@ export const Architecture: FC = () => {
                 padding: `${token.paddingSM}px ${token.paddingLG}px`,
                 borderRadius: token.borderRadiusLG,
                 background: token.colorBgElevated,
-                border: `1px solid ${token.colorBorder}`
+                border: `1px solid ${token.colorBorder}`,
+                boxShadow: token.boxShadow
               }}
             >
               <Typography.Title level={4}>{step.title}</Typography.Title>
@@ -31,15 +32,22 @@ export const Architecture: FC = () => {
         }))}
       />
 
-      <div className="stats">
+      <div
+        style={{
+          marginTop: token.marginXL,
+          display: 'grid',
+          gap: token.marginLG,
+          gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))'
+        }}
+      >
         {releaseStats.map((stat) => (
           <div
             key={stat.label}
-            className="stat"
             style={{
               borderRadius: token.borderRadiusLG,
               border: `1px solid ${token.colorBorderSecondary}`,
-              background: token.colorBgContainer
+              background: token.colorBgContainer,
+              padding: `${token.paddingSM}px ${token.paddingLG}px`
             }}
           >
             <Typography.Text type="secondary">{stat.label}</Typography.Text>

@@ -3,7 +3,7 @@ import { Card, Typography, theme } from 'antd'
 export const Showcase = () => {
   const { token } = theme.useToken()
   return (
-    <section className="section" id="showcase">
+    <section style={{ marginTop: token.marginXL * 2.5 }} id="showcase">
       <Typography.Title level={2}>Unified experience</Typography.Title>
       <Typography.Paragraph type="secondary">
         Dashboards, kanban, wiki, seed orchestration, and admin panels all share the same Ant Design

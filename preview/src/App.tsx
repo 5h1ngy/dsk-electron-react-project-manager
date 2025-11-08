@@ -27,33 +27,56 @@ const AppShell = ({
   const { token } = antdTheme.useToken()
 
   useEffect(() => {
-    const root = document.documentElement
-    root.style.setProperty('--app-bg', token.colorBgLayout ?? '#05070d')
-    root.style.setProperty('--app-surface', token.colorBgContainer ?? '#111b2d')
-    root.style.setProperty('--app-elevated', token.colorBgElevated ?? '#1f2937')
-    root.style.setProperty('--app-border', token.colorBorderSecondary ?? 'rgba(255,255,255,0.08)')
-    root.style.setProperty('--app-text', token.colorTextBase ?? '#e2e8f0')
-    root.style.setProperty('--app-text-secondary', token.colorTextSecondary ?? '#94a3b8')
-    root.style.setProperty('--app-accent', token.colorPrimary ?? '#6366f1')
-    root.style.setProperty('--app-shadow', token.boxShadow ?? '0 20px 50px rgba(15,23,42,.35)')
-  }, [
-    token.colorBgContainer,
-    token.colorBgElevated,
-    token.colorBgLayout,
-    token.colorBorderSecondary,
-    token.colorPrimary,
-    token.colorTextBase,
-    token.colorTextSecondary,
-    token.boxShadow
-  ])
+    document.body.style.background = token.colorBgLayout ?? '#05070d'
+    document.body.style.color = token.colorTextBase ?? '#e2e8f0'
+    document.body.style.fontFamily =
+      token.fontFamily ?? 'Inter, "SF Pro Display", "Segoe UI", system-ui, sans-serif'
+    document.body.style.transition = 'background 0.4s ease, color 0.4s ease'
+  }, [token.colorBgLayout, token.colorTextBase, token.fontFamily])
 
   return (
-    <Layout className={`app app-${mode}`}>
-      <Header className="app-header">
-        <span className="brand-dot" />
+    <Layout
+      style={{
+        minHeight: '100vh',
+        background: `radial-gradient(circle at top, ${token.colorBgContainer}20, transparent 55%)`
+      }}
+    >
+      <Header
+        style={{
+          position: 'sticky',
+          top: 0,
+          zIndex: 10,
+          display: 'flex',
+          alignItems: 'center',
+          gap: token.marginSM,
+          fontWeight: 600,
+          textTransform: 'uppercase',
+          letterSpacing: '0.05em',
+          padding: '18px 32px',
+          background: 'rgba(5, 7, 13, 0.7)',
+          borderBottom: `1px solid ${token.colorBorderSecondary}`,
+          backdropFilter: 'blur(12px)'
+        }}
+      >
+        <span
+          style={{
+            width: 12,
+            height: 12,
+            borderRadius: 999,
+            background: token.colorPrimary,
+            display: 'inline-block'
+          }}
+        />
         <span>DSK Project Manager</span>
       </Header>
-      <Content className="app-content">
+      <Content
+        style={{
+          padding: '48px 24px 96px',
+          maxWidth: 1080,
+          margin: '0 auto',
+          width: '100%'
+        }}
+      >
         <Hero />
         <TokenPlayground
           mode={mode}
@@ -66,7 +89,14 @@ const AppShell = ({
         <Showcase />
         <CallToAction />
       </Content>
-      <Footer className="app-footer">
+      <Footer
+        style={{
+          textAlign: 'center',
+          padding: 32,
+          background: 'transparent',
+          color: token.colorTextSecondary
+        }}
+      >
         Crafted with Electron + React · MIT License · Hosted on GitHub Pages
       </Footer>
       <FloatButton.BackTop visibilityHeight={200} />

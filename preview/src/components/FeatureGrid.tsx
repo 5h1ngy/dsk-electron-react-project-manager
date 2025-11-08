@@ -6,7 +6,7 @@ export const FeatureGrid: FC = () => {
   const { token } = theme.useToken()
 
   return (
-    <section className="section">
+    <section style={{ marginTop: token.marginXL * 2.5 }}>
       <Typography.Title level={2}>Why teams pick DSK Project Manager</Typography.Title>
       <Typography.Paragraph type="secondary">
         Shared domain logic, hardened IPC, and curated UX patterns keep multi-surface delivery tidy.
@@ -21,10 +21,13 @@ export const FeatureGrid: FC = () => {
                 borderRadius: token.borderRadiusLG,
                 background: token.colorBgElevated,
                 border: `1px solid ${token.colorBorderSecondary}`,
-                boxShadow: token.boxShadowSecondary ?? token.boxShadow
+                boxShadow: token.boxShadowSecondary ?? token.boxShadow,
+                display: 'flex',
+                flexDirection: 'column',
+                gap: token.marginSM
               }}
             >
-              <div className="feature-emoji">{card.emoji}</div>
+              <div style={{ fontSize: 28, marginBottom: token.marginXS }}>{card.emoji}</div>
               <Typography.Title level={4}>{card.title}</Typography.Title>
               <Typography.Paragraph type="secondary">{card.description}</Typography.Paragraph>
             </Card>

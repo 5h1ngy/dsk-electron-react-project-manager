@@ -6,7 +6,7 @@ export const CallToAction = () => {
   const { token } = theme.useToken()
 
   return (
-    <section className="section">
+    <section style={{ marginTop: token.marginXL * 2 }}>
       <Card
         bordered={false}
         style={{

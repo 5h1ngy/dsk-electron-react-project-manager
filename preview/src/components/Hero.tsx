@@ -7,10 +7,13 @@ export const Hero = () => {
   const { token } = theme.useToken()
   return (
     <div
-      className="hero"
       style={{
-        padding: `${token.paddingXL}px ${token.paddingXL}px ${token.paddingLG * 3}px`,
-        gap: token.marginLG
+        textAlign: 'center',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        gap: token.marginLG,
+        padding: `${token.paddingXL}px ${token.paddingXL}px ${token.paddingLG * 3}px`
       }}
     >
       <Tag

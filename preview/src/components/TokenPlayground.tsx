@@ -20,7 +20,7 @@ export const TokenPlayground: FC<TokenPlaygroundProps> = ({
   const { token } = theme.useToken()
 
   return (
-    <section className="section">
+    <section style={{ marginTop: token.marginXL * 2 }}>
       <Card
         bordered={false}
         style={{
@@ -31,7 +31,7 @@ export const TokenPlayground: FC<TokenPlaygroundProps> = ({
         }}
       >
         <Space direction="vertical" size="large" style={{ width: '100%' }}>
-          <div className="token-heading" style={{ gap: token.marginSM }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: token.marginSM }}>
             <BulbOutlined style={{ fontSize: 28, color: token.colorPrimary }} />
             <div>
               <Typography.Title level={3} style={{ marginBottom: 0 }}>
@@ -43,7 +43,15 @@ export const TokenPlayground: FC<TokenPlaygroundProps> = ({
             </div>
           </div>
 
-          <div className="token-controls" style={{ gap: token.marginLG }}>
+          <div
+            style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: token.marginLG
+            }}
+          >
             <div>
               <Typography.Text strong>Mode</Typography.Text>
               <Switch
@@ -59,7 +67,18 @@ export const TokenPlayground: FC<TokenPlaygroundProps> = ({
               <Segmented
                 style={{ marginLeft: token.marginSM }}
                 options={ACCENT_OPTIONS.map((color) => ({
-                  label: <span className="accent-dot" style={{ backgroundColor: color }} />,
+                  label: (
+                    <span
+                      style={{
+                        width: 28,
+                        height: 28,
+                        borderRadius: 999,
+                        border: '2px solid rgba(255,255,255,0.4)',
+                        display: 'inline-block',
+                        backgroundColor: color
+                      }}
+                    />
+                  ),
                   value: color
                 }))}
                 value={accent}
@@ -68,7 +87,13 @@ export const TokenPlayground: FC<TokenPlaygroundProps> = ({
             </div>
           </div>
 
-          <div className="token-preview">
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+              gap: token.marginLG
+            }}
+          >
             <Card
               bordered={false}
               style={{
@@ -83,10 +108,22 @@ export const TokenPlayground: FC<TokenPlaygroundProps> = ({
                 in the core product.
               </Typography.Paragraph>
               <Space wrap>
-                <span className="badge">brandPrimary</span>
-                <span className="badge">brandSecondary</span>
-                <span className="badge">radiusLG</span>
-                <span className="badge">shadowSurface</span>
+                {['brandPrimary', 'brandSecondary', 'radiusLG', 'shadowSurface'].map((badge) => (
+                  <span
+                    key={badge}
+                    style={{
+                      padding: '6px 14px',
+                      borderRadius: 999,
+                      background: `${token.colorPrimary}12`,
+                      color: token.colorTextSecondary,
+                      fontSize: 12,
+                      letterSpacing: '0.04em',
+                      textTransform: 'uppercase'
+                    }}
+                  >
+                    {badge}
+                  </span>
+                ))}
               </Space>
             </Card>
           </div>
