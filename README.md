@@ -221,7 +221,7 @@ No explicit OSS license is bundled; coordinate internally before distributing bi
 
 ---
 
-[version-shield]: https://img.shields.io/badge/version-0.44.12-blue?style=flat
+[version-shield]: https://img.shields.io/badge/version-0.60.17-blue?style=flat
 [version-link]: https://github.com/dsk-labs/dsk-electron-react-project-manager/releases
 [electron-shield]: https://img.shields.io/badge/electron-38.3-47848f?logo=electron&logoColor=white
 [electron-link]: https://www.electronjs.org/
