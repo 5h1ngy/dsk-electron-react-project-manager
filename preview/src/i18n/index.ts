@@ -3,6 +3,7 @@ import { initReactI18next } from 'react-i18next'
 
 import en from '../locales/en/translation.json'
 import it from '../locales/it/translation.json'
+
 import { DEFAULT_LANGUAGE } from './language'
 
 void i18n.use(initReactI18next).init({

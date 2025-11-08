@@ -1,7 +1,9 @@
 import { Card, theme } from 'antd'
 import { useState, type ReactElement } from 'react'
+
 import type { ThemeMode } from '../theme/foundations/palette'
 import type { GalleryContent } from '../types/content'
+
 import { HeroGallery } from './HeroGallery'
 
 interface HeroMockupCardProps {

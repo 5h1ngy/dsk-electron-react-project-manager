@@ -1,6 +1,7 @@
 import { Avatar, Flex, Segmented, Select, Switch, Typography, theme } from 'antd'
 import { BulbOutlined, MoonOutlined } from '@ant-design/icons'
 import type { ReactElement } from 'react'
+
 import type { ThemeMode } from '../theme/foundations/palette'
 import { ACCENT_OPTIONS } from '../theme'
 import type { ControlCopy, LanguageOption } from '../types/content'

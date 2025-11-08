@@ -1,6 +1,7 @@
+import { darken, lighten } from '../utils'
+
 import type { ThemeMode } from './palette'
 import type { PaletteTokens } from './palette'
-import { darken, lighten } from '../utils'
 
 export interface BrandTokens {
   primary: string

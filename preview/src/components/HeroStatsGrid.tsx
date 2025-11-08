@@ -1,5 +1,6 @@
 import { Card, Flex, Typography, theme } from 'antd'
 import { useState, type ReactElement } from 'react'
+
 import type { HeroStat } from '../types/content'
 
 interface HeroStatsGridProps {

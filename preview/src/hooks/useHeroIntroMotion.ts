@@ -27,5 +27,5 @@ export const useHeroIntroMotion = (...refs: Array<RefObject<HTMLElement | null>>
     })
 
     return () => ctx.revert()
-  }, [])
+  }, [refs])
 }

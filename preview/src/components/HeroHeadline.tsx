@@ -1,9 +1,11 @@
 import { ArrowRightOutlined, DownloadOutlined } from '@ant-design/icons'
 import { Button, Space, Tag, Typography, theme } from 'antd'
 import { useRef, type ReactElement } from 'react'
+
 import type { HeroContent } from '../types/content'
-import { HeroStatsGrid } from './HeroStatsGrid'
 import { useHeroIntroMotion } from '../hooks/useHeroIntroMotion'
+
+import { HeroStatsGrid } from './HeroStatsGrid'
 
 interface HeroHeadlineProps {
   accent: string

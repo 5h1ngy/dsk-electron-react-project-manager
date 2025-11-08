@@ -1,10 +1,12 @@
 import { Card, Col, Flex, Row, theme } from 'antd'
 import { useMemo, type ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
+
 import { FALLBACK_LANGUAGE_LABELS, SUPPORTED_LANGUAGES, isSupportedLanguage } from '../i18n/language'
 import type { SupportedLanguage } from '../i18n/language'
 import type { ControlCopy, GalleryContent, HeroContent, LanguageOption } from '../types/content'
 import type { ThemeMode } from '../theme/foundations/palette'
+
 import { HeroControls } from './HeroControls'
 import { HeroHeadline } from './HeroHeadline'
 import { HeroMockupCard } from './HeroMockupCard'
@@ -30,19 +32,19 @@ export const HeroStage = ({
   const { t } = useTranslation()
 
   const heroContent = useMemo(
-    () => t('hero', { returnObjects: true }) as HeroContent,
+    () => t('hero', { returnObjects: true, lng: language }) as HeroContent,
     [t, language]
   )
   const galleryContent = useMemo(
-    () => t('gallery', { returnObjects: true }) as GalleryContent,
+    () => t('gallery', { returnObjects: true, lng: language }) as GalleryContent,
     [t, language]
   )
   const controlsCopy = useMemo(
-    () => t('controls', { returnObjects: true }) as ControlCopy,
+    () => t('controls', { returnObjects: true, lng: language }) as ControlCopy,
     [t, language]
   )
   const rawLanguageOptions = useMemo(
-    () => t('languages', { returnObjects: true }) as Array<{ label: string; value: string }>,
+    () => t('languages', { returnObjects: true, lng: language }) as Array<{ label: string; value: string }>,
     [t, language]
   )
 

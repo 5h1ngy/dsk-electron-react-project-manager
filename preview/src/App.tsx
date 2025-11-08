@@ -2,6 +2,7 @@ import { ConfigProvider, Flex, Layout, theme as antdTheme } from 'antd'
 import gsap from 'gsap'
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
+
 import { HeroStage } from './components/HeroStage'
 import { getLanguageFromUrl, resolveInitialLanguage, syncLanguageQueryParam } from './i18n/language'
 import type { SupportedLanguage } from './i18n/language'
