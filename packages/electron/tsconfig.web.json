@@ -1,27 +1,14 @@
 {
-  "extends": "@electron-toolkit/tsconfig/tsconfig.web.json",
+  "extends": "../frontend/tsconfig.json",
   "include": [
-    "src/renderer/src/env.d.ts",
-    "src/renderer/src/**/*",
-    "src/renderer/src/**/*.tsx",
+    "../frontend/src/env.d.ts",
+    "../frontend/src/**/*",
+    "../frontend/src/**/*.tsx",
     "src/preload/src/**/*.d.ts"
   ],
   "compilerOptions": {
     "composite": true,
-    "jsx": "react-jsx",
-    "baseUrl": "../..",
-    "paths": {
-      "@renderer/*": ["packages/electron/src/renderer/src/*"],
-      "@preload/*": ["packages/electron/src/preload/src/*"],
-      "@main/*": ["packages/electron/src/main/*"],
-      "@services/*": ["packages/shared/src/*"],
-      "@seeding/*": ["packages/seeding/src/*"],
-      "@api/*": ["packages/api/src/*"]
-    },
     "strict": true,
-    "types": ["jest"],
-    "resolveJsonModule": true,
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
+    "types": ["jest"]
   }
 }

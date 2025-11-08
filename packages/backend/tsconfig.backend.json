@@ -1,7 +1,10 @@
 {
   "extends": "../electron/tsconfig.node.json",
-  "include": ["./src/**/*", "../shared/src/**/*"],
+  "include": ["../shared/src/**/*", "./src/**/*", "../seeding/src/**/*"],
   "compilerOptions": {
+    "outDir": "../../out/backend",
+    "rootDir": "../..",
+    "composite": false,
     "module": "commonjs",
     "moduleResolution": "node",
     "baseUrl": "../..",

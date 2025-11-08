@@ -57,8 +57,9 @@
 ```text
 dsk-electron-react-project-manager
 |- packages
-|  |- electron   # Electron app sources (src/main, src/preload, src/renderer)
-|  |- api        # Decorator-based REST API (routing-controllers + typedi)
+|  |- electron   # Electron runtime sources (src/main, src/preload) + electron-vite config
+|  |- frontend   # React renderer (shared between Electron and standalone browser builds)
+|  |- backend    # Decorator-based REST API (routing-controllers + typedi)
 |  |- shared     # Domain models, Sequelize setup, services shared by all runtimes
 |  \- seeding    # Seeder entry points and dataset builders
 |- resources     # Icons and extra assets for packaging
@@ -79,9 +80,9 @@ See `docs/architecture-overview.md` for a deeper walkthrough of the Electron lif
 
 1. Install dependencies: `npm install`
 2. Desktop (offline) mode: `npm run dev:electron`
-3. Backend API mode: `npm run dev:api` (exposes REST services on port `3333`)
+3. Backend API mode: `npm run dev:backend` (exposes REST services on port `3333`)
 4. Browser UI mode: `npm run dev:frontend` (proxy `/api` -> `http://localhost:3333` by default)
-5. Build production bundles: `npm run build:electron`, `npm run build:api`, `npm run build:frontend`
+5. Build production bundles: `npm run build:electron`, `npm run build:backend`, `npm run build:frontend`
 6. Package the Windows desktop app: `npm run build:win`
 7. Esplora la documentazione REST generata automaticamente: `http://localhost:3333/docs` (spec JSON su `/docs.json`)
 
@@ -94,26 +95,26 @@ All commands assume a recent Node 22 environment. The Electron app automatically
 | Command                          | Purpose                                                   |
 | -------------------------------- | --------------------------------------------------------- |
 | `npm run format`                 | Runs Prettier across every workspace (`format:*` helpers) |
-| `npm run format:<target>`        | Format a single surface (`electron`, `frontend`, `api`, `shared`, `seeding`) |
-| `npm run lint`                   | Lint Electron, frontend, API, shared, and seeding sequentially |
+| `npm run format:<target>`        | Format a single surface (`electron`, `frontend`, `backend`, `shared`, `seeding`) |
+| `npm run lint`                   | Lint Electron, frontend, backend, shared, and seeding sequentially |
 | `npm run lint:<target>`          | Lint a single surface (same targets as above)             |
 | `npm run typecheck`              | Aggregated TypeScript checks for Node and web             |
 | `npm run test` / `npm run test:<target>` | Jest suites for all surfaces or a single target        |
 | `npm run test:watch`             | Jest watch mode for the Electron stack                    |
 | `npm run dev:electron`           | Electron main + renderer in desktop offline mode          |
-| `npm run dev:api`                | Start the REST backend with live TypeScript transpilation |
+| `npm run dev:backend`            | Start the REST backend with live TypeScript transpilation |
 | `npm run dev:frontend`           | Serve the React SPA (Vite proxy forwards `/api` calls)    |
 | `npm run build:electron`         | Production bundle for the Electron desktop app            |
-| `npm run build:api`              | Transpile shared services + API to `out/api`              |
+| `npm run build:backend`          | Transpile shared services + backend to `out/backend`      |
 | `npm run build:frontend`         | Vite build of the browser renderer to `out/renderer-web`  |
-| `npm run start:api`              | Run the compiled API (`npm run build:api` first)          |
+| `npm run start:backend`          | Run the compiled backend (`npm run build:backend` first)  |
 | `npm run db:seed`                | Execute `DevelopmentSeeder` via ts-node with path aliases |
 
 ### Docker Compose
 
 - Build and run both backend and web UI: `docker-compose up --build`
 - Override ports with `API_PORT` (default `3333`) and `FRONTEND_PORT` (default `8080`)
-- Persisted SQLite data is stored in the named volume `api-data`
+- Persisted SQLite data is stored in the named volume `backend-data`
 - For local browser-only dev, the Vite server proxies every `/api/*` request to `API_PROXY_TARGET` (default `http://localhost:3333`). Set `API_PROXY_TARGET` if your backend runs elsewhere.
 
 ### Versioning & Releases
@@ -130,11 +131,11 @@ All commands assume a recent Node 22 environment. The Electron app automatically
 
 Set `DB_STORAGE_PATH` to override the default SQLite location (Electron `app.getPath('userData')`). Run `npm run db:seed` to populate the database with roles, users, projects, Kanban boards, notes, comments, and audit logs. To seed a running API instead of touching the SQLite file directly:
 
-- `npm run db:seed:api` &rarr; posts to `http://localhost:3333/seed`
+- `npm run db:seed:backend` &rarr; posts to `http://localhost:3333/seed`
 - `npm run db:seed -- --port 5555` &rarr; targets `http://localhost:5555/seed`
 - `npm run db:seed -- --host 10.0.0.42 --port 8080` &rarr; remote host/port
 
-The CLI also honors `SEED_API_PORT` / `SEED_API_HOST` env variables. All modes log progress so large batches remain traceable.
+The CLI also honors `SEED_BACKEND_PORT` / `SEED_BACKEND_HOST` (falling back to the legacy `SEED_API_*` variables). All modes log progress so large batches remain traceable.
 
 ---
 

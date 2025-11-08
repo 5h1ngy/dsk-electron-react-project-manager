@@ -60,7 +60,7 @@ These roles are created automatically at startup (`DatabaseManager.ensureRoles`)
 ### Preload & Renderer
 
 - `roleApi` (preload) exposes IPC wrappers for listing, creating, updating, deleting roles. All calls require a valid token and rely on `AuthService.resolveActor` to provide the role list to backend services.
-- Localised permission descriptions are mirrored in `packages/electron/src/renderer/src/i18n/locales/*/roles.json` for consistent UI messaging.
+- Localised permission descriptions are mirrored in `packages/frontend/src/i18n/locales/*/roles.json` for consistent UI messaging.
 
 ## Lifecycle & Management Flow
 
@@ -89,6 +89,6 @@ These roles are created automatically at startup (`DatabaseManager.ensureRoles`)
 - `packages/shared/src/services/auth/index.ts` – User provisioning, role assignment, session resolution.
 - `packages/shared/src/config/database.ts` – Bootstrap seeding of system roles and admin account.
 - `packages/electron/src/preload/src/api/role.ts` – IPC bindings for role management operations.
-- `packages/electron/src/renderer/src/i18n/locales/*/roles.json` – UI copy for permission descriptions.
+- `packages/frontend/src/i18n/locales/*/roles.json` – UI copy for permission descriptions.
 
 Refer back to this document before modifying access control to ensure consistency across the codebase and UI. Always audit both service-level guards and UI affordances when introducing new capabilities or roles.

@@ -16,20 +16,20 @@ const config: Config = {
   coverageDirectory: 'coverage',
   coverageProvider: 'v8',
   collectCoverageFrom: [
-    'packages/seeding/src/**/*.{ts,tsx}',
-    '!packages/seeding/src/**/*.d.ts',
-    '!packages/seeding/src/**/*.test.ts?(x)'
+    'packages/backend/src/**/*.{ts,tsx}',
+    '!packages/backend/src/**/*.d.ts',
+    '!packages/backend/src/**/*.test.ts?(x)'
   ],
   moduleNameMapper: sharedModuleNameMapper,
   preset: 'ts-jest',
   testEnvironment: 'node',
-  testMatch: ['<rootDir>/packages/seeding/src/**/*.test.ts?(x)'],
+  testMatch: ['<rootDir>/packages/backend/src/**/*.test.ts?(x)'],
   setupFiles: ['<rootDir>/test/setupEnv.ts'],
   transform: {
     '^.+\\.(ts|tsx)$': [
       'ts-jest',
       {
-        tsconfig: '<rootDir>/packages/seeding/tsconfig.tools.json'
+        tsconfig: '<rootDir>/packages/backend/tsconfig.backend.json'
       }
     ]
   }

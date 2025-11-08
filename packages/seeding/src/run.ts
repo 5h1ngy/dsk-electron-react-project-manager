@@ -95,13 +95,23 @@ const parseRemoteSeedArgs = (argv: string[]): RemoteSeedArgs => {
   return result
 }
 
+const resolveRemoteEnvPort = (): number | undefined => {
+  const envValue = process.env.SEED_BACKEND_PORT ?? process.env.SEED_API_PORT
+  if (!envValue) {
+    return undefined
+  }
+  const parsed = Number(envValue)
+  return Number.isNaN(parsed) ? undefined : parsed
+}
+
 const resolveRemoteTarget = (args: RemoteSeedArgs): RemoteSeedTarget | null => {
-  const envPort = process.env.SEED_API_PORT ? Number(process.env.SEED_API_PORT) : undefined
+  const envPort = resolveRemoteEnvPort()
   const port = args.port ?? envPort
   if (!port || Number.isNaN(port)) {
     return null
   }
-  const host = args.host ?? process.env.SEED_API_HOST ?? 'localhost'
+  const host =
+    args.host ?? process.env.SEED_BACKEND_HOST ?? process.env.SEED_API_HOST ?? 'localhost'
   return { host, port }
 }
 
@@ -120,7 +130,7 @@ const triggerRemoteSeed = async (
     )
   }
 
-  seedLogger.success('Remote API seeding completed successfully', SEED_LOG_CONTEXT)
+  seedLogger.success('Remote backend seeding completed successfully', SEED_LOG_CONTEXT)
 }
 
 export const runSeedCli = (options: SeedCliOptions = {}): Promise<void> => {

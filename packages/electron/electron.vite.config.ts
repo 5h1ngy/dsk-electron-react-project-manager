@@ -17,8 +17,8 @@ export default defineConfig({
         '@main': resolve(__dirname, 'src/main'),
         '@preload': resolve(__dirname, 'src/preload/src'),
         '@services': resolve(__dirname, '../shared/src'),
-        '@api': resolve(__dirname, '../api/src'),
-        '@renderer': resolve(__dirname, 'src/renderer/src'),
+        '@backend': resolve(__dirname, '../backend/src'),
+        '@renderer': resolve(__dirname, '../frontend/src'),
         '@seeding': resolve(__dirname, '../seeding/src')
       }
     },
@@ -38,8 +38,8 @@ export default defineConfig({
         '@preload': resolve(__dirname, 'src/preload/src'),
         '@main': resolve(__dirname, 'src/main'),
         '@services': resolve(__dirname, '../shared/src'),
-        '@api': resolve(__dirname, '../api/src'),
-        '@renderer': resolve(__dirname, 'src/renderer/src'),
+        '@backend': resolve(__dirname, '../backend/src'),
+        '@renderer': resolve(__dirname, '../frontend/src'),
         '@seeding': resolve(__dirname, '../seeding/src')
       }
     },
@@ -60,14 +60,14 @@ export default defineConfig({
     plugins: [externalizeDepsPlugin()]
   },
   renderer: {
-    root: resolve(__dirname, 'src/renderer'),
+    root: resolve(__dirname, '../frontend'),
     resolve: {
       alias: {
-        '@renderer': resolve(__dirname, 'src/renderer/src'),
+        '@renderer': resolve(__dirname, '../frontend/src'),
         '@preload': resolve(__dirname, 'src/preload/src'),
         '@main': resolve(__dirname, 'src/main'),
         '@services': resolve(__dirname, '../shared/src'),
-        '@api': resolve(__dirname, '../api/src'),
+        '@backend': resolve(__dirname, '../backend/src'),
         '@seeding': resolve(__dirname, '../seeding/src')
       }
     },
@@ -87,7 +87,7 @@ export default defineConfig({
     },
     build: {
       rollupOptions: {
-        input: resolve(__dirname, 'src/renderer/index.html')
+        input: resolve(__dirname, '../frontend/index.html')
       }
     }
   }

@@ -3,7 +3,7 @@
 - ### Overview
 - Introduce `packages/shared` as the shared domain layer housing database orchestration, Sequelize models, and business services.
 - Keep `packages/electron/src/main` focused purely on Electron concerns (app lifecycle, window & IPC wiring, security hooks) while delegating domain work to the shared package.
-- Add `packages/api` exposing the same domain through an HTTP interface built with decorator-driven controllers.
+- Add `packages/backend` exposing the same domain through an HTTP interface built with decorator-driven controllers.
 
 ### packages/shared
 - `config/`: typed environment access, structured logger, storage-path resolver, and database bootstrap logic.
@@ -17,9 +17,9 @@
 - Retain Electron-specific bootstrapping, window management, IPC registrars, and security hardening.
 - Replace direct imports of models/services/config with `@services/*` (pointing at `packages/shared`) equivalents.
 - Compose the shared domain context through the services package, keeping session management and audit logging centralized.
-- Structure the sources under `packages/electron/src/{main,preload,renderer}` so that bundlers and tsconfig aliases have a single root.
+- Keep only `src/main` and `src/preload` under `packages/electron`; the renderer now lives in `packages/frontend` but is still consumed by electron-vite during desktop builds.
 
-### packages/api (Backend)
+### packages/backend (Backend)
 - `controllers/`: decorator-based `routing-controllers` HTTP endpoints for auth, projects, tasks, notes, wiki, and admin operations.
 - `middlewares/`: auth/session guards mapping bearer tokens to domain actors.
 - `startup/`: domain context bootstrap, database initialization, and Express server wiring.
@@ -27,12 +27,12 @@
 - Renderer fallback wiring automatically hydrates `window.api` via HTTP when the Electron preload bridge is absent, allowing the SPA build to target the REST API seamlessly.
 
 ### Tooling & Scripts
-- Extend TypeScript path aliases and Jest module mapping to include `@services/*` (-> `packages/shared/src`) and `@api/*`.
-- Add npm scripts for `dev:electron`, `dev:frontend`, `dev:api`, plus `build:electron`, `build:frontend`, `build:api`.
-- Provide a `docker-compose.yml` that runs frontend (Vite preview) and backend (API server) together on localhost.
+- Extend TypeScript path aliases and Jest module mapping to include `@services/*` (-> `packages/shared/src`) and `@backend/*`.
+- Add npm scripts for `dev:electron`, `dev:frontend`, `dev:backend`, plus `build:electron`, `build:frontend`, `build:backend`.
+- Provide a `docker-compose.yml` that runs the frontend (Vite preview) and backend (API server) together on localhost.
 
 ### Launch Modes
 - **Electron**: Continue using `npm run dev:electron` for the offline desktop app.
-- **Backend**: `npm run dev:api` runs the decorator-driven server with live reload (ts-node/tsx).
+- **Backend**: `npm run dev:backend` runs the decorator-driven server with live reload (ts-node/tsx).
 - **Frontend**: `npm run dev:frontend` launches the renderer in browser-only mode.
-- **Combined**: `docker-compose up` to spin up API + frontend for web deployments or companion services.
+- **Combined**: `docker-compose up` to spin up backend + frontend for web deployments or companion services.

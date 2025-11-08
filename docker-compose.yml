@@ -1,10 +1,10 @@
 version: '3.9'
 
 services:
-  api:
+  backend:
     build:
       context: .
-      dockerfile: docker/api.Dockerfile
+      dockerfile: docker/backend.Dockerfile
     environment:
       NODE_ENV: production
       DB_STORAGE_PATH: /data/app.sqlite
@@ -12,7 +12,7 @@ services:
     ports:
       - "${API_PORT:-3333}:3333"
     volumes:
-      - api-data:/data
+      - backend-data:/data
 
   frontend:
     build:
@@ -21,9 +21,9 @@ services:
       args:
         VITE_API_BASE_URL: ${API_BASE_URL:-/api}
     depends_on:
-      - api
+      - backend
     ports:
       - "${FRONTEND_PORT:-8080}:80"
 
 volumes:
-  api-data:
+  backend-data:
