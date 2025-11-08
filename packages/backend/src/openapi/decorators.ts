@@ -33,4 +33,15 @@ export const ApiBearerAuth = (): ClassDecorator & MethodDecorator =>
     security: [{ bearerAuth: [] }]
   }) as ClassDecorator & MethodDecorator
 
+export const backendResponse = (
+  schemaName: string,
+  description = 'Success',
+  status: HttpStatus = '200'
+): MethodDecorator => ApiResponse(schemaName, description, status)
+
+export const backendRequestBody = (schemaName: string, required = true): MethodDecorator =>
+  ApiRequestBody(schemaName, required)
+
+export const backendBearerAuth = (): ClassDecorator & MethodDecorator => ApiBearerAuth()
+
 export const schemaReference = schemaRef

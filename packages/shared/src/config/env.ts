@@ -2,7 +2,7 @@ import { existsSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import dotenv from 'dotenv'
 
-import type { Env, LogLevelSetting } from '@services/config/env.types'
+import type { Env, LogLevelSetting, RuntimeTarget } from '@services/config/env.types'
 
 type ProcessWithResourcesPath = NodeJS.Process & {
   resourcesPath?: string
@@ -30,7 +30,8 @@ export class EnvConfig {
     }
     return new EnvConfig({
       logLevel: EnvConfig.parseLogLevel(process.env.LOG_LEVEL),
-      appVersion: EnvConfig.resolveAppVersion(process.env.APP_VERSION)
+      appVersion: EnvConfig.resolveAppVersion(process.env.APP_VERSION),
+      runtimeTarget: EnvConfig.parseRuntimeTarget(process.env.APP_RUNTIME)
     })
   }
 
@@ -49,6 +50,10 @@ export class EnvConfig {
     return this.config.appVersion
   }
 
+  get runtimeTarget(): RuntimeTarget {
+    return this.config.runtimeTarget
+  }
+
   /**
    * Normalizes the LOG_LEVEL variable to a supported set of values, falling
    * back to "info" when the input is missing or invalid.
@@ -65,6 +70,14 @@ export class EnvConfig {
       default:
         return 'info'
     }
+  }
+
+  private static parseRuntimeTarget(value?: string): RuntimeTarget {
+    const normalized = value?.trim().toLowerCase()
+    if (normalized === 'webapp') {
+      return 'webapp'
+    }
+    return 'desktop'
   }
 
   private static resolveAppVersion(value?: string): string {

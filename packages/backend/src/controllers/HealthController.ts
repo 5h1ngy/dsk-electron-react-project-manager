@@ -2,7 +2,7 @@ import { JsonController, Get } from 'routing-controllers'
 import { Service } from 'typedi'
 
 import { BaseController } from '@backend/controllers/BaseController'
-import { ApiResponse } from '@backend/openapi/decorators'
+import { backendResponse } from '@backend/openapi/decorators'
 import { env } from '@services/config/env'
 
 @Service()
@@ -15,7 +15,8 @@ export class HealthController extends BaseController {
       status: 'healthy',
       version: env.appVersion,
       timestamp: new Date().toISOString(),
-      uptimeSeconds: process.uptime()
+      uptimeSeconds: process.uptime(),
+      runtime: env.runtimeTarget
     }
   }
 }

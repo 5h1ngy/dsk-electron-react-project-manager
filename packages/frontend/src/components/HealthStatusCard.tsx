@@ -56,6 +56,12 @@ export const HealthStatusCard = ({ className, cardStyle }: HealthStatusCardProps
               <Typography.Text>{data.version}</Typography.Text>
             </Space>
             <Space>
+              <Typography.Text strong>Modalita:</Typography.Text>
+              <Typography.Text>
+                {data.runtime === 'desktop' ? 'Desktop (IPC)' : 'Web App (HTTP)'}
+              </Typography.Text>
+            </Space>
+            <Space>
               <Typography.Text strong>Uptime:</Typography.Text>
               <Typography.Text>{uptimeLabel}</Typography.Text>
             </Space>

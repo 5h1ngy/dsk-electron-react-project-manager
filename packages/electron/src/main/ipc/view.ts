@@ -21,9 +21,9 @@ export class ViewIpcRegistrar {
   }
 
   register(): void {
-    this.registrar.register('view:list', async (token: string) => {
+    this.registrar.register('view:list', async (token: string, payload: unknown) => {
       const actor = await this.resolveActor(token)
-      return await this.viewService.listViews(actor)
+      return await this.viewService.listViews(actor, payload)
     })
 
     this.registrar.register('view:create', async (token: string, payload: unknown) => {

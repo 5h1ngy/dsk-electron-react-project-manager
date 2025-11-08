@@ -16,3 +16,6 @@ if (!process.env.APP_VERSION) {
     process.env.APP_VERSION = '0.0.0'
   }
 }
+
+process.env.VITE_APP_RUNTIME = process.env.VITE_APP_RUNTIME ?? 'webapp'
+process.env.APP_RUNTIME = process.env.APP_RUNTIME ?? 'webapp'

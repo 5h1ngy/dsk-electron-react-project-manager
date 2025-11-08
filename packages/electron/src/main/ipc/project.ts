@@ -50,16 +50,19 @@ export class ProjectIpcRegistrar {
       return { success: true }
     })
 
-    this.registrar.register('project:members', async (token: string, projectId: string) => {
-      const actor = await this.resolveActor(token)
-      return await this.projectService.listMembers(actor, projectId)
-    })
-
     this.registrar.register(
-      'project:update-membership',
+      'project:add-member',
       async (token: string, projectId: string, payload: unknown) => {
         const actor = await this.resolveActor(token)
-        return await this.projectService.updateMembership(actor, projectId, payload)
+        return await this.projectService.addOrUpdateMember(actor, projectId, payload)
+      }
+    )
+
+    this.registrar.register(
+      'project:remove-member',
+      async (token: string, projectId: string, userId: string) => {
+        const actor = await this.resolveActor(token)
+        return await this.projectService.removeMember(actor, projectId, userId)
       }
     )
   }

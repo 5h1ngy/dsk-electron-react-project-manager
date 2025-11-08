@@ -297,7 +297,14 @@ class MainProcessApplication {
     const databaseService = new DatabaseMaintenanceService({
       authService: this.deps.context.authService,
       auditService: this.deps.context.auditService,
-      app: this.deps.app,
+      lifecycle: {
+        relaunch: () => this.deps.app.relaunch(),
+        exit: (code?: number) => {
+          if (typeof this.deps.app.exit === 'function') {
+            this.deps.app.exit(code ?? 0)
+          }
+        }
+      },
       storage: {
         getDatabasePath: () => this.deps.context.getDatabasePath(),
         teardownDatabase: () => this.deps.context.teardownDatabase()

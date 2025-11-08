@@ -1,6 +1,8 @@
 import type { Sequelize } from 'sequelize-typescript'
 
 import { AppError } from '@services/config/appError'
+import { env } from '@services/config/env'
+import type { RuntimeTarget } from '@services/config/env.types'
 
 import { IpcChannelRegistrar } from '@main/ipc/utils'
 import type { IpcResponse } from '@main/ipc/utils'
@@ -10,6 +12,7 @@ export interface HealthStatus {
   version: string
   timestamp: string
   uptimeSeconds: number
+  runtime: RuntimeTarget
 }
 
 export const HEALTH_CHANNEL = 'system:health'
@@ -42,7 +45,8 @@ export class HealthIpcRegistrar {
           status: 'healthy',
           version: this.version,
           timestamp: new Date().toISOString(),
-          uptimeSeconds: process.uptime()
+          uptimeSeconds: process.uptime(),
+          runtime: env.runtimeTarget
         }
       } catch (error) {
         const message = error instanceof Error ? error.message : 'Unknown error'

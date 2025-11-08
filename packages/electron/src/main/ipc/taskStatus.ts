@@ -21,33 +21,32 @@ export class TaskStatusIpcRegistrar {
   }
 
   register(): void {
-    this.registrar.register('task-status:list', async (token: string, projectId: string) => {
+    this.registrar.register('taskStatus:list', async (token: string, payload: unknown) => {
       const actor = await this.resolveActor(token)
-      return await this.taskStatusService.listByProject(actor, projectId)
+      return await this.taskStatusService.listStatuses(actor, payload)
     })
 
-    this.registrar.register('task-status:create', async (token: string, payload: unknown) => {
+    this.registrar.register('taskStatus:create', async (token: string, payload: unknown) => {
       const actor = await this.resolveActor(token)
       return await this.taskStatusService.createStatus(actor, payload)
     })
 
     this.registrar.register(
-      'task-status:update',
+      'taskStatus:update',
       async (token: string, statusId: string, payload: unknown) => {
         const actor = await this.resolveActor(token)
         return await this.taskStatusService.updateStatus(actor, statusId, payload)
       }
     )
 
-    this.registrar.register('task-status:reorder', async (token: string, payload: unknown) => {
+    this.registrar.register('taskStatus:reorder', async (token: string, payload: unknown) => {
       const actor = await this.resolveActor(token)
       return await this.taskStatusService.reorderStatuses(actor, payload)
     })
 
-    this.registrar.register('task-status:delete', async (token: string, statusId: string) => {
+    this.registrar.register('taskStatus:delete', async (token: string, payload: unknown) => {
       const actor = await this.resolveActor(token)
-      await this.taskStatusService.deleteStatus(actor, statusId)
-      return { success: true }
+      return await this.taskStatusService.deleteStatus(actor, payload)
     })
   }
 

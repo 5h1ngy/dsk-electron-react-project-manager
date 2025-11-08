@@ -21,7 +21,8 @@ describe('health preload api', () => {
         status: 'healthy',
         version: process.env.APP_VERSION ?? '0.0.0',
         timestamp: new Date().toISOString(),
-        uptimeSeconds: 10
+        uptimeSeconds: 10,
+        runtime: 'desktop' as const
       }
     }
 

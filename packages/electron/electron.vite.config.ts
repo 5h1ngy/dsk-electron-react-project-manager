@@ -4,6 +4,18 @@ import { resolve } from 'node:path'
 import { defineConfig, externalizeDepsPlugin } from 'electron-vite'
 import react from '@vitejs/plugin-react'
 
+const normalizeRuntimeTarget = (value?: string): 'desktop' | 'webapp' => {
+  const normalized = value?.trim().toLowerCase()
+  return normalized === 'webapp' ? 'webapp' : 'desktop'
+}
+
+const runtimeTarget = normalizeRuntimeTarget(
+  process.env.APP_RUNTIME ?? process.env.VITE_APP_RUNTIME ?? 'desktop'
+)
+
+process.env.APP_RUNTIME = runtimeTarget
+process.env.VITE_APP_RUNTIME = process.env.VITE_APP_RUNTIME ?? runtimeTarget
+
 const API_PROXY_TARGET = process.env.API_PROXY_TARGET ?? 'http://localhost:3333'
 const LOCAL_TSCONFIG_PATH = resolve(__dirname, 'tsconfig.json')
 const tsconfigRaw = JSON.parse(readFileSync(LOCAL_TSCONFIG_PATH, 'utf-8'))

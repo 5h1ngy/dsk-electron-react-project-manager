@@ -25,7 +25,8 @@ describe('HealthStatusCard', () => {
         status: 'healthy',
         version: process.env.APP_VERSION ?? '0.0.0',
         timestamp: new Date('2025-01-01T00:00:00.000Z').toISOString(),
-        uptimeSeconds: 125
+        uptimeSeconds: 125,
+        runtime: 'desktop' as const
       }
     })
 
@@ -33,6 +34,7 @@ describe('HealthStatusCard', () => {
 
     expect(screen.getByText('Versione:')).toBeInTheDocument()
     expect(screen.getByText(process.env.APP_VERSION ?? '0.0.0')).toBeInTheDocument()
+    expect(screen.getByText('Desktop (IPC)')).toBeInTheDocument()
     expect(screen.getByText('2m 5s')).toBeInTheDocument()
     expect(screen.getByText('healthy')).toBeInTheDocument()
   })
@@ -60,7 +62,8 @@ describe('HealthStatusCard', () => {
         status: 'healthy',
         version: process.env.APP_VERSION ?? '0.0.0',
         timestamp: new Date().toISOString(),
-        uptimeSeconds: 10
+        uptimeSeconds: 10,
+        runtime: 'desktop' as const
       }
     })
 

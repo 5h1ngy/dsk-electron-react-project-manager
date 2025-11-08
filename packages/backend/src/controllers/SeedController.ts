@@ -2,7 +2,7 @@ import { JsonController, Post } from 'routing-controllers'
 import { Service } from 'typedi'
 
 import { BaseController } from '@backend/controllers/BaseController'
-import { ApiResponse } from '@backend/openapi/decorators'
+import { backendResponse } from '@backend/openapi/decorators'
 import { DevelopmentSeeder } from '@seeding/DevelopmentSeeder'
 import type { DevelopmentSeederOptions } from '@seeding/DevelopmentSeeder.types'
 

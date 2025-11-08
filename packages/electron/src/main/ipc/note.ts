@@ -21,9 +21,9 @@ export class NoteIpcRegistrar {
   }
 
   register(): void {
-    this.registrar.register('note:list', async (token: string, projectId: string) => {
+    this.registrar.register('note:list', async (token: string, payload: unknown) => {
       const actor = await this.resolveActor(token)
-      return await this.noteService.listByProject(actor, projectId)
+      return await this.noteService.listNotes(actor, payload)
     })
 
     this.registrar.register('note:get', async (token: string, noteId: string) => {

@@ -13,7 +13,11 @@ import {
 import { Service } from 'typedi'
 
 import { BaseController } from '@backend/controllers/BaseController'
-import { ApiBearerAuth, ApiRequestBody, ApiResponse } from '@backend/openapi/decorators'
+import {
+  backendBearerAuth,
+  backendRequestBody,
+  backendResponse
+} from '@backend/openapi/decorators'
 
 @Service()
 @backendBearerAuth()

@@ -13,7 +13,8 @@ const createHealthResponse = () => ({
     status: 'healthy' as const,
     version: process.env.APP_VERSION ?? '0.0.0',
     timestamp: new Date().toISOString(),
-    uptimeSeconds: 5
+    uptimeSeconds: 5,
+    runtime: 'desktop' as const
   }
 })
 

@@ -1,5 +1,6 @@
 import type { IpcError, IpcResponse, PreloadApi } from '@preload/types'
 import type { HealthResponse } from '@main/ipc/health'
+import { runtime } from '@renderer/config/runtime'
 
 type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE'
 
@@ -37,7 +38,7 @@ const normalizeBaseUrl = (value: string, clientOrigin?: string): string => {
   return value.replace(/\/$/, '')
 }
 
-const baseUrl = resolveBaseUrl()
+const baseUrl = runtime.isWebapp ? resolveBaseUrl() : null
 
 const toSuccess = <T>(data: T): IpcResponse<T> => ({
   ok: true,
@@ -57,6 +58,9 @@ interface RequestOptions {
 }
 
 const buildUrl = (path: string, query?: RequestOptions['query']): string => {
+  if (!baseUrl) {
+    throw new Error('HTTP bridge is disabled while running in desktop mode')
+  }
   const sanitizedPath = path.replace(/^\//, '')
   const normalizedBase = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`
   const url = new URL(sanitizedPath, normalizedBase)
@@ -271,6 +275,9 @@ const buildHttpBridge = (): PreloadApi => ({
 })
 
 export const ensureHttpBridge = (): void => {
+  if (!runtime.isWebapp) {
+    return
+  }
   if (typeof window === 'undefined') {
     return
   }

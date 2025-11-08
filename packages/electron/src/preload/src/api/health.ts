@@ -3,6 +3,9 @@ import type { HealthResponse } from '@main/ipc/health'
 
 const CHANNEL = 'system:health'
 
+const isRuntimeTarget = (value: unknown): value is 'desktop' | 'webapp' =>
+  value === 'desktop' || value === 'webapp'
+
 const isValidHealthResponse = (payload: unknown): payload is HealthResponse => {
   if (typeof payload !== 'object' || payload === null) {
     return false
@@ -20,7 +23,8 @@ const isValidHealthResponse = (payload: unknown): payload is HealthResponse => {
       typeof data?.status === 'string' &&
       typeof data?.version === 'string' &&
       typeof data?.timestamp === 'string' &&
-      typeof data?.uptimeSeconds === 'number'
+      typeof data?.uptimeSeconds === 'number' &&
+      isRuntimeTarget(data?.runtime)
     )
   }
 

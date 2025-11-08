@@ -86,6 +86,8 @@ See `docs/architecture-overview.md` for a deeper walkthrough of the Electron lif
 6. Package the Windows desktop app: `npm run build:win`
 7. Esplora la documentazione REST generata automaticamente: `http://localhost:3333/docs` (spec JSON su `/docs.json`)
 
+> Tip: copy `.env.desktop` before running Electron-focused commands and `.env.webapp` before `dev:frontend` / `dev:backend` so the renderer automatically switches between IPC and HTTP modes.
+
 All commands assume a recent Node 22 environment. The Electron app automatically seeds sane defaults on first launch.
 
 ---
@@ -164,15 +166,25 @@ Utility helpers unwrap the union inside the renderer and trigger session recover
 
 ## Configuration
 
-| Variable                  | Default               | Description                                                                  |
-| ------------------------- | --------------------- | ---------------------------------------------------------------------------- |
-| `LOG_LEVEL`               | `info`                | Adjusts the structured logger verbosity                                      |
-| `SESSION_TIMEOUT_MINUTES` | `60`                  | Overrides the default auth session TTL (also persisted in `system_settings`) |
-| `DB_STORAGE_PATH`         | Electron app data dir | Custom database location for runtime and seeding                             |
-| `ELECTRON_START_URL`      | auto                  | Dev server URL, injected by electron-vite during `npm run dev:electron`      |
-| `ENABLE_DEVTOOLS`         | auto                  | `true` forces DevTools on, `false` blocks them regardless of environment     |
+Two ready-to-use presets live at the repo root:
 
-Use `.env` or per-machine environment variables to customize settings; see `.env.example` for guidance.
+- `.env.desktop` → offline Electron runtime (IPC bridge + DevTools).
+- `.env.webapp` → standalone browser UI + REST backend (HTTP calls).
+
+Copy the one you need to `.env` (or export the same variables) before running commands. The `APP_RUNTIME` / `VITE_APP_RUNTIME` pair toggles the renderer transport so Electron sticks to IPC while the webapp automatically enables the HTTP bridge and proxy.
+
+| Variable                            | Default               | Description                                                                  |
+| ----------------------------------- | --------------------- | ---------------------------------------------------------------------------- |
+| `APP_RUNTIME` / `VITE_APP_RUNTIME`  | `desktop`             | `desktop` keeps IPC wiring; `webapp` enables the HTTP bridge + `/api` proxy  |
+| `LOG_LEVEL`                         | `info`                | Adjusts the structured logger verbosity                                      |
+| `SESSION_TIMEOUT_MINUTES`           | `60`                  | Overrides the default auth session TTL (also persisted in `system_settings`) |
+| `DB_STORAGE_PATH`                   | Electron app data dir | Custom database location for runtime and seeding                             |
+| `ELECTRON_START_URL`                | auto                  | Dev server URL, injected by electron-vite during `npm run dev:electron`      |
+| `ENABLE_DEVTOOLS`                   | auto                  | `true` forces DevTools on, `false` blocks them regardless of environment     |
+| `API_PROXY_TARGET` (dev servers)    | `http://localhost:3333` | Target for Vite’s `/api` proxy when running as a webapp                    |
+| `VITE_API_BASE_URL` (SPA builds)    | `/api`                | Base URL baked into the standalone frontend for direct HTTP calls            |
+
+Use `.env`, `.env.desktop`, `.env.webapp`, or per-machine environment variables to customize settings; see `.env.example` for guidance.
 
 ---
 

@@ -81,6 +81,7 @@ const isoDate = () =>
 const idSchema = () => z.string().min(1).max(64)
 
 const nullableString = () => z.string().nullable()
+const runtimeTargetSchema = z.enum(['desktop', 'webapp'])
 
 const roleNameSchema = z.string().min(1)
 
@@ -426,7 +427,8 @@ register(
     status: z.literal('healthy'),
     version: z.string(),
     timestamp: isoDateTime(),
-    uptimeSeconds: z.number()
+    uptimeSeconds: z.number(),
+    runtime: runtimeTargetSchema
   })
 )
 
