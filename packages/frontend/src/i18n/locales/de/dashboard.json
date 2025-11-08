@@ -1,0 +1,215 @@
+{
+  "actionBar": {
+    "create": "Neuen Benutzer",
+    "refresh": "Aktualisieren"
+  },
+  "filters": {
+    "users": {
+      "ariaLabel": "Benutzer filtern",
+      "searchPlaceholder": "Benutzer suchen...",
+      "usernamePlaceholder": "Nach Benutzername filtern",
+      "displayNamePlaceholder": "Nach Name filtern",
+      "openButton": "Filter",
+      "status": {
+        "all": "Alle",
+        "active": "Aktiv",
+        "inactive": "Inaktiv"
+      },
+      "roles": {
+        "all": "Alle Rollen"
+      },
+      "view": {
+        "table": "Tabellenansicht",
+        "list": "Listenansicht",
+        "cards": "Kartenansicht"
+      },
+      "lastLogin": "Letzte Anmeldung: {{date}}",
+      "lastLoginNever": "Letzte Anmeldung: nie",
+      "statusLabel": "Benutzerstatus",
+      "lastLoginRangeLabel": "Letzte Anmeldung",
+      "createdRangeLabel": "Erstellt am",
+      "updatedRangeLabel": "Aktualisiert am"
+    },
+    "panelTitle": "Filter"
+  },
+  "table": {
+    "id": "Benutzer-ID",
+    "username": "Benutzername",
+    "displayName": "Name",
+    "roles": "Rollen",
+    "status": "Status",
+    "lastLoginAt": "Letzte Anmeldung",
+    "createdAt": "Erstellt am",
+    "updatedAt": "Aktualisiert am",
+    "neverLoggedIn": "Noch nie angemeldet",
+    "actions": "Aktionen",
+    "empty": "Keine Benutzer"
+  },
+  "optionalColumns": {
+    "button": "Optionale Felder",
+    "modalTitle": "Optionale Felder",
+    "description": "Waehle die zusaetzlichen Spalten, die in der Tabelle angezeigt werden sollen.",
+    "placeholder": "Optionale Spalten auswaehlen",
+    "columns": {
+      "id": "Benutzer-ID",
+      "lastLoginAt": "Letzte Anmeldung",
+      "createdAt": "Erstellt am",
+      "updatedAt": "Aktualisiert am"
+    }
+  },
+  "status": {
+    "active": "Aktiv",
+    "inactive": "Inaktiv"
+  },
+  "actions": {
+    "edit": "Bearbeiten",
+    "delete": "Entfernen",
+    "deleteTitle": "Benutzer entfernen",
+    "deleteDescription": "Moechten Sie {{username}} wirklich entfernen?",
+    "confirmDelete": "Entfernen",
+    "cancel": "Abbrechen",
+    "deleteSelected": "Auswahl entfernen",
+    "panelTitle": "Aktionen"
+  },
+  "modals": {
+    "create": {
+      "title": "Benutzer erstellen",
+      "confirm": "Erstellen",
+      "fields": {
+        "username": "Benutzername",
+        "displayName": "Name",
+        "password": "Passwort",
+        "roles": "Rollen",
+        "rolesPlaceholder": "Rollen auswaehlen",
+        "active": "Aktiv"
+      }
+    },
+    "edit": {
+      "title": "Benutzer {{username}} bearbeiten",
+      "confirm": "Speichern",
+      "fields": {
+        "displayName": "Name",
+        "password": "Neues Passwort",
+        "passwordHint": "Leer lassen, um das aktuelle Passwort zu behalten",
+        "roles": "Rollen",
+        "rolesPlaceholder": "Rollen auswaehlen",
+        "active": "Aktiv"
+      }
+    },
+    "deleteUser": {
+      "title": "Benutzer {{username}} entfernen",
+      "bulkTitle": "{{count}} Benutzer entfernen",
+      "description": "Sie sind dabei, {{user}} samt aller verknuepften Daten zu entfernen.",
+      "bulkDescription": "Sie sind dabei, {{count}} Benutzer und alle verknuepften Daten zu entfernen.",
+      "warning": "Projektzuordnungen, gespeicherte Ansichten, Kommentare und weitere verknuepfte Daten werden entfernt oder neu zugewiesen. Dieser Vorgang kann nicht rueckgaengig gemacht werden.",
+      "confirm": "Entfernen",
+      "cancel": "Abbrechen"
+    }
+  },
+  "validation": {
+    "createUser": {
+      "usernameRequired": "Der Benutzername ist erforderlich",
+      "usernameMin": "Der Benutzername muss mindestens 3 Zeichen enthalten",
+      "usernameMax": "Der Benutzername darf höchstens 32 Zeichen enthalten",
+      "usernamePattern": "Verwende nur Buchstaben, Zahlen, Punkte, Bindestriche oder Unterstriche",
+      "displayNameRequired": "Der Name ist erforderlich",
+      "displayNameMax": "Der Name darf höchstens 64 Zeichen enthalten",
+      "passwordRequired": "Das Passwort ist erforderlich",
+      "passwordMin": "Das Passwort muss mindestens 8 Zeichen enthalten",
+      "rolesRequired": "Wähle mindestens eine Rolle aus"
+    },
+    "updateUser": {
+      "displayNameRequired": "Der Name ist erforderlich",
+      "displayNameMax": "Der Name darf höchstens 64 Zeichen enthalten",
+      "passwordMin": "Wenn du ein neues Passwort angibst, muss es mindestens 8 Zeichen haben",
+      "rolesRequired": "Wähle mindestens eine Rolle aus"
+    }
+  },
+  "messages": {
+    "createSuccess": "Benutzer erfolgreich erstellt",
+    "createErrorFallback": "Benutzer konnte nicht erstellt werden",
+    "updateSuccess": "Benutzer erfolgreich aktualisiert",
+    "updateErrorFallback": "Benutzer konnte nicht aktualisiert werden",
+    "deleteSuccess": "Benutzer erfolgreich entfernt",
+    "deleteBulkSuccess": "Erfolgreich {{count}} Benutzer entfernt",
+    "deleteErrorFallback": "Benutzer konnte nicht entfernt werden",
+    "deleteSelfWarning": "Sie koennen Ihr eigenes Konto nicht entfernen"
+  },
+  "error": {
+    "title": "Fehler"
+  },
+  "roles": {
+    "Admin": "Administrator",
+    "Maintainer": "Betreuer",
+    "Contributor": "Mitwirkender",
+    "Viewer": "Betrachter"
+  },
+  "permissions": {
+    "title": "Unzureichende Berechtigungen",
+    "description": "Nur Administratoren koennen Benutzer verwalten."
+  },
+  "personal": {
+    "projectsTitle": "Meine Projekte",
+    "profileTitle": "Profiluebersicht",
+    "username": "Angemeldet als {{username}}",
+    "noDescription": "Keine Beschreibung vorhanden",
+    "noProjects": "Sie sind derzeit keinem Projekt zugeordnet.",
+    "heading": "Persoenliche Uebersicht"
+  },
+  "overview": {
+    "welcome": "Willkommen zurück, {{name}}",
+    "subtitle": "Hier siehst du, was in deinem Arbeitsbereich passiert."
+  },
+  "summary": {
+    "cards": {
+      "total": {
+        "title": "Projekte",
+        "caption": "Alle Rollen"
+      },
+      "managed": {
+        "title": "Betreute Projekte",
+        "caption": "Du bist Administrator"
+      },
+      "collaborating": {
+        "title": "Zusammenarbeit",
+        "caption": "Projekte, die du bearbeiten kannst"
+      },
+      "watching": {
+        "title": "Beobachtung",
+        "caption": "Nur Lesezugriff"
+      }
+    },
+    "roles": {
+      "admin": "Betreut",
+      "edit": "Zusammenarbeit",
+      "view": "Beobachtung"
+    },
+    "noLastLogin": "Noch keine Anmeldung erfasst"
+  },
+  "quickLinks": {
+    "title": "Schnellaktionen",
+    "projects": "Zu meinen Projekten",
+    "projectsDescription": "Aktive Initiativen und Aufgaben prüfen.",
+    "settings": "Einstellungen öffnen",
+    "settingsDescription": "Darstellung und Workspace-Einstellungen anpassen.",
+    "users": "Benutzer verwalten",
+    "usersDescription": "Benutzer einladen, deaktivieren oder Berechtigungen ändern."
+  },
+  "insights": {
+    "title": "Workspace-Einblicke",
+    "roles": "Projekte nach Rolle",
+    "tags": "Meistgenutzte Tags",
+    "noTags": "Tags erscheinen, sobald Projekte Etiketten besitzen.",
+    "tagCountLabel": "{{count}} Verwendungen"
+  },
+  "profile": {
+    "title": "Dein Profil",
+    "username": "Benutzername",
+    "lastLogin": "Letzte Anmeldung",
+    "roles": "Rollen"
+  },
+  "recentProjects": {
+    "title": "Neueste Projekte",
+    "empty": "Du nimmst noch an keinem Projekt teil."
+  }
+}

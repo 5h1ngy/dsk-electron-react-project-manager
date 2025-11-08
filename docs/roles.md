@@ -23,7 +23,7 @@ This document describes how the DSK Project Manager models workspace roles, whic
 | `manageViews`       | Manage saved views| Create, update, share saved filters/workspace views.                   |
 | `viewAnalytics`     | View analytics    | Access dashboards, reports, and aggregated workspace metrics.          |
 
-> Permission definitions live in `packages/main/src/services/roles/constants.ts` (`ROLE_PERMISSION_DEFINITIONS`). The `sanitizePermissions` helper filters any payload to this allow-list before saving.
+> Permission definitions live in `packages/shared/src/services/roles/constants.ts` (`ROLE_PERMISSION_DEFINITIONS`). The `sanitizePermissions` helper filters any payload to this allow-list before saving.
 
 ## Default Roles
 
@@ -60,7 +60,7 @@ These roles are created automatically at startup (`DatabaseManager.ensureRoles`)
 ### Preload & Renderer
 
 - `roleApi` (preload) exposes IPC wrappers for listing, creating, updating, deleting roles. All calls require a valid token and rely on `AuthService.resolveActor` to provide the role list to backend services.
-- Localised permission descriptions are mirrored in `packages/renderer/src/i18n/locales/*/roles.json` for consistent UI messaging.
+- Localised permission descriptions are mirrored in `packages/frontend/src/i18n/locales/*/roles.json` for consistent UI messaging.
 
 ## Lifecycle & Management Flow
 
@@ -83,12 +83,12 @@ These roles are created automatically at startup (`DatabaseManager.ensureRoles`)
 
 ## Key Source Locations
 
-- `packages/main/src/services/roles/constants.ts` – Role and permission definitions.
-- `packages/main/src/services/roles/index.ts` – RoleService logic and guards.
-- `packages/main/src/services/project/roles.ts` – Project membership role logic and `isSystemAdmin` helper.
-- `packages/main/src/services/auth/index.ts` – User provisioning, role assignment, session resolution.
-- `packages/main/src/config/database.ts` – Bootstrap seeding of system roles and admin account.
-- `packages/preload/src/api/role.ts` – IPC bindings for role management operations.
-- `packages/renderer/src/i18n/locales/*/roles.json` – UI copy for permission descriptions.
+- `packages/shared/src/services/roles/constants.ts` – Role and permission definitions.
+- `packages/shared/src/services/roles/index.ts` – RoleService logic and guards.
+- `packages/shared/src/services/project/roles.ts` – Project membership role logic and `isSystemAdmin` helper.
+- `packages/shared/src/services/auth/index.ts` – User provisioning, role assignment, session resolution.
+- `packages/shared/src/config/database.ts` – Bootstrap seeding of system roles and admin account.
+- `packages/electron/src/preload/src/api/role.ts` – IPC bindings for role management operations.
+- `packages/frontend/src/i18n/locales/*/roles.json` – UI copy for permission descriptions.
 
 Refer back to this document before modifying access control to ensure consistency across the codebase and UI. Always audit both service-level guards and UI affordances when introducing new capabilities or roles.

@@ -1,5 +1,15 @@
+node_modules
 out
 dist
+coverage
+build
+*.log
+.DS_Store
+tmp
+temp
+packages/**/dist
+packages/**/out
+packages/**/coverage
 pnpm-lock.yaml
 LICENSE.md
 tsconfig.json

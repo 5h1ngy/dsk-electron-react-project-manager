@@ -1,0 +1,30 @@
+{
+  "name": "dsk-backend-prod-deps",
+  "private": true,
+  "license": "MIT",
+  "_moduleAliases": {
+    "@backend": "packages/backend/src",
+    "@services": "packages/shared/src",
+    "@main": "packages/electron/src/main",
+    "@preload": "packages/electron/src/preload/src",
+    "@renderer": "packages/frontend/src",
+    "@seeding": "packages/seeding/src"
+  },
+  "dependencies": {
+    "@asteasolutions/zod-to-openapi": "^7.3.4",
+    "@node-rs/argon2": "^2.0.2",
+    "dotenv": "^16.4.5",
+    "express": "^5.1.0",
+    "module-alias": "^2.2.3",
+    "reflect-metadata": "^0.1.14",
+    "routing-controllers": "^0.11.3",
+    "routing-controllers-openapi": "^5.0.0",
+    "sequelize": "^6.37.7",
+    "sequelize-typescript": "^2.1.6",
+    "sqlite3": "^5.1.7",
+    "swagger-ui-express": "^5.0.1",
+    "tsconfig-paths": "^4.2.0",
+    "typedi": "^0.10.0",
+    "zod": "^3.25.76"
+  }
+}

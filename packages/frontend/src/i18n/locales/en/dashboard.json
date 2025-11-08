@@ -1,0 +1,215 @@
+{
+  "actionBar": {
+    "create": "New user",
+    "refresh": "Refresh"
+  },
+  "filters": {
+    "users": {
+      "ariaLabel": "Filter users",
+      "searchPlaceholder": "Search users...",
+      "usernamePlaceholder": "Filter by username",
+      "displayNamePlaceholder": "Filter by name",
+      "openButton": "Filters",
+      "status": {
+        "all": "All",
+        "active": "Active",
+        "inactive": "Inactive"
+      },
+      "roles": {
+        "all": "All roles"
+      },
+      "view": {
+        "table": "Table view",
+        "list": "List view",
+        "cards": "Card view"
+      },
+      "lastLogin": "Last login: {{date}}",
+      "lastLoginNever": "Last login: never",
+      "statusLabel": "User status",
+      "lastLoginRangeLabel": "Last login",
+      "createdRangeLabel": "Created on",
+      "updatedRangeLabel": "Updated on"
+    },
+    "panelTitle": "Filters"
+  },
+  "table": {
+    "id": "User ID",
+    "username": "Username",
+    "displayName": "Name",
+    "roles": "Roles",
+    "status": "Status",
+    "lastLoginAt": "Last login",
+    "createdAt": "Created on",
+    "updatedAt": "Updated on",
+    "neverLoggedIn": "Never logged in",
+    "actions": "Actions",
+    "empty": "No users yet"
+  },
+  "optionalColumns": {
+    "button": "Optional fields",
+    "modalTitle": "Optional fields",
+    "description": "Choose the additional columns you want to display in the table view.",
+    "placeholder": "Select optional columns",
+    "columns": {
+      "id": "User ID",
+      "lastLoginAt": "Last login",
+      "createdAt": "Created on",
+      "updatedAt": "Updated on"
+    }
+  },
+  "status": {
+    "active": "Active",
+    "inactive": "Inactive"
+  },
+  "actions": {
+    "edit": "Edit",
+    "delete": "Delete",
+    "deleteTitle": "Remove user",
+    "deleteDescription": "Do you really want to remove {{username}}?",
+    "confirmDelete": "Remove",
+    "cancel": "Cancel",
+    "deleteSelected": "Delete selected",
+    "panelTitle": "Actions"
+  },
+  "modals": {
+    "create": {
+      "title": "Create user",
+      "confirm": "Create",
+      "fields": {
+        "username": "Username",
+        "displayName": "Name",
+        "password": "Password",
+        "roles": "Roles",
+        "rolesPlaceholder": "Select roles",
+        "active": "Active"
+      }
+    },
+    "edit": {
+      "title": "Edit user {{username}}",
+      "confirm": "Save",
+      "fields": {
+        "displayName": "Name",
+        "password": "New password",
+        "passwordHint": "Leave blank to keep the current password",
+        "roles": "Roles",
+        "rolesPlaceholder": "Select roles",
+        "active": "Active"
+      }
+    },
+    "deleteUser": {
+      "title": "Remove user {{username}}",
+      "bulkTitle": "Remove {{count}} users",
+      "description": "You are about to remove {{user}} and all related records.",
+      "bulkDescription": "You are about to remove {{count}} users and all of their related records.",
+      "warning": "Project memberships, saved views, comments, and other linked data will be removed or reassigned. This action cannot be undone.",
+      "confirm": "Remove",
+      "cancel": "Cancel"
+    }
+  },
+  "validation": {
+    "createUser": {
+      "usernameRequired": "Username is required",
+      "usernameMin": "Username must be at least 3 characters",
+      "usernameMax": "Username must be at most 32 characters",
+      "usernamePattern": "Use only letters, numbers, dots, hyphens or underscores",
+      "displayNameRequired": "Name is required",
+      "displayNameMax": "Name must be 64 characters or fewer",
+      "passwordRequired": "Password is required",
+      "passwordMin": "Password must be at least 8 characters",
+      "rolesRequired": "Select at least one role"
+    },
+    "updateUser": {
+      "displayNameRequired": "Name is required",
+      "displayNameMax": "Name must be 64 characters or fewer",
+      "passwordMin": "If you set a new password, it must be at least 8 characters long",
+      "rolesRequired": "Select at least one role"
+    }
+  },
+  "messages": {
+    "createSuccess": "User created successfully",
+    "createErrorFallback": "Unable to create user",
+    "updateSuccess": "User updated successfully",
+    "updateErrorFallback": "Unable to update user",
+    "deleteSuccess": "User removed successfully",
+    "deleteBulkSuccess": "Removed {{count}} users successfully",
+    "deleteErrorFallback": "Unable to remove user",
+    "deleteSelfWarning": "You cannot remove your own account"
+  },
+  "error": {
+    "title": "Error"
+  },
+  "roles": {
+    "Admin": "Administrator",
+    "Maintainer": "Maintainer",
+    "Contributor": "Contributor",
+    "Viewer": "Viewer"
+  },
+  "permissions": {
+    "title": "Insufficient permissions",
+    "description": "Only administrators can manage user accounts."
+  },
+  "personal": {
+    "projectsTitle": "My projects",
+    "profileTitle": "Profile summary",
+    "username": "Logged in as {{username}}",
+    "noDescription": "No description available",
+    "noProjects": "You are not part of any project yet.",
+    "heading": "Overview"
+  },
+  "overview": {
+    "welcome": "Welcome back, {{name}}",
+    "subtitle": "Here's what is happening across your workspace."
+  },
+  "summary": {
+    "cards": {
+      "total": {
+        "title": "Projects",
+        "caption": "Across all roles"
+      },
+      "managed": {
+        "title": "Managed projects",
+        "caption": "Where you are the administrator"
+      },
+      "collaborating": {
+        "title": "Collaborating",
+        "caption": "Projects you can update"
+      },
+      "watching": {
+        "title": "Watching",
+        "caption": "Projects with read-only access"
+      }
+    },
+    "roles": {
+      "admin": "Managed",
+      "edit": "Collaborating",
+      "view": "Watching"
+    },
+    "noLastLogin": "No login recorded yet"
+  },
+  "quickLinks": {
+    "title": "Quick actions",
+    "projects": "Go to my projects",
+    "projectsDescription": "Review active initiatives and assignments.",
+    "settings": "Open settings",
+    "settingsDescription": "Adjust appearance and workspace preferences.",
+    "users": "Manage users",
+    "usersDescription": "Invite, deactivate or change user permissions."
+  },
+  "insights": {
+    "title": "Workspace insights",
+    "roles": "Projects by role",
+    "tags": "Most used tags",
+    "noTags": "Tags will appear when projects include labels.",
+    "tagCountLabel": "{{count}} uses"
+  },
+  "profile": {
+    "title": "Your profile",
+    "username": "Username",
+    "lastLogin": "Last login",
+    "roles": "Roles"
+  },
+  "recentProjects": {
+    "title": "Recent projects",
+    "empty": "You haven't joined any projects yet."
+  }
+}
