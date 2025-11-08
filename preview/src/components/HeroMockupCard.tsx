@@ -1,15 +1,16 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { Card, theme } from 'antd'
-import { useState } from 'react'
+import { useState, type ReactElement } from 'react'
 import type { ThemeMode } from '../theme/foundations/palette'
+import type { GalleryContent } from '../types/content'
 import { HeroGallery } from './HeroGallery'
 
 interface HeroMockupCardProps {
   accent: string
   mode: ThemeMode
+  gallery: GalleryContent
 }
 
-export const HeroMockupCard = ({ accent, mode }: HeroMockupCardProps) => {
+export const HeroMockupCard = ({ accent, mode, gallery }: HeroMockupCardProps): ReactElement => {
   const { token } = theme.useToken()
   const [hovered, setHovered] = useState(false)
   const background =
@@ -36,7 +37,7 @@ export const HeroMockupCard = ({ accent, mode }: HeroMockupCardProps) => {
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      <HeroGallery />
+      <HeroGallery content={gallery} />
     </Card>
   )
 }

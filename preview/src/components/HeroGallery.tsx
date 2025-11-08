@@ -1,15 +1,20 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { ExpandOutlined, LeftOutlined, RightOutlined } from '@ant-design/icons'
 import { Button, Carousel, Flex, Image, Modal, Space, theme } from 'antd'
 import type { CarouselRef } from 'antd/es/carousel'
-import { useRef, useState } from 'react'
-import { galleryShots } from '../data/site'
+import { useRef, useState, type ReactElement } from 'react'
+import type { GalleryContent } from '../types/content'
 
-export const HeroGallery = () => {
+interface HeroGalleryProps {
+  content: GalleryContent
+}
+
+export const HeroGallery = ({ content }: HeroGalleryProps): ReactElement => {
   const { token } = theme.useToken()
   const carouselRef = useRef<CarouselRef>(null)
   const [modalOpen, setModalOpen] = useState(false)
   const [activeIndex, setActiveIndex] = useState(0)
+  const shots = content.shots ?? []
+  const currentShot = shots[activeIndex] ?? shots[0]
 
   return (
     <>
@@ -22,11 +27,11 @@ export const HeroGallery = () => {
           style={{ width: '100%', borderRadius: token.borderRadiusLG }}
           afterChange={(index) => setActiveIndex(index)}
         >
-          {galleryShots.map((shot) => (
+          {shots.map((shot) => (
             <Image
               key={shot}
               src={shot}
-              alt="Product preview"
+              alt={content.alt}
               preview={false}
               style={{
                 width: '100%',
@@ -48,19 +53,19 @@ export const HeroGallery = () => {
             shape="circle"
             icon={<LeftOutlined />}
             onClick={() => carouselRef.current?.prev()}
-            aria-label="Show previous preview"
+            aria-label={content.controls.previous}
           />
           <Button
             shape="circle"
             icon={<RightOutlined />}
             onClick={() => carouselRef.current?.next()}
-            aria-label="Show next preview"
+            aria-label={content.controls.next}
           />
           <Button
             type="primary"
             icon={<ExpandOutlined />}
             onClick={() => setModalOpen(true)}
-            aria-label="Expand preview"
+            aria-label={content.controls.expand}
           />
         </Space>
       </Flex>
@@ -73,7 +78,7 @@ export const HeroGallery = () => {
         onCancel={() => setModalOpen(false)}
         styles={{ mask: { backdropFilter: 'blur(4px)' } }}
       >
-        <Image src={galleryShots[activeIndex]} alt="Fullscreen preview" preview={false} />
+        {currentShot ? <Image src={currentShot} alt={content.modalAlt} preview={false} /> : null}
       </Modal>
     </>
   )

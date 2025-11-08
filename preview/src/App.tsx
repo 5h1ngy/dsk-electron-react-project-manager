@@ -1,13 +1,14 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { ConfigProvider, Flex, Layout, theme as antdTheme } from 'antd'
 import gsap from 'gsap'
-import { useLayoutEffect, useMemo, useRef, useState } from 'react'
-import { ACCENT_OPTIONS, createThemeConfig } from './theme'
-
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 import { HeroStage } from './components/HeroStage'
-import type { ThemeMode } from './theme/foundations/palette'
+import { getLanguageFromUrl, resolveInitialLanguage, syncLanguageQueryParam } from './i18n/language'
+import type { SupportedLanguage } from './i18n/language'
 import { useGlobalAnimations } from './hooks/useGlobalAnimations'
 import { useLenisScroll } from './hooks/useLenisScroll'
+import { ACCENT_OPTIONS, createThemeConfig } from './theme'
+import type { ThemeMode } from './theme/foundations/palette'
 
 const { Content } = Layout
 const DEFAULT_ACCENT = ACCENT_OPTIONS[0]
@@ -17,9 +18,18 @@ interface AppShellProps {
   toggleMode: () => void
   accent: string
   setAccent: (value: string) => void
+  language: SupportedLanguage
+  setLanguage: (value: SupportedLanguage) => void
 }
 
-const AppShell = ({ mode, toggleMode, accent, setAccent }: AppShellProps) => {
+const AppShell = ({
+  mode,
+  toggleMode,
+  accent,
+  setAccent,
+  language,
+  setLanguage
+}: AppShellProps): ReactElement => {
   const { token } = antdTheme.useToken()
   const contentRef = useRef<HTMLDivElement>(null)
   useGlobalAnimations()
@@ -69,19 +79,54 @@ const AppShell = ({ mode, toggleMode, accent, setAccent }: AppShellProps) => {
             boxSizing: 'border-box'
           }}
         >
-          <HeroStage mode={mode} accent={accent} toggleMode={toggleMode} setAccent={setAccent} />
+          <HeroStage
+            mode={mode}
+            accent={accent}
+            toggleMode={toggleMode}
+            setAccent={setAccent}
+            language={language}
+            onLanguageChange={setLanguage}
+          />
         </Flex>
       </Content>
     </Layout>
   )
 }
 
-const App = () => {
+const App = (): ReactElement => {
+  const { i18n } = useTranslation()
   const [mode, setMode] = useState<ThemeMode>('dark')
   const [accent, setAccent] = useState<string>(DEFAULT_ACCENT)
+  const [language, setLanguage] = useState<SupportedLanguage>(() =>
+    resolveInitialLanguage(i18n.language)
+  )
   const themeConfig = useMemo(() => createThemeConfig(mode, accent), [mode, accent])
 
   useLenisScroll()
+
+  useEffect(() => {
+    if (language !== i18n.language) {
+      void i18n.changeLanguage(language)
+    }
+  }, [language, i18n])
+
+  useEffect(() => {
+    syncLanguageQueryParam(language)
+  }, [language])
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return undefined
+    }
+    const handlePopstate = () => {
+      const nextLanguage = getLanguageFromUrl()
+      if (nextLanguage && nextLanguage !== language) {
+        setLanguage(nextLanguage)
+      }
+    }
+    window.addEventListener('popstate', handlePopstate)
+    return () => window.removeEventListener('popstate', handlePopstate)
+  }, [language])
 
   return (
     <ConfigProvider theme={themeConfig}>
@@ -90,6 +135,8 @@ const App = () => {
         toggleMode={() => setMode((prev) => (prev === 'dark' ? 'light' : 'dark'))}
         accent={accent}
         setAccent={setAccent}
+        language={language}
+        setLanguage={setLanguage}
       />
     </ConfigProvider>
   )

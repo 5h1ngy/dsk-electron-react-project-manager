@@ -1,8 +1,7 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { useLayoutEffect, type RefObject } from 'react'
 import gsap from 'gsap'
 
-export const useHeroIntroMotion = (...refs: Array<RefObject<HTMLElement | null>>) => {
+export const useHeroIntroMotion = (...refs: Array<RefObject<HTMLElement | null>>): void => {
   useLayoutEffect(() => {
     const elements = refs
       .map((ref) => ref.current)

@@ -1,19 +1,19 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { Card, Flex, Typography, theme } from 'antd'
-import { useState } from 'react'
-import { heroContent } from '../data/site'
+import { useState, type ReactElement } from 'react'
+import type { HeroStat } from '../types/content'
 
 interface HeroStatsGridProps {
   accent: string
+  stats: HeroStat[]
 }
 
-export const HeroStatsGrid = ({ accent }: HeroStatsGridProps) => {
+export const HeroStatsGrid = ({ accent, stats }: HeroStatsGridProps): ReactElement => {
   const { token } = theme.useToken()
   const [activeCard, setActiveCard] = useState<string | null>(null)
 
   return (
     <Flex wrap gap={token.margin} style={{ width: '100%' }}>
-      {heroContent.stats.map((stat) => {
+      {stats.map((stat) => {
         const active = activeCard === stat.label
         return (
           <Card

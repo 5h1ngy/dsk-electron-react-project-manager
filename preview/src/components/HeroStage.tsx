@@ -1,6 +1,9 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { Card, Col, Flex, Row, theme } from 'antd'
-import { useMemo } from 'react'
+import { useMemo, type ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
+import { FALLBACK_LANGUAGE_LABELS, SUPPORTED_LANGUAGES, isSupportedLanguage } from '../i18n/language'
+import type { SupportedLanguage } from '../i18n/language'
+import type { ControlCopy, GalleryContent, HeroContent, LanguageOption } from '../types/content'
 import type { ThemeMode } from '../theme/foundations/palette'
 import { HeroControls } from './HeroControls'
 import { HeroHeadline } from './HeroHeadline'
@@ -11,10 +14,53 @@ interface HeroStageProps {
   mode: ThemeMode
   toggleMode: () => void
   setAccent: (value: string) => void
+  language: SupportedLanguage
+  onLanguageChange: (value: SupportedLanguage) => void
 }
 
-export const HeroStage = ({ accent, mode, toggleMode, setAccent }: HeroStageProps) => {
+export const HeroStage = ({
+  accent,
+  mode,
+  toggleMode,
+  setAccent,
+  language,
+  onLanguageChange
+}: HeroStageProps): ReactElement => {
   const { token } = theme.useToken()
+  const { t } = useTranslation()
+
+  const heroContent = useMemo(
+    () => t('hero', { returnObjects: true }) as HeroContent,
+    [t, language]
+  )
+  const galleryContent = useMemo(
+    () => t('gallery', { returnObjects: true }) as GalleryContent,
+    [t, language]
+  )
+  const controlsCopy = useMemo(
+    () => t('controls', { returnObjects: true }) as ControlCopy,
+    [t, language]
+  )
+  const rawLanguageOptions = useMemo(
+    () => t('languages', { returnObjects: true }) as Array<{ label: string; value: string }>,
+    [t, language]
+  )
+
+  const fallbackLanguageOptions = useMemo<LanguageOption[]>(
+    () =>
+      SUPPORTED_LANGUAGES.map((value) => ({
+        value,
+        label: FALLBACK_LANGUAGE_LABELS[value]
+      })),
+    []
+  )
+
+  const languageOptions = useMemo<LanguageOption[]>(() => {
+    const normalized = rawLanguageOptions.filter((option): option is LanguageOption =>
+      isSupportedLanguage(option.value)
+    )
+    return normalized.length ? normalized : fallbackLanguageOptions
+  }, [rawLanguageOptions, fallbackLanguageOptions])
 
   const layeredBackground = useMemo(
     () =>
@@ -49,13 +95,22 @@ export const HeroStage = ({ accent, mode, toggleMode, setAccent }: HeroStageProp
       bodyStyle={{ padding: `${token.paddingXL * 2}px ${token.paddingXL * 2.5}px` }}
     >
       <Flex vertical gap={token.marginXL} style={{ width: '100%' }}>
-        <HeroControls accent={accent} setAccent={setAccent} mode={mode} toggleMode={toggleMode} />
+        <HeroControls
+          accent={accent}
+          setAccent={setAccent}
+          mode={mode}
+          toggleMode={toggleMode}
+          controlsCopy={controlsCopy}
+          language={language}
+          languageOptions={languageOptions}
+          onLanguageChange={onLanguageChange}
+        />
         <Row align="middle" gutter={[48, 48]} style={{ minHeight: '100%' }}>
           <Col xs={24} lg={9}>
-            <HeroHeadline accent={accent} />
+            <HeroHeadline accent={accent} content={heroContent} />
           </Col>
           <Col xs={24} lg={15}>
-            <HeroMockupCard accent={accent} mode={mode} />
+            <HeroMockupCard accent={accent} mode={mode} gallery={galleryContent} />
           </Col>
         </Row>
       </Flex>

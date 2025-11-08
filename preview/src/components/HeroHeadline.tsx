@@ -1,16 +1,16 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { ArrowRightOutlined, DownloadOutlined } from '@ant-design/icons'
 import { Button, Space, Tag, Typography, theme } from 'antd'
-import { useRef } from 'react'
-import { heroContent } from '../data/site'
+import { useRef, type ReactElement } from 'react'
+import type { HeroContent } from '../types/content'
 import { HeroStatsGrid } from './HeroStatsGrid'
 import { useHeroIntroMotion } from '../hooks/useHeroIntroMotion'
 
 interface HeroHeadlineProps {
   accent: string
+  content: HeroContent
 }
 
-export const HeroHeadline = ({ accent }: HeroHeadlineProps) => {
+export const HeroHeadline = ({ accent, content }: HeroHeadlineProps): ReactElement => {
   const { token } = theme.useToken()
   const titleRef = useRef<HTMLHeadingElement | null>(null)
   const descriptionRef = useRef<HTMLParagraphElement | null>(null)
@@ -28,7 +28,7 @@ export const HeroHeadline = ({ accent }: HeroHeadlineProps) => {
           color: accent
         }}
       >
-        {heroContent.eyebrow}
+        {content.eyebrow}
       </Tag>
       <Typography.Title
         level={1}
@@ -40,7 +40,7 @@ export const HeroHeadline = ({ accent }: HeroHeadlineProps) => {
           lineHeight: 1
         }}
       >
-        {heroContent.title}
+        {content.title}
       </Typography.Title>
       <Typography.Paragraph
         ref={descriptionRef}
@@ -51,17 +51,32 @@ export const HeroHeadline = ({ accent }: HeroHeadlineProps) => {
           marginBottom: token.marginSM
         }}
       >
-        {heroContent.description}
+        {content.description}
       </Typography.Paragraph>
       <Space size="large" wrap>
-        <Button type="primary" size="large" icon={<DownloadOutlined />} style={{ minWidth: 180 }}>
-          {heroContent.primaryCta}
+        <Button
+          type="primary"
+          size="large"
+          icon={<DownloadOutlined />}
+          style={{ minWidth: 180 }}
+          href={content.primaryCta.href}
+          target="_blank"
+          rel="noreferrer"
+        >
+          {content.primaryCta.label}
         </Button>
-        <Button size="large" icon={<ArrowRightOutlined />} ghost>
-          {heroContent.secondaryCta}
+        <Button
+          size="large"
+          icon={<ArrowRightOutlined />}
+          ghost
+          href={content.secondaryCta.href}
+          target="_blank"
+          rel="noreferrer"
+        >
+          {content.secondaryCta.label}
         </Button>
       </Space>
-      <HeroStatsGrid accent={accent} />
+      <HeroStatsGrid accent={accent} stats={content.stats} />
     </Space>
   )
 }

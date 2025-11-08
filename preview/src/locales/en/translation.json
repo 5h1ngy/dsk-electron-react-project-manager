@@ -1,0 +1,45 @@
+{
+  "hero": {
+    "eyebrow": "Offline-first delivery suite",
+    "title": "DSK Project Manager",
+    "description": "One workspace that blends Electron, React, and a typed REST API so distributed teams can run projects, wikis, and automations even when the connection drops.",
+    "heroShot": "/Screenshot 2025-11-08 115411.png",
+    "primaryCta": {
+      "label": "Download desktop",
+      "href": "https://github.com/5h1ngy/dsk-electron-react-project-manager/releases"
+    },
+    "secondaryCta": {
+      "label": "Explore docs",
+      "href": "https://github.com/5h1ngy/dsk-electron-react-project-manager/tree/main/docs"
+    },
+    "stats": [
+      { "label": "Surfaces", "value": "Electron / Web / API" },
+      { "label": "Roles", "value": "Admin / Maintainer / Contributor / Viewer" },
+      { "label": "Seed time", "value": "< 2 min faker bootstrap" }
+    ]
+  },
+  "controls": {
+    "displayLabel": "Display",
+    "languageLabel": "Language",
+    "accentLabel": "Accent"
+  },
+  "languages": [
+    { "label": "English", "value": "en" },
+    { "label": "Italian", "value": "it" }
+  ],
+  "gallery": {
+    "shots": [
+      "/Screenshot 2025-11-08 115625.png",
+      "/Screenshot 2025-11-08 115609.png",
+      "/Screenshot 2025-11-08 115638.png",
+      "/Screenshot 2025-11-08 115529.png"
+    ],
+    "alt": "Product preview",
+    "modalAlt": "Fullscreen preview",
+    "controls": {
+      "previous": "Show previous preview",
+      "next": "Show next preview",
+      "expand": "Expand preview"
+    }
+  }
+}
