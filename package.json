@@ -70,9 +70,9 @@
     "version:bump": "node scripts/version/apply-version-bump.mjs",
     "prepare": "husky",
     "internal:build:electron": "npm run typecheck && electron-vite build --config packages/electron/electron.vite.config.ts",
-    "internal:build:portable": "npm run internal:build:electron && electron-builder --config packages/electron/electron-builder.yml --win portable",
-    "internal:build:dir": "npm run internal:build:electron && electron-builder --config packages/electron/electron-builder.yml --dir",
-    "internal:build:win": "npm run internal:build:electron && electron-builder --config packages/electron/electron-builder.yml --win",
+    "internal:build:portable": "npm run internal:build:electron && cross-env DEBUG=electron-builder electron-builder --config packages/electron/electron-builder.yml --win portable",
+    "internal:build:dir": "npm run internal:build:electron && cross-env DEBUG=electron-builder electron-builder --config packages/electron/electron-builder.yml --dir",
+    "internal:build:win": "npm run internal:build:electron && cross-env DEBUG=electron-builder electron-builder --config packages/electron/electron-builder.yml --win",
     "internal:seed": "cross-env TS_NODE_PROJECT=packages/seeding/tsconfig.tools.json TS_NODE_BASEURL=. node --max-old-space-size=32768 -r module-alias/register -r tsconfig-paths/register -r ts-node/register/transpile-only packages/seeding/src/run.ts"
   },
   "dependencies": {
@@ -82,7 +82,6 @@
     "@asteasolutions/zod-to-openapi": "^7.3.4",
     "@electron-toolkit/preload": "^3.0.2",
     "@electron-toolkit/utils": "^4.0.0",
-    "@faker-js/faker": "^8.4.1",
     "@hookform/resolvers": "^5.2.2",
     "@node-rs/argon2": "^2.0.2",
     "@redux-devtools/extension": "^3.3.0",
@@ -124,6 +123,7 @@
     "@electron-toolkit/eslint-config-prettier": "^3.0.0",
     "@electron-toolkit/eslint-config-ts": "^3.1.0",
     "@electron-toolkit/tsconfig": "^2.0.0",
+    "@faker-js/faker": "^8.4.1",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",

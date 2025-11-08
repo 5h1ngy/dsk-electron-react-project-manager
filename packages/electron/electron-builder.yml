@@ -22,6 +22,7 @@ portable:
   artifactName: ${name}-${version}-portable-win.${ext}
   requestExecutionLevel: user
 npmRebuild: false
+beforePack: ./scripts/prune-dev-deps.cjs
 publish:
   provider: generic
   url: https://example.com/auto-updates
