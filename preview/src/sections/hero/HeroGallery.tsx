@@ -1,11 +1,10 @@
-import { Button, Carousel, Image, Modal, Space, theme } from 'antd'
-import { LeftOutlined, RightOutlined, ExpandOutlined } from '@ant-design/icons'
+import { ExpandOutlined, LeftOutlined, RightOutlined } from '@ant-design/icons'
+import { Button, Carousel, Flex, Image, Modal, Space, theme } from 'antd'
 import type { CarouselRef } from 'antd/es/carousel'
-import type { FC } from 'react'
 import { useRef, useState } from 'react'
-import { galleryShots } from '../data/site'
+import { galleryShots } from '../../data/site'
 
-export const HeroGallery: FC = () => {
+export const HeroGallery = () => {
   const { token } = theme.useToken()
   const carouselRef = useRef<CarouselRef>(null)
   const [modalOpen, setModalOpen] = useState(false)
@@ -13,7 +12,7 @@ export const HeroGallery: FC = () => {
 
   return (
     <>
-      <div style={{ position: 'relative', width: '100%' }}>
+      <Flex style={{ position: 'relative', width: '100%' }}>
         <Carousel
           ref={carouselRef}
           dots={false}
@@ -48,19 +47,22 @@ export const HeroGallery: FC = () => {
             shape="circle"
             icon={<LeftOutlined />}
             onClick={() => carouselRef.current?.prev()}
+            aria-label="Show previous preview"
           />
           <Button
             shape="circle"
             icon={<RightOutlined />}
             onClick={() => carouselRef.current?.next()}
+            aria-label="Show next preview"
           />
           <Button
             type="primary"
             icon={<ExpandOutlined />}
             onClick={() => setModalOpen(true)}
+            aria-label="Expand preview"
           />
         </Space>
-      </div>
+      </Flex>
 
       <Modal
         open={modalOpen}

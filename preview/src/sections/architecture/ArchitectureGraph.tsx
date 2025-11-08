@@ -1,48 +1,24 @@
 import { Card, Col, Divider, List, Row, Space, Tag, Typography, theme } from 'antd'
-import type { FC } from 'react'
-import { useRef } from 'react'
-import { architectureGraph } from '../data/site'
-import { useBlurOnScroll } from '../hooks/useBlurOnScroll'
+import { architectureGraph } from '../../data/site'
+import { SectionHeading } from '../common/SectionHeading'
+import { SectionShell } from '../common/SectionShell'
 
 interface ArchitectureGraphProps {
   accent: string
 }
 
-export const ArchitectureGraph: FC<ArchitectureGraphProps> = ({ accent }) => {
+export const ArchitectureGraph = ({ accent }: ArchitectureGraphProps) => {
   const { token } = theme.useToken()
-  const headingRef = useRef<HTMLHeadingElement>(null)
-  const descriptionRef = useRef<HTMLParagraphElement>(null)
-  useBlurOnScroll(headingRef)
-  useBlurOnScroll(descriptionRef)
 
   return (
-    <Card
-      data-motion="architecture"
-      bordered={false}
-      style={{ background: 'transparent', marginTop: token.marginXXL * 2 }}
-      bodyStyle={{ padding: 0 }}
-    >
+    <SectionShell motionKey="architecture">
       <Space direction="vertical" size="large" style={{ width: '100%' }}>
-        <Typography.Title
-          ref={headingRef}
-          level={2}
-          style={{
-            color: accent,
-            textAlign: 'center',
-            marginBottom: token.margin,
-            fontSize: 56,
-            letterSpacing: 1.3
-          }}
-        >
-          Architecture graph
-        </Typography.Title>
-        <Typography.Paragraph
-          ref={descriptionRef}
-          style={{ color: `${accent}cc`, textAlign: 'center', fontSize: 16 }}
-        >
-          Every workspace surface sits on a shared domain layer; this graph highlights the primary
-          nodes that collaborate through IPC, REST, and shared DTOs.
-        </Typography.Paragraph>
+        <SectionHeading
+          title="Architecture graph"
+          accent={accent}
+          description="Every workspace surface sits on a shared domain layer; this graph highlights the primary nodes that collaborate through IPC, REST, and shared DTOs."
+          descriptionColor={`${accent}cc`}
+        />
         <Row gutter={[24, 24]}>
           {architectureGraph.nodes.map((node) => (
             <Col xs={24} md={12} key={node.title}>
@@ -100,6 +76,6 @@ export const ArchitectureGraph: FC<ArchitectureGraphProps> = ({ accent }) => {
           </Space>
         </Card>
       </Space>
-    </Card>
+    </SectionShell>
   )
 }

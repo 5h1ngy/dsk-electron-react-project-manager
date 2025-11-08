@@ -1,7 +1,10 @@
-import { Card, ConfigProvider, Layout, theme as antdTheme } from 'antd'
+import { ConfigProvider, Flex, Layout, theme as antdTheme } from 'antd'
 import gsap from 'gsap'
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
-import { HeroStage } from './components/HeroStage'
+import { HeroStage } from './sections/hero/HeroStage'
+import { FeatureOrbit } from './sections/features/FeatureOrbit'
+import { ExperienceShowcase } from './sections/experience/ExperienceShowcase'
+import { ArchitectureGraph } from './sections/architecture/ArchitectureGraph'
 import { ACCENT_OPTIONS, createThemeConfig } from './theme'
 import type { ThemeMode } from './theme/foundations/palette'
 import { useGlobalAnimations } from './hooks/useGlobalAnimations'
@@ -57,19 +60,21 @@ const AppShell = ({ mode, toggleMode, accent, setAccent }: AppShellProps) => {
   return (
     <Layout style={{ minHeight: '100vh', background: 'transparent' }}>
       <Content style={{ width: '100%', padding: 0, overflow: 'hidden' }}>
-        <div
+        <Flex
           ref={contentRef}
+          vertical
+          gap={token.marginXXL}
           style={{
             minHeight: '100vh',
-            padding: '32px 24px',
-            boxSizing: 'border-box',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center'
+            padding: `${token.paddingXL * 2}px ${token.paddingXL * 1.5}px`,
+            boxSizing: 'border-box'
           }}
         >
           <HeroStage mode={mode} accent={accent} toggleMode={toggleMode} setAccent={setAccent} />
-        </div>
+          <FeatureOrbit accent={accent} />
+          <ExperienceShowcase accent={accent} />
+          <ArchitectureGraph accent={accent} />
+        </Flex>
       </Content>
     </Layout>
   )

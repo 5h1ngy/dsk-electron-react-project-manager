@@ -1,3 +1,5 @@
+import type { ExperienceDeckEntry } from '../types/experience'
+
 export const heroContent = {
   eyebrow: 'Offline-first delivery suite',
   title: 'DSK Project Manager',
@@ -37,7 +39,7 @@ export const featureHighlights = [
   }
 ]
 
-export const experienceDeck = [
+export const experienceDeck: ExperienceDeckEntry[] = [
   {
     title: 'Mission control for sprints',
     summary:
