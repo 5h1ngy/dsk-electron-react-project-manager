@@ -64,7 +64,6 @@
     "postinstall": "node scripts/postinstall.mjs",
     "reset:build": "rimraf dist out",
     "version:bump": "node scripts/versioning.mjs",
-    "repotree": "node scripts/repotree.mjs",
     "prepare": "husky"
   },
   "dependencies": {
