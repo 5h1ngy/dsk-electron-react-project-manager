@@ -43,7 +43,7 @@ export default defineConfig({
     }
   },
   build: {
-    outDir: resolve(__dirname, '../../../out/renderer-web'),
+    outDir: resolve(__dirname, '../../out/renderer-web'),
     emptyOutDir: true
   }
 })
