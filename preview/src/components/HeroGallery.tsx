@@ -9,20 +9,35 @@ interface HeroGalleryProps {
   content: GalleryContent
 }
 
+const resolveStaticSrc = (raw: string): string => {
+  if (!raw) return ''
+  if (/^https?:\/\//i.test(raw)) {
+    return raw
+  }
+  const trimmed = raw.replace(/^\/+/, '')
+  const base = import.meta.env.BASE_URL ?? '/'
+  if (base === '/' || base === '') {
+    return trimmed ? `/${trimmed}` : ''
+  }
+  if (base === './') {
+    return `./${trimmed}`
+  }
+  const normalized = base.endsWith('/') ? base : `${base}/`
+  return `${normalized}${trimmed}`
+}
+
 export const HeroGallery = ({ content }: HeroGalleryProps): ReactElement => {
   const { token } = theme.useToken()
   const carouselRef = useRef<CarouselRef>(null)
   const [modalOpen, setModalOpen] = useState(false)
   const [activeIndex, setActiveIndex] = useState(0)
-  const resolvedShots = useMemo(() => {
-    const base = import.meta.env.BASE_URL ?? '/'
-    const normalizedBase = base.endsWith('/') ? base : `${base}/`
-    const rawShots = content.shots ?? []
-    return rawShots.map((shot) => ({
-      key: shot,
-      src: `${normalizedBase}${shot.replace(/^\/+/, '')}`
-    }))
-  }, [content.shots])
+  const resolvedShots = useMemo(
+    () =>
+      (content.shots ?? [])
+        .map((shot) => ({ key: shot, src: resolveStaticSrc(shot) }))
+        .filter((shot) => Boolean(shot.src)),
+    [content.shots]
+  )
   const currentShot = resolvedShots[activeIndex]?.src ?? resolvedShots[0]?.src ?? ''
 
   return (
