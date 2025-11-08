@@ -1,4 +1,4 @@
-import { Timeline, Typography, theme } from 'antd'
+import { Card, Col, Row, Space, Timeline, Typography, theme } from 'antd'
 import type { FC } from 'react'
 import { workflowTimeline, releaseStats } from '../data/site'
 
@@ -6,7 +6,7 @@ export const Architecture: FC = () => {
   const { token } = theme.useToken()
 
   return (
-    <section style={{ marginTop: token.marginXL * 2.5 }}>
+    <Space direction="vertical" size="large" style={{ marginTop: token.marginXL * 2.5, width: '100%' }}>
       <Typography.Title level={2}>Architecture in four movements</Typography.Title>
       <Typography.Paragraph type="secondary">
         Desktop, backend, renderer, and tooling share the same schema, tokens, and logging strategy.
@@ -16,45 +16,40 @@ export const Architecture: FC = () => {
         items={workflowTimeline.map((step) => ({
           color: token.colorPrimary,
           children: (
-            <div
+            <Card
+              bordered={false}
               style={{
-                padding: `${token.paddingSM}px ${token.paddingLG}px`,
                 borderRadius: token.borderRadiusLG,
                 background: token.colorBgElevated,
                 border: `1px solid ${token.colorBorder}`,
                 boxShadow: token.boxShadow
               }}
+              bodyStyle={{ padding: `${token.paddingSM}px ${token.paddingLG}px` }}
             >
               <Typography.Title level={4}>{step.title}</Typography.Title>
               <Typography.Paragraph type="secondary">{step.details}</Typography.Paragraph>
-            </div>
+            </Card>
           )
         }))}
       />
 
-      <div
-        style={{
-          marginTop: token.marginXL,
-          display: 'grid',
-          gap: token.marginLG,
-          gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))'
-        }}
-      >
+      <Row gutter={[token.marginLG, token.marginLG]}>
         {releaseStats.map((stat) => (
-          <div
-            key={stat.label}
-            style={{
-              borderRadius: token.borderRadiusLG,
-              border: `1px solid ${token.colorBorderSecondary}`,
-              background: token.colorBgContainer,
-              padding: `${token.paddingSM}px ${token.paddingLG}px`
-            }}
-          >
-            <Typography.Text type="secondary">{stat.label}</Typography.Text>
-            <Typography.Title level={4}>{stat.value}</Typography.Title>
-          </div>
+          <Col key={stat.label} xs={24} sm={12} md={12} lg={12}>
+            <Card
+              bordered={false}
+              style={{
+                borderRadius: token.borderRadiusLG,
+                border: `1px solid ${token.colorBorderSecondary}`,
+                background: token.colorBgContainer
+              }}
+            >
+              <Typography.Text type="secondary">{stat.label}</Typography.Text>
+              <Typography.Title level={4}>{stat.value}</Typography.Title>
+            </Card>
+          </Col>
         ))}
-      </div>
-    </section>
+      </Row>
+    </Space>
   )
 }

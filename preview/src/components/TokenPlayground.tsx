@@ -1,5 +1,5 @@
 import { BulbOutlined } from '@ant-design/icons'
-import { Card, Segmented, Space, Switch, Typography, theme } from 'antd'
+import { Avatar, Card, Segmented, Space, Switch, Tag, Typography, theme } from 'antd'
 import type { FC } from 'react'
 import { ACCENT_OPTIONS } from '../theme'
 import type { ThemeMode } from '../theme/foundations/palette'
@@ -20,7 +20,7 @@ export const TokenPlayground: FC<TokenPlaygroundProps> = ({
   const { token } = theme.useToken()
 
   return (
-    <section style={{ marginTop: token.marginXL * 2 }}>
+    <Space direction="vertical" style={{ marginTop: token.marginXL * 2, width: '100%' }}>
       <Card
         bordered={false}
         style={{
@@ -31,52 +31,43 @@ export const TokenPlayground: FC<TokenPlaygroundProps> = ({
         }}
       >
         <Space direction="vertical" size="large" style={{ width: '100%' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: token.marginSM }}>
+          <Space align="center" size="middle">
             <BulbOutlined style={{ fontSize: 28, color: token.colorPrimary }} />
-            <div>
+            <Space direction="vertical" size={4}>
               <Typography.Title level={3} style={{ marginBottom: 0 }}>
                 Live token customizer
               </Typography.Title>
               <Typography.Text type="secondary">
                 Toggle theme + accent to see how Ant Design tokens adapt instantly.
               </Typography.Text>
-            </div>
-          </div>
+            </Space>
+          </Space>
 
-          <div
-            style={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              gap: token.marginLG
-            }}
+          <Space
+            wrap
+            align="center"
+            style={{ width: '100%', justifyContent: 'space-between', gap: token.marginLG }}
           >
-            <div>
-              <Typography.Text strong>Mode</Typography.Text>
-              <Switch
+            <Space align="center">
+                <Typography.Text strong>Mode</Typography.Text>
+                <Switch
                 checkedChildren="Dark"
                 unCheckedChildren="Light"
                 checked={mode === 'dark'}
                 onChange={(checked) => onModeChange(checked ? 'dark' : 'light')}
                 style={{ marginLeft: token.marginSM }}
               />
-            </div>
-            <div>
-              <Typography.Text strong>Accent</Typography.Text>
-              <Segmented
-                style={{ marginLeft: token.marginSM }}
-                options={ACCENT_OPTIONS.map((color) => ({
+            </Space>
+            <Space align="center">
+                <Typography.Text strong>Accent</Typography.Text>
+                <Segmented
+                  style={{ marginLeft: token.marginSM }}
+                  options={ACCENT_OPTIONS.map((color) => ({
                   label: (
-                    <span
-                      style={{
-                        width: 28,
-                        height: 28,
-                        borderRadius: 999,
-                        border: '2px solid rgba(255,255,255,0.4)',
-                        display: 'inline-block',
-                        backgroundColor: color
-                      }}
+                    <Avatar
+                      size={28}
+                      shape="circle"
+                      style={{ backgroundColor: color, border: '2px solid rgba(255,255,255,0.4)' }}
                     />
                   ),
                   value: color
@@ -84,16 +75,10 @@ export const TokenPlayground: FC<TokenPlaygroundProps> = ({
                 value={accent}
                 onChange={(value) => onAccentChange(value as string)}
               />
-            </div>
-          </div>
+            </Space>
+          </Space>
 
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-              gap: token.marginLG
-            }}
-          >
+          <Space direction="vertical" style={{ width: '100%' }}>
             <Card
               bordered={false}
               style={{
@@ -109,26 +94,24 @@ export const TokenPlayground: FC<TokenPlaygroundProps> = ({
               </Typography.Paragraph>
               <Space wrap>
                 {['brandPrimary', 'brandSecondary', 'radiusLG', 'shadowSurface'].map((badge) => (
-                  <span
+                  <Tag
                     key={badge}
                     style={{
-                      padding: '6px 14px',
                       borderRadius: 999,
                       background: `${token.colorPrimary}12`,
+                      border: 'none',
                       color: token.colorTextSecondary,
-                      fontSize: 12,
-                      letterSpacing: '0.04em',
-                      textTransform: 'uppercase'
+                      letterSpacing: '0.04em'
                     }}
                   >
                     {badge}
-                  </span>
+                  </Tag>
                 ))}
               </Space>
             </Card>
-          </div>
+          </Space>
         </Space>
       </Card>
-    </section>
+    </Space>
   )
 }

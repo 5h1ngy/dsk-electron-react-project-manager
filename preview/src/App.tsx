@@ -1,4 +1,4 @@
-import { ConfigProvider, FloatButton, Layout, theme as antdTheme } from 'antd'
+import { Avatar, ConfigProvider, FloatButton, Layout, Space, Typography, theme as antdTheme } from 'antd'
 import { useEffect, useMemo, useState } from 'react'
 import { Hero } from './components/Hero'
 import { FeatureGrid } from './components/FeatureGrid'
@@ -46,28 +46,21 @@ const AppShell = ({
           position: 'sticky',
           top: 0,
           zIndex: 10,
-          display: 'flex',
-          alignItems: 'center',
-          gap: token.marginSM,
-          fontWeight: 600,
-          textTransform: 'uppercase',
-          letterSpacing: '0.05em',
-          padding: '18px 32px',
           background: 'rgba(5, 7, 13, 0.7)',
           borderBottom: `1px solid ${token.colorBorderSecondary}`,
-          backdropFilter: 'blur(12px)'
+          backdropFilter: 'blur(12px)',
+          padding: '18px 32px'
         }}
       >
-        <span
-          style={{
-            width: 12,
-            height: 12,
-            borderRadius: 999,
-            background: token.colorPrimary,
-            display: 'inline-block'
-          }}
-        />
-        <span>DSK Project Manager</span>
+        <Space align="center" size="small">
+          <Avatar
+            size={14}
+            style={{ backgroundColor: token.colorPrimary, display: 'inline-flex' }}
+          />
+          <Typography.Text strong style={{ letterSpacing: '0.05em' }}>
+            DSK Project Manager
+          </Typography.Text>
+        </Space>
       </Header>
       <Content
         style={{

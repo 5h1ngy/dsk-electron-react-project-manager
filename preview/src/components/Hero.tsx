@@ -6,15 +6,11 @@ const repoUrl = 'https://github.com/dsk-labs/dsk-electron-react-project-manager'
 export const Hero = () => {
   const { token } = theme.useToken()
   return (
-    <div
-      style={{
-        textAlign: 'center',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        gap: token.marginLG,
-        padding: `${token.paddingXL}px ${token.paddingXL}px ${token.paddingLG * 3}px`
-      }}
+    <Space
+      direction="vertical"
+      align="center"
+      size="large"
+      style={{ width: '100%', padding: `${token.paddingXL}px ${token.paddingXL}px ${token.paddingLG * 3}px` }}
     >
       <Tag
         style={{
@@ -27,10 +23,10 @@ export const Hero = () => {
       >
         Open Source · MIT License
       </Tag>
-      <Typography.Title level={1} style={{ marginTop: token.marginSM }}>
+      <Typography.Title level={1} style={{ textAlign: 'center' }}>
         Manage complex delivery fully offline
       </Typography.Title>
-      <Typography.Paragraph type="secondary" style={{ maxWidth: 720, margin: '0 auto' }}>
+      <Typography.Paragraph type="secondary" style={{ maxWidth: 720, textAlign: 'center' }}>
         DSK Project Manager bundles an Electron desktop app, a React SPA, and a SQLite-first REST
         API so product, engineering, and delivery teams can collaborate without depending on cloud
         connectivity.
@@ -49,6 +45,6 @@ export const Hero = () => {
           Go to Repository
         </Button>
       </Space>
-    </div>
+    </Space>
   )
 }

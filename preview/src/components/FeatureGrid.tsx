@@ -1,4 +1,4 @@
-import { Card, Col, Row, Typography, theme } from 'antd'
+import { Card, Col, Row, Space, Typography, theme } from 'antd'
 import type { FC } from 'react'
 import { featureCards } from '../data/site'
 
@@ -6,7 +6,7 @@ export const FeatureGrid: FC = () => {
   const { token } = theme.useToken()
 
   return (
-    <section style={{ marginTop: token.marginXL * 2.5 }}>
+    <Space direction="vertical" size="large" style={{ marginTop: token.marginXL * 2.5, width: '100%' }}>
       <Typography.Title level={2}>Why teams pick DSK Project Manager</Typography.Title>
       <Typography.Paragraph type="secondary">
         Shared domain logic, hardened IPC, and curated UX patterns keep multi-surface delivery tidy.
@@ -27,13 +27,15 @@ export const FeatureGrid: FC = () => {
                 gap: token.marginSM
               }}
             >
-              <div style={{ fontSize: 28, marginBottom: token.marginXS }}>{card.emoji}</div>
+              <Typography.Title level={3} style={{ marginBottom: token.marginXS }}>
+                {card.emoji}
+              </Typography.Title>
               <Typography.Title level={4}>{card.title}</Typography.Title>
               <Typography.Paragraph type="secondary">{card.description}</Typography.Paragraph>
             </Card>
           </Col>
         ))}
       </Row>
-    </section>
+    </Space>
   )
 }

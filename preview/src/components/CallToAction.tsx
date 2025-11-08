@@ -1,4 +1,4 @@
-import { Button, Card, Typography, theme } from 'antd'
+import { Button, Card, Typography, Space, theme } from 'antd'
 
 const repoUrl = 'https://github.com/dsk-labs/dsk-electron-react-project-manager'
 
@@ -6,7 +6,7 @@ export const CallToAction = () => {
   const { token } = theme.useToken()
 
   return (
-    <section style={{ marginTop: token.marginXL * 2 }}>
+    <Space direction="vertical" style={{ marginTop: token.marginXL * 2, width: '100%' }}>
       <Card
         bordered={false}
         style={{
@@ -26,6 +26,6 @@ export const CallToAction = () => {
           Star on GitHub
         </Button>
       </Card>
-    </section>
+    </Space>
   )
 }
