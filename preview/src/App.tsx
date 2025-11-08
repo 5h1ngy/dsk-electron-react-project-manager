@@ -16,7 +16,6 @@ import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { HeroStage } from './components/HeroStage'
 import { FeatureOrbit } from './components/FeatureOrbit'
 import { ExperienceShowcase } from './components/ExperienceShowcase'
-import { ScreensGallery } from './components/ScreensGallery'
 import { ACCENT_OPTIONS, createThemeConfig } from './theme'
 import type { ThemeMode } from './theme/foundations/palette'
 import { useGlobalAnimations } from './hooks/useGlobalAnimations'
@@ -132,13 +131,32 @@ const AppShell = ({ mode, toggleMode, accent, setAccent }: AppShellProps) => {
             >
               <FeatureOrbit accent={accent} />
               <ExperienceShowcase accent={accent} />
-              <ScreensGallery accent={accent} />
             </Space>
           </div>
         </div>
       </Content>
-      <Footer style={{ textAlign: 'center', background: 'transparent', color: token.colorTextBase }}>
-        (c) {new Date().getFullYear()} DSK Project Manager - Offline-first delivery suite
+      <Footer
+        style={{
+          textAlign: 'center',
+          background:
+            mode === 'dark'
+              ? 'linear-gradient(180deg, rgba(4,6,14,0), rgba(4,6,14,0.85) 45%, #010310)'
+              : 'linear-gradient(180deg, rgba(240,244,255,0), rgba(240,244,255,0.9) 45%, #fefefe)',
+          color: token.colorTextSecondary,
+          padding: '48px 24px',
+          borderTop: `1px solid ${token.colorBorder}`,
+          marginTop: token.marginXXL
+        }}
+      >
+        <Space direction="vertical" size="small" style={{ width: '100%' }}>
+          <Typography.Text style={{ color: token.colorTextBase, fontWeight: 600 }}>
+            DSK Project Manager
+          </Typography.Text>
+          <Typography.Text>Offline-first delivery suite · Electron · React · API</Typography.Text>
+          <Typography.Text type="secondary">
+            © {new Date().getFullYear()} DSK Labs. Crafted with Ant Design tokens & GSAP.
+          </Typography.Text>
+        </Space>
       </Footer>
       <FloatButton.BackTop />
     </Layout>

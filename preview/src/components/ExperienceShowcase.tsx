@@ -1,4 +1,4 @@
-import { Card, Col, Image, Row, Space, Tag, Typography, theme } from 'antd'
+import { Card, Flex, Image, Space, Tag, Typography, theme } from 'antd'
 import type { FC } from 'react'
 import { useRef } from 'react'
 import gsap from 'gsap'
@@ -22,7 +22,7 @@ export const ExperienceShowcase: FC<ExperienceShowcaseProps> = ({ accent }) => {
     gsap.to(node, {
       y: enter ? -12 : 0,
       rotateX: enter ? 2 : 0,
-      duration: enter ? 0.5 : 0.4,
+      duration: enter ? 0.5 : 0.35,
       ease: enter ? 'elastic.out(1, 0.5)' : 'power3.inOut'
     })
   }
@@ -48,13 +48,14 @@ export const ExperienceShowcase: FC<ExperienceShowcaseProps> = ({ accent }) => {
         >
           Delivery tapestries
         </Typography.Title>
-        <Space direction="vertical" size={token.marginXL} style={{ width: '100%' }}>
+
+        <Space direction="vertical" size={token.marginXXL} style={{ width: '100%' }}>
           {experienceDeck.map((experience, index) => {
             const isEven = index % 2 === 0
             const imageShift = isEven ? '12%' : '-12%'
             const textAlign = isEven ? 'left' : 'right'
             const alignItems = isEven ? 'flex-start' : 'flex-end'
-            const alignSelfValue = isEven ? 'flex-start' : 'flex-end'
+            const justifyHighlights = isEven ? 'flex-start' : 'flex-end'
 
             return (
               <Card
@@ -62,35 +63,29 @@ export const ExperienceShowcase: FC<ExperienceShowcaseProps> = ({ accent }) => {
                 bordered={false}
                 style={{
                   borderRadius: token.borderRadiusXXL * 2,
-                  border: `1px solid ${accent}33`,
+                  border: `1px solid ${accent}40`,
                   background: isDark
-                    ? `linear-gradient(140deg, rgba(6,9,20,0.95), rgba(3,4,12,0.9))`
-                    : `linear-gradient(140deg, rgba(255,255,255,0.95), rgba(235,240,255,0.92))`,
-                  boxShadow: `0 40px 90px rgba(15,23,42,0.35)`,
-                  overflow: 'visible'
+                    ? 'linear-gradient(145deg, rgba(6,9,20,0.95), rgba(3,4,12,0.9))'
+                    : 'linear-gradient(145deg, rgba(255,255,255,0.96), rgba(236,240,255,0.92))',
+                  boxShadow: '0 40px 90px rgba(15,23,42,0.35)'
                 }}
-                bodyStyle={{
-                  padding: `${token.paddingLG}px ${token.paddingXL}px`,
-                  overflow: 'visible'
-                }}
+                bodyStyle={{ padding: `${token.paddingLG}px ${token.paddingXL}px` }}
               >
-                <div
+                <Flex
+                  wrap
+                  align="center"
+                  gap={token.marginXL}
                   style={{
-                    display: 'flex',
-                    flexWrap: 'wrap',
-                    alignItems: 'center',
                     flexDirection: isEven ? 'row' : 'row-reverse',
-                    gap: token.marginXL,
                     minHeight: 260
                   }}
                 >
-                  <div
+                  <Flex
+                    vertical
+                    gap={token.marginSM}
                     style={{
                       flex: '1 1 320px',
                       padding: `${token.paddingSM}px ${token.paddingXL}px`,
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: token.marginSM,
                       alignItems,
                       textAlign
                     }}
@@ -100,8 +95,7 @@ export const ExperienceShowcase: FC<ExperienceShowcaseProps> = ({ accent }) => {
                       style={{
                         borderColor: accent,
                         color: accent,
-                        background: `${accent}20`,
-                        alignSelf: alignSelfValue
+                        background: `${accent}20`
                       }}
                     >
                       {experience.badge}
@@ -114,15 +108,7 @@ export const ExperienceShowcase: FC<ExperienceShowcaseProps> = ({ accent }) => {
                     >
                       {experience.summary}
                     </Typography.Paragraph>
-                    <div
-                      style={{
-                        width: '100%',
-                        display: 'flex',
-                        flexWrap: 'wrap',
-                        gap: token.marginXS,
-                        justifyContent: isEven ? 'flex-start' : 'flex-end'
-                      }}
-                    >
+                    <Flex wrap gap={token.marginXS} justify={justifyHighlights} style={{ width: '100%' }}>
                       {experience.highlights.map((highlight) => (
                         <Tag
                           key={highlight}
@@ -137,14 +123,15 @@ export const ExperienceShowcase: FC<ExperienceShowcaseProps> = ({ accent }) => {
                           {highlight}
                         </Tag>
                       ))}
-                    </div>
-                  </div>
-                  <div
+                    </Flex>
+                  </Flex>
+
+                  <Flex
                     style={{
                       flex: '1 1 360px',
-                      display: 'flex',
                       justifyContent: 'center',
-                      position: 'relative'
+                      position: 'relative',
+                      overflow: 'visible'
                     }}
                   >
                     <Card
@@ -152,15 +139,9 @@ export const ExperienceShowcase: FC<ExperienceShowcaseProps> = ({ accent }) => {
                       style={{
                         borderRadius: token.borderRadiusXXL * 1.2,
                         background: 'transparent',
-                        boxShadow: modeAwareShadow(token.colorBgBase),
-                        overflow: 'visible'
+                        boxShadow: '0 30px 80px rgba(0,0,0,0.4)'
                       }}
-                      bodyStyle={{
-                        padding: token.padding,
-                        display: 'flex',
-                        justifyContent: 'center',
-                        overflow: 'visible'
-                      }}
+                      bodyStyle={{ padding: token.padding, overflow: 'visible' }}
                       ref={(node) => {
                         if (node) {
                           imageRefs.current[experience.title] = node
@@ -182,8 +163,8 @@ export const ExperienceShowcase: FC<ExperienceShowcaseProps> = ({ accent }) => {
                         }}
                       />
                     </Card>
-                  </div>
-                </div>
+                  </Flex>
+                </Flex>
               </Card>
             )
           })}
@@ -192,6 +173,3 @@ export const ExperienceShowcase: FC<ExperienceShowcaseProps> = ({ accent }) => {
     </Card>
   )
 }
-
-const modeAwareShadow = (colorBgBase: string) =>
-  `0 30px 80px rgba(15,23,42,${colorBgBase === '#040614' ? '0.45' : '0.18'})`

@@ -1,0 +1,77 @@
+import { Button, Carousel, Image, Modal, Space, theme } from 'antd'
+import { LeftOutlined, RightOutlined, ExpandOutlined } from '@ant-design/icons'
+import type { CarouselRef } from 'antd/es/carousel'
+import type { FC } from 'react'
+import { useRef, useState } from 'react'
+import { galleryShots } from '../data/site'
+
+export const HeroGallery: FC = () => {
+  const { token } = theme.useToken()
+  const carouselRef = useRef<CarouselRef>(null)
+  const [modalOpen, setModalOpen] = useState(false)
+  const [activeIndex, setActiveIndex] = useState(0)
+
+  return (
+    <>
+      <div style={{ position: 'relative', width: '100%' }}>
+        <Carousel
+          ref={carouselRef}
+          dots={false}
+          autoplay
+          autoplaySpeed={4500}
+          style={{ width: '100%', borderRadius: token.borderRadiusLG }}
+          afterChange={(index) => setActiveIndex(index)}
+        >
+          {galleryShots.map((shot) => (
+            <Image
+              key={shot}
+              src={shot}
+              alt="Product preview"
+              preview={false}
+              style={{
+                width: '100%',
+                borderRadius: token.borderRadiusLG,
+                boxShadow: '0 25px 60px rgba(0,0,0,0.35)'
+              }}
+            />
+          ))}
+        </Carousel>
+        <Space
+          style={{
+            position: 'absolute',
+            bottom: token.margin,
+            right: token.margin,
+            gap: token.marginXS
+          }}
+        >
+          <Button
+            shape="circle"
+            icon={<LeftOutlined />}
+            onClick={() => carouselRef.current?.prev()}
+          />
+          <Button
+            shape="circle"
+            icon={<RightOutlined />}
+            onClick={() => carouselRef.current?.next()}
+          />
+          <Button
+            type="primary"
+            icon={<ExpandOutlined />}
+            onClick={() => setModalOpen(true)}
+          />
+        </Space>
+      </div>
+
+      <Modal
+        open={modalOpen}
+        footer={null}
+        width="90%"
+        centered
+        onCancel={() => setModalOpen(false)}
+        styles={{ mask: { backdropFilter: 'blur(4px)' } }}
+      >
+        <Image src={galleryShots[activeIndex]} alt="Fullscreen preview" preview={false} />
+      </Modal>
+    </>
+  )
+}

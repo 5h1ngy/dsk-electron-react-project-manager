@@ -1,9 +1,10 @@
-import { Button, Card, Col, Image, Row, Space, Tag, Typography, theme } from 'antd'
+import { Button, Card, Col, Row, Space, Tag, Typography, theme } from 'antd'
 import { ArrowRightOutlined, DownloadOutlined } from '@ant-design/icons'
 import gsap from 'gsap'
 import type { FC } from 'react'
 import { useLayoutEffect, useRef, useState } from 'react'
 import { heroContent } from '../data/site'
+import { HeroGallery } from './HeroGallery'
 import type { ThemeMode } from '../theme/foundations/palette'
 
 interface HeroStageProps {
@@ -252,21 +253,11 @@ export const HeroStage: FC<HeroStageProps> = ({ accent, mode }) => {
                 ? '0 30px 80px rgba(0,0,0,0.5)'
                 : '0 30px 60px rgba(15,23,42,0.2)'
             }}
-            bodyStyle={{ padding: token.padding }}
+            bodyStyle={{ padding: token.padding, overflow: 'hidden' }}
             onMouseEnter={() => animateMockup(true)}
             onMouseLeave={() => animateMockup(false)}
           >
-            <Image
-              src={heroContent.heroShot}
-              alt="Kanban board preview"
-              preview={false}
-              style={{
-                borderRadius: token.borderRadiusLG,
-                width: '100%',
-                height: '100%',
-                filter: mode === 'dark' ? 'drop-shadow(0 20px 45px rgba(0,0,0,0.45))' : 'none'
-              }}
-            />
+            <HeroGallery />
           </Card>
         </Col>
       </Row>
