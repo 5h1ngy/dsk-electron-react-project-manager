@@ -1,7 +1,6 @@
 import { useEffect, useMemo } from 'react'
 import { HashRouter } from 'react-router-dom'
 import { App as AntdApp, ConfigProvider, theme } from 'antd'
-import { Helmet } from 'react-helmet'
 
 import { ErrorBoundary } from '@renderer/components/ErrorBoundary'
 import { AppRoutes } from '@renderer/pages/routes'
@@ -156,30 +155,46 @@ const App = () => {
 
   const faviconHref = `${import.meta.env.BASE_URL ?? '/'}favicon.ico`
 
+  useEffect(() => {
+    document.title = 'DSK Project Manager'
+  }, [])
+
+  useEffect(() => {
+    const head = document.head
+    if (!head) {
+      return
+    }
+    let favicon = head.querySelector<HTMLLinkElement>("link[rel~='icon']")
+    if (!favicon) {
+      favicon = document.createElement('link')
+      favicon.rel = 'icon'
+      head.appendChild(favicon)
+    }
+    const prevHref = favicon.href
+    favicon.href = faviconHref
+    return () => {
+      favicon.href = prevHref
+    }
+  }, [faviconHref])
+
   return (
-    <>
-      <Helmet>
-        <title>DSK Project Manager</title>
-        <link rel="icon" href={faviconHref} />
-      </Helmet>
-      <ErrorBoundary>
-        <ConfigProvider theme={themeConfig}>
-          <HashRouter
-            future={{
-              v7_startTransition: true,
-              v7_relativeSplatPath: true
-            }}
-          >
-            <AntdApp>
-              <BodyStyleSynchronizer />
-              <ScrollbarStyleSynchronizer />
-              <NavigationStyleSynchronizer />
-              <AppRoutes />
-            </AntdApp>
-          </HashRouter>
-        </ConfigProvider>
-      </ErrorBoundary>
-    </>
+    <ErrorBoundary>
+      <ConfigProvider theme={themeConfig}>
+        <HashRouter
+          future={{
+            v7_startTransition: true,
+            v7_relativeSplatPath: true
+          }}
+        >
+          <AntdApp>
+            <BodyStyleSynchronizer />
+            <ScrollbarStyleSynchronizer />
+            <NavigationStyleSynchronizer />
+            <AppRoutes />
+          </AntdApp>
+        </HashRouter>
+      </ConfigProvider>
+    </ErrorBoundary>
   )
 }
 
