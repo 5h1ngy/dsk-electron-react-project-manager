@@ -40,8 +40,6 @@ process.env.VITE_PUBLIC_BASE = RENDERER_BASE
 process.env.PUBLIC_BASE = process.env.PUBLIC_BASE ?? RENDERER_BASE
 const LOCAL_TSCONFIG_PATH = resolve(__dirname, 'tsconfig.json')
 const tsconfigRaw = JSON.parse(readFileSync(LOCAL_TSCONFIG_PATH, 'utf-8'))
-process.env.TS_NODE_PROJECT =
-  process.env.TS_NODE_PROJECT ?? resolve(__dirname, 'tsconfig.electron.json')
 
 export default defineConfig({
   main: {
