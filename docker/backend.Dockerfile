@@ -3,7 +3,7 @@ FROM node:22-alpine AS builder
 WORKDIR /app
 
 # install only the dependencies required to build the backend (no electron postinstall)
-COPY docker/node/backend.package.json ./package.json
+COPY docker/backend.dev.package.json ./package.json
 RUN npm install
 
 # bring in the real project files for compilation
@@ -20,7 +20,7 @@ ENV TS_NODE_BASEURL=out/backend
 WORKDIR /app
 
 # install slim runtime dependencies for the backend service
-COPY docker/node/backend.package.json ./package.json
+COPY docker/backend.prod.package.json ./package.json
 RUN npm install --omit=dev
 
 COPY packages/backend/tsconfig.backend.json ./packages/backend/tsconfig.backend.json

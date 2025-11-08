@@ -4,7 +4,7 @@ import { resolve } from 'node:path'
 
 const rootDir = resolve(__dirname, '..')
 
-config({ path: resolve(rootDir, '.env') })
+config({ path: resolve(rootDir, 'env/.env') })
 
 if (!process.env.APP_VERSION) {
   try {

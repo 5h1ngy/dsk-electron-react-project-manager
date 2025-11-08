@@ -8,7 +8,7 @@ import { execSync } from 'node:child_process'
 import readline from 'node:readline'
 
 const PROJECT_ROOT = process.cwd()
-const VERSION_FILES = ['package.json', 'package-lock.json', '.env', 'README.md']
+const VERSION_FILES = ['package.json', 'package-lock.json', 'env/.env', 'README.md']
 const args = process.argv.slice(2)
 
 const getCliVersion = () => {
@@ -71,10 +71,10 @@ const updatePackageLock = (version) => {
 }
 
 const updateEnvFile = (version) => {
-  const envPath = resolve(PROJECT_ROOT, '.env')
+  const envPath = resolve(PROJECT_ROOT, 'env/.env')
   const raw = readFileSync(envPath, 'utf8')
   if (!/^APP_VERSION=/m.test(raw)) {
-    throw new Error('APP_VERSION entry is missing in .env')
+    throw new Error('APP_VERSION entry is missing in env/.env')
   }
   const next = raw.replace(/^APP_VERSION=.*$/m, `APP_VERSION=${version}`)
   writeFileSync(envPath, next, 'utf8')

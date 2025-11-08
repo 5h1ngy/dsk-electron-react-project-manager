@@ -86,7 +86,7 @@ See `docs/architecture-overview.md` for a deeper walkthrough of the Electron lif
 6. Package the Windows desktop app: `npm run build:win`
 7. Esplora la documentazione REST generata automaticamente: `http://localhost:3333/docs` (spec JSON su `/docs.json`)
 
-> Tip: copy `.env.desktop` before running Electron-focused commands, `.env.webapp` before `dev:frontend`, and `.env.backend` before `dev:backend` / backend builds so each stack picks up the right defaults automatically.
+> Tip: copy `env/.env.desktop` before running Electron-focused commands, `env/.env.webapp` before `dev:frontend`, and `env/.env.backend` before `dev:backend` / backend builds so each stack picks up the right defaults automatically.
 
 All commands assume a recent Node 22 environment. The Electron app automatically seeds sane defaults on first launch.
 
@@ -121,8 +121,8 @@ All commands assume a recent Node 22 environment. The Electron app automatically
 
 ### Versioning & Releases
 
-- Esegui `npm run version:bump` per impostare manualmente la nuova versione: lo script aggiorna `.env`, `package.json`, `package-lock.json`, il badge `version-` nel README e crea automaticamente il commit `chore: bump version to X.Y.Z`.
-- La versione applicativa è dichiarata in `.env` (`APP_VERSION`) e deve rimanere allineata con `package.json`; il comando precedente garantisce l'aggiornamento coerente dei file.
+- Esegui `npm run version:bump` per impostare manualmente la nuova versione: lo script aggiorna `env/.env`, `package.json`, `package-lock.json`, il badge `version-` nel README e crea automaticamente il commit `chore: bump version to X.Y.Z`.
+- La versione applicativa è dichiarata in `env/.env` (`APP_VERSION`) e deve rimanere allineata con `package.json`; il comando precedente garantisce l'aggiornamento coerente dei file.
 - Su `develop` sono ammessi solo branch `feature/`, `feat/`, `bugfix/`, `bug/`, `fix/`; su `main` soltanto `release/` e `hotfix/`. I merge non conformi vengono bloccati sia in locale sia in CI.
 - La pipeline `Release` su GitHub genera esclusivamente il pacchetto Windows portable e pubblica tag+release partendo dalla versione presente nel repository.
 - Gli hook Git sono gestiti da Husky: `npm install` esegue automaticamente `prepare` per configurare i controlli pre-commit (`npm run lint`) e commitlint (Conventional Commits) sul messaggio.
@@ -168,11 +168,11 @@ Utility helpers unwrap the union inside the renderer and trigger session recover
 
 Two ready-to-use presets live at the repo root:
 
-- `.env.desktop` → offline Electron runtime (IPC bridge + DevTools).
-- `.env.webapp` → standalone browser UI + REST backend (HTTP calls).
-- `.env.backend` → dedicated settings for the REST backend service and seeding CLI.
+- `env/.env.desktop` → offline Electron runtime (IPC bridge + DevTools).
+- `env/.env.webapp` → standalone browser UI + REST backend (HTTP calls).
+- `env/.env.backend` → dedicated settings for the REST backend service and seeding CLI.
 
-Copy the one you need to `.env` (or export the same variables) before running commands. The `APP_RUNTIME` / `VITE_APP_RUNTIME` pair toggles the renderer transport so Electron sticks to IPC while the webapp automatically enables the HTTP bridge and proxy.
+Copy the one you need to `env/.env` (or export the same variables) before running commands. The `APP_RUNTIME` / `VITE_APP_RUNTIME` pair toggles the renderer transport so Electron sticks to IPC while the webapp automatically enables the HTTP bridge and proxy.
 
 | Variable                            | Default               | Description                                                                  |
 | ----------------------------------- | --------------------- | ---------------------------------------------------------------------------- |
@@ -186,7 +186,7 @@ Copy the one you need to `.env` (or export the same variables) before running co
 | `VITE_API_BASE_URL` (SPA builds)    | `/api`                | Base URL baked into the standalone frontend for direct HTTP calls            |
 | `API_PORT` / `SEED_BACKEND_PORT`    | `3333`                | Backend REST port plus the seed CLI’s default remote target                  |
 
-Use `.env`, `.env.desktop`, `.env.webapp`, or per-machine environment variables to customize settings; see `.env.example` for guidance.
+Use `env/.env`, `env/.env.desktop`, `env/.env.webapp`, or per-machine environment variables to customize settings; see `env/.env.example` for guidance.
 
 ---
 

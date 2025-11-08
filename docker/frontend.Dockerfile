@@ -7,7 +7,7 @@ ENV VITE_PUBLIC_BASE=$VITE_PUBLIC_BASE
 
 WORKDIR /app
 
-COPY docker/node/frontend.package.json ./package.json
+COPY docker/frontend.dev.package.json ./package.json
 RUN npm install
 
 COPY package.json package-lock.json ./
@@ -17,7 +17,7 @@ RUN npm run build:frontend
 
 FROM nginx:1.27-alpine
 
-COPY docker/frontend/nginx.conf /etc/nginx/conf.d/default.conf
+COPY docker/frontend.nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=builder /app/out/renderer-web /usr/share/nginx/html
 
 EXPOSE 80
