@@ -86,7 +86,7 @@ See `docs/architecture-overview.md` for a deeper walkthrough of the Electron lif
 6. Package the Windows desktop app: `npm run build:win`
 7. Esplora la documentazione REST generata automaticamente: `http://localhost:3333/docs` (spec JSON su `/docs.json`)
 
-> Tip: copy `.env.desktop` before running Electron-focused commands and `.env.webapp` before `dev:frontend` / `dev:backend` so the renderer automatically switches between IPC and HTTP modes.
+> Tip: copy `.env.desktop` before running Electron-focused commands, `.env.webapp` before `dev:frontend`, and `.env.backend` before `dev:backend` / backend builds so each stack picks up the right defaults automatically.
 
 All commands assume a recent Node 22 environment. The Electron app automatically seeds sane defaults on first launch.
 
@@ -170,6 +170,7 @@ Two ready-to-use presets live at the repo root:
 
 - `.env.desktop` → offline Electron runtime (IPC bridge + DevTools).
 - `.env.webapp` → standalone browser UI + REST backend (HTTP calls).
+- `.env.backend` → dedicated settings for the REST backend service and seeding CLI.
 
 Copy the one you need to `.env` (or export the same variables) before running commands. The `APP_RUNTIME` / `VITE_APP_RUNTIME` pair toggles the renderer transport so Electron sticks to IPC while the webapp automatically enables the HTTP bridge and proxy.
 
@@ -183,6 +184,7 @@ Copy the one you need to `.env` (or export the same variables) before running co
 | `ENABLE_DEVTOOLS`                   | auto                  | `true` forces DevTools on, `false` blocks them regardless of environment     |
 | `API_PROXY_TARGET` (dev servers)    | `http://localhost:3333` | Target for Vite’s `/api` proxy when running as a webapp                    |
 | `VITE_API_BASE_URL` (SPA builds)    | `/api`                | Base URL baked into the standalone frontend for direct HTTP calls            |
+| `API_PORT` / `SEED_BACKEND_PORT`    | `3333`                | Backend REST port plus the seed CLI’s default remote target                  |
 
 Use `.env`, `.env.desktop`, `.env.webapp`, or per-machine environment variables to customize settings; see `.env.example` for guidance.
 
