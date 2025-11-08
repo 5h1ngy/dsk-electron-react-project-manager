@@ -6,7 +6,11 @@ export const CallToAction = () => {
   const { token } = theme.useToken()
 
   return (
-    <Space direction="vertical" style={{ marginTop: token.marginXL * 2, width: '100%' }}>
+    <Space
+      direction="vertical"
+      style={{ marginTop: token.marginXL * 2, width: '100%' }}
+      data-motion="cta"
+    >
       <Card
         bordered={false}
         style={{
@@ -16,6 +20,8 @@ export const CallToAction = () => {
           border: `1px solid ${token.colorBorder}`,
           boxShadow: token.boxShadow
         }}
+        data-hover-tilt
+        data-shadow={token.boxShadow ?? ''}
       >
         <Typography.Title level={3}>Ready to explore the code?</Typography.Title>
         <Typography.Paragraph type="secondary">

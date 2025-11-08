@@ -60,7 +60,7 @@
     "build:backend": "dotenv -e env/.env.backend -- tsc --project packages/backend/tsconfig.backend.prod.json",
     "build:win": "npm run typecheck && electron-vite build --config packages/electron/electron.vite.config.ts && electron-builder --config packages/electron/electron-builder.yml --win",
     "db:seed": "dotenv -e env/.env.desktop -- node -r module-alias/register -r tsconfig-paths/register -r ts-node/register/transpile-only packages/seeding/src/run.ts",
-    "db:seed:backend": "dotenv -e env/.env.backend -- node -r module-alias/register -r tsconfig-paths/register -r ts-node/register/transpile-only packages/seeding/src/run.ts -- --port 3333",
+    "db:seed:backend": "dotenv -e env/.env.backend -- ts-node --transpile-only -r module-alias/register -r tsconfig-paths/register --project packages/seeding/tsconfig.tools.json packages/seeding/src/run.ts -- --port 3000",
     "postinstall": "node scripts/postinstall.mjs",
     "reset:build": "rimraf dist out",
     "version:bump": "node scripts/versioning.mjs",

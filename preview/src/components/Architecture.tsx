@@ -6,7 +6,12 @@ export const Architecture: FC = () => {
   const { token } = theme.useToken()
 
   return (
-    <Space direction="vertical" size="large" style={{ marginTop: token.marginXL * 2.5, width: '100%' }}>
+    <Space
+      direction="vertical"
+      size="large"
+      style={{ marginTop: token.marginXL * 2.5, width: '100%' }}
+      data-motion="architecture"
+    >
       <Typography.Title level={2}>Architecture in four movements</Typography.Title>
       <Typography.Paragraph type="secondary">
         Desktop, backend, renderer, and tooling share the same schema, tokens, and logging strategy.
@@ -25,6 +30,8 @@ export const Architecture: FC = () => {
                 boxShadow: token.boxShadow
               }}
               bodyStyle={{ padding: `${token.paddingSM}px ${token.paddingLG}px` }}
+              data-hover-tilt
+              data-shadow={token.boxShadow ?? ''}
             >
               <Typography.Title level={4}>{step.title}</Typography.Title>
               <Typography.Paragraph type="secondary">{step.details}</Typography.Paragraph>
@@ -43,6 +50,8 @@ export const Architecture: FC = () => {
                 border: `1px solid ${token.colorBorderSecondary}`,
                 background: token.colorBgContainer
               }}
+              data-hover-tilt
+              data-shadow={token.boxShadow ?? ''}
             >
               <Typography.Text type="secondary">{stat.label}</Typography.Text>
               <Typography.Title level={4}>{stat.value}</Typography.Title>

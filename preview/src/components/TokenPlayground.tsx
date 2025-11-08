@@ -20,7 +20,11 @@ export const TokenPlayground: FC<TokenPlaygroundProps> = ({
   const { token } = theme.useToken()
 
   return (
-    <Space direction="vertical" style={{ marginTop: token.marginXL * 2, width: '100%' }}>
+    <Space
+      direction="vertical"
+      style={{ marginTop: token.marginXL * 2, width: '100%' }}
+      data-motion="token"
+    >
       <Card
         bordered={false}
         style={{

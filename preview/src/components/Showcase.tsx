@@ -3,7 +3,13 @@ import { Card, Typography, Image, Space, theme } from 'antd'
 export const Showcase = () => {
   const { token } = theme.useToken()
   return (
-    <Space direction="vertical" size="large" style={{ marginTop: token.marginXL * 2.5, width: '100%' }} id="showcase">
+    <Space
+      direction="vertical"
+      size="large"
+      style={{ marginTop: token.marginXL * 2.5, width: '100%' }}
+      id="showcase"
+      data-motion="showcase"
+    >
       <Typography.Title level={2}>Unified experience</Typography.Title>
       <Typography.Paragraph type="secondary">
         Dashboards, kanban, wiki, seed orchestration, and admin panels all share the same Ant Design
@@ -18,6 +24,8 @@ export const Showcase = () => {
           border: `1px solid ${token.colorBorder}`,
           boxShadow: token.boxShadow
         }}
+        data-hover-tilt
+        data-shadow={token.boxShadow ?? ''}
       >
         <Image
           src="/preview.png"

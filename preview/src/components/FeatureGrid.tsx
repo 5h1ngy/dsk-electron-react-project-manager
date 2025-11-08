@@ -6,7 +6,12 @@ export const FeatureGrid: FC = () => {
   const { token } = theme.useToken()
 
   return (
-    <Space direction="vertical" size="large" style={{ marginTop: token.marginXL * 2.5, width: '100%' }}>
+    <Space
+      direction="vertical"
+      size="large"
+      style={{ marginTop: token.marginXL * 2.5, width: '100%' }}
+      data-motion="features"
+    >
       <Typography.Title level={2}>Why teams pick DSK Project Manager</Typography.Title>
       <Typography.Paragraph type="secondary">
         Shared domain logic, hardened IPC, and curated UX patterns keep multi-surface delivery tidy.
@@ -26,6 +31,8 @@ export const FeatureGrid: FC = () => {
                 flexDirection: 'column',
                 gap: token.marginSM
               }}
+              data-hover-tilt
+              data-shadow={token.boxShadowSecondary ?? token.boxShadow ?? ''}
             >
               <Typography.Title level={3} style={{ marginBottom: token.marginXS }}>
                 {card.emoji}

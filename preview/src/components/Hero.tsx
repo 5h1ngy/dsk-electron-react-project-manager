@@ -7,6 +7,7 @@ export const Hero = () => {
   const { token } = theme.useToken()
   return (
     <Space
+      data-motion="hero"
       direction="vertical"
       align="center"
       size="large"
