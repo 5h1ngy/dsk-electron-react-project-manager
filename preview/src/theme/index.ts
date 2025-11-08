@@ -11,7 +11,7 @@ import { buildShadowTokens } from './foundations/shadow'
 
 const { darkAlgorithm, defaultAlgorithm } = antdTheme
 
-export const ACCENT_OPTIONS = ['#2563EB', '#6366F1', '#0EA5E9', '#10B981', '#F97316', '#F43F5E']
+export const ACCENT_OPTIONS = ['#ff7b4f', '#f97316', '#f43f5e', '#4c6fff']
 
 export const createThemeConfig = (mode: ThemeMode, accentColor: string): ThemeConfig => {
   const palette = resolvePalette(mode)
@@ -32,26 +32,19 @@ export const createThemeConfig = (mode: ThemeMode, accentColor: string): ThemeCo
     colorInfo: brand.secondary,
     colorInfoHover: brand.secondaryHover,
     colorInfoActive: brand.secondaryActive,
-    colorBgBase: palette.surfaceBase,
-    colorBgLayout: palette.surfaceApp,
-    colorBgContainer: palette.surfaceContainer,
-    colorBgElevated: palette.surfaceElevated,
-    colorTextBase: palette.textPrimary,
-    colorTextSecondary: palette.textSecondary,
-    colorBorder: palette.borderSubtle,
-    colorBorderSecondary: palette.borderStrong,
-    colorBgMask: palette.surfaceBackdrop,
+    colorBgBase: mode === 'dark' ? '#040614' : '#f5f7ff',
+    colorBgLayout: mode === 'dark' ? '#040614' : '#f5f7ff',
+    colorBgContainer: mode === 'dark' ? '#0c1020' : '#ffffff',
+    colorBgElevated: mode === 'dark' ? '#111525' : '#ffffff',
+    colorTextBase: mode === 'dark' ? '#ffffff' : '#0a0d1c',
+    colorTextSecondary: mode === 'dark' ? '#cbd5ff' : '#4b4f68',
+    colorBorder: mode === 'dark' ? '#1f2435' : '#e4e8ff',
+    colorBorderSecondary: mode === 'dark' ? '#2a2f44' : '#d5dbff',
+    colorBgMask: mode === 'dark' ? 'rgba(5,6,12,0.85)' : 'rgba(245,247,255,0.95)',
     colorLink: brand.primary,
     colorLinkHover: brand.primaryHover,
     colorLinkActive: brand.primaryActive,
-    controlOutline: brand.primaryHover,
-    brandPrimary: brand.primary,
-    brandPrimarySurface: brand.primarySurface,
-    brandOnPrimary: brand.onPrimary,
-    brandSecondary: brand.secondary,
-    brandSecondarySurface: brand.secondarySurface,
-    brandSecondaryBorder: brand.secondaryBorder,
-    brandOnSecondary: brand.onSecondary
+    controlOutline: brand.primaryHover
   }
 
   return {
