@@ -1,6 +1,7 @@
 appId: com.electron.app
 productName: DSK Project Manager
 directories:
+  output: dist
   buildResources: packages/electron/build
 files:
   - '!**/.vscode/*'
