@@ -233,3 +233,4 @@ No explicit OSS license is bundled; coordinate internally before distributing bi
 [typescript-link]: https://www.typescriptlang.org/
 [jest-shield]: https://img.shields.io/badge/tests-jest%2029-99425b?logo=jest&logoColor=white
 [jest-link]: https://jestjs.io/
+
