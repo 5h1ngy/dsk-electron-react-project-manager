@@ -2,13 +2,29 @@
 
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 
-import { readFileSync, writeFileSync } from 'node:fs'
+import { readFileSync, writeFileSync, readdirSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { execSync } from 'node:child_process'
 import readline from 'node:readline'
 
 const PROJECT_ROOT = process.cwd()
-const VERSION_FILES = ['package.json', 'package-lock.json', 'env/.env', 'README.md']
+const ENV_DIR = resolve(PROJECT_ROOT, 'env')
+
+const collectEnvFiles = () => {
+  try {
+    return readdirSync(ENV_DIR, { withFileTypes: true })
+      .filter((entry) => entry.isFile() && entry.name.startsWith('.env'))
+      .map((entry) => ({
+        relative: `env/${entry.name}`,
+        absolute: resolve(ENV_DIR, entry.name)
+      }))
+  } catch {
+    return []
+  }
+}
+
+const ENV_FILES = collectEnvFiles()
+const VERSION_FILES = ['package.json', 'package-lock.json', 'README.md', ...ENV_FILES.map((file) => file.relative)]
 const args = process.argv.slice(2)
 
 const getCliVersion = () => {
@@ -70,14 +86,19 @@ const updatePackageLock = (version) => {
   writeJson(lock.filePath, lock.data)
 }
 
-const updateEnvFile = (version) => {
-  const envPath = resolve(PROJECT_ROOT, 'env/.env')
-  const raw = readFileSync(envPath, 'utf8')
-  if (!/^APP_VERSION=/m.test(raw)) {
-    throw new Error('APP_VERSION entry is missing in env/.env')
+const updateEnvFiles = (version) => {
+  if (ENV_FILES.length === 0) {
+    throw new Error('No env files found under env/. Cannot update APP_VERSION entries.')
   }
-  const next = raw.replace(/^APP_VERSION=.*$/m, `APP_VERSION=${version}`)
-  writeFileSync(envPath, next, 'utf8')
+
+  ENV_FILES.forEach(({ absolute, relative }) => {
+    const raw = readFileSync(absolute, 'utf8')
+    if (!/^APP_VERSION=/m.test(raw)) {
+      throw new Error(`APP_VERSION entry is missing in ${relative}`)
+    }
+    const next = raw.replace(/^APP_VERSION=.*$/m, `APP_VERSION=${version}`)
+    writeFileSync(absolute, next, 'utf8')
+  })
 }
 
 const updateReadme = (version) => {
@@ -131,7 +152,7 @@ const main = async () => {
 
   updatePackageJson(input)
   updatePackageLock(input)
-  updateEnvFile(input)
+  updateEnvFiles(input)
   updateReadme(input)
 
   stageFiles()
