@@ -1,8 +1,9 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { ExpandOutlined, LeftOutlined, RightOutlined } from '@ant-design/icons'
 import { Button, Carousel, Flex, Image, Modal, Space, theme } from 'antd'
 import type { CarouselRef } from 'antd/es/carousel'
 import { useRef, useState } from 'react'
-import { galleryShots } from '../../data/site'
+import { galleryShots } from '../data/site'
 
 export const HeroGallery = () => {
   const { token } = theme.useToken()

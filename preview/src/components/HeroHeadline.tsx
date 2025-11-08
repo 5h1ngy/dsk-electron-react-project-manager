@@ -1,9 +1,10 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { ArrowRightOutlined, DownloadOutlined } from '@ant-design/icons'
 import { Button, Space, Tag, Typography, theme } from 'antd'
 import { useRef } from 'react'
-import { heroContent } from '../../data/site'
+import { heroContent } from '../data/site'
 import { HeroStatsGrid } from './HeroStatsGrid'
-import { useHeroIntroMotion } from './useHeroIntroMotion'
+import { useHeroIntroMotion } from '../hooks/useHeroIntroMotion'
 
 interface HeroHeadlineProps {
   accent: string

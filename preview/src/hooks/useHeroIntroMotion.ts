@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { useLayoutEffect, type RefObject } from 'react'
 import gsap from 'gsap'
 

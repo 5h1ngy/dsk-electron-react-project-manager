@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { Card, Flex, Typography, theme } from 'antd'
 import { useState } from 'react'
-import { heroContent } from '../../data/site'
+import { heroContent } from '../data/site'
 
 interface HeroStatsGridProps {
   accent: string

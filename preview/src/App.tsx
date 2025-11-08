@@ -1,11 +1,10 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { ConfigProvider, Flex, Layout, theme as antdTheme } from 'antd'
 import gsap from 'gsap'
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
-import { HeroStage } from './sections/hero/HeroStage'
-import { FeatureOrbit } from './sections/features/FeatureOrbit'
-import { ExperienceShowcase } from './sections/experience/ExperienceShowcase'
-import { ArchitectureGraph } from './sections/architecture/ArchitectureGraph'
+import { useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { ACCENT_OPTIONS, createThemeConfig } from './theme'
+
+import { HeroStage } from './components/HeroStage'
 import type { ThemeMode } from './theme/foundations/palette'
 import { useGlobalAnimations } from './hooks/useGlobalAnimations'
 import { useLenisScroll } from './hooks/useLenisScroll'
@@ -25,7 +24,7 @@ const AppShell = ({ mode, toggleMode, accent, setAccent }: AppShellProps) => {
   const contentRef = useRef<HTMLDivElement>(null)
   useGlobalAnimations()
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     document.body.style.background =
       mode === 'dark'
         ? `radial-gradient(circle at 10% 20%, ${accent}1a, transparent 50%),
@@ -71,9 +70,6 @@ const AppShell = ({ mode, toggleMode, accent, setAccent }: AppShellProps) => {
           }}
         >
           <HeroStage mode={mode} accent={accent} toggleMode={toggleMode} setAccent={setAccent} />
-          <FeatureOrbit accent={accent} />
-          <ExperienceShowcase accent={accent} />
-          <ArchitectureGraph accent={accent} />
         </Flex>
       </Content>
     </Layout>

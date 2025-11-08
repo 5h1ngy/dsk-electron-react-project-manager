@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { Card, theme } from 'antd'
 import { useState } from 'react'
-import type { ThemeMode } from '../../theme/foundations/palette'
+import type { ThemeMode } from '../theme/foundations/palette'
 import { HeroGallery } from './HeroGallery'
 
 interface HeroMockupCardProps {
@@ -27,9 +28,7 @@ export const HeroMockupCard = ({ accent, mode }: HeroMockupCardProps) => {
         background,
         borderColor: accent,
         boxShadow:
-          mode === 'dark'
-            ? '0 30px 80px rgba(0,0,0,0.5)'
-            : '0 30px 60px rgba(15,23,42,0.2)',
+          mode === 'dark' ? '0 30px 80px rgba(0,0,0,0.5)' : '0 30px 60px rgba(15,23,42,0.2)',
         transform: hovered ? 'translateY(-12px) rotateX(2deg) rotateY(-2deg)' : 'translateY(0)',
         transition: 'transform 0.5s cubic-bezier(0.22, 1, 0.36, 1)'
       }}

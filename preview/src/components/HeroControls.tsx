@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { Avatar, Flex, Segmented, Switch, Typography, theme } from 'antd'
 import { BulbOutlined, MoonOutlined } from '@ant-design/icons'
-import type { ThemeMode } from '../../theme/foundations/palette'
-import { ACCENT_OPTIONS } from '../../theme'
+import type { ThemeMode } from '../theme/foundations/palette'
+import { ACCENT_OPTIONS } from '../theme'
 
 interface HeroControlsProps {
   accent: string

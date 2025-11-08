@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { Card, Col, Flex, Row, theme } from 'antd'
 import { useMemo } from 'react'
-import type { ThemeMode } from '../../theme/foundations/palette'
+import type { ThemeMode } from '../theme/foundations/palette'
 import { HeroControls } from './HeroControls'
 import { HeroHeadline } from './HeroHeadline'
 import { HeroMockupCard } from './HeroMockupCard'
@@ -34,6 +35,7 @@ export const HeroStage = ({ accent, mode, toggleMode, setAccent }: HeroStageProp
       data-motion="hero"
       bordered={false}
       style={{
+        minHeight: '90vh',
         borderRadius: token.borderRadiusXL,
         padding: 0,
         overflow: 'hidden',
