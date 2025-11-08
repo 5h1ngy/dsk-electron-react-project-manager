@@ -10,13 +10,15 @@ WORKDIR /app
 COPY packages ./packages
 COPY docker/frontend.dev.package.json ./package.json
 COPY package-lock.json ./
-
 RUN npm install
+
+COPY package.json ./package.json
 RUN npm run build:frontend
 
 FROM nginx:1.27-alpine
+ARG WEB_PORT=0000
 
 COPY docker/frontend.nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=builder /app/out/renderer-web /usr/share/nginx/html
 
-EXPOSE 80
+EXPOSE ${WEB_PORT}

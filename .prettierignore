@@ -10,3 +10,7 @@ temp
 packages/**/dist
 packages/**/out
 packages/**/coverage
+pnpm-lock.yaml
+LICENSE.md
+tsconfig.json
+tsconfig.*.json

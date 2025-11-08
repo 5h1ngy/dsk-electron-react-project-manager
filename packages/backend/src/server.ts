@@ -140,6 +140,7 @@ const main = async () => {
 
   const port = resolvePort()
   const server = app.listen(port, () => {
+    logger.info(`Environment: ${JSON.stringify(process.env)}`, 'API')
     logger.info(`API server listening on port ${port}`, 'API')
   }) as Server
 
