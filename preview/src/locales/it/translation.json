@@ -14,7 +14,7 @@
     },
     "stats": [
       { "label": "Stack", "value": "Electron 38 / React 19 / Ant Design 5" },
-      { "label": "Dominio condiviso", "value": "TypeScript / SQLite / Sequelize" },
+      { "label": "Shared domain", "value": "TypeScript / SQLite / Sequelize" },
       { "label": "Delivery", "value": "REST API / Seeder CLI / Build portabile" }
     ]
   },
