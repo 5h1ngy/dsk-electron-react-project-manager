@@ -1,0 +1,30 @@
+{
+  "hero": {
+    "eyebrow": "Suite di delivery offline-first",
+    "title": "DSK Project Manager",
+    "description": "Un'unica workspace che fonde Electron, React e una REST API tipizzata così i team distribuiti gestiscono progetti, wiki e automazioni anche senza connessione.",
+    "heroShot": "/preview-kanban.png",
+    "primaryCta": {
+      "label": "Scarica",
+      "href": "https://github.com/5h1ngy/dsk-electron-react-project-manager/releases"
+    },
+    "secondaryCta": {
+      "label": "GitHub",
+      "href": "https://github.com/5h1ngy/dsk-electron-react-project-manager"
+    },
+    "stats": [
+      { "label": "Stack", "value": "Electron 38 / React 19 / Ant Design 5" },
+      { "label": "Shared domain", "value": "TypeScript / SQLite / Sequelize" },
+      { "label": "Delivery", "value": "REST API / Seeder CLI / Build portabile" }
+    ]
+  },
+  "controls": {
+    "displayLabel": "Visualizzazione",
+    "languageLabel": "Lingua",
+    "accentLabel": "Colore accento"
+  },
+  "languages": [
+    { "label": "Inglese", "value": "en" },
+    { "label": "Italiano", "value": "it" }
+  ]
+}

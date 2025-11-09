@@ -1,0 +1,23 @@
+services:
+  dsk-backend:
+    build:
+      context: .
+      dockerfile: docker/backend.Dockerfile
+      args:
+        API_PORT: 3000
+    ports:
+      - "3000:3000"
+    volumes:
+      - backend-data:/data
+
+  dsk-frontend:
+    build:
+      context: .
+      dockerfile: docker/frontend.Dockerfile
+    depends_on:
+      - dsk-backend
+    ports:
+      - "8080:80"
+
+volumes:
+  backend-data:

@@ -1,0 +1,102 @@
+{
+  "actions": {
+    "create": "Rolle erstellen",
+    "refresh": "Aktualisieren",
+    "edit": "Bearbeiten",
+    "delete": "Loeschen",
+    "deleteSelected": "Auswahl loeschen ({{count}})",
+    "syncDefaults": "Rollen aktualisieren"
+  },
+  "table": {
+    "name": "Name",
+    "description": "Beschreibung",
+    "permissions": "Berechtigungen",
+    "userCount": "Benutzer",
+    "type": "Typ",
+    "systemRole": "System",
+    "customRole": "Individuell",
+    "actions": "Aktionen",
+    "noDescription": "Keine Beschreibung"
+  },
+  "form": {
+    "name": "Name",
+    "namePlaceholder": "Rollennamen eingeben",
+    "description": "Beschreibung",
+    "descriptionPlaceholder": "Optionale Beschreibung",
+    "permissions": "Berechtigungen"
+  },
+  "validation": {
+    "nameRequired": "Der Rollenname ist erforderlich",
+    "nameLength": "Hoestens 64 Zeichen verwenden",
+    "permissionsRequired": "Mindestens eine Berechtigung auswaehlen"
+  },
+  "messages": {
+    "createSuccess": "Rolle erfolgreich erstellt",
+    "updateSuccess": "Rolle erfolgreich aktualisiert",
+    "deleteSuccess": "Rolle \"{{name}}\" geloescht",
+    "deleteBulkSuccess": "{{count}} Rollen geloescht",
+    "deletePartialWarning": "{{count}} ausgewaehlte Rollen koennen nicht geloescht werden, weil sie geschuetzt oder noch zugewiesen sind.",
+    "syncSuccess": "Systemrollen erfolgreich aktualisiert"
+  },
+  "errors": {
+    "title": "Rollen konnten nicht geladen werden",
+    "sessionExpired": "Ihre Sitzung ist abgelaufen. Bitte melden Sie sich erneut an."
+  },
+  "create": {
+    "title": "Neue Rolle",
+    "confirm": "Rolle erstellen",
+    "cancel": "Abbrechen"
+  },
+  "edit": {
+    "title": "{{name}} bearbeiten",
+    "confirm": "Aenderungen speichern",
+    "cancel": "Abbrechen"
+  },
+  "modals": {
+    "delete": {
+      "title": "Rolle {{name}} loeschen",
+      "bulkTitle": "{{count}} Rollen loeschen",
+      "description": "Beim Loeschen dieser Rolle werden die zugeordneten Berechtigungen entfernt. Stellen Sie sicher, dass sie niemandem mehr zugewiesen ist.",
+      "bulkDescription": "Das Loeschen dieser Rollen entfernt deren Berechtigungen im gesamten Workspace.",
+      "warning": "Dieser Vorgang kann nicht rueckgaengig gemacht werden.",
+      "confirm": "Loeschen",
+      "cancel": "Abbrechen"
+    }
+  },
+  "emptyState": "Es wurden noch keine Rollen erstellt",
+  "loadingState": "Rollen werden geladen...",
+  "permissions": {
+    "manageUsers": {
+      "label": "Benutzer verwalten",
+      "description": "Benutzerkonten im Workspace anlegen, aktualisieren, deaktivieren und zuruecksetzen."
+    },
+    "manageRoles": {
+      "label": "Rollen verwalten",
+      "description": "Rollen erstellen und deren Berechtigungen konfigurieren."
+    },
+    "manageProjects": {
+      "label": "Projekte verwalten",
+      "description": "Projekte erstellen, aktualisieren und archivieren."
+    },
+    "manageTasks": {
+      "label": "Aufgaben verwalten",
+      "description": "Aufgaben und Kommentare erstellen, aktualisieren und loeschen."
+    },
+    "manageTaskStatuses": {
+      "label": "Aufgabenstatus verwalten",
+      "description": "Workflow Spalten und deren Reihenfolge konfigurieren."
+    },
+    "manageNotes": {
+      "label": "Notizen verwalten",
+      "description": "Notizen und Notizbuecher erstellen, aktualisieren und loeschen."
+    },
+    "manageViews": {
+      "label": "Gespeicherte Ansichten verwalten",
+      "description": "Gespeicherte Filtersaetze erstellen, aktualisieren und teilen."
+    },
+    "viewAnalytics": {
+      "label": "Analysen anzeigen",
+      "description": "Dashboards und Workspace Berichte einsehen."
+    }
+  }
+}

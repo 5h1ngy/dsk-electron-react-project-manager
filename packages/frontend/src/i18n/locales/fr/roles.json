@@ -1,0 +1,102 @@
+{
+  "actions": {
+    "create": "Creer un role",
+    "refresh": "Actualiser",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "deleteSelected": "Supprimer la selection ({{count}})",
+    "syncDefaults": "Mettre a jour les roles"
+  },
+  "table": {
+    "name": "Nom",
+    "description": "Description",
+    "permissions": "Permissions",
+    "userCount": "Utilisateurs",
+    "type": "Type",
+    "systemRole": "Systeme",
+    "customRole": "Personnalise",
+    "actions": "Actions",
+    "noDescription": "Aucune description"
+  },
+  "form": {
+    "name": "Nom",
+    "namePlaceholder": "Saisir le nom du role",
+    "description": "Description",
+    "descriptionPlaceholder": "Description facultative",
+    "permissions": "Permissions"
+  },
+  "validation": {
+    "nameRequired": "Le nom du role est obligatoire",
+    "nameLength": "Utilisez au maximum 64 caracteres",
+    "permissionsRequired": "Selectionnez au moins une permission"
+  },
+  "messages": {
+    "createSuccess": "Role cree avec succes",
+    "updateSuccess": "Role mis a jour avec succes",
+    "deleteSuccess": "Role \"{{name}}\" supprime",
+    "deleteBulkSuccess": "{{count}} roles supprimes",
+    "deletePartialWarning": "{{count}} roles selectionnes ne peuvent pas etre supprimes car ils sont proteges ou encore assignes.",
+    "syncSuccess": "Roles systeme mis a jour avec succes"
+  },
+  "errors": {
+    "title": "Impossible de charger les roles",
+    "sessionExpired": "Votre session a expire. Veuillez vous reconnecter."
+  },
+  "create": {
+    "title": "Nouveau role",
+    "confirm": "Creer le role",
+    "cancel": "Annuler"
+  },
+  "edit": {
+    "title": "Modifier {{name}}",
+    "confirm": "Enregistrer",
+    "cancel": "Annuler"
+  },
+  "modals": {
+    "delete": {
+      "title": "Supprimer le role {{name}}",
+      "bulkTitle": "Supprimer {{count}} roles",
+      "description": "La suppression de ce role retirera les permissions associees. Assurez-vous qu'il n'est plus assigne.",
+      "bulkDescription": "Supprimer ces roles revoquera leurs permissions dans tout l'espace de travail.",
+      "warning": "Cette action est definitive.",
+      "confirm": "Supprimer",
+      "cancel": "Annuler"
+    }
+  },
+  "emptyState": "Aucun role cree pour le moment",
+  "loadingState": "Chargement des roles...",
+  "permissions": {
+    "manageUsers": {
+      "label": "Gerer les utilisateurs",
+      "description": "Creer, mettre a jour, desactiver et reinitialiser les comptes du workspace."
+    },
+    "manageRoles": {
+      "label": "Gerer les roles",
+      "description": "Creer des roles et configurer leurs permissions."
+    },
+    "manageProjects": {
+      "label": "Gerer les projets",
+      "description": "Creer, mettre a jour et archiver des projets."
+    },
+    "manageTasks": {
+      "label": "Gerer les taches",
+      "description": "Creer, mettre a jour et supprimer des taches et des commentaires."
+    },
+    "manageTaskStatuses": {
+      "label": "Gerer les statuts de tache",
+      "description": "Configurer les colonnes du flux de travail et leur ordre."
+    },
+    "manageNotes": {
+      "label": "Gerer les notes",
+      "description": "Creer, mettre a jour et supprimer des notes et carnets."
+    },
+    "manageViews": {
+      "label": "Gerer les vues enregistrees",
+      "description": "Creer, mettre a jour et partager des ensembles de filtres enregistres."
+    },
+    "viewAnalytics": {
+      "label": "Consulter les analyses",
+      "description": "Acceder aux tableaux de bord et aux rapports du workspace."
+    }
+  }
+}
