@@ -13,9 +13,9 @@
       "href": "https://github.com/5h1ngy/dsk-electron-react-project-manager"
     },
     "stats": [
-      { "label": "Surfaces", "value": "Electron / Web / API" },
-      { "label": "Roles", "value": "Admin / Maintainer / Contributor / Viewer" },
-      { "label": "Seed time", "value": "< 2 min faker bootstrap" }
+      { "label": "Stack", "value": "Electron 38 / React 19 / Ant Design 5" },
+      { "label": "Shared domain", "value": "TypeScript / SQLite / Sequelize" },
+      { "label": "Delivery", "value": "REST API / Seeder CLI / Portable build" }
     ]
   },
   "controls": {
