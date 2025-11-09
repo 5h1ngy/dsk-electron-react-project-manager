@@ -15,7 +15,7 @@ services:
       context: .
       dockerfile: docker/frontend.Dockerfile
     depends_on:
-      - backend
+      - dsk-backend
     ports:
       - "8080:80"
 
