@@ -81,6 +81,7 @@
     "@uiw/react-markdown-preview": "^5.1.2",
     "ajv": "^8.17.1",
     "antd": "^5.27.5",
+    "axios": "^1.7.9",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.2",
     "cors": "^2.8.5",

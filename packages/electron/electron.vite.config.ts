@@ -31,13 +31,9 @@ const normalizeBasePath = (value?: string, fallback: string = './'): string => {
   return normalized.endsWith('/') ? normalized : `${normalized}/`
 }
 
-const RENDERER_BASE = normalizeBasePath(
-  process.env.VITE_PUBLIC_BASE ?? process.env.PUBLIC_BASE,
-  './'
-)
+const RENDERER_BASE = normalizeBasePath(process.env.VITE_PUBLIC_BASE, './')
 
 process.env.VITE_PUBLIC_BASE = RENDERER_BASE
-process.env.PUBLIC_BASE = process.env.PUBLIC_BASE ?? RENDERER_BASE
 const LOCAL_TSCONFIG_PATH = resolve(__dirname, 'tsconfig.json')
 const tsconfigRaw = JSON.parse(readFileSync(LOCAL_TSCONFIG_PATH, 'utf-8'))
 
