@@ -168,7 +168,7 @@ const App = () => {
 
   const themeConfig = useMemo(() => createThemeConfig(mode, accentColor), [mode, accentColor])
 
-  const faviconHref = `${import.meta.env.BASE_URL ?? '/'}favicon.ico`
+  const faviconHref = `${import.meta.env.VITE_PUBLIC_BASE ?? '/'}favicon.ico`
 
   useEffect(() => {
     document.title = 'DSK Project Manager'
@@ -194,7 +194,7 @@ const App = () => {
     <ErrorBoundary>
       <ConfigProvider theme={themeConfig}>
         <RouterComponent
-          basename={normalizeRouterBase(import.meta.env.BASE_URL ?? '/')}
+          basename={normalizeRouterBase(import.meta.env.VITE_PUBLIC_BASE ?? '/')}
           future={routerFuture}
         >
           <AntdApp>
