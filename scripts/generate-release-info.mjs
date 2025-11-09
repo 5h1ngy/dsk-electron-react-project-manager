@@ -8,6 +8,7 @@ import { execSync } from 'node:child_process'
 
 const PROJECT_ROOT = process.cwd()
 const PACKAGE_JSON = resolve(PROJECT_ROOT, 'package.json')
+const DESKTOP_ENV_FILE = resolve(PROJECT_ROOT, 'env/.env.desktop.prod')
 
 const readPackageJson = () => {
   try {
@@ -21,6 +22,28 @@ const readPackageJson = () => {
 const formatDescription = (value) => {
   if (!value) return 'Secure offline project manager built with Electron, React, Ant Design, and SQLite.'
   return value.replace(/\s+/g, ' ').trim()
+}
+
+const extractAppVersion = () => {
+  try {
+    const raw = readFileSync(DESKTOP_ENV_FILE, 'utf8')
+    const line = raw
+      .split('\n')
+      .map((entry) => entry.trim())
+      .find((entry) => entry.startsWith('APP_VERSION='))
+
+    if (!line) {
+      throw new Error('APP_VERSION entry not found in env/.env.desktop.prod')
+    }
+
+    const value = line.split('APP_VERSION=')[1]?.trim()
+    if (!value) {
+      throw new Error('APP_VERSION entry is empty in env/.env.desktop.prod')
+    }
+    return value
+  } catch (error) {
+    throw new Error(`Unable to read env/.env.desktop.prod: ${error.message ?? error}`)
+  }
 }
 
 const getLatestTag = () => {
@@ -100,12 +123,12 @@ const appendOutput = (key, value) => {
 
 const run = () => {
   const pkg = readPackageJson()
-  const version = pkg.version
+  const version = extractAppVersion()
   const packageName = pkg.name
   const productName = pkg.productName ?? packageName
   const description = formatDescription(pkg.description)
   const releaseDate = new Date().toISOString().split('T')[0]
-  const title = `${productName} ${version}`
+  const title = `v${version}`
 
   const summarySection = [
     '## Summary',
@@ -117,16 +140,8 @@ const run = () => {
     `> ${description}`
   ].join('\n')
 
-  const assetsSection = [
-    '## Assets',
-    '',
-    `- Windows portable build (\`${packageName}-${version}-portable-win.exe\`)`,
-    '- Runtime bundle (`out/`) packaged as `.tgz`',
-    '- Documentation snapshot (`docs/`) packaged as `.tgz`'
-  ].join('\n')
-
   const highlightsSection = buildHighlightsSection()
-  const notes = [summarySection, assetsSection, highlightsSection].join('\n\n')
+  const notes = [summarySection, highlightsSection].join('\n\n')
 
   appendOutput('version', version)
   appendOutput('title', title)
