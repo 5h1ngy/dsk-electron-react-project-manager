@@ -140,10 +140,16 @@ const NavigationStyleSynchronizer = () => {
 }
 
 const normalizeRouterBase = (value?: string): string | undefined => {
-  if (!value || value === '/') {
+  if (!value) {
     return runtime.isWebapp ? '/' : undefined
   }
-  return value.endsWith('/') ? value.slice(0, -1) : value
+
+  const normalized = value.trim()
+  if (normalized === '/' || normalized === '.' || normalized === './') {
+    return runtime.isWebapp ? '/' : undefined
+  }
+
+  return normalized.endsWith('/') ? normalized.slice(0, -1) : normalized
 }
 
 const routerFuture = {

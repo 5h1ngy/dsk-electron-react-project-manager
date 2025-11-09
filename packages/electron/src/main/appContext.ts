@@ -143,8 +143,21 @@ export class MainWindowManager {
   }
 
   private loadWindowContent(window: BrowserWindow): void {
+    const devServerUrl =
+      this.env.ELECTRON_RENDERER_URL ??
+      this.env.VITE_DEV_SERVER_URL ??
+      process.env.ELECTRON_RENDERER_URL ??
+      process.env.VITE_DEV_SERVER_URL
+
+    if (!app.isPackaged && devServerUrl) {
+      this.logger.debug(`Loading renderer from dev server at ${devServerUrl}`, 'Window')
+      void window.loadURL(devServerUrl)
+      return
+    }
+
+    const bundledHtml = join(__dirname, '../renderer/index.html')
     this.logger.debug('Loading renderer from bundled HTML', 'Window')
-    void window.loadFile(join(__dirname, '../renderer/index.html'))
+    void window.loadFile(bundledHtml)
   }
 
   private parseDevtoolsToggle(value: string | undefined): boolean {
