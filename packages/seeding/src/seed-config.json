@@ -1,0 +1,131 @@
+{
+  "users": {
+    "profiles": [
+      { "roles": ["Admin", "Maintainer"], "count": 2 },
+      { "roles": ["Maintainer", "Contributor"], "count": 5 },
+      { "roles": ["Maintainer"], "count": 3 },
+      { "roles": ["Contributor"], "count": 12 },
+      { "roles": ["Contributor", "Viewer"], "count": 4 },
+      { "roles": ["Viewer"], "count": 4 }
+    ]
+  },
+  "projects": {
+    "min": 4,
+    "max": 7,
+    "tasksPerProject": {
+      "min": 8,
+      "max": 20
+    },
+    "backlogBufferMax": 2,
+    "tagsPerProject": {
+      "min": 1,
+      "max": 4
+    },
+    "members": {
+      "maintainerAdmin": {
+        "min": 1,
+        "max": 2
+      },
+      "contributor": {
+        "min": 2,
+        "max": 5
+      },
+      "viewer": {
+        "min": 0,
+        "max": 2
+      }
+    }
+  },
+  "comments": {
+    "minByStatus": {
+      "todo": 0,
+      "in_progress": 1,
+      "blocked": 1,
+      "done": 0
+    },
+    "maxByStatus": {
+      "todo": 2,
+      "in_progress": 4,
+      "blocked": 5,
+      "done": 3
+    }
+  },
+  "notes": {
+    "perProject": {
+      "min": 4,
+      "max": 10
+    },
+    "privateRatio": 0.2,
+    "notebooks": [
+      "Discovery",
+      "Retro",
+      "Runbook",
+      "Weekly Sync",
+      "Incident Review",
+      "Strategy",
+      "Architecture Review",
+      "Customer Success",
+      "Security Briefing"
+    ],
+    "tagsCatalog": [
+      "retro",
+      "summary",
+      "decision",
+      "risk",
+      "handoff",
+      "customer",
+      "support",
+      "ops",
+      "kpi",
+      "roadmap",
+      "review",
+      "audit",
+      "training",
+      "innovation",
+      "infrastructure"
+    ],
+    "tagsPerNote": {
+      "min": 1,
+      "max": 3
+    },
+    "linkProbability": 0.6,
+    "linkTargets": {
+      "min": 1,
+      "max": 2
+    },
+    "checklistProbability": 0.35,
+    "summaryParagraphs": {
+      "min": 2,
+      "max": 4
+    }
+  },
+  "wiki": {
+    "perProject": {
+      "min": 2,
+      "max": 5
+    },
+    "summarySentences": {
+      "min": 1,
+      "max": 2
+    },
+    "sections": [
+      "Overview",
+      "Architecture",
+      "Operations",
+      "Dependencies",
+      "Runbook",
+      "Risks",
+      "FAQ",
+      "Testing"
+    ],
+    "paragraphsPerSection": {
+      "min": 1,
+      "max": 2
+    },
+    "revisionProbability": 0.35,
+    "revisionsPerPage": {
+      "min": 1,
+      "max": 2
+    }
+  }
+}

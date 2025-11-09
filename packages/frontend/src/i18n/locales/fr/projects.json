@@ -1,0 +1,697 @@
+{
+  "title": "Projets",
+  "viewSwitcher": {
+    "table": "Vue tableau",
+    "cards": "Vue cartes",
+    "board": "Vue Kanban",
+    "sprint": "Vue sprint",
+    "timeline": "Suivi du temps"
+  },
+  "actions": {
+    "refresh": "Actualiser",
+    "create": "Nouveau projet",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "deleteTitle": "Supprimer le projet",
+    "deleteDescription": "Voulez-vous vraiment supprimer {{name}} ?",
+    "deleteConfirm": "Supprimer",
+    "cancel": "Annuler",
+    "panelTitle": "Actions"
+  },
+  "filters": {
+    "searchPlaceholder": "Rechercher par nom, cle ou tag",
+    "tagsPlaceholder": "Filtrer par tags",
+    "openButton": "Filtres",
+    "createdRange": {
+      "start": "Cree a partir du",
+      "end": "Cree jusqu'au"
+    },
+    "roleOptions": {
+      "all": "Tous les roles",
+      "admin": "Administrateur",
+      "edit": "Editeur",
+      "view": "Lecteur"
+    },
+    "ownedOptions": {
+      "all": "Tous les projets",
+      "mine": "CrÃ©Ã©s par moi"
+    },
+    "panelTitle": "Filtres"
+  },
+  "permissions": {
+    "createDenied": "Seuls les administrateurs ou mainteneurs peuvent creer des projets.",
+    "updateDenied": "Seuls les administrateurs ou mainteneurs peuvent modifier des projets.",
+    "manageMembersDenied": "Seuls les administrateurs ou mainteneurs peuvent gerer les membres.",
+    "tasksCreateDenied": "Vous n'avez pas les droits pour creer des taches dans ce projet.",
+    "tasksUpdateDenied": "Vous n'avez pas les droits pour modifier les taches de ce projet.",
+    "tasksDeleteDenied": "Vous n'avez pas les droits pour supprimer cette tache.",
+    "deleteDenied": "Seuls les administrateurs peuvent supprimer des projets."
+  },
+  "errors": {
+    "generic": "Echec de l'operation"
+  },
+  "create": {
+    "success": "Projet cree"
+  },
+  "update": {
+    "success": "Projet mis a jour"
+  },
+  "members": {
+    "addSuccess": "Membre ajoute",
+    "removeSuccess": "Membre supprime"
+  },
+  "list": {
+    "loading": "Chargement des projets...",
+    "empty": "Aucun projet trouve",
+    "noTags": "Aucun tag",
+    "memberCount_one": "{{count}} membre",
+    "memberCount_other": "{{count}} membres",
+    "createdOn": "Cree le {{date}}",
+    "columns": {
+      "key": "Cle",
+      "name": "Nom",
+      "owner": "Proprietaire",
+      "tags": "Tags",
+      "role": "Role",
+      "members": "Membres",
+      "createdAt": "Cree",
+      "actions": "Actions"
+    },
+    "role": {
+      "admin": "Administrateur",
+      "edit": "Editeur",
+      "view": "Lecteur"
+    }
+  },
+  "breadcrumbs": {
+    "projects": "Projets",
+    "overview": "Apercu",
+    "tasks": "Taches",
+    "notes": "Notes",
+    "board": "Kanban"
+  },
+  "cards": {
+    "noDescription": "Aucune description"
+  },
+  "details": {
+    "title": "Details du projet",
+    "loading": "Chargement...",
+    "refresh": "Actualiser",
+    "tabs": {
+      "overview": "Apercu",
+      "tasks": "Taches",
+      "notes": "Notes",
+      "board": "Kanban"
+    },
+    "overview": {
+      "metrics": {
+        "title": "Vue d'ensemble",
+        "total": "Taches totales",
+        "active": "En cours",
+        "done": "Terminees",
+        "overdue": "En retard",
+        "dueSoon": "A venir",
+        "unassigned": "Non assignes"
+      },
+      "statusCard": {
+        "title": "Repartition des statuts"
+      },
+      "priorityCard": {
+        "title": "Repartition des priorites"
+      },
+      "assigneeCard": {
+        "title": "Charge par assigne",
+        "unassigned": "Non assigne"
+      },
+      "trendCard": {
+        "title": "Tendance des completions",
+        "empty": "Aucune tache terminee sur la periode"
+      },
+      "upcoming": {
+        "title": "Echeances imminentes",
+        "empty": "Aucune echeance imminente"
+      },
+      "overdue": {
+        "title": "Taches en retard",
+        "empty": "Aucune tache en retard"
+      },
+      "customizeButton": "Personnaliser la vue",
+      "customizeTitle": "Personnaliser la vue",
+      "customizeDescription": "Choisissez les cartes a afficher dans la vue d'ensemble.",
+      "customizeMinimum": "Selectionnez au moins une carte.",
+      "customizeReset": "Restaurer les valeurs par defaut",
+      "customizeCancel": "Annuler",
+      "customizeApply": "Appliquer les modifications",
+      "taskItem": {
+        "due": "Echeance {{date}}",
+        "priority": "Priorite : {{priority}}"
+      },
+      "empty": "Aucune donnee disponible"
+    },
+    "tasksTitle": "Taches du projet",
+    "kanbanTitle": "Tableau Kanban",
+    "tasksLoading": "Chargement des taches...",
+    "tasksEmpty": "Aucune tache disponible",
+    "tasksSearchPlaceholder": "Rechercher des taches...",
+    "filters": {
+      "status": "Statut",
+      "statusOptions": {
+        "all": "Tous les statuts"
+      },
+      "priority": "Priorite",
+      "priorityOptions": {
+        "all": "Toutes les priorites"
+      },
+      "assignee": "Assigne",
+      "assigneeOptions": {
+        "all": "Tous les assignes",
+        "unassigned": "Non assigne"
+      },
+      "sprint": "Sprint",
+      "sprintOptions": {
+        "all": "Tous les sprints",
+        "backlog": "Backlog"
+      },
+      "dueDateRange": {
+        "start": "Echeance a partir du",
+        "end": "Echeance jusqu'au"
+      }
+    },
+    "noAssignee": "Non assigne",
+    "noDueDate": "Pas de date d'echeance",
+    "status": {
+      "todo": "A faire",
+      "in_progress": "En cours",
+      "blocked": "Bloque",
+      "done": "Termine"
+    },
+    "priority": {
+      "low": "Priorite basse",
+      "medium": "Priorite moyenne",
+      "high": "Priorite elevee",
+      "critical": "Priorite critique"
+    },
+    "summary": {
+      "title": "Resume du projet",
+      "empty": "Selectionnez un projet pour voir les details",
+      "owner": "Proprietaire",
+      "createdOn": "Cree",
+      "createdBy": "{{date}} par {{user}}",
+      "editProject": "Modifier le projet",
+      "description": "Description",
+      "noDescription": "Aucune description disponible",
+      "tags": "Tags",
+      "noTags": "Aucun tag",
+      "members": "Membres",
+      "noMembers": "Aucun membre assigne"
+    },
+    "tasksColumns": {
+      "key": "Cle",
+      "title": "Titre",
+      "status": "Statut",
+      "priority": "Priorite",
+      "assignee": "Assigne",
+      "dueDate": "Echeance",
+      "comments": "Commentaires"
+    },
+    "drawer": {
+      "title": "Details de la tache",
+      "description": "Description",
+      "assignment": "Assignation",
+      "owner": "Proprietaire : {{owner}}",
+      "assignee": "Assigne : {{assignee}}",
+      "timing": "Chronologie",
+      "createdAt": "Cree le {{date}}",
+      "dueDate": "Echeance le {{date}}",
+      "sprintLabel": "Sprint",
+      "sprint": "Sprint : {{sprint}}",
+      "noSprint": "Backlog",
+      "empty": "Selectionnez une tache pour voir les details"
+    },
+    "missingId": "Identifiant du projet manquant",
+    "notFound": "Projet introuvable",
+    "backToList": "Retour aux projets"
+  },
+  "board": {
+    "empty": "Selectionnez un projet pour ouvrir le Kanban",
+    "permissions": {
+      "title": "Permissions limitees",
+      "description": "Vous n'avez pas les droits pour modifier les taches de ce projet."
+    },
+    "columns": {
+      "todo": "A faire",
+      "inProgress": "En cours",
+      "blocked": "Bloque",
+      "done": "Termine"
+    },
+    "composer": {
+      "title": "Creer une nouvelle tache",
+      "titlePlaceholder": "Titre de la tache",
+      "descriptionPlaceholder": "Description (optionnelle)",
+      "submit": "Ajouter la tache"
+    },
+    "taskCount_one": "{{count}} tache",
+    "taskCount_other": "{{count}} taches",
+    "emptyColumn": "Aucune tache dans cette colonne",
+    "summary": {
+      "total": "Toutes les taches"
+    },
+    "statusPanel": {
+      "title": "Statistiques kanban",
+      "total": "Total des taches",
+      "close": "Fermer le panneau"
+    }
+  },
+  "notifications": {
+    "taskCreated": "Tache creee",
+    "taskUpdated": "Tache mise a jour"
+  },
+  "form": {
+    "createTitle": "Nouveau projet",
+    "fields": {
+      "key": {
+        "placeholder": "ex. PROJ",
+        "label": "Cle"
+      },
+      "name": {
+        "placeholder": "Nom du projet",
+        "label": "Nom"
+      },
+      "description": {
+        "placeholder": "Description (optionnelle)",
+        "label": "Description"
+      },
+      "tags": {
+        "placeholder": "Ajouter des tags (Entrer pour valider)",
+        "label": "Tags"
+      }
+    },
+    "createAction": "Creer",
+    "editTitle": "Modifier {{name}}",
+    "editTitleFallback": "Modifier le projet",
+    "updateAction": "Enregistrer"
+  },
+  "delete": {
+    "success": "Projet supprime"
+  },
+  "tasks": {
+    "openFilters": "Filtres",
+    "resetFilters": "Rinitialiser les filtres",
+    "closeFilters": "Fermer",
+    "columns": {
+      "actions": "Actions"
+    },
+    "optionalColumns": {
+      "label": "Champs optionnels",
+      "button": "Champs optionnels",
+      "modalTitle": "S�lectionnez les champs optionnels",
+      "description": "Choisissez les champs suppl�mentaires � afficher dans la vue tableau."
+    },
+    "deleteModal": {
+      "title": "Supprimer la t�che",
+      "message": "La suppression de ��{{title}}�� supprimera d�finitivement la t�che, ses commentaires et tous les liens vers les notes.",
+      "warning": "Cette action est irr�versible.",
+      "confirm": "Supprimer la t�che",
+      "cancel": "Annuler"
+    },
+    "statusManager": {
+      "manageButton": "Gérer les statuts",
+      "title": "Statuts des tâches",
+      "add": "Ajouter un statut",
+      "empty": "Aucun statut défini",
+      "messages": {
+        "created": "Statut créé",
+        "updated": "Statut mis à jour",
+        "deleted": "Statut supprimé",
+        "reordered": "Ordre mis à jour",
+        "error": "Opération échouée"
+      },
+      "deleteTitle": "Supprimer le statut",
+      "deleteDescription": "Voulez-vous supprimer « {{status}} » ?",
+      "deletePrompt": "La suppression de « {{status}} » déplacera les tâches vers le statut de secours.",
+      "confirm": "Confirmer",
+      "cancel": "Annuler",
+      "createTitle": "Créer un statut",
+      "editTitle": "Modifier le statut",
+      "fields": {
+        "label": "Libellé",
+        "fallback": "Statut de secours"
+      },
+      "validation": {
+        "labelRequired": "Saisissez un libellé",
+        "labelMax": "80 caractères maximum",
+        "fallbackRequired": "Sélectionnez un statut de secours"
+      }
+    },
+    "savedViews": {
+      "placeholder": "Vues enregistrÃƒÂ©es",
+      "panelTitle": "Vues enregistrÃƒÂ©es",
+      "saveButton": "Enregistrer la vue",
+      "deleteButton": "Supprimer",
+      "modalTitle": "Enregistrer la vue actuelle",
+      "nameLabel": "Nom",
+      "nameRequired": "Veuillez saisir un nom"
+    },
+    "actions": {
+      "create": "Nouvelle tache",
+      "edit": "Modifier",
+      "delete": "Supprimer",
+      "toggleBoardInsights": "Statistiques kanban",
+      "deleteTitle": "Supprimer la tache",
+      "deleteDescription": "Voulez-vous vraiment supprimer \"{{title}}\" ?",
+      "deleteConfirm": "Supprimer",
+      "cancel": "Annuler",
+      "deleteSelected": "Supprimer la selection ({{count}})"
+    },
+    "form": {
+      "createTitle": "Nouvelle tache",
+      "editTitle": "Modifier {{title}}",
+      "createAction": "Creer la tache",
+      "updateAction": "Enregistrer",
+      "fields": {
+        "title": "Titre",
+        "description": "Description",
+        "status": "Statut",
+        "priority": "Priorite",
+        "assignee": "Assignation",
+        "owner": "Proprietaire",
+        "dueDate": "Date limite",
+        "sprint": "Sprint",
+        "estimatedMinutes": "Minutes estimees"
+      },
+      "placeholders": {
+        "title": "Titre de la tache",
+        "description": "Description (optionnelle)",
+        "assignee": "Selectionnez un responsable",
+        "owner": "Selectionnez un proprietaire",
+        "dueDate": "Choisir la date limite",
+        "sprint": "Selectionnez un sprint",
+        "estimatedMinutes": "Minutes (optionnel)"
+      }
+    },
+    "messages": {
+      "createSuccess": "Tache creee",
+      "updateSuccess": "Tache mise a jour",
+      "deleteSuccess": "Tache supprimee",
+      "notFound": "Tache introuvable",
+      "deleteBulkSuccess": "{{count}} taches supprimees",
+      "deleteOwnerWarning": "{{count}} taches selectionnees ne peuvent pas etre supprimees car vous n'etes pas proprietaire."
+    },
+    "details": {
+      "description": "Description",
+      "noDescription": "Aucune description disponible",
+      "owner": "Proprietaire : {{owner}}",
+      "assignee": "Assigne : {{assignee}}",
+      "createdAt": "Cree le {{date}}",
+      "dueDate": "Echeance le {{date}}",
+      "sprintLabel": "Sprint",
+      "sprint": "Sprint : {{sprint}}",
+      "noSprint": "Backlog",
+      "linkedNotes": "Notes liÃƒÂ©es",
+      "noLinkedNotes": "Aucune note liÃƒÂ©e",
+      "empty": "Aucune tache selectionnee",
+      "comments": {
+        "title": "Commentaires",
+        "count_one": "{{count}} commentaire",
+        "count_other": "{{count}} commentaires",
+        "empty": "Aucun commentaire",
+        "addLabel": "Ajouter un commentaire",
+        "validation": "Saisissez un commentaire",
+        "submit": "Publier",
+        "success": "Commentaire ajout�"
+      },
+      "loadingTitle": "D�tails de la t�che",
+      "goBack": "Retour aux t�ches",
+      "propertiesTitle": "Propri�t�s de la t�che",
+      "statusLabel": "Statut",
+      "priorityLabel": "Priorit�",
+      "ownerLabel": "Propri�taire",
+      "assigneeLabel": "Assign� �",
+      "createdAtLabel": "Cr�� le",
+      "dueDateLabel": "Date d'�ch�ance",
+      "updatedAtLabel": "Derni�re mise � jour"
+    },
+    "filterPanel": "Filtres",
+    "actionsPanel": "Actions",
+    "bulkDelete": {
+      "title": "Supprimer {{count}} taches",
+      "description": "Supprimer ces taches retirera commentaires, historique et liens vers les notes.",
+      "warning": "Cette action est definitive.",
+      "confirm": "Supprimer les taches",
+      "cancel": "Annuler"
+    }
+  },
+  "notes": {
+    "title": "Notes du projet",
+    "filters": {
+      "includePrivate": "Inclure les notes privees",
+      "includePrivateOptions": {
+        "public": "Notes publiques uniquement",
+        "private": "Inclure les notes privees"
+      },
+      "notebook": "Carnet",
+      "tag": "Tag",
+      "panelTitle": "Filtres"
+    },
+    "actions": {
+      "create": "Nouvelle note",
+      "save": "Enregistrer la note",
+      "cancel": "Annuler",
+      "searchPlaceholder": "Rechercher des notes...",
+      "view": "Ouvrir",
+      "edit": "Modifier",
+      "deleteTitle": "Supprimer la note",
+      "deleteConfirmText": "Voulez-vous vraiment supprimer cette note ?",
+      "delete": "Supprimer",
+      "panelTitle": "Actions",
+      "openFilters": "Filtres",
+      "resetFilters": "Rinitialiser les filtres",
+      "closeFilters": "Fermer",
+      "deleteSelected": "Supprimer la selection ({{count}})"
+    },
+    "view": {
+      "list": "Vue liste",
+      "cards": "Vue cartes"
+    },
+    "labels": {
+      "private": "Privee",
+      "public": "Publique"
+    },
+    "list": {
+      "updatedBy": "Derniere mise a jour {{date}} par {{user}}",
+      "empty": "Aucune note disponible"
+    },
+    "editor": {
+      "createTitle": "Creer une note",
+      "editTitle": "Modifier la note",
+      "fields": {
+        "title": "Titre",
+        "notebook": "Carnet",
+        "tags": "Tags",
+        "visibility": "VisibilitÃƒÂ©",
+        "body": "Contenu Markdown",
+        "linkedTasks": "Taches liees"
+      },
+      "placeholders": {
+        "notebook": "Carnet ou collection (facultatif)",
+        "tags": "Ajoutez des tags et appuyez sur Entree",
+        "body": "Ecrivez ici le contenu markdown...",
+        "linkedTasks": "Selectionnez les taches a lier"
+      },
+      "suggestions": {
+        "title": "Suggestions de taches ([[key]])",
+        "empty": "Tapez apres [[ pour voir les taches suggerees"
+      }
+    },
+    "viewer": {
+      "title": "Note",
+      "linkedTasks": "Taches liees",
+      "noLinks": "Aucune tache liee.",
+      "empty": "Selectionnez une note pour afficher les details",
+      "updatedBy": "Derniere mise a jour {{date}} par {{user}}"
+    },
+    "feedback": {
+      "created": "Note creee",
+      "updated": "Note mise a jour",
+      "deleted": "Note supprimee",
+      "notFound": "Note introuvable",
+      "deleteDenied": "Vous n'avez pas les droits pour supprimer cette note.",
+      "bulkDeleted": "{{count}} notes supprimees",
+      "deleteOwnerWarning": "{{count}} notes selectionnees ne peuvent pas etre supprimees car vous n'etes pas proprietaire."
+    },
+    "validation": {
+      "title": "Le titre est obligatoire",
+      "titleMax": "Le titre peut contenir au plus 160 caracteres",
+      "body": "Le contenu est obligatoire",
+      "notebookMax": "Le nom du carnet peut contenir au plus 80 caracteres",
+      "tag": "Le tag ne peut pas etre vide",
+      "tagMax": "Le tag peut contenir au plus 40 caracteres",
+      "tooManyTags": "20 tags maximum par note",
+      "tooManyLinks": "20 taches liees maximum"
+    },
+    "search": {
+      "title": "Rechercher des notes",
+      "empty": "Aucune note trouvee",
+      "open": "Ouvrir la note",
+      "noHighlight": "Aucune previsualisation disponible"
+    },
+    "bulkDelete": {
+      "title": "Supprimer {{count}} notes",
+      "description": "Supprimer ces notes retirera leur contenu et les liens vers les taches.",
+      "warning": "Cette action est definitive.",
+      "confirm": "Supprimer les notes",
+      "cancel": "Annuler"
+    }
+  },
+  "search": {
+    "button": "Rechercher des taches",
+    "title": "Recherche globale",
+    "placeholder": "Rechercher par titre ou description",
+    "submit": "Rechercher",
+    "empty": "Aucune tache trouvee",
+    "openTask": "Ouvrir"
+  },
+  "views": {
+    "placeholder": "Vues enregistrées",
+    "panelTitle": "Vues enregistrées",
+    "saveButton": "Enregistrer la vue",
+    "deleteButton": "Supprimer",
+    "saveSuccess": "Vue enregistrée",
+    "saveError": "Impossible d'enregistrer la vue",
+    "deleteSuccess": "Vue supprimée",
+    "modal": {
+      "title": "Enregistrer une vue projet",
+      "save": "Enregistrer",
+      "cancel": "Annuler",
+      "nameLabel": "Nom",
+      "nameRequired": "Saisissez un nom"
+    }
+  },
+  "wiki": {
+    "title": "Wiki",
+    "actions": {
+      "refresh": "Actualiser",
+      "create": "Nouvelle page",
+      "createFirst": "Cr�er la premi�re page",
+      "edit": "Modifier",
+      "delete": "Supprimer",
+      "history": "Historique",
+      "save": "Enregistrer",
+      "cancel": "Annuler"
+    },
+    "fields": {
+      "title": "Titre",
+      "summary": "R�sum�",
+      "content": "Contenu"
+    },
+    "validation": {
+      "title": "Veuillez saisir un titre.",
+      "contentRequired": "Veuillez renseigner le contenu de la page."
+    },
+    "emptyState": "Aucune page wiki pour le moment.",
+    "list": {
+      "noSummary": "Aucun r�sum� disponible"
+    },
+    "noSelection": "S�lectionnez une page dans la liste.",
+    "create": {
+      "title": "Cr�er une page"
+    },
+    "feedback": {
+      "created": "Page cr��e.",
+      "updated": "Page mise � jour.",
+      "deleted": "Page supprim�e.",
+      "restored": "Version restaur�e."
+    },
+    "delete": {
+      "confirmTitle": "Supprimer la page ?",
+      "confirmDescription": "Cette action supprime la page et son historique.",
+      "confirmButton": "Supprimer",
+      "cancel": "Annuler"
+    },
+    "revisions": {
+      "title": "Historique des versions",
+      "restore": "Restaurer",
+      "noSummary": "Aucun r�sum�",
+      "empty": "Aucune version disponible."
+    }
+  },
+  "sprints": {
+    "title": "Sprints du projet",
+    "noProjectSelected": "S�lectionnez un projet pour afficher ses sprints.",
+    "empty": "Aucun sprint d�fini pour ce projet.",
+    "totalTasks": "T�ches totales",
+    "estimatedMinutes": "Estim�es",
+    "spentMinutes": "Enregistr�es",
+    "capacityMinutes": "Capacit�",
+    "utilization": "Utilisation",
+    "actions": {
+      "create": "Nouveau sprint",
+      "viewTasks": "Voir les t�ches"
+    },
+    "deleteConfirmTitle": "Supprimer le sprint",
+    "deleteConfirmBody": "La suppression d�un sprint retire l�association des t�ches mais celles-ci restent disponibles dans le backlog.",
+    "deleteSuccess": "Sprint supprim�",
+    "form": {
+      "invalid": "Veuillez remplir tous les champs obligatoires.",
+      "nameRequired": "Le nom est obligatoire",
+      "dateRequired": "S�lectionnez les dates de d�but et de fin"
+    },
+    "createTitle": "Cr�er un sprint",
+    "editTitle": "Modifier le sprint",
+    "createSuccess": "Sprint cr��",
+    "updateSuccess": "Sprint mis � jour",
+    "status": {
+      "planned": "Planifi�",
+      "active": "En cours",
+      "completed": "Termin�",
+      "archived": "Archiv�"
+    },
+    "fields": {
+      "name": "Nom",
+      "goal": "Objectif",
+      "dateRange": "P�riode",
+      "status": "Statut",
+      "capacityMinutes": "Capacit� (minutes)"
+    },
+    "details": {
+      "title": "D�tails du sprint",
+      "tasks": "T�ches",
+      "emptyTasks": "Aucune t�che dans ce sprint."
+    },
+    "selectPrompt": "Sélectionnez un sprint pour afficher les détails."
+  },
+  "time": {
+    "tracking": {
+      "title": "Suivi du temps",
+      "actions": {
+        "logTime": "Enregistrer du temps"
+      },
+      "createTitle": "Enregistrer du temps",
+      "editTitle": "Modifier l�enregistrement",
+      "createSuccess": "Temps enregistr�",
+      "updateSuccess": "Enregistrement mis � jour",
+      "deleteTitle": "Supprimer l�enregistrement",
+      "deleteBody": "Voulez-vous supprimer cet enregistrement de temps�?",
+      "deleteSuccess": "Enregistrement supprim�",
+      "totalMinutes": "Minutes enregistr�es",
+      "byUser": "Par utilisateur",
+      "byTask": "Par t�che",
+      "noData": "Aucune donn�e disponible",
+      "noEntries": "Aucun enregistrement pour la p�riode s�lectionn�e.",
+      "noTasks": "Cr�ez une t�che avant d’enregistrer du temps.",
+      "columns": {
+        "date": "Date",
+        "task": "T�che",
+        "user": "Utilisateur",
+        "minutes": "Minutes",
+        "description": "Description"
+      },
+      "fields": {
+        "task": "T�che",
+        "entryDate": "Date",
+        "duration": "Dur�e (minutes)",
+        "description": "Description"
+      }
+    }
+  }
+}

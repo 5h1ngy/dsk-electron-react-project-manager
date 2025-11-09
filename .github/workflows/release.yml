@@ -14,6 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.release_info.outputs.version }}
+      title: ${{ steps.release_info.outputs.title }}
       notes: ${{ steps.release_info.outputs.notes }}
 
     steps:
@@ -29,7 +30,7 @@ jobs:
 
       - name: Generate release information
         id: release_info
-        run: node scripts/release/generate-release-info.mjs
+        run: node scripts/generate-release-info.mjs
 
   build:
     needs: prepare
@@ -53,22 +54,53 @@ jobs:
       - name: Build project
         run: npm run build:win
 
-      - name: Collect artifacts
+      - name: Stage release artifacts
         run: |
+          set -euo pipefail
+          VERSION=$(node -p "require('./package.json').version")
+          PACKAGE_NAME=$(node -p "require('./package.json').name")
           mkdir -p artifacts/windows
           if [ -d dist ]; then
             find dist -maxdepth 1 -type f -print0 | while IFS= read -r -d '' file; do
               base=$(basename "$file")
-              cp "$file" "artifacts/windows/windows-$base"
+              cp "$file" "artifacts/windows/$base"
             done
+          else
+            echo "dist directory not found. Windows artifacts will be missing." >&2
+          fi
+          mkdir -p artifacts/app-bundle
+          if [ -d out ]; then
+            tar -czf "artifacts/app-bundle/${PACKAGE_NAME}-${VERSION}-app-bundle.tgz" out
+          else
+            echo "out directory not found. Runtime bundle archive skipped." >&2
+          fi
+          mkdir -p artifacts/docs
+          if [ -d docs ]; then
+            tar -czf "artifacts/docs/${PACKAGE_NAME}-${VERSION}-docs.tgz" docs
+          else
+            echo "docs directory not found. Documentation snapshot skipped." >&2
           fi
         shell: bash
 
-      - name: Upload artifacts
+      - name: Upload Windows artifacts
         uses: actions/upload-artifact@v4
         with:
           name: windows
           path: artifacts/windows
+          if-no-files-found: error
+
+      - name: Upload runtime bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: runtime-bundle
+          path: artifacts/app-bundle
+          if-no-files-found: error
+
+      - name: Upload docs snapshot
+        uses: actions/upload-artifact@v4
+        with:
+          name: docs
+          path: artifacts/docs
           if-no-files-found: error
 
   release:
@@ -103,9 +135,10 @@ jobs:
       - name: Flatten artifact list
         id: files
         run: |
-          FILES=$(find release-assets -type f \( -iname '*portable*' \) -print)
+          set -euo pipefail
+          FILES=$(find release-assets -type f -print)
           if [ -z "$FILES" ]; then
-            echo "No portable artifacts found to attach to the release." >&2
+            echo "No artifacts found to attach to the release." >&2
             exit 1
           fi
           echo "list<<EOF" >> $GITHUB_OUTPUT
@@ -116,7 +149,6 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           tag_name: v${{ needs.prepare.outputs.version }}
-          name: v${{ needs.prepare.outputs.version }}
-          body: |
-            Portable package for DSK Project Manager v${{ needs.prepare.outputs.version }}.
+          name: ${{ needs.prepare.outputs.title }}
+          body: ${{ needs.prepare.outputs.notes }}
           files: ${{ steps.files.outputs.list }}

@@ -1,0 +1,215 @@
+{
+  "actionBar": {
+    "create": "Nouvel utilisateur",
+    "refresh": "Actualiser"
+  },
+  "filters": {
+    "users": {
+      "ariaLabel": "Filtrer les utilisateurs",
+      "searchPlaceholder": "Rechercher des utilisateurs...",
+      "usernamePlaceholder": "Filtrer par identifiant",
+      "displayNamePlaceholder": "Filtrer par nom",
+      "openButton": "Filtres",
+      "status": {
+        "all": "Tous",
+        "active": "Actifs",
+        "inactive": "Inactifs"
+      },
+      "roles": {
+        "all": "Tous les roles"
+      },
+      "view": {
+        "table": "Vue tableau",
+        "list": "Vue liste",
+        "cards": "Vue cartes"
+      },
+      "lastLogin": "Derniere connexion : {{date}}",
+      "lastLoginNever": "Derniere connexion : jamais",
+      "statusLabel": "Statut des utilisateurs",
+      "lastLoginRangeLabel": "Derniere connexion",
+      "createdRangeLabel": "Cree le",
+      "updatedRangeLabel": "Mis a jour le"
+    },
+    "panelTitle": "Filtres"
+  },
+  "table": {
+    "id": "ID utilisateur",
+    "username": "Nom d'utilisateur",
+    "displayName": "Nom",
+    "roles": "Roles",
+    "status": "Statut",
+    "lastLoginAt": "Derniere connexion",
+    "createdAt": "Cree le",
+    "updatedAt": "Mis a jour le",
+    "neverLoggedIn": "Jamais connecte",
+    "actions": "Actions",
+    "empty": "Aucun utilisateur"
+  },
+  "optionalColumns": {
+    "button": "Champs optionnels",
+    "modalTitle": "Champs optionnels",
+    "description": "Choisissez les colonnes supplementaires a afficher dans la vue tableau.",
+    "placeholder": "Selectionnez les colonnes optionnelles",
+    "columns": {
+      "id": "ID utilisateur",
+      "lastLoginAt": "Derniere connexion",
+      "createdAt": "Cree le",
+      "updatedAt": "Mis a jour le"
+    }
+  },
+  "status": {
+    "active": "Actif",
+    "inactive": "Inactif"
+  },
+  "actions": {
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "deleteTitle": "Supprimer l'utilisateur",
+    "deleteDescription": "Voulez-vous vraiment supprimer {{username}} ?",
+    "confirmDelete": "Supprimer",
+    "cancel": "Annuler",
+    "deleteSelected": "Supprimer la selection",
+    "panelTitle": "Actions"
+  },
+  "modals": {
+    "create": {
+      "title": "Creer un utilisateur",
+      "confirm": "Creer",
+      "fields": {
+        "username": "Nom d'utilisateur",
+        "displayName": "Nom",
+        "password": "Mot de passe",
+        "roles": "Roles",
+        "rolesPlaceholder": "Selectionnez les roles",
+        "active": "Actif"
+      }
+    },
+    "edit": {
+      "title": "Modifier l'utilisateur {{username}}",
+      "confirm": "Enregistrer",
+      "fields": {
+        "displayName": "Nom",
+        "password": "Nouveau mot de passe",
+        "passwordHint": "Laissez vide pour conserver le mot de passe actuel",
+        "roles": "Roles",
+        "rolesPlaceholder": "Selectionnez les roles",
+        "active": "Actif"
+      }
+    },
+    "deleteUser": {
+      "title": "Supprimer l'utilisateur {{username}}",
+      "bulkTitle": "Supprimer {{count}} utilisateurs",
+      "description": "Vous etes sur le point de supprimer {{user}} et toutes les donnees associees.",
+      "bulkDescription": "Vous etes sur le point de supprimer {{count}} utilisateurs et toutes leurs donnees associees.",
+      "warning": "Les appartenances aux projets, vues enregistrees, commentaires et autres donnees liees seront supprimees ou reassignees. Cette action est irreversible.",
+      "confirm": "Supprimer",
+      "cancel": "Annuler"
+    }
+  },
+  "validation": {
+    "createUser": {
+      "usernameRequired": "Le nom d'utilisateur est requis",
+      "usernameMin": "Le nom d'utilisateur doit contenir au moins 3 caracteres",
+      "usernameMax": "Le nom d'utilisateur ne doit pas depasser 32 caracteres",
+      "usernamePattern": "Utilisez uniquement des lettres, chiffres, points, tirets ou underscores",
+      "displayNameRequired": "Le nom est requis",
+      "displayNameMax": "Le nom ne doit pas depasser 64 caracteres",
+      "passwordRequired": "Le mot de passe est requis",
+      "passwordMin": "Le mot de passe doit contenir au moins 8 caracteres",
+      "rolesRequired": "Selectionnez au moins un role"
+    },
+    "updateUser": {
+      "displayNameRequired": "Le nom est requis",
+      "displayNameMax": "Le nom ne doit pas depasser 64 caracteres",
+      "passwordMin": "Si vous definissez un nouveau mot de passe, il doit contenir au moins 8 caracteres",
+      "rolesRequired": "Selectionnez au moins un role"
+    }
+  },
+  "messages": {
+    "createSuccess": "Utilisateur cree avec succes",
+    "createErrorFallback": "Impossible de creer l'utilisateur",
+    "updateSuccess": "Utilisateur mis a jour avec succes",
+    "updateErrorFallback": "Impossible de mettre a jour l'utilisateur",
+    "deleteSuccess": "Utilisateur supprime avec succes",
+    "deleteBulkSuccess": "Suppression reussie de {{count}} utilisateurs",
+    "deleteErrorFallback": "Impossible de supprimer l'utilisateur",
+    "deleteSelfWarning": "Vous ne pouvez pas supprimer votre propre compte"
+  },
+  "error": {
+    "title": "Erreur"
+  },
+  "roles": {
+    "Admin": "Administrateur",
+    "Maintainer": "Mainteneur",
+    "Contributor": "Contributeur",
+    "Viewer": "Lecteur"
+  },
+  "permissions": {
+    "title": "Permissions insuffisantes",
+    "description": "Seuls les administrateurs peuvent gerer les utilisateurs."
+  },
+  "personal": {
+    "projectsTitle": "Mes projets",
+    "profileTitle": "Resume du profil",
+    "username": "Connecte en tant que {{username}}",
+    "noDescription": "Aucune description disponible",
+    "noProjects": "Vous ne participez a aucun projet pour le moment.",
+    "heading": "Vue personnelle"
+  },
+  "overview": {
+    "welcome": "Bon retour, {{name}}",
+    "subtitle": "Voici un aperçu de votre espace de travail."
+  },
+  "summary": {
+    "cards": {
+      "total": {
+        "title": "Projets",
+        "caption": "Tous rôles confondus"
+      },
+      "managed": {
+        "title": "Projets gérés",
+        "caption": "Là où vous êtes administrateur"
+      },
+      "collaborating": {
+        "title": "En collaboration",
+        "caption": "Projets que vous pouvez mettre à jour"
+      },
+      "watching": {
+        "title": "En observation",
+        "caption": "Accès en lecture seule"
+      }
+    },
+    "roles": {
+      "admin": "Gérés",
+      "edit": "En collaboration",
+      "view": "En observation"
+    },
+    "noLastLogin": "Aucune connexion enregistrée"
+  },
+  "quickLinks": {
+    "title": "Actions rapides",
+    "projects": "Accéder à mes projets",
+    "projectsDescription": "Passez en revue les initiatives actives et les tâches.",
+    "settings": "Ouvrir les paramètres",
+    "settingsDescription": "Ajustez l'apparence et les préférences.",
+    "users": "Gérer les utilisateurs",
+    "usersDescription": "Invitez, désactivez ou modifiez les permissions des utilisateurs."
+  },
+  "insights": {
+    "title": "Aperçus de l'espace",
+    "roles": "Projets par rôle",
+    "tags": "Tags les plus utilisés",
+    "noTags": "Les tags apparaîtront lorsque des projets auront des étiquettes.",
+    "tagCountLabel": "{{count}} utilisations"
+  },
+  "profile": {
+    "title": "Votre profil",
+    "username": "Identifiant",
+    "lastLogin": "Dernière connexion",
+    "roles": "Rôles"
+  },
+  "recentProjects": {
+    "title": "Projets récents",
+    "empty": "Vous ne participez à aucun projet pour le moment."
+  }
+}

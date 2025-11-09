@@ -1,0 +1,34 @@
+appId: com.electron.app
+productName: DSK Project Manager
+directories:
+  output: dist
+  buildResources: packages/electron/build
+files:
+  - '!**/.vscode/*'
+  - '!src/*'
+  - '!electron.vite.config.{js,ts,mjs,cjs}'
+  - '!{.eslintcache,eslint.config.mjs,.prettierignore,.prettierrc.yaml,dev-app-update.yml,CHANGELOG.md,README.md}'
+  - '!{.env.*,.npmrc,pnpm-lock.yaml}'
+  - '!env/**'
+  - '!{tsconfig.json,tsconfig.node.json,tsconfig.web.json}'
+asarUnpack:
+  - resources/**
+win:
+  icon: packages/electron/build/icon.ico
+  target:
+    - target: portable
+      arch:
+        - x64
+  executableName: dsk-project-manager
+  artifactName: ${name}-${version}-portable-win.${ext}
+portable:
+  artifactName: ${name}-${version}-portable-win.${ext}
+  requestExecutionLevel: user
+npmRebuild: false
+beforePack: ./packages/electron/scripts/prune-dev-deps.cjs
+extraResources:
+  - from: packages/electron/resources
+    to: .
+publish:
+  provider: generic
+  url: https://example.com/auto-updates

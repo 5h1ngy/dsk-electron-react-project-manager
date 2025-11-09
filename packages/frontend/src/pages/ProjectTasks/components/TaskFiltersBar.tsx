@@ -1,0 +1,443 @@
+import { useEffect, useMemo, useState, type JSX, type CSSProperties } from 'react'
+import {
+  AppstoreAddOutlined,
+  AppstoreOutlined,
+  BarsOutlined,
+  ColumnWidthOutlined,
+  PlusOutlined,
+  TableOutlined
+} from '@ant-design/icons'
+import {
+  Button,
+  DatePicker,
+  Drawer,
+  Flex,
+  Grid,
+  Input,
+  Segmented,
+  Select,
+  Space,
+  theme,
+  Modal,
+  Typography
+} from 'antd'
+import type { SelectProps } from 'antd'
+import type { ReactNode } from 'react'
+import { SearchOutlined } from '@ant-design/icons'
+import dayjs, { type Dayjs } from 'dayjs'
+import { useTranslation } from 'react-i18next'
+import { FilterOutlined, SaveOutlined } from '@ant-design/icons'
+
+import type { SelectOption, TaskFilters } from '@renderer/pages/ProjectTasks/ProjectTasks.types'
+import { BorderedPanel } from '@renderer/components/Surface/BorderedPanel'
+
+const { RangePicker } = DatePicker
+
+type Option = SelectProps['options']
+
+export interface TaskFiltersBarProps {
+  filters: TaskFilters
+  statusOptions: SelectOption[]
+  priorityOptions: SelectOption[]
+  assigneeOptions: SelectOption[]
+  sprintOptions?: SelectOption[]
+  onChange: (patch: Partial<TaskFilters>) => void
+  viewMode: 'table' | 'list' | 'cards' | 'board'
+  onViewModeChange: (mode: 'table' | 'list' | 'cards' | 'board') => void
+  onCreate?: () => void
+  canCreate?: boolean
+  secondaryActions?: ReactNode
+  savedViewsControls?: ReactNode
+  optionalFieldControls?: {
+    content: ReactNode
+    hasOptions: boolean
+    disabled?: boolean
+  }
+  primaryActions?: ReactNode[]
+}
+
+export const TaskFiltersBar = ({
+  filters,
+  statusOptions,
+  priorityOptions,
+  assigneeOptions,
+  sprintOptions,
+  onChange,
+  viewMode,
+  onViewModeChange,
+  onCreate,
+  canCreate = true,
+  secondaryActions,
+  savedViewsControls,
+  optionalFieldControls,
+  primaryActions = []
+}: TaskFiltersBarProps): JSX.Element => {
+  const { t } = useTranslation('projects')
+  const [filtersOpen, setFiltersOpen] = useState(false)
+  const [optionalFieldsOpen, setOptionalFieldsOpen] = useState(false)
+  const screens = Grid.useBreakpoint()
+  const { token } = theme.useToken()
+  const toolbarSegmentedStyle = useMemo(
+    () => ({
+      background: token.colorFillTertiary,
+      border: `${token.lineWidth}px solid ${token.colorFillQuaternary}`,
+      boxShadow: 'none',
+      padding: token.paddingXXS,
+      borderRadius: token.borderRadiusLG
+    }),
+    [
+      token.borderRadiusLG,
+      token.colorFillQuaternary,
+      token.colorFillTertiary,
+      token.lineWidth,
+      token.paddingXXS
+    ]
+  )
+
+  const isCompact = !screens.md
+
+  const dueRangeValue = useMemo<[Dayjs | null, Dayjs | null] | null>(() => {
+    if (!filters.dueDateRange) {
+      return null
+    }
+    const [start, end] = filters.dueDateRange
+    return [start ? dayjs(start) : null, end ? dayjs(end) : null]
+  }, [filters.dueDateRange])
+
+  const viewSegmentedOptions = useMemo(
+    () => [
+      {
+        label: (
+          <Space size={6} style={{ color: 'inherit' }}>
+            <TableOutlined />
+            {!isCompact ? <span>{t('viewSwitcher.table')}</span> : null}
+          </Space>
+        ),
+        value: 'table'
+      },
+      {
+        label: (
+          <Space size={6} style={{ color: 'inherit' }}>
+            <BarsOutlined />
+            {!isCompact ? <span>{t('viewSwitcher.list')}</span> : null}
+          </Space>
+        ),
+        value: 'list'
+      },
+      {
+        label: (
+          <Space size={6} style={{ color: 'inherit' }}>
+            <ColumnWidthOutlined />
+            {!isCompact ? <span>{t('viewSwitcher.board')}</span> : null}
+          </Space>
+        ),
+        value: 'board'
+      },
+      {
+        label: (
+          <Space size={6} style={{ color: 'inherit' }}>
+            <AppstoreOutlined />
+            {!isCompact ? <span>{t('viewSwitcher.cards')}</span> : null}
+          </Space>
+        ),
+        value: 'cards'
+      }
+    ],
+    [isCompact, t]
+  )
+
+  const selectOption = (options?: SelectOption[] | null): Option =>
+    (options ?? []).map((option) => ({ label: option.label, value: option.value }))
+
+  const segmentedStyle = useMemo(
+    () => ({
+      ...toolbarSegmentedStyle,
+      width: isCompact ? '100%' : undefined,
+      display: 'flex',
+      justifyContent: 'space-between'
+    }),
+    [toolbarSegmentedStyle, isCompact]
+  )
+
+  const buttonFullWidthStyle = useMemo<CSSProperties | undefined>(
+    () => (isCompact ? { width: '100%' } : undefined),
+    [isCompact]
+  )
+
+  const handleRangeChange = (dates: [Dayjs | null, Dayjs | null] | null) => {
+    if (!dates) {
+      onChange({ dueDateRange: null })
+      return
+    }
+    const [start, end] = dates
+    if (!start && !end) {
+      onChange({ dueDateRange: null })
+      return
+    }
+    onChange({
+      dueDateRange: [
+        start ? start.startOf('day').toISOString() : null,
+        end ? end.endOf('day').toISOString() : null
+      ]
+    })
+  }
+
+  useEffect(() => {
+    if (!optionalFieldControls?.hasOptions && optionalFieldsOpen) {
+      setOptionalFieldsOpen(false)
+    }
+  }, [optionalFieldControls?.hasOptions, optionalFieldsOpen])
+
+  useEffect(() => {
+    if (optionalFieldControls?.disabled && optionalFieldsOpen) {
+      setOptionalFieldsOpen(false)
+    }
+  }, [optionalFieldControls?.disabled, optionalFieldsOpen])
+
+  const filterContent = (
+    <Flex vertical gap={16}>
+      {savedViewsControls ? (
+        <BorderedPanel
+          padding="md"
+          styles={{
+            body: {
+              display: 'flex',
+              flexDirection: 'column',
+              gap: token.paddingSM
+            }
+          }}
+          title={
+            <Space size={6} align="center">
+              <SaveOutlined />
+              <span>
+                {t('tasks.savedViews.panelTitle', {
+                  defaultValue: t('tasks.savedViews.placeholder')
+                })}
+              </span>
+            </Space>
+          }
+          style={{ width: '100%' }}
+        >
+          {savedViewsControls}
+        </BorderedPanel>
+      ) : null}
+      <Input
+        allowClear
+        prefix={<SearchOutlined />}
+        value={filters.searchQuery}
+        onChange={(event) => onChange({ searchQuery: event.target.value })}
+        placeholder={t('details.tasksSearchPlaceholder')}
+        size="large"
+      />
+      <Flex vertical gap={12}>
+        <Select
+          size="large"
+          value={filters.status}
+          onChange={(value) => onChange({ status: value as TaskFilters['status'] })}
+          options={selectOption(statusOptions)}
+          style={{ width: '100%' }}
+        />
+        <Select
+          size="large"
+          value={filters.priority}
+          onChange={(value) => onChange({ priority: value as TaskFilters['priority'] })}
+          options={selectOption(priorityOptions)}
+          style={{ width: '100%' }}
+        />
+        <Select
+          size="large"
+          value={filters.assignee}
+          onChange={(value) => onChange({ assignee: value as TaskFilters['assignee'] })}
+          options={selectOption(assigneeOptions)}
+          style={{ width: '100%' }}
+        />
+        <Select
+          size="large"
+          value={filters.sprint}
+          onChange={(value) => onChange({ sprint: value as TaskFilters['sprint'] })}
+          options={selectOption(sprintOptions)}
+          style={{ width: '100%' }}
+        />
+        <RangePicker
+          size="large"
+          value={dueRangeValue}
+          onChange={(dates) => handleRangeChange(dates as [Dayjs | null, Dayjs | null] | null)}
+          allowClear
+          placeholder={[
+            t('details.filters.dueDateRange.start'),
+            t('details.filters.dueDateRange.end')
+          ]}
+          style={{ width: '100%' }}
+        />
+      </Flex>
+    </Flex>
+  )
+
+  const actionsContent = (
+    <Flex
+      vertical={isCompact}
+      align={isCompact ? 'stretch' : 'center'}
+      gap={12}
+      style={{ width: '100%' }}
+    >
+      <Flex
+        align={isCompact ? 'stretch' : 'center'}
+        vertical={isCompact}
+        gap={12}
+        wrap={!isCompact}
+        style={{ flex: '1 1 auto' }}
+      >
+        <Space size={12} wrap>
+          {onCreate ? (
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={onCreate}
+              disabled={!canCreate}
+              style={buttonFullWidthStyle}
+            >
+              {t('tasks.actions.create')}
+            </Button>
+          ) : null}
+          {secondaryActions ? <div style={buttonFullWidthStyle}>{secondaryActions}</div> : null}
+          {primaryActions.length
+            ? primaryActions.map((action, index) => (
+                <div key={`primary-action-${index}`} style={buttonFullWidthStyle}>
+                  {action}
+                </div>
+              ))
+            : null}
+        </Space>
+      </Flex>
+      <Flex
+        align={isCompact ? 'stretch' : 'center'}
+        vertical={isCompact}
+        gap={12}
+        style={{ justifyContent: 'flex-end', flexShrink: 0 }}
+      >
+        <Segmented
+          size="large"
+          value={viewMode}
+          onChange={(next) => onViewModeChange(next as 'table' | 'list' | 'cards' | 'board')}
+          options={viewSegmentedOptions}
+          block={isCompact}
+          style={segmentedStyle}
+        />
+        {optionalFieldControls && optionalFieldControls.hasOptions ? (
+          <Button
+            icon={<AppstoreAddOutlined />}
+            size="large"
+            disabled={optionalFieldControls.disabled}
+            onClick={() => {
+              if (!optionalFieldControls.disabled) {
+                setOptionalFieldsOpen(true)
+              }
+            }}
+            style={buttonFullWidthStyle}
+          >
+            {t('tasks.optionalColumns.button', { defaultValue: 'Optional fields' })}
+          </Button>
+        ) : null}
+        <Button
+          icon={<FilterOutlined />}
+          size="large"
+          onClick={() => setFiltersOpen(true)}
+          style={buttonFullWidthStyle}
+        >
+          {t('tasks.openFilters')}
+        </Button>
+      </Flex>
+    </Flex>
+  )
+
+  return (
+    <>
+      <BorderedPanel padding="lg" style={{ width: '100%' }}>
+        {actionsContent}
+      </BorderedPanel>
+      <Drawer
+        placement="right"
+        open={filtersOpen}
+        onClose={() => setFiltersOpen(false)}
+        width={screens.lg ? 420 : '100%'}
+        title={
+          <Space size={6} align="center">
+            <FilterOutlined />
+            <span>{t('tasks.filterPanel', { defaultValue: 'Filtri' })}</span>
+          </Space>
+        }
+        styles={{
+          wrapper: {
+            borderRadius: `${token.borderRadiusLG}px`,
+            margin: screens.lg ? token.marginLG : 0,
+            border: `${token.lineWidth}px solid ${token.colorBorderSecondary}`,
+            boxShadow: token.boxShadowSecondary,
+            overflow: 'hidden'
+          },
+          header: { padding: token.paddingLG, marginBottom: 0 },
+          body: { padding: token.paddingLG, display: 'flex', flexDirection: 'column', gap: 16 },
+          footer: {
+            padding: token.paddingLG,
+            borderTop: `${token.lineWidth}px solid ${token.colorBorderSecondary}`
+          }
+        }}
+        footer={
+          <Flex justify="space-between" align="center" style={{ width: '100%' }}>
+            <Button
+              onClick={() => {
+                onChange({
+                  searchQuery: '',
+                  status: 'all',
+                  priority: 'all',
+                  assignee: 'all',
+                  dueDateRange: null,
+                  sprint: 'all'
+                })
+              }}
+            >
+              {t('tasks.resetFilters', { defaultValue: 'Reimposta filtri' })}
+            </Button>
+            <Button type="primary" onClick={() => setFiltersOpen(false)}>
+              {t('tasks.closeFilters', { defaultValue: 'Chiudi' })}
+            </Button>
+          </Flex>
+        }
+      >
+        {filterContent}
+      </Drawer>
+      {optionalFieldControls && optionalFieldControls.hasOptions ? (
+        <Modal
+          open={optionalFieldsOpen}
+          title={t('tasks.optionalColumns.modalTitle', { defaultValue: 'Optional fields' })}
+          onCancel={() => setOptionalFieldsOpen(false)}
+          footer={null}
+          closable
+          destroyOnClose={false}
+          centered
+          styles={{
+            body: {
+              paddingTop: token.paddingLG,
+              display: 'flex',
+              flexDirection: 'column',
+              gap: token.marginLG,
+              paddingBottom: token.paddingLG
+            }
+          }}
+        >
+          <Flex vertical gap={token.marginMD}>
+            <Typography.Paragraph style={{ marginBottom: 0 }}>
+              {t('tasks.optionalColumns.description', {
+                defaultValue: 'Select the additional fields you want to show in the table view.'
+              })}
+            </Typography.Paragraph>
+            {optionalFieldControls.content}
+          </Flex>
+        </Modal>
+      ) : null}
+    </>
+  )
+}
+
+TaskFiltersBar.displayName = 'TaskFiltersBar'
+
+export default TaskFiltersBar

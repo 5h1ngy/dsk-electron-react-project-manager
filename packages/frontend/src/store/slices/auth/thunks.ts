@@ -1,0 +1,179 @@
+import { createAsyncThunk } from '@reduxjs/toolkit'
+
+import type { SessionPayload, UserDTO } from '@services/services/auth'
+import type {
+  CreateUserInput,
+  UpdateUserInput,
+  LoginInput,
+  RegisterUserInput
+} from '@services/services/auth/schemas'
+
+import type { AppThunk, RootState } from '@renderer/store/types'
+import {
+  extractErrorMessage,
+  getStoredToken,
+  handleResponse,
+  isSessionExpiredError,
+  persistToken
+} from '@renderer/store/slices/auth/helpers'
+import { forceLogout } from '@renderer/store/slices/auth/slice'
+
+export const fetchUsers = createAsyncThunk<UserDTO[], string, { rejectValue: string }>(
+  'auth/fetchUsers',
+  async (token, { dispatch, rejectWithValue }) => {
+    try {
+      return await handleResponse(window.api.auth.listUsers(token))
+    } catch (error) {
+      if (isSessionExpiredError(error)) {
+        persistToken(null)
+        dispatch(forceLogout())
+        return rejectWithValue('Sessione scaduta')
+      }
+      return rejectWithValue(extractErrorMessage(error))
+    }
+  }
+)
+
+export const login = createAsyncThunk<
+  { token: string; user: UserDTO },
+  LoginInput,
+  { rejectValue: string }
+>('auth/login', async (input, { dispatch, rejectWithValue }) => {
+  try {
+    const payload = await handleResponse(window.api.auth.login(input))
+    persistToken(payload)
+    await dispatch(fetchUsers(payload.token))
+    return { token: payload.token, user: payload.user }
+  } catch (error) {
+    return rejectWithValue(extractErrorMessage(error))
+  }
+})
+
+export const register = createAsyncThunk<
+  { token: string; user: UserDTO },
+  RegisterUserInput,
+  { rejectValue: string }
+>('auth/register', async (input, { rejectWithValue }) => {
+  try {
+    const payload = await handleResponse<SessionPayload>(window.api.auth.register(input))
+    persistToken(payload)
+    return { token: payload.token, user: payload.user }
+  } catch (error) {
+    return rejectWithValue(extractErrorMessage(error))
+  }
+})
+
+export const logout = createAsyncThunk<void, void, { state: RootState }>(
+  'auth/logout',
+  async (_arg, { getState }) => {
+    const token = getState().auth.token
+    if (token) {
+      try {
+        await handleResponse(window.api.auth.logout(token))
+      } catch {
+        // ignore logout errors
+      }
+    }
+    persistToken(null)
+  }
+)
+
+export const restoreSession = createAsyncThunk<
+  { token: string; user: UserDTO } | null,
+  void,
+  { rejectValue: void }
+>('auth/restoreSession', async (_arg, { dispatch, rejectWithValue }) => {
+  const storedToken = getStoredToken()
+  if (!storedToken) {
+    return null
+  }
+  try {
+    const user = await handleResponse(window.api.auth.session(storedToken))
+    if (!user) {
+      persistToken(null)
+      dispatch(forceLogout())
+      return null
+    }
+    persistToken(storedToken)
+    await dispatch(fetchUsers(storedToken))
+    return { token: storedToken, user }
+  } catch (error) {
+    persistToken(null)
+    if (isSessionExpiredError(error)) {
+      dispatch(forceLogout())
+    }
+    return rejectWithValue()
+  }
+})
+
+export const createUser = createAsyncThunk<
+  UserDTO,
+  CreateUserInput,
+  { state: RootState; rejectValue: string }
+>('auth/createUser', async (input, { getState, dispatch, rejectWithValue }) => {
+  const token = getState().auth.token
+  if (!token) {
+    return rejectWithValue('Sessione non valida')
+  }
+  try {
+    return await handleResponse(window.api.auth.createUser(token, input))
+  } catch (error) {
+    if (isSessionExpiredError(error)) {
+      persistToken(null)
+      dispatch(forceLogout())
+      return rejectWithValue('Sessione scaduta')
+    }
+    return rejectWithValue(extractErrorMessage(error))
+  }
+})
+
+export const updateUser = createAsyncThunk<
+  UserDTO,
+  { userId: string; input: UpdateUserInput },
+  { state: RootState; rejectValue: string }
+>('auth/updateUser', async ({ userId, input }, { getState, dispatch, rejectWithValue }) => {
+  const token = getState().auth.token
+  if (!token) {
+    return rejectWithValue('Sessione non valida')
+  }
+  try {
+    return await handleResponse(window.api.auth.updateUser(token, userId, input))
+  } catch (error) {
+    if (isSessionExpiredError(error)) {
+      persistToken(null)
+      dispatch(forceLogout())
+      return rejectWithValue('Sessione scaduta')
+    }
+    return rejectWithValue(extractErrorMessage(error))
+  }
+})
+
+export const deleteUser = createAsyncThunk<
+  string,
+  string,
+  { state: RootState; rejectValue: string }
+>('auth/deleteUser', async (userId, { getState, dispatch, rejectWithValue }) => {
+  const token = getState().auth.token
+  if (!token) {
+    return rejectWithValue('Sessione non valida')
+  }
+  try {
+    await handleResponse(window.api.auth.deleteUser(token, userId))
+    return userId
+  } catch (error) {
+    if (isSessionExpiredError(error)) {
+      persistToken(null)
+      dispatch(forceLogout())
+      return rejectWithValue('Sessione scaduta')
+    }
+    return rejectWithValue(extractErrorMessage(error))
+  }
+})
+
+export const loadUsers = (): AppThunk => async (dispatch, getState) => {
+  const token = getState().auth.token
+  if (!token) {
+    return
+  }
+  await dispatch(fetchUsers(token))
+}

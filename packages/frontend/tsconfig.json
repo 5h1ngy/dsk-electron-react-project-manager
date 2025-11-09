@@ -1,0 +1,20 @@
+{
+  "extends": "@electron-toolkit/tsconfig/tsconfig.web.json",
+  "include": ["src", "src/env.d.ts", "test"],
+  "compilerOptions": {
+    "baseUrl": "../..",
+    "jsx": "react-jsx",
+    "types": ["vite/client", "jest"],
+    "resolveJsonModule": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "paths": {
+      "@renderer/*": ["packages/frontend/src/*"],
+      "@preload/*": ["packages/electron/src/preload/src/*"],
+      "@main/*": ["packages/electron/src/main/*"],
+      "@services/*": ["packages/shared/src/*"],
+      "@backend/*": ["packages/backend/src/*"],
+      "@seeding/*": ["packages/seeding/src/*"]
+    }
+  }
+}

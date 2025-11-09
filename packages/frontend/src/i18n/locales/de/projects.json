@@ -1,0 +1,697 @@
+{
+  "title": "Projekte",
+  "viewSwitcher": {
+    "table": "Tabellenansicht",
+    "cards": "Kartenansicht",
+    "board": "Kanban Ansicht"
+  },
+  "actions": {
+    "refresh": "Aktualisieren",
+    "create": "Neues Projekt",
+    "edit": "Bearbeiten",
+    "delete": "Loeschen",
+    "deleteTitle": "Projekt entfernen",
+    "deleteDescription": "Moechten Sie {{name}} wirklich entfernen?",
+    "deleteConfirm": "Entfernen",
+    "cancel": "Abbrechen",
+    "panelTitle": "Aktionen"
+  },
+  "filters": {
+    "searchPlaceholder": "Nach Name, Key oder Tag suchen",
+    "tagsPlaceholder": "Nach Tags filtern",
+    "openButton": "Filter",
+    "createdRange": {
+      "start": "Erstellt ab",
+      "end": "Erstellt bis"
+    },
+    "roleOptions": {
+      "all": "Alle Rollen",
+      "admin": "Administrator",
+      "edit": "Bearbeiter",
+      "view": "Betrachter"
+    },
+    "ownedOptions": {
+      "all": "Alle Projekte",
+      "mine": "Von mir erstellt"
+    },
+    "panelTitle": "Filter"
+  },
+  "permissions": {
+    "createDenied": "Nur Administratoren oder Maintainer koennen Projekte erstellen.",
+    "updateDenied": "Nur Administratoren oder Maintainer koennen Projekte bearbeiten.",
+    "manageMembersDenied": "Nur Administratoren oder Maintainer koennen Mitglieder verwalten.",
+    "tasksCreateDenied": "Keine Berechtigung, Aufgaben in diesem Projekt zu erstellen.",
+    "tasksUpdateDenied": "Keine Berechtigung, Aufgaben in diesem Projekt zu aktualisieren.",
+    "tasksDeleteDenied": "Keine Berechtigung, diese Aufgabe zu loeschen.",
+    "deleteDenied": "Nur Administratoren duerfen Projekte loeschen."
+  },
+  "errors": {
+    "generic": "Vorgang fehlgeschlagen"
+  },
+  "create": {
+    "success": "Projekt erstellt"
+  },
+  "update": {
+    "success": "Projekt aktualisiert"
+  },
+  "members": {
+    "addSuccess": "Mitglied hinzugefuegt",
+    "removeSuccess": "Mitglied entfernt"
+  },
+  "list": {
+    "loading": "Projekte werden geladen...",
+    "empty": "Keine Projekte gefunden",
+    "noTags": "Keine Tags",
+    "memberCount_one": "{{count}} Mitglied",
+    "memberCount_other": "{{count}} Mitglieder",
+    "createdOn": "Erstellt am {{date}}",
+    "columns": {
+      "key": "Key",
+      "name": "Name",
+      "owner": "Eigentuemer",
+      "tags": "Tags",
+      "role": "Rolle",
+      "members": "Mitglieder",
+      "createdAt": "Erstellt",
+      "actions": "Aktionen"
+    },
+    "role": {
+      "admin": "Administrator",
+      "edit": "Bearbeiter",
+      "view": "Betrachter"
+    }
+  },
+  "breadcrumbs": {
+    "projects": "Projekte",
+    "overview": "Uebersicht",
+    "tasks": "Aufgaben",
+    "notes": "Notizen",
+    "board": "Kanban"
+  },
+  "cards": {
+    "noDescription": "Keine Beschreibung vorhanden"
+  },
+  "details": {
+    "title": "Projektdetails",
+    "loading": "Wird geladen...",
+    "refresh": "Aktualisieren",
+    "tabs": {
+      "overview": "Uebersicht",
+      "tasks": "Aufgaben",
+      "notes": "Notizen",
+      "board": "Kanban"
+    },
+    "overview": {
+      "metrics": {
+        "title": "Arbeitsstatus",
+        "total": "Gesamtaufgaben",
+        "active": "In Arbeit",
+        "done": "Abgeschlossen",
+        "overdue": "Ueberfaellig",
+        "dueSoon": "Kurz vor Faelligkeit",
+        "unassigned": "Nicht zugewiesen"
+      },
+      "statusCard": {
+        "title": "Statusverteilung"
+      },
+      "priorityCard": {
+        "title": "Prioritaetsverteilung"
+      },
+      "assigneeCard": {
+        "title": "Auslastung nach Verantwortlichem",
+        "unassigned": "Nicht zugewiesen"
+      },
+      "trendCard": {
+        "title": "Fertigstellungsverlauf",
+        "empty": "Keine Aufgaben im Zeitraum abgeschlossen"
+      },
+      "upcoming": {
+        "title": "Bevorstehende Faelligkeiten",
+        "empty": "Keine bevorstehenden Faelligkeiten"
+      },
+      "overdue": {
+        "title": "Ueberfaellige Aufgaben",
+        "empty": "Keine ueberfaelligen Aufgaben"
+      },
+      "customizeButton": "Uebersicht anpassen",
+      "customizeTitle": "Uebersicht anpassen",
+      "customizeDescription": "Waehlen Sie aus, welche Karten in der Uebersicht angezeigt werden sollen.",
+      "customizeMinimum": "Waehlen Sie mindestens eine Karte aus.",
+      "customizeReset": "Standard wiederherstellen",
+      "customizeCancel": "Abbrechen",
+      "customizeApply": "Aenderungen uebernehmen",
+      "taskItem": {
+        "due": "Faellig am {{date}}",
+        "priority": "Prioritaet: {{priority}}"
+      },
+      "empty": "Keine Daten verfuegbar"
+    },
+    "tasksTitle": "Projektaufgaben",
+    "kanbanTitle": "Kanban-Board",
+    "tasksLoading": "Aufgaben werden geladen...",
+    "tasksEmpty": "Keine Aufgaben verfuegbar",
+    "tasksSearchPlaceholder": "Aufgaben durchsuchen...",
+    "filters": {
+      "status": "Status",
+      "statusOptions": {
+        "all": "Alle Status"
+      },
+      "priority": "Prioritaet",
+      "priorityOptions": {
+        "all": "Alle Prioritaeten"
+      },
+      "assignee": "Zustaendig",
+      "assigneeOptions": {
+        "all": "Alle Zustaendigen",
+        "unassigned": "Nicht zugewiesen"
+      },
+      "sprint": "Sprint",
+      "sprintOptions": {
+        "all": "Alle Sprints",
+        "backlog": "Backlog"
+      },
+      "dueDateRange": {
+        "start": "Faellig ab",
+        "end": "Faellig bis"
+      }
+    },
+    "noAssignee": "Nicht zugewiesen",
+    "noDueDate": "Kein Faelligkeitsdatum",
+    "status": {
+      "todo": "Offen",
+      "in_progress": "In Arbeit",
+      "blocked": "Blockiert",
+      "done": "Abgeschlossen"
+    },
+    "priority": {
+      "low": "Niedrige Prioritaet",
+      "medium": "Mittlere Prioritaet",
+      "high": "Hohe Prioritaet",
+      "critical": "Kritische Prioritaet"
+    },
+    "summary": {
+      "title": "Projektuebersicht",
+      "empty": "Projekt auswaehlen, um Details zu sehen",
+      "owner": "Eigentuemer",
+      "createdOn": "Erstellt",
+      "createdBy": "{{date}} von {{user}}",
+      "editProject": "Projekt bearbeiten",
+      "description": "Beschreibung",
+      "noDescription": "Keine Beschreibung verfuegbar",
+      "tags": "Tags",
+      "noTags": "Keine Tags",
+      "members": "Mitglieder",
+      "noMembers": "Keine Mitglieder zugewiesen"
+    },
+    "tasksColumns": {
+      "key": "Key",
+      "title": "Titel",
+      "status": "Status",
+      "priority": "Prioritaet",
+      "assignee": "Zustaendig",
+      "dueDate": "Faellig am",
+      "comments": "Kommentare"
+    },
+    "drawer": {
+      "title": "Aufgabendetails",
+      "description": "Beschreibung",
+      "assignment": "Zuweisung",
+      "owner": "Eigentuemer: {{owner}}",
+      "assignee": "Zustaendig: {{assignee}}",
+      "timing": "Zeitplan",
+      "createdAt": "Erstellt am {{date}}",
+      "dueDate": "Faellig am {{date}}",
+      "sprintLabel": "Sprint",
+      "sprint": "Sprint: {{sprint}}",
+      "noSprint": "Backlog",
+      "linkedNotes": "Verknüpfte Notizen",
+      "noLinkedNotes": "Keine verknüpften Notizen",
+      "empty": "Aufgabe auswaehlen, um Details zu sehen"
+    },
+    "missingId": "Projekt-ID fehlt",
+    "notFound": "Projekt nicht gefunden",
+    "backToList": "Zurueck zu den Projekten"
+  },
+  "board": {
+    "empty": "Projekt waehlen, um das Kanban-Board zu oeffnen",
+    "permissions": {
+      "title": "Eingeschraenkte Berechtigungen",
+      "description": "Keine Berechtigung, Aufgaben in diesem Projekt zu aendern."
+    },
+    "columns": {
+      "todo": "Offen",
+      "inProgress": "In Arbeit",
+      "blocked": "Blockiert",
+      "done": "Abgeschlossen"
+    },
+    "composer": {
+      "title": "Neue Aufgabe erstellen",
+      "titlePlaceholder": "Titel der Aufgabe",
+      "descriptionPlaceholder": "Beschreibung (optional)",
+      "submit": "Aufgabe hinzufuegen"
+    },
+    "taskCount_one": "{{count}} Aufgabe",
+    "taskCount_other": "{{count}} Aufgaben",
+    "emptyColumn": "Keine Aufgaben in dieser Spalte",
+    "summary": {
+      "total": "Alle Aufgaben"
+    },
+    "statusPanel": {
+      "title": "Kanban-Statistiken",
+      "total": "Gesamtaufgaben",
+      "close": "Panel schliessen"
+    }
+  },
+  "notifications": {
+    "taskCreated": "Aufgabe erstellt",
+    "taskUpdated": "Aufgabe aktualisiert"
+  },
+  "form": {
+    "createTitle": "Neues Projekt",
+    "fields": {
+      "key": {
+        "placeholder": "z. B. PROJ",
+        "label": "Key"
+      },
+      "name": {
+        "placeholder": "Projektname",
+        "label": "Name"
+      },
+      "description": {
+        "placeholder": "Beschreibung (optional)",
+        "label": "Beschreibung"
+      },
+      "tags": {
+        "placeholder": "Tags hinzufuegen (Enter zum Bestaetigen)",
+        "label": "Tags"
+      }
+    },
+    "createAction": "Erstellen",
+    "editTitle": "Projekt {{name}} bearbeiten",
+    "editTitleFallback": "Projekt bearbeiten",
+    "updateAction": "Aenderungen speichern"
+  },
+  "delete": {
+    "success": "Projekt erfolgreich entfernt"
+  },
+  "tasks": {
+    "openFilters": "Filter",
+    "resetFilters": "Filter zurcksetzen",
+    "closeFilters": "Schlieen",
+    "columns": {
+      "actions": "Aktionen"
+    },
+    "optionalColumns": {
+      "label": "Optionale Felder",
+      "button": "Optionale Felder",
+      "modalTitle": "Optionale Felder ausw�hlen",
+      "description": "W�hlen Sie die zus�tzlichen Felder, die in der Tabellenansicht angezeigt werden sollen."
+    },
+    "deleteModal": {
+      "title": "Aufgabe l�schen",
+      "message": "Durch das L�schen von \"{{title}}\" werden die Aufgabe, alle Kommentare und alle Notizverkn�pfungen dauerhaft entfernt.",
+      "warning": "Dieser Vorgang kann nicht r�ckg�ngig gemacht werden.",
+      "confirm": "Aufgabe l�schen",
+      "cancel": "Abbrechen"
+    },
+    "statusManager": {
+      "manageButton": "Status verwalten",
+      "title": "Aufgabenstatus",
+      "add": "Status hinzufügen",
+      "empty": "Keine Status definiert",
+      "messages": {
+        "created": "Status erstellt",
+        "updated": "Status aktualisiert",
+        "deleted": "Status entfernt",
+        "reordered": "Reihenfolge aktualisiert",
+        "error": "Vorgang fehlgeschlagen"
+      },
+      "deleteTitle": "Status entfernen",
+      "deleteDescription": "\"{{status}}\" wirklich entfernen?",
+      "deletePrompt": "Durch das Entfernen von \"{{status}}\" werden vorhandene Aufgaben dem Ersatzstatus zugewiesen.",
+      "confirm": "Bestätigen",
+      "cancel": "Abbrechen",
+      "createTitle": "Status erstellen",
+      "editTitle": "Status bearbeiten",
+      "fields": {
+        "label": "Bezeichnung",
+        "fallback": "Ersatzstatus"
+      },
+      "validation": {
+        "labelRequired": "Bezeichnung angeben",
+        "labelMax": "Maximal 80 Zeichen",
+        "fallbackRequired": "Ersatzstatus auswählen"
+      }
+    },
+    "savedViews": {
+      "placeholder": "Gespeicherte Ansichten",
+      "panelTitle": "Gespeicherte Ansichten",
+      "saveButton": "Ansicht speichern",
+      "deleteButton": "Löschen",
+      "modalTitle": "Aktuelle Ansicht speichern",
+      "nameLabel": "Name",
+      "nameRequired": "Bitte einen Namen eingeben"
+    },
+    "actions": {
+      "create": "Neuer Task",
+      "edit": "Bearbeiten",
+      "delete": "Entfernen",
+      "toggleBoardInsights": "Kanban-Statistiken",
+      "deleteTitle": "Task entfernen",
+      "deleteDescription": "Moechten Sie \"{{title}}\" wirklich entfernen?",
+      "deleteConfirm": "Entfernen",
+      "cancel": "Abbrechen",
+      "deleteSelected": "Auswahl loeschen ({{count}})"
+    },
+    "form": {
+      "createTitle": "Neuer Task",
+      "editTitle": "Task {{title}} bearbeiten",
+      "createAction": "Task erstellen",
+      "updateAction": "Aenderungen speichern",
+      "fields": {
+        "title": "Titel",
+        "description": "Beschreibung",
+        "status": "Status",
+        "priority": "Prioritaet",
+        "assignee": "Zustaendig",
+        "owner": "Eigentuemer",
+        "dueDate": "Faellig am",
+        "sprint": "Sprint",
+        "estimatedMinutes": "Geschaetzte Minuten"
+      },
+      "placeholders": {
+        "title": "Titel des Tasks",
+        "description": "Beschreibung (optional)",
+        "assignee": "Zustaendigen auswaehlen",
+        "owner": "Eigentuemer auswaehlen",
+        "dueDate": "Faelligkeitsdatum waehlen",
+        "sprint": "Sprint auswaehlen",
+        "estimatedMinutes": "Minuten (optional)"
+      }
+    },
+    "messages": {
+      "createSuccess": "Task erstellt",
+      "updateSuccess": "Task aktualisiert",
+      "deleteSuccess": "Task entfernt",
+      "notFound": "Task nicht gefunden",
+      "deleteBulkSuccess": "{{count}} Aufgaben geloescht",
+      "deleteOwnerWarning": "{{count}} ausgewaehlte Aufgaben koennen nicht geloescht werden, weil Sie nicht der Besitzer sind."
+    },
+    "details": {
+      "description": "Beschreibung",
+      "noDescription": "Keine Beschreibung vorhanden",
+      "owner": "Eigentuemer: {{owner}}",
+      "assignee": "Zustaendig: {{assignee}}",
+      "createdAt": "Erstellt am {{date}}",
+      "dueDate": "Faellig am {{date}}",
+      "sprintLabel": "Sprint",
+      "sprint": "Sprint: {{sprint}}",
+      "noSprint": "Backlog",
+      "linkedNotes": "Verknüpfte Notizen",
+      "noLinkedNotes": "Keine verknüpften Notizen",
+      "empty": "Kein Task ausgewaehlt",
+      "comments": {
+        "title": "Kommentare",
+        "count_one": "{{count}} Kommentar",
+        "count_other": "{{count}} Kommentare",
+        "empty": "Noch keine Kommentare",
+        "addLabel": "Kommentar hinzufuegen",
+        "validation": "Bitte einen Kommentar eingeben",
+        "submit": "Kommentar senden",
+        "success": "Kommentar hinzugef�gt"
+      },
+      "loadingTitle": "Aufgabendetails",
+      "goBack": "Zur�ck zu den Aufgaben",
+      "propertiesTitle": "Aufgabeneigenschaften",
+      "statusLabel": "Status",
+      "priorityLabel": "Priorit�t",
+      "ownerLabel": "Eigent�mer",
+      "assigneeLabel": "Zugewiesen an",
+      "createdAtLabel": "Erstellt am",
+      "dueDateLabel": "F�lligkeitsdatum",
+      "updatedAtLabel": "Zuletzt aktualisiert"
+    },
+    "filterPanel": "Filter",
+    "actionsPanel": "Aktionen",
+    "bulkDelete": {
+      "title": "{{count}} Aufgaben loeschen",
+      "description": "Beim Loeschen dieser Aufgaben werden Kommentare, Verlauf und Notizverknuepfungen entfernt.",
+      "warning": "Dieser Vorgang kann nicht rueckgaengig gemacht werden.",
+      "confirm": "Aufgaben loeschen",
+      "cancel": "Abbrechen"
+    }
+  },
+  "notes": {
+    "title": "Projektnotizen",
+    "filters": {
+      "includePrivate": "Private Notizen anzeigen",
+      "includePrivateOptions": {
+        "public": "Nur oeffentliche Notizen",
+        "private": "Private Notizen einschliessen"
+      },
+      "notebook": "Notizbuch",
+      "tag": "Tag",
+      "panelTitle": "Filter"
+    },
+    "actions": {
+      "create": "Neue Note",
+      "save": "Notiz speichern",
+      "cancel": "Abbrechen",
+      "searchPlaceholder": "Notizen durchsuchen...",
+      "view": "Oeffnen",
+      "edit": "Bearbeiten",
+      "deleteTitle": "Notiz loeschen",
+      "deleteConfirmText": "Moechten Sie diese Notiz wirklich loeschen?",
+      "delete": "Loeschen",
+      "panelTitle": "Aktionen",
+      "openFilters": "Filter",
+      "resetFilters": "Filter zurcksetzen",
+      "closeFilters": "Schlieen",
+      "deleteSelected": "Auswahl loeschen ({{count}})"
+    },
+    "view": {
+      "list": "Listenansicht",
+      "cards": "Kartenansicht"
+    },
+    "labels": {
+      "private": "Privat",
+      "public": "Oeffentlich"
+    },
+    "list": {
+      "updatedBy": "Zuletzt aktualisiert {{date}} von {{user}}",
+      "empty": "Keine Notizen verfuegbar"
+    },
+    "editor": {
+      "createTitle": "Notiz erstellen",
+      "editTitle": "Notiz bearbeiten",
+      "fields": {
+        "title": "Titel",
+        "notebook": "Notizbuch",
+        "tags": "Tags",
+        "visibility": "Sichtbarkeit",
+        "body": "Markdown-Inhalt",
+        "linkedTasks": "Verknuepfte Aufgaben"
+      },
+      "placeholders": {
+        "notebook": "Notizbuch oder Sammlung (optional)",
+        "tags": "Tags hinzufuegen und Enter druecken",
+        "body": "Schreibe hier den Markdown-Inhalt...",
+        "linkedTasks": "Verknuepfte Aufgaben auswaehlen"
+      },
+      "suggestions": {
+        "title": "Aufgabenvorschlaege ([[key]])",
+        "empty": "Nach [[ schreiben, um Vorschlaege zu sehen"
+      }
+    },
+    "viewer": {
+      "title": "Notiz",
+      "linkedTasks": "Verknuepfte Aufgaben",
+      "noLinks": "Keine verknuepften Aufgaben.",
+      "empty": "Keine Notizen verfuegbar",
+      "updatedBy": "Zuletzt aktualisiert {{date}} von {{user}}"
+    },
+    "feedback": {
+      "created": "Notiz erstellt",
+      "updated": "Notiz aktualisiert",
+      "deleted": "Notiz geloescht",
+      "notFound": "Notiz nicht gefunden",
+      "deleteDenied": "Keine Berechtigung, diese Notiz zu loeschen.",
+      "bulkDeleted": "{{count}} Notizen geloescht",
+      "deleteOwnerWarning": "{{count}} ausgewaehlte Notizen koennen nicht geloescht werden, weil Sie nicht der Besitzer sind."
+    },
+    "validation": {
+      "title": "Titel ist erforderlich",
+      "titleMax": "Titel darf maximal 160 Zeichen enthalten",
+      "body": "Inhalt ist erforderlich",
+      "notebookMax": "Der Name des Notizbuchs darf maximal 80 Zeichen haben",
+      "tag": "Tag darf nicht leer sein",
+      "tagMax": "Tag darf maximal 40 Zeichen haben",
+      "tooManyTags": "Maximal 20 Tags pro Note",
+      "tooManyLinks": "Maximal 20 verknuepfte Aufgaben"
+    },
+    "search": {
+      "title": "Notizen suchen",
+      "empty": "Keine Notizen gefunden",
+      "open": "Notiz oeffnen",
+      "noHighlight": "Keine Vorschau verfuegbar"
+    },
+    "bulkDelete": {
+      "title": "{{count}} Notizen loeschen",
+      "description": "Beim Loeschen dieser Notizen werden Inhalte und Verknuepfungen zu Aufgaben entfernt.",
+      "warning": "Dieser Vorgang kann nicht rueckgaengig gemacht werden.",
+      "confirm": "Notizen loeschen",
+      "cancel": "Abbrechen"
+    }
+  },
+  "search": {
+    "button": "Aufgaben suchen",
+    "title": "Globale Aufgabensuche",
+    "placeholder": "Nach Titel oder Beschreibung suchen",
+    "submit": "Suchen",
+    "empty": "Keine Aufgaben gefunden",
+    "openTask": "Oeffnen"
+  },
+  "views": {
+    "placeholder": "Gespeicherte Ansichten",
+    "panelTitle": "Gespeicherte Ansichten",
+    "saveButton": "Ansicht speichern",
+    "deleteButton": "Löschen",
+    "saveSuccess": "Ansicht gespeichert",
+    "saveError": "Ansicht konnte nicht gespeichert werden",
+    "deleteSuccess": "Ansicht gelöscht",
+    "modal": {
+      "title": "Projektansicht speichern",
+      "save": "Speichern",
+      "cancel": "Abbrechen",
+      "nameLabel": "Name",
+      "nameRequired": "Bitte einen Namen eingeben"
+    }
+  },
+  "wiki": {
+    "title": "Wiki",
+    "actions": {
+      "refresh": "Aktualisieren",
+      "create": "Neue Seite",
+      "createFirst": "Erste Seite erstellen",
+      "edit": "Bearbeiten",
+      "delete": "L�schen",
+      "history": "Verlauf",
+      "save": "Speichern",
+      "cancel": "Abbrechen"
+    },
+    "fields": {
+      "title": "Titel",
+      "summary": "Zusammenfassung",
+      "content": "Inhalt"
+    },
+    "validation": {
+      "title": "Bitte einen Titel angeben.",
+      "contentRequired": "Bitte Seiteninhalt hinzuf�gen."
+    },
+    "emptyState": "Es sind noch keine Wiki-Seiten vorhanden.",
+    "list": {
+      "noSummary": "Keine Zusammenfassung verf�gbar"
+    },
+    "noSelection": "W�hle eine Seite aus der Liste.",
+    "create": {
+      "title": "Seite erstellen"
+    },
+    "feedback": {
+      "created": "Seite erstellt.",
+      "updated": "Seite aktualisiert.",
+      "deleted": "Seite gel�scht.",
+      "restored": "Version wiederhergestellt."
+    },
+    "delete": {
+      "confirmTitle": "Seite l�schen?",
+      "confirmDescription": "Diese Aktion entfernt die Seite und ihren Verlauf.",
+      "confirmButton": "L�schen",
+      "cancel": "Abbrechen"
+    },
+    "revisions": {
+      "title": "Versionsverlauf",
+      "restore": "Wiederherstellen",
+      "noSummary": "Keine Zusammenfassung",
+      "empty": "Keine Versionen verf�gbar."
+    }
+  },
+  "sprints": {
+    "title": "Projektsprints",
+    "noProjectSelected": "W�hlen Sie ein Projekt aus, um dessen Sprints anzuzeigen.",
+    "empty": "F�r dieses Projekt sind keine Sprints definiert.",
+    "totalTasks": "Gesamtaufgaben",
+    "estimatedMinutes": "Gesch�tzt",
+    "spentMinutes": "Erfasst",
+    "capacityMinutes": "Kapazit�t",
+    "utilization": "Auslastung",
+    "actions": {
+      "create": "Neuer Sprint",
+      "viewTasks": "Aufgaben anzeigen"
+    },
+    "deleteConfirmTitle": "Sprint l�schen",
+    "deleteConfirmBody": "Beim L�schen eines Sprints bleiben die Aufgaben erhalten, verlieren jedoch die Zuordnung.",
+    "deleteSuccess": "Sprint gel�scht",
+    "form": {
+      "invalid": "Bitte f�llen Sie alle Pflichtfelder aus.",
+      "nameRequired": "Name ist erforderlich",
+      "dateRequired": "Start- und Enddatum ausw�hlen"
+    },
+    "createTitle": "Sprint erstellen",
+    "editTitle": "Sprint bearbeiten",
+    "createSuccess": "Sprint erstellt",
+    "updateSuccess": "Sprint aktualisiert",
+    "status": {
+      "planned": "Geplant",
+      "active": "Aktiv",
+      "completed": "Abgeschlossen",
+      "archived": "Archiviert"
+    },
+    "fields": {
+      "name": "Name",
+      "goal": "Ziel",
+      "dateRange": "Zeitraum",
+      "status": "Status",
+      "capacityMinutes": "Kapazit�t (Minuten)"
+    },
+    "details": {
+      "title": "Sprintdetails",
+      "tasks": "Aufgaben",
+      "emptyTasks": "In diesem Sprint sind keine Aufgaben enthalten."
+    },
+    "selectPrompt": "Wählen Sie einen Sprint aus, um Details zu sehen."
+  },
+  "time": {
+    "tracking": {
+      "title": "Zeiterfassung",
+      "actions": {
+        "logTime": "Zeit erfassen"
+      },
+      "createTitle": "Zeit erfassen",
+      "editTitle": "Eintrag bearbeiten",
+      "createSuccess": "Zeit erfasst",
+      "updateSuccess": "Eintrag aktualisiert",
+      "deleteTitle": "Eintrag l�schen",
+      "deleteBody": "M�chten Sie diesen Zeiterfassungseintrag l�schen?",
+      "deleteSuccess": "Eintrag gel�scht",
+      "totalMinutes": "Erfasste Minuten",
+      "byUser": "Pro Benutzer",
+      "byTask": "Pro Aufgabe",
+      "noData": "Keine Daten verf�gbar",
+      "noEntries": "Keine Eintr�ge f�r den ausgew�hlten Zeitraum.",
+      "noTasks": "Erstellen Sie zuerst eine Aufgabe, bevor Sie Zeit erfassen.",
+      "columns": {
+        "date": "Datum",
+        "task": "Aufgabe",
+        "user": "Benutzer",
+        "minutes": "Minuten",
+        "description": "Beschreibung"
+      },
+      "fields": {
+        "task": "Aufgabe",
+        "entryDate": "Datum",
+        "duration": "Dauer (Minuten)",
+        "description": "Beschreibung"
+      }
+    }
+  }
+}

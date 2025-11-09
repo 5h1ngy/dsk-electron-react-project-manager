@@ -7,5 +7,21 @@
   },
   "[json]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
-  }
+  },
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "eslint.experimental.useFlatConfig": true,
+  "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
+  "eslint.workingDirectories": [
+    { "directory": ".", "changeProcessCWD": true },
+    { "directory": "packages/electron", "changeProcessCWD": true },
+    { "directory": "packages/frontend", "changeProcessCWD": true },
+    { "directory": "packages/backend", "changeProcessCWD": true },
+    { "directory": "packages/shared", "changeProcessCWD": true },
+    { "directory": "packages/seeding", "changeProcessCWD": true }
+  ],
+  "prettier.prettierPath": "${workspaceFolder}/node_modules/prettier",
+  "prettier.requireConfig": true,
+  "prettier.ignorePath": ".prettierignore"
 }
