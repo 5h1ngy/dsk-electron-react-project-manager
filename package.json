@@ -63,6 +63,7 @@
     "db:seed:backend": "dotenv -e env/.env.backend -- ts-node --transpile-only -r module-alias/register -r tsconfig-paths/register --project packages/seeding/tsconfig.tools.json packages/seeding/src/run.ts -- --port 3000",
     "postinstall": "node scripts/postinstall.mjs",
     "reset:build": "rimraf dist out preview/dist",
+    "reset:node": "rimraf node_modules preview/node_modules",
     "version:bump": "node scripts/versioning.mjs",
     "prepare": "husky"
   },
