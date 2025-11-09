@@ -74,10 +74,10 @@ const AppShell = ({
         <Flex
           ref={contentRef}
           vertical
-          gap={token.marginXXL}
+          gap={token.marginXL}
           style={{
             minHeight: '100vh',
-            padding: `${token.paddingXL * 2}px ${token.paddingXL * 1.5}px`,
+            padding: `${token.paddingXL * 1.5}px ${token.paddingXL}px`,
             boxSizing: 'border-box'
           }}
         >

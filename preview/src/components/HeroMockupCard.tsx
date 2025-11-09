@@ -11,20 +11,43 @@ interface HeroMockupCardProps {
   title: string
 }
 
-const resolveHeroShotSrc = (raw: string): string => {
+const resolveHeroShotSrc = (raw: string, mode: ThemeMode): string => {
   if (!raw) return ''
   if (/^https?:\/\//i.test(raw)) {
     return raw
   }
+
+  // Normalizzazione percorso come prima
   const sanitized = raw.replace(/^\.?[\\/]+/, '')
   const relative = sanitized.startsWith('gallery/') || sanitized.startsWith('assets/')
     ? sanitized
     : sanitized.startsWith('public/')
       ? sanitized.replace(/^public[\\/]+/, '')
       : sanitized.replace(/^\/+/, '')
+
+  // Separa path da query/hash (es: ?v=1 #frag)
+  const match = relative.match(/^(.*?)([?#].*)?$/)
+  const pathPart = match?.[1] ?? relative
+  const queryHash = match?.[2] ?? ''
+
+  // Evita di aggiungere il suffisso se già presente .light/.dark
+  const alreadyHasVariant = /\.((light|dark))(?=\.[^./?#]+$)/i.test(pathPart)
+
+  let pathWithVariant = pathPart
+  if (!alreadyHasVariant) {
+    const variant = mode === 'dark' ? '-dark' : '-light'
+    const extMatch = pathPart.match(/^(.*?)(\.[^./\\?#]+)$/) // ultimo punto = estensione
+    if (extMatch) {
+      pathWithVariant = `${extMatch[1]}${variant}${extMatch[2]}`
+    } else {
+      // niente estensione: appendo il variant in coda
+      pathWithVariant = `${pathPart}${variant}`
+    }
+  }
+
   const base = import.meta.env.BASE_URL ?? '/'
   const normalizedBase = base.endsWith('/') ? base : `${base}/`
-  return `${normalizedBase}${relative}`
+  return `${normalizedBase}${pathWithVariant}${queryHash}`
 }
 
 export const HeroMockupCard = ({ accent, mode, heroShot, title }: HeroMockupCardProps): ReactElement => {
@@ -33,7 +56,7 @@ export const HeroMockupCard = ({ accent, mode, heroShot, title }: HeroMockupCard
   const [hovered, setHovered] = useState(false)
   const cardMaxWidth = token.sizeUnit * 240
   const hoverLift = token.padding
-  const heroShotSrc = useMemo(() => resolveHeroShotSrc(heroShot), [heroShot])
+  const heroShotSrc = useMemo(() => resolveHeroShotSrc(heroShot, mode), [heroShot])
 
   return (
     <Card

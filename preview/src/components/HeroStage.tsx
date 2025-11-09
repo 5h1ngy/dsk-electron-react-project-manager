@@ -68,12 +68,15 @@ export const HeroStage = ({
     token.marginXXXL + token.margin
   ]
 
+  const stagePaddingVertical = token.paddingXL * 1.5
+  const stagePaddingHorizontal = token.paddingXL * 1.75
+
   return (
     <Card
       data-motion="hero"
       bordered={false}
       style={{
-        minHeight: '90vh',
+        minHeight: '82vh',
         borderRadius: token.borderRadiusXL,
         padding: 0,
         overflow: 'hidden',
@@ -84,7 +87,9 @@ export const HeroStage = ({
         backgroundPosition: 'center',
         boxShadow: mode === 'dark' ? token.boxShadowSecondary : token.boxShadow
       }}
-      bodyStyle={{ padding: `${token.paddingXL * 2}px ${token.paddingXL * 2.5}px` }}
+      bodyStyle={{
+        padding: `${stagePaddingVertical}px ${stagePaddingHorizontal}px`
+      }}
     >
       <Flex
         style={{
