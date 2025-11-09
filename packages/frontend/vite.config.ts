@@ -32,12 +32,11 @@ const normalizeBasePath = (value?: string, fallback?: string): string => {
 
 const DEFAULT_BASE = runtimeTarget === 'desktop' ? './' : '/'
 const PUBLIC_BASE = normalizeBasePath(
-  process.env.VITE_PUBLIC_BASE ?? process.env.PUBLIC_BASE,
+  process.env.VITE_PUBLIC_BASE,
   DEFAULT_BASE
 )
 
 process.env.VITE_PUBLIC_BASE = PUBLIC_BASE
-process.env.PUBLIC_BASE = process.env.PUBLIC_BASE ?? PUBLIC_BASE
 
 export default defineConfig({
   base: PUBLIC_BASE,

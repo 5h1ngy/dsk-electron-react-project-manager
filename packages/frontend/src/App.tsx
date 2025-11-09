@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from 'react'
-import { HashRouter } from 'react-router-dom'
+import { BrowserRouter, HashRouter } from 'react-router-dom'
 import { App as AntdApp, ConfigProvider, theme } from 'antd'
 
 import { ErrorBoundary } from '@renderer/components/ErrorBoundary'
@@ -8,6 +8,7 @@ import { createThemeConfig } from '@renderer/theme'
 import { useAppDispatch, useAppSelector } from '@renderer/store/hooks'
 import { restoreSession } from '@renderer/store/slices/auth'
 import { selectAccentColor, selectThemeMode } from '@renderer/store/slices/theme'
+import { runtime } from '@renderer/config/runtime'
 
 const BodyStyleSynchronizer = () => {
   const { token } = theme.useToken()
@@ -138,6 +139,20 @@ const NavigationStyleSynchronizer = () => {
   return null
 }
 
+const normalizeRouterBase = (value?: string): string | undefined => {
+  if (!value || value === '/') {
+    return runtime.isWebapp ? '/' : undefined
+  }
+  return value.endsWith('/') ? value.slice(0, -1) : value
+}
+
+const routerFuture = {
+  v7_startTransition: true,
+  v7_relativeSplatPath: true
+}
+
+const RouterComponent = runtime.isWebapp ? BrowserRouter : HashRouter
+
 const App = () => {
   const dispatch = useAppDispatch()
   const mode = useAppSelector(selectThemeMode)
@@ -153,7 +168,7 @@ const App = () => {
 
   const themeConfig = useMemo(() => createThemeConfig(mode, accentColor), [mode, accentColor])
 
-  const faviconHref = `${import.meta.env.BASE_URL ?? '/'}favicon.ico`
+  const faviconHref = `${import.meta.env.VITE_PUBLIC_BASE ?? '/'}favicon.ico`
 
   useEffect(() => {
     document.title = 'DSK Project Manager'
@@ -178,11 +193,9 @@ const App = () => {
   return (
     <ErrorBoundary>
       <ConfigProvider theme={themeConfig}>
-        <HashRouter
-          future={{
-            v7_startTransition: true,
-            v7_relativeSplatPath: true
-          }}
+        <RouterComponent
+          basename={normalizeRouterBase(import.meta.env.VITE_PUBLIC_BASE ?? '/')}
+          future={routerFuture}
         >
           <AntdApp>
             <BodyStyleSynchronizer />
@@ -190,7 +203,7 @@ const App = () => {
             <NavigationStyleSynchronizer />
             <AppRoutes />
           </AntdApp>
-        </HashRouter>
+        </RouterComponent>
       </ConfigProvider>
     </ErrorBoundary>
   )

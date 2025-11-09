@@ -2,7 +2,7 @@
 
 [![Release Workflow](https://github.com/5h1ngy/dsk-electron-react-project-manager/actions/workflows/release.yml/badge.svg)](https://github.com/5h1ngy/dsk-electron-react-project-manager/actions/workflows/release.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-![Version](https://img.shields.io/badge/version-0.61.17-6C63FF.svg)
+![Version](https://img.shields.io/badge/version-0.61.18-6C63FF.svg)
 
 Gestore di progetti offline-first costruito con Electron 38, React 19, Ant Design 5 e un dominio condiviso TypeScript/SQLite pensato per ambienti air-gapped o installazioni on-prem. Include API REST, CLI di seeding e pipeline di rilascio Windows portabile.
 
@@ -282,7 +282,7 @@ Tutte le variabili sono documentate in `env/.env.example` e replicate negli altr
   Alza `backend` (Node 22-alpine, SQLite in volume `backend-data`) e `frontend` (nginx che proxy `/api/` verso backend:3000).
 
 - **CI/CD**
-  - Workflow `release.yml`: 3 job (`prepare`, `build`, `release`). Genera release info (`scripts/release/generate-release-info.mjs`), builda su Windows, carica artefatti e pubblica tag `vX.Y.Z`.
+  - Workflow `release.yml`: 3 job (`prepare`, `build`, `release`). Genera release info (`scripts/generate-release-info.mjs`), builda su Windows, carica artefatti e pubblica tag `vX.Y.Z`.
   - Script `npm run version:bump` mantiene allineati `package*.json`, README, `.env.*` e crea commit `chore: bump version to X.Y.Z`.
 
 ## API (endpoint principali con esempi curl)

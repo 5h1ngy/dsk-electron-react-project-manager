@@ -1,3 +1,4 @@
+import axios, { AxiosError, type AxiosInstance } from 'axios'
 import type { IpcError, IpcResponse, PreloadApi } from '@preload/types'
 import type { HealthResponse } from '@main/ipc/health'
 import { runtime } from '@renderer/config/runtime'
@@ -38,7 +39,15 @@ const normalizeBaseUrl = (value: string, clientOrigin?: string): string => {
   return value.replace(/\/$/, '')
 }
 
-const baseUrl = runtime.isWebapp ? resolveBaseUrl() : null
+const createHttpClient = (): AxiosInstance => {
+  const baseURL = resolveBaseUrl()
+  return axios.create({
+    baseURL,
+    withCredentials: true
+  })
+}
+
+const httpClient = runtime.isWebapp ? createHttpClient() : null
 
 const toSuccess = <T>(data: T): IpcResponse<T> => ({
   ok: true,
@@ -57,23 +66,14 @@ interface RequestOptions {
   query?: Record<string, string | number | boolean | undefined | null>
 }
 
-const buildUrl = (path: string, query?: RequestOptions['query']): string => {
-  if (!baseUrl) {
+const ensureHttpClient = (): AxiosInstance => {
+  if (!httpClient) {
     throw new Error('HTTP bridge is disabled while running in desktop mode')
   }
-  const sanitizedPath = path.replace(/^\//, '')
-  const normalizedBase = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`
-  const url = new URL(sanitizedPath, normalizedBase)
-  if (query) {
-    Object.entries(query).forEach(([key, value]) => {
-      if (value === undefined || value === null) {
-        return
-      }
-      url.searchParams.set(key, String(value))
-    })
-  }
-  return url.toString()
+  return httpClient
 }
+
+const sanitizePath = (path: string): string => (path.startsWith('/') ? path : `/${path}`)
 
 const httpRequest = async <T>(
   method: HttpMethod,
@@ -81,34 +81,41 @@ const httpRequest = async <T>(
   options: RequestOptions = {}
 ): Promise<IpcResponse<T>> => {
   try {
-    const response = await fetch(buildUrl(path, options.query), {
+    const client = ensureHttpClient()
+    const response = await client.request<T>({
       method,
+      url: sanitizePath(path),
+      data: options.body,
+      params: options.query,
       headers: {
-        ...(options.body ? { 'Content-Type': 'application/json' } : {}),
         ...(options.token ? { Authorization: `Bearer ${options.token}` } : {})
-      },
-      body: options.body ? JSON.stringify(options.body) : undefined,
-      credentials: 'include'
+      }
     })
 
-    const isJson = response.headers.get('content-type')?.includes('application/json')
-    const payload = isJson ? await response.json() : await response.text()
-
-    if (response.ok) {
-      return toSuccess(payload as T)
-    }
-
-    if (payload && typeof payload === 'object' && 'error' in payload) {
-      const details = (payload as { error: { code?: string; message?: string } }).error
-      return toError(details.code ?? 'ERR_HTTP', details.message ?? 'Richiesta non riuscita')
-    }
-
-    return toError('ERR_HTTP', response.statusText || 'Richiesta non riuscita')
+    return toSuccess(response.data as T)
   } catch (error) {
+    if (axios.isAxiosError(error)) {
+      return handleAxiosError(error)
+    }
     const message =
       error instanceof Error ? error.message : 'Impossibile raggiungere il server backend'
     return toError('ERR_NETWORK', message)
   }
+}
+
+const handleAxiosError = (error: AxiosError): IpcError => {
+  if (error.response) {
+    const payload = error.response.data as { error?: { code?: string; message?: string } }
+    if (payload && typeof payload === 'object' && payload.error) {
+      return toError(payload.error.code ?? 'ERR_HTTP', payload.error.message ?? 'Richiesta non riuscita')
+    }
+    const message = error.response.statusText || 'Richiesta non riuscita'
+    return toError('ERR_HTTP', message)
+  }
+
+  const fallback =
+    error.message || 'Impossibile raggiungere il server backend'
+  return toError('ERR_NETWORK', fallback)
 }
 
 const unsupported = (): IpcResponse<never> =>
