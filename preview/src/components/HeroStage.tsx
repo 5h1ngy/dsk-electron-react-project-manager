@@ -76,7 +76,7 @@ export const HeroStage = ({
       data-motion="hero"
       bordered={false}
       style={{
-        minHeight: '82vh',
+        minHeight: `93.1vh`,
         borderRadius: token.borderRadiusXL,
         padding: 0,
         overflow: 'hidden',

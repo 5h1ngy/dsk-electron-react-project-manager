@@ -13,7 +13,7 @@ import type { ThemeMode } from './theme/foundations/palette'
 import { buildSurfacePalette } from './theme/surfaces'
 
 const { Content } = Layout
-const DEFAULT_ACCENT = ACCENT_OPTIONS[0]
+const DEFAULT_ACCENT = ACCENT_OPTIONS[ACCENT_OPTIONS.length - 1]
 
 interface AppShellProps {
   mode: ThemeMode

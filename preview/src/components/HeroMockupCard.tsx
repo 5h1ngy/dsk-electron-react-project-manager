@@ -56,7 +56,7 @@ export const HeroMockupCard = ({ accent, mode, heroShot, title }: HeroMockupCard
   const [hovered, setHovered] = useState(false)
   const cardMaxWidth = token.sizeUnit * 240
   const hoverLift = token.padding
-  const heroShotSrc = useMemo(() => resolveHeroShotSrc(heroShot, mode), [heroShot])
+  const heroShotSrc = useMemo(() => resolveHeroShotSrc(heroShot, mode), [heroShot, mode])
 
   return (
     <Card

@@ -83,7 +83,9 @@ export const HeroHeadline = ({ accent, content }: HeroHeadlineProps): ReactEleme
           {content.secondaryCta.label}
         </Button>
       </Space>
-      <HeroStatsGrid accent={accent} stats={content.stats} />
+      <div style={{ marginTop: token.marginXXXL }}>
+        <HeroStatsGrid accent={accent} stats={content.stats} />
+      </div>
     </Space>
   )
 }
