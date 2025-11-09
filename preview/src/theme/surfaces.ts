@@ -5,6 +5,7 @@ import { darken, lighten, transparentize } from './utils'
 
 export interface SurfacePalette {
   pageBackground: string
+  pageSolid: string
   heroBackdrop: string
   trayBackground: string
   trayBorder: string
@@ -38,6 +39,8 @@ export const buildSurfacePalette = (
     radial-gradient(circle at 85% 8%, ${accentMist}, transparent 50%),
     repeating-linear-gradient(${gridAngle}deg, ${gridColor}, ${gridColor} 2px, transparent 2px, transparent ${gridSpacing}px),
     linear-gradient(135deg, ${base} 0%, ${overlay} 100%)`
+  const pageSolid =
+    mode === 'dark' ? darken(base, 0.05) : lighten(base, 0.03)
 
   const trayBackground = transparentize(
     mode === 'dark' ? darken(elevated, 0.2) : lighten(elevated, 0.08),
@@ -53,6 +56,7 @@ export const buildSurfacePalette = (
 
   return {
     pageBackground: heroBackdrop,
+    pageSolid,
     heroBackdrop,
     trayBackground,
     trayBorder,

@@ -38,12 +38,12 @@ const AppShell = ({
   const surfaces = useMemo(() => buildSurfacePalette(token, mode, accent), [token, mode, accent])
 
   useLayoutEffect(() => {
-    document.body.style.background = surfaces.pageBackground
+    document.body.style.background = surfaces.pageSolid
     document.body.style.color = mode === 'dark' ? token.colorTextLightSolid ?? '#f8fafc' : token.colorTextBase
     document.body.style.backgroundAttachment = 'fixed'
     document.body.style.fontFamily =
       token.fontFamily ?? 'Inter, "SF Pro Display", "Segoe UI", system-ui, sans-serif'
-  }, [token.fontFamily, mode, token.colorTextBase, token.colorTextLightSolid, surfaces.pageBackground])
+  }, [token.fontFamily, mode, token.colorTextBase, token.colorTextLightSolid, surfaces.pageSolid])
 
   useLayoutEffect(() => {
     if (!contentRef.current) return
@@ -66,7 +66,7 @@ const AppShell = ({
     <Layout
       style={{
         minHeight: '100vh',
-        background: surfaces.pageBackground,
+        background: surfaces.pageSolid,
         transition: 'background 0.4s ease'
       }}
     >

@@ -39,6 +39,7 @@ export const HeroControls = ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+    lineHeight: 1,
     fontSize: iconSize
   })
 
