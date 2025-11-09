@@ -3,15 +3,15 @@ import { Avatar, Flex, Segmented, theme } from 'antd'
 import type { ReactElement } from 'react'
 
 import { ACCENT_OPTIONS } from '../theme'
+import { useSurfacePalette } from '../hooks/useSurfacePalette'
 import type { ControlCopy } from '../types/content'
 import type { ThemeMode } from '../theme/foundations/palette'
-import { darken, lighten } from '../theme/utils'
 
 interface HeroControlsProps {
   accent: string
   setAccent: (value: string) => void
   mode: ThemeMode
-  toggleMode: () => void
+  onModeChange: (value: ThemeMode) => void
   controlsCopy: ControlCopy
 }
 
@@ -19,28 +19,23 @@ export const HeroControls = ({
   accent,
   setAccent,
   mode,
-  toggleMode,
+  onModeChange,
   controlsCopy
 }: HeroControlsProps): ReactElement => {
   const { token } = theme.useToken()
+  const surfaces = useSurfacePalette(mode, accent)
   const controlHeight = token.controlHeightLG
   const controlPaddingY = token.paddingXXS
   const controlPaddingX = token.paddingSM
-  const pillBackground =
-    mode === 'dark'
-      ? darken(token.colorBgElevated, 0.05)
-      : lighten(token.colorBgElevated, 0.06)
-  const pillBorder = mode === 'dark' ? token.colorBorder : token.colorBorderSecondary
-  const pillShadow = mode === 'dark' ? token.boxShadowSecondary : token.boxShadow
   const swatchSize = token.controlHeightSM - token.padding
   const iconSize = token.fontSizeHeading4
 
   const pillStyle = {
     borderRadius: token.borderRadiusOuter * 2,
     padding: `${controlPaddingY}px ${controlPaddingX}px`,
-    background: pillBackground,
-    border: `1px solid ${pillBorder}`,
-    boxShadow: pillShadow
+    background: surfaces.pillBackground,
+    border: `1px solid ${surfaces.pillBorder}`,
+    boxShadow: surfaces.pillShadow
   }
 
   return (
@@ -55,8 +50,9 @@ export const HeroControls = ({
           { value: 'dark', label: <MoonOutlined style={{ fontSize: iconSize }} /> }
         ]}
         onChange={(value) => {
-          if (value !== mode) {
-            toggleMode()
+          const next = value as ThemeMode
+          if (next !== mode) {
+            onModeChange(next)
           }
         }}
       />

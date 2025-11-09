@@ -20,19 +20,6 @@ export interface HeroContent {
   stats: HeroStat[]
 }
 
-export interface GalleryControlsCopy {
-  previous: string
-  next: string
-  expand: string
-}
-
-export interface GalleryContent {
-  shots: string[]
-  alt: string
-  modalAlt: string
-  controls: GalleryControlsCopy
-}
-
 export interface ControlCopy {
   displayLabel: string
   languageLabel: string

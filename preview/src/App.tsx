@@ -10,13 +10,14 @@ import { useGlobalAnimations } from './hooks/useGlobalAnimations'
 import { useLenisScroll } from './hooks/useLenisScroll'
 import { ACCENT_OPTIONS, createThemeConfig } from './theme'
 import type { ThemeMode } from './theme/foundations/palette'
+import { buildSurfacePalette } from './theme/surfaces'
 
 const { Content } = Layout
 const DEFAULT_ACCENT = ACCENT_OPTIONS[0]
 
 interface AppShellProps {
   mode: ThemeMode
-  toggleMode: () => void
+  onModeChange: (value: ThemeMode) => void
   accent: string
   setAccent: (value: string) => void
   language: SupportedLanguage
@@ -25,7 +26,7 @@ interface AppShellProps {
 
 const AppShell = ({
   mode,
-  toggleMode,
+  onModeChange,
   accent,
   setAccent,
   language,
@@ -34,21 +35,15 @@ const AppShell = ({
   const { token } = antdTheme.useToken()
   const contentRef = useRef<HTMLDivElement>(null)
   useGlobalAnimations()
+  const surfaces = useMemo(() => buildSurfacePalette(token, mode, accent), [token, mode, accent])
 
   useLayoutEffect(() => {
-    document.body.style.background =
-      mode === 'dark'
-        ? `radial-gradient(circle at 10% 20%, ${accent}1a, transparent 50%),
-           radial-gradient(circle at 90% 0%, ${accent}14, transparent 40%),
-           linear-gradient(135deg, #020412, #050b1a 55%, #010106)`
-        : `radial-gradient(circle at 15% 25%, ${accent}26, transparent 45%),
-           radial-gradient(circle at 85% 10%, ${accent}1f, transparent 45%),
-           linear-gradient(135deg, #f0f4ff, #ffffff 55%, #eef1ff)`
-    document.body.style.color = mode === 'dark' ? '#f8fafc' : '#0f172a'
+    document.body.style.background = surfaces.pageBackground
+    document.body.style.color = mode === 'dark' ? token.colorTextLightSolid ?? '#f8fafc' : token.colorTextBase
     document.body.style.backgroundAttachment = 'fixed'
     document.body.style.fontFamily =
       token.fontFamily ?? 'Inter, "SF Pro Display", "Segoe UI", system-ui, sans-serif'
-  }, [token.fontFamily, mode, accent])
+  }, [token.fontFamily, mode, token.colorTextBase, token.colorTextLightSolid, surfaces.pageBackground])
 
   useLayoutEffect(() => {
     if (!contentRef.current) return
@@ -68,7 +63,13 @@ const AppShell = ({
   }, [])
 
   return (
-    <Layout style={{ minHeight: '100vh', background: 'transparent' }}>
+    <Layout
+      style={{
+        minHeight: '100vh',
+        background: surfaces.pageBackground,
+        transition: 'background 0.4s ease'
+      }}
+    >
       <Content style={{ width: '100%', padding: 0, overflow: 'hidden' }}>
         <Flex
           ref={contentRef}
@@ -83,7 +84,7 @@ const AppShell = ({
           <HeroStage
             mode={mode}
             accent={accent}
-            toggleMode={toggleMode}
+            onModeChange={onModeChange}
             setAccent={setAccent}
             language={language}
             onLanguageChange={setLanguage}
@@ -133,7 +134,7 @@ const App = (): ReactElement => {
     <ConfigProvider theme={themeConfig}>
       <AppShell
         mode={mode}
-        toggleMode={() => setMode((prev) => (prev === 'dark' ? 'light' : 'dark'))}
+        onModeChange={(value) => setMode(value)}
         accent={accent}
         setAccent={setAccent}
         language={language}

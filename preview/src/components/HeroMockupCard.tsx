@@ -1,28 +1,39 @@
-import { Card, Flex, theme } from 'antd'
-import { useState, type ReactElement } from 'react'
+import { Card, Empty, Image, theme } from 'antd'
+import { useMemo, useState, type ReactElement } from 'react'
 
-import type { GalleryContent } from '../types/content'
+import { useSurfacePalette } from '../hooks/useSurfacePalette'
 import type { ThemeMode } from '../theme/foundations/palette'
-import { darken, lighten } from '../theme/utils'
-
-import { HeroGallery } from './HeroGallery'
 
 interface HeroMockupCardProps {
   accent: string
   mode: ThemeMode
-  gallery: GalleryContent
+  heroShot: string
+  title: string
 }
 
-export const HeroMockupCard = ({ accent, mode, gallery }: HeroMockupCardProps): ReactElement => {
+const resolveHeroShotSrc = (raw: string): string => {
+  if (!raw) return ''
+  if (/^https?:\/\//i.test(raw)) {
+    return raw
+  }
+  const sanitized = raw.replace(/^\.?[\\/]+/, '')
+  const relative = sanitized.startsWith('gallery/') || sanitized.startsWith('assets/')
+    ? sanitized
+    : sanitized.startsWith('public/')
+      ? sanitized.replace(/^public[\\/]+/, '')
+      : sanitized.replace(/^\/+/, '')
+  const base = import.meta.env.BASE_URL ?? '/'
+  const normalizedBase = base.endsWith('/') ? base : `${base}/`
+  return `${normalizedBase}${relative}`
+}
+
+export const HeroMockupCard = ({ accent, mode, heroShot, title }: HeroMockupCardProps): ReactElement => {
   const { token } = theme.useToken()
+  const surfaces = useSurfacePalette(mode, accent)
   const [hovered, setHovered] = useState(false)
-  const background =
-    mode === 'dark'
-      ? darken(token.colorBgElevated, 0.08)
-      : lighten(token.colorBgElevated, 0.06)
-  const galleryOverflowOffset = token.marginXXXL + token.marginXL
   const cardMaxWidth = token.sizeUnit * 240
   const hoverLift = token.padding
+  const heroShotSrc = useMemo(() => resolveHeroShotSrc(heroShot), [heroShot])
 
   return (
     <Card
@@ -32,29 +43,34 @@ export const HeroMockupCard = ({ accent, mode, gallery }: HeroMockupCardProps): 
         maxWidth: cardMaxWidth,
         marginLeft: 'auto',
         borderRadius: token.borderRadiusOuter,
-        background,
+        background: surfaces.mockupCardBackground,
         borderColor: accent,
-        boxShadow:
-          mode === 'dark' ? token.boxShadowSecondary : token.boxShadow,
+        boxShadow: mode === 'dark' ? token.boxShadowSecondary : token.boxShadow,
         transform: hovered
           ? `translateY(-${hoverLift}px) rotateX(2deg) rotateY(-2deg)`
           : 'translateY(0)',
         transition: 'transform 0.5s cubic-bezier(0.22, 1, 0.36, 1)',
-        overflow: 'visible'
+        overflow: 'hidden'
       }}
-      bodyStyle={{ padding: token.padding, overflow: 'visible' }}
+      bodyStyle={{ padding: token.padding }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      <Flex
-        style={{
-          position: 'relative',
-          right: `-${galleryOverflowOffset}px`,
-          width: `calc(100% + ${galleryOverflowOffset}px)`
-        }}
-      >
-        <HeroGallery content={gallery} />
-      </Flex>
+      {heroShotSrc ? (
+        <Image
+          src={heroShotSrc}
+          alt={title}
+          preview={false}
+          style={{
+            width: '100%',
+            borderRadius: token.borderRadiusLG,
+            boxShadow: mode === 'dark' ? token.boxShadowSecondary : token.boxShadow,
+            background: surfaces.mockupImageBackground
+          }}
+        />
+      ) : (
+        <Empty description={title} />
+      )}
     </Card>
   )
 }
