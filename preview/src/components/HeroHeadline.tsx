@@ -23,6 +23,7 @@ export const HeroHeadline = ({ accent, content }: HeroHeadlineProps): ReactEleme
   const paragraphSize = token.fontSizeHeading4
   const actionsGap = token.marginLG
   const descriptionWidth = token.sizeUnit * 130
+  const featureOffset = token.marginXXXL * 1.5
 
   return (
     <Space direction="vertical" size={stackSpacing} style={{ width: '100%' }}>
@@ -83,7 +84,7 @@ export const HeroHeadline = ({ accent, content }: HeroHeadlineProps): ReactEleme
           {content.secondaryCta.label}
         </Button>
       </Space>
-      <div style={{ marginTop: token.marginXXXL }}>
+      <div style={{ marginTop: featureOffset }}>
         <HeroStatsGrid accent={accent} stats={content.stats} />
       </div>
     </Space>
