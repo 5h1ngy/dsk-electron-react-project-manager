@@ -57,28 +57,22 @@ jobs:
       - name: Stage release artifacts
         run: |
           set -euo pipefail
-          VERSION=$(node -p "require('./package.json').version")
-          PACKAGE_NAME=$(node -p "require('./package.json').name")
           mkdir -p artifacts/windows
-          if [ -d dist ]; then
-            find dist -maxdepth 1 -type f -print0 | while IFS= read -r -d '' file; do
-              base=$(basename "$file")
-              cp "$file" "artifacts/windows/$base"
-            done
-          else
+          if [ ! -d dist ]; then
             echo "dist directory not found. Windows artifacts will be missing." >&2
+            exit 1
           fi
-          mkdir -p artifacts/app-bundle
-          if [ -d out ]; then
-            tar -czf "artifacts/app-bundle/${PACKAGE_NAME}-${VERSION}-app-bundle.tgz" out
-          else
-            echo "out directory not found. Runtime bundle archive skipped." >&2
-          fi
-          mkdir -p artifacts/docs
-          if [ -d docs ]; then
-            tar -czf "artifacts/docs/${PACKAGE_NAME}-${VERSION}-docs.tgz" docs
-          else
-            echo "docs directory not found. Documentation snapshot skipped." >&2
+
+          FOUND=0
+          while IFS= read -r -d '' file; do
+            base=$(basename "$file")
+            cp "$file" "artifacts/windows/$base"
+            FOUND=1
+          done < <(find dist -maxdepth 1 -type f -iname '*portable*.exe' -print0)
+
+          if [ "$FOUND" -eq 0 ]; then
+            echo "No portable Windows executables were produced under dist/." >&2
+            exit 1
           fi
         shell: bash
 
@@ -87,20 +81,6 @@ jobs:
         with:
           name: windows
           path: artifacts/windows
-          if-no-files-found: error
-
-      - name: Upload runtime bundle
-        uses: actions/upload-artifact@v4
-        with:
-          name: runtime-bundle
-          path: artifacts/app-bundle
-          if-no-files-found: error
-
-      - name: Upload docs snapshot
-        uses: actions/upload-artifact@v4
-        with:
-          name: docs
-          path: artifacts/docs
           if-no-files-found: error
 
   release:
