@@ -282,7 +282,7 @@ Tutte le variabili sono documentate in `env/.env.example` e replicate negli altr
   Alza `backend` (Node 22-alpine, SQLite in volume `backend-data`) e `frontend` (nginx che proxy `/api/` verso backend:3000).
 
 - **CI/CD**
-  - Workflow `release.yml`: 3 job (`prepare`, `build`, `release`). Genera release info (`scripts/release/generate-release-info.mjs`), builda su Windows, carica artefatti e pubblica tag `vX.Y.Z`.
+  - Workflow `release.yml`: 3 job (`prepare`, `build`, `release`). Genera release info (`scripts/generate-release-info.mjs`), builda su Windows, carica artefatti e pubblica tag `vX.Y.Z`.
   - Script `npm run version:bump` mantiene allineati `package*.json`, README, `.env.*` e crea commit `chore: bump version to X.Y.Z`.
 
 ## API (endpoint principali con esempi curl)

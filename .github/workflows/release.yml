@@ -30,7 +30,7 @@ jobs:
 
       - name: Generate release information
         id: release_info
-        run: node scripts/release/generate-release-info.mjs
+        run: node scripts/generate-release-info.mjs
 
   build:
     needs: prepare
