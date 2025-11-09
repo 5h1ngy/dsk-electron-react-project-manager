@@ -3,6 +3,7 @@ FROM node:22-alpine AS builder
 WORKDIR /app
 
 COPY packages ./packages
+COPY env ./env
 COPY docker/frontend.package.dev.json ./package.json
 COPY package-lock.json ./
 RUN npm install
@@ -14,6 +15,6 @@ FROM nginx:1.27-alpine
 ARG WEB_PORT=0000
 
 COPY docker/frontend.nginx.conf /etc/nginx/conf.d/default.conf
-COPY --from=builder /app/out/renderer-web /usr/share/nginx/html
+COPY --from=builder /app/out/renderer-web /usr/share/nginx/html/services/dsk
 
 EXPOSE ${WEB_PORT}
