@@ -15,6 +15,6 @@ FROM nginx:1.27-alpine
 ARG WEB_PORT=0000
 
 COPY docker/frontend.nginx.conf /etc/nginx/conf.d/default.conf
-COPY --from=builder /app/out/renderer-web /usr/share/nginx/html/services/dsk
+COPY --from=builder /app/out/renderer-web /usr/share/nginx/html
 
 EXPOSE ${WEB_PORT}
